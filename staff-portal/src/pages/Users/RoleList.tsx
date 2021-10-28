@@ -69,7 +69,7 @@ function RoleList() {
         }
 
         if (errorList.length < 1) {
-            axios.put('/roles/' + newData.id, newData)
+            axios.put('//roles/{roleID}/' + newData.id, newData)
                 .then(res => {
                     const dataUpdate = [...data];
                     const index = oldData.tableData.id;
@@ -97,7 +97,7 @@ function RoleList() {
 
     const handleRowDelete = (oldData, resolve) => {
 
-        axios.delete('/roles/' + oldData.id)
+        axios.delete('/roles/{roleID}' + oldData.id)
             .then(res => {
                 const dataDelete = [...data];
                 const index = oldData.tableData.id;
