@@ -56,13 +56,6 @@ const chartData: { items: MenuItemType[] } = {
                             title: 'Department',
                             type: 'item',
                             url: '/department'
-                        },
-                        {
-                            id: 'courselist',
-                            title: 'Courses List',
-                            type: 'item',
-                            url: '/courselist'
-
                         }
                     ]
                 }

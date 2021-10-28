@@ -1,12 +1,12 @@
 import Default from './pages/Dashboard/Default';
 import RoleList from './pages/Users/RoleList';
-import CoursesList from './pages/Academics/CoursesList';
+import Departments from './pages/Academics/Departments';
 
 
 const routes = [
     { path: '/dashboard', exact: true, name: 'default', component: Default },
     { path: '/rolelist', exact: true, name: 'default', component: RoleList },
-    { path: '/courselist', exact: true, name: 'default', component: CoursesList },
+    { path: '/department', exact: true, name: 'default', component: Departments },
 
 ];
 export default routes;
