@@ -44,6 +44,27 @@ const chartData: { items: MenuItemType[] } = {
                             url: "/createrole"
                         },
                     ]
+                },
+                {
+                    id: 'Academics',
+                    title: 'Academics',
+                    type: 'collapse',
+                    icon: 'feather icon-book',
+                    children: [
+                        {
+                            id: 'department',
+                            title: 'Department',
+                            type: 'item',
+                            url: '/department'
+                        },
+                        {
+                            id: 'courselist',
+                            title: 'Courses List',
+                            type: 'item',
+                            url: '/courselist'
+
+                        }
+                    ]
                 }
 
             ]
