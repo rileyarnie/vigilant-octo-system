@@ -25,6 +25,26 @@ const chartData: { items: MenuItemType[] } = {
             type: 'group',
             icon: 'feather icon-monitor',
             children: [
+                {
+                    id: 'Default',
+                    title: 'Users',
+                    type: 'collapse',
+                    icon: 'feather icon-user',
+                    children: [
+                        {
+                            id: 'createUser',
+                            title: 'Create User',
+                            type: 'item',
+                            url: '/createuser'
+                        },
+                        {
+                            id: 'userlist',
+                            title: 'Staff',
+                            type: 'item',
+                            url: '/userlist'
+                        },
+                    ]
+                }
 
             ]
         }
