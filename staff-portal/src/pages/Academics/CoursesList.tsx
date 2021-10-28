@@ -46,10 +46,6 @@ function Department() {
     const columns = [
         { title: 'ID', field: 'id', hidden: false },
         { title: 'Course name', field: 'name' },
-        {
-            title: 'Status', field: 'isActive',
-            lookup: { true: 'Active', false: 'Deactivated' }
-        }
 
 
     ];
