@@ -73,7 +73,7 @@ function Department() {
             errorList.push('Please enter Department name');
         }
         if (errorList.length < 1) {
-            axios.put('/timetabling-service/0.0.1/departments/{departmentId}' + newData.departmentId, newData)
+            axios.put('/departments/{departmentId}' + newData.departmentId, newData)
                 .then(res => {
                     const dataUpdate = [...data];
                     const index = oldData.tableData.departmentId;
