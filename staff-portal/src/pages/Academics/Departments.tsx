@@ -57,7 +57,7 @@ function Department() {
     const [iserror, setIserror] = useState(false);
     const [errorMessages, setErrorMessages] = useState([]);
     useEffect(() => {
-        axios.get(`/timetabling-service/0.0.1/departments/{departmentId}`)
+        axios.get(`/departments`)
             .then(res => {
                 setData(res.data);
             })
