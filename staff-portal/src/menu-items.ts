@@ -26,22 +26,22 @@ const chartData: { items: MenuItemType[] } = {
             icon: 'feather icon-monitor',
             children: [
                 {
-                    id: 'Default',
-                    title: 'Users',
-                    type: 'collapse',
-                    icon: 'feather icon-user',
+                    id: "project",
+                    title: "Users",
+                    type: "collapse",
+                    icon: "feather icon-user",
                     children: [
                         {
-                            id: 'createUser',
-                            title: 'Create User',
-                            type: 'item',
-                            url: '/createuser'
+                            id: "rolelist",
+                            title: "Role List",
+                            type: "item",
+                            url: "/rolelist"
                         },
                         {
-                            id: 'userlist',
-                            title: 'User List',
-                            type: 'item',
-                            url: '/userlist'
+                            id: "createrole",
+                            title: "Create Role",
+                            type: "item",
+                            url: "/createrole"
                         },
                     ]
                 }

@@ -1,10 +1,10 @@
 import Default from './pages/Dashboard/Default';
-import UserList from './pages/Users/UserList';
+import RoleList from './pages/Users/RoleList';
 
 
 const routes = [
     { path: '/dashboard', exact: true, name: 'default', component: Default },
-    { path: "/userlist", exact: true, name: "default", component: UserList },
+    { path: '/rolelist', exact: true, name: 'default', component: RoleList },
 
 ];
 export default routes;
