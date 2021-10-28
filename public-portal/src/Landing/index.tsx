@@ -1,11 +1,9 @@
 import React, { useState } from 'react';
-//import '../../assets/scss/style.scss';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import { Navbar, Container, Nav } from 'react-bootstrap';
 import Institute from '../assets/images/system/miog.jpg';
+import '../App.css';
 import logoDark from '../assets/images/logo.png';
-import { Redirect } from 'react-router';
-
 const LandingPage = () => {
 
     return (
