@@ -39,7 +39,7 @@ const chartData: { items: MenuItemType[] } = {
                         },
                         {
                             id: 'userlist',
-                            title: 'Staff',
+                            title: 'User List',
                             type: 'item',
                             url: '/userlist'
                         },
