@@ -53,10 +53,22 @@ const chartData: { items: MenuItemType[] } = {
                     children: [
                         {
                             id: 'department',
-                            title: 'Department',
+                            title: 'Departments',
                             type: 'item',
                             url: '/department'
-                        }
+                        },
+                        {
+                            id: 'courselist',
+                            title: 'Courses List',
+                            type: 'item',
+                            url: '/courselist'
+                        },
+                        {
+                            id: 'createcourse',
+                            title: 'Create Course',
+                            type: 'item',
+                            url: '/createcourse'
+                        },
                     ]
                 }
 
