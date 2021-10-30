@@ -69,7 +69,7 @@ function RoleList() {
         }
 
         if (errorList.length < 1) {
-            axios.put('//roles/{roleID}/' + newData.id, newData)
+            axios.put('/roles/{roleID}/' + newData.id, newData)
                 .then(res => {
                     const dataUpdate = [...data];
                     const index = oldData.tableData.id;
@@ -93,8 +93,36 @@ function RoleList() {
         }
 
     };
+    const handleRowAdd = (newData, resolve) => {
+        //validation
+        let errorList = []
+        if(newData.role_name === undefined){
+            errorList.push("Please enter role name")
+        }
+
+        if(errorList.length < 1){ //no error
+            axios.put("/roles", newData)
+                .then(res => {
+                    let dataToAdd = [...data];
+                    dataToAdd.push(newData);
+                    setData(dataToAdd);
+                    resolve()
+                    setErrorMessages([])
+                    setIserror(false)
+                })
+                .catch(error => {
+                    setErrorMessages(["Cannot add Role"])
+                    setIserror(true)
+                    resolve()
+                })
+        }else{
+            setErrorMessages(errorList)
+            setIserror(true)
+            resolve()
+        }
 
 
+    }
     const handleRowDelete = (oldData, resolve) => {
 
         axios.delete('/roles/{roleID}' + oldData.id)
@@ -142,7 +170,10 @@ function RoleList() {
                                 onRowUpdate: (newData, oldData) =>
                                     new Promise((resolve) => {
                                         handleRowUpdate(newData, oldData, resolve);
-
+                                    }),
+                                onRowAdd: (newData) =>
+                                    new Promise((resolve) => {
+                                        handleRowAdd(newData, resolve)
                                     }),
                                 onRowDelete: (oldData) =>
                                     new Promise((resolve) => {
