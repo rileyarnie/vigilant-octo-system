@@ -45,13 +45,12 @@ function Department() {
 
     const columns = [
         { title: 'ID', field: 'id', hidden: true },
-        { title: 'Department name', field: 'name'},
+        { title: 'Department name', field: 'name' },
+
         {
             title: 'Status', field: 'isActive',
             lookup: { true: 'Active', false: 'Deactivated' }
         }
-
-
     ];
     const [data, setData] = useState([]);
     const [iserror, setIserror] = useState(false);
@@ -66,11 +65,41 @@ function Department() {
                 console.error(error);
             });
     }, []);
-    //Update department details(staus and name)
+
+    const handleRowAdd = (newData, resolve) => {
+        let errorList = [];
+        if (newData.name === undefined) {
+            errorList.push('Please enter department name');
+        }
+        if (newData.isActive === undefined) {
+            errorList.push('Please select status');
+        }
+        if (errorList.length < 1) {
+            axios.put('/departments', newData)
+                .then(res => {
+                    let dataToAdd = [...data];
+                    dataToAdd.push(newData);
+                    setData(dataToAdd);
+                    resolve();
+                    setErrorMessages([]);
+                    setIserror(false);
+                })
+                .catch(error => {
+                    setErrorMessages(['Invalid input details.']);
+                    setIserror(true);
+                    resolve();
+                });
+        } else {
+            setErrorMessages(errorList);
+            setIserror(true);
+            resolve();
+        }
+    };
     const handleRowUpdate = (newData, oldData, resolve) => {
+        //validation
         let errorList = [];
         if (newData.name === '') {
-            errorList.push('Enter Department name');
+            errorList.push('Please enter Department name');
         }
         if (errorList.length < 1) {
             axios.put('/departments/{departmentId}' + newData.departmentId, newData)
@@ -84,7 +113,7 @@ function Department() {
                     setErrorMessages([]);
                 })
                 .catch(error => {
-                    setErrorMessages(['Invalid input details']);
+                    setErrorMessages(['Invalid input details!']);
                     setIserror(true);
                     resolve();
                 });
@@ -95,6 +124,7 @@ function Department() {
             resolve();
         }
     };
+    
     return (
         <>
             <Row className='align-items-center page-header'>
@@ -121,7 +151,10 @@ function Department() {
                             // @ts-ignore
                             icons={tableIcons}
                             editable={{
-                                //handle row update
+                                onRowAdd: (newData) =>
+                                    new Promise((resolve) => {
+                                        handleRowAdd(newData, resolve);
+                                    }),
                                 onRowUpdate: (newData, oldData) =>
                                     new Promise((resolve) => {
                                         handleRowUpdate(newData, oldData, resolve);
