@@ -45,12 +45,13 @@ function Department() {
 
     const columns = [
         { title: 'ID', field: 'id', hidden: true },
-        { title: 'Department name', field: 'name' },
-
+        { title: 'Department name', field: 'name'},
         {
             title: 'Status', field: 'isActive',
             lookup: { true: 'Active', false: 'Deactivated' }
         }
+
+
     ];
     const [data, setData] = useState([]);
     const [iserror, setIserror] = useState(false);
@@ -65,12 +66,11 @@ function Department() {
                 console.error(error);
             });
     }, []);
-
+    //Update department details(staus and name)
     const handleRowUpdate = (newData, oldData, resolve) => {
-        //validation
         let errorList = [];
         if (newData.name === '') {
-            errorList.push('Please enter Department name');
+            errorList.push('Enter Department name');
         }
         if (errorList.length < 1) {
             axios.put('/departments/{departmentId}' + newData.departmentId, newData)
@@ -84,7 +84,7 @@ function Department() {
                     setErrorMessages([]);
                 })
                 .catch(error => {
-                    setErrorMessages(['Update failed!']);
+                    setErrorMessages(['Invalid input details']);
                     setIserror(true);
                     resolve();
                 });
@@ -95,7 +95,6 @@ function Department() {
             resolve();
         }
     };
-    
     return (
         <>
             <Row className='align-items-center page-header'>
@@ -122,13 +121,13 @@ function Department() {
                             // @ts-ignore
                             icons={tableIcons}
                             editable={{
+                                //handle row update
                                 onRowUpdate: (newData, oldData) =>
                                     new Promise((resolve) => {
                                         handleRowUpdate(newData, oldData, resolve);
                                     }),
                             }}
                         />
-
                     </Card>
                 </Col>
             </Row>
