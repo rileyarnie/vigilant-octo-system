@@ -4,10 +4,20 @@ import { Navbar, Container, Nav } from 'react-bootstrap';
 import Institute from '../assets/images/system/miog.jpg';
 import '../App.css';
 import logoDark from '../assets/images/logo.png';
+<<<<<<< HEAD
+import { Redirect } from 'react-router';
+import Login from '../App/components/Login';
+import { AuthContext } from '../App/context/AuthContext';
+
+=======
+>>>>>>> origin/develop
 const LandingPage = () => {
+    const [isAuthenticated,setAuthState] = useState(false);
+    const user = JSON.parse(sessionStorage.getItem('User') as string);
 
     return (
         <>
+            {isAuthenticated  ? <Redirect to="/dashboard" /> : null}
             <Navbar bg="primary" expand="lg">
                 <Container>
                     <Navbar.Brand href="/home">
@@ -16,10 +26,19 @@ const LandingPage = () => {
                     <Navbar.Toggle aria-controls="basic-navbar-nav " />
                     <Navbar.Collapse id="basic-navbar-nav">
                         <Nav className="mr-auto ">
-                            <Nav.Link href="home">Home</Nav.Link>
-                            <Nav.Link href="courses">Courses</Nav.Link>
-                            <Nav.Link href="apply">Apply</Nav.Link>
-                            <Nav.Link href="apply">Login</Nav.Link>
+                            <AuthContext.Provider
+                                value={{
+                                    isAuthenticated,
+                                    setAuthState
+                                }}
+                            >
+                                <Nav.Link href="home">Home</Nav.Link>
+                                <Nav.Link href="courses">Courses</Nav.Link>
+                                <Nav.Link href="apply">Apply</Nav.Link>
+                                <Nav.Link>
+                                    <Login></Login>
+                                </Nav.Link>
+                            </AuthContext.Provider>
                         </Nav>
                     </Navbar.Collapse>
                 </Container>
