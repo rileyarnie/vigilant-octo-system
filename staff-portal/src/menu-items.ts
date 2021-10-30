@@ -26,22 +26,16 @@ const chartData: { items: MenuItemType[] } = {
             icon: 'feather icon-monitor',
             children: [
                 {
-                    id: "project",
+                    id: "Default",
                     title: "Users",
                     type: "collapse",
                     icon: "feather icon-user",
                     children: [
                         {
-                            id: "rolelist",
-                            title: "Role List",
+                            id: "createUser",
+                            title: "Create User",
                             type: "item",
-                            url: "/rolelist"
-                        },
-                        {
-                            id: "createrole",
-                            title: "Create Role",
-                            type: "item",
-                            url: "/createrole"
+                            url: "/createuser"
                         },
                     ]
                 },
