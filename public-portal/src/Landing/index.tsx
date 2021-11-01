@@ -4,20 +4,16 @@ import { Navbar, Container, Nav } from 'react-bootstrap';
 import Institute from '../assets/images/system/miog.jpg';
 import '../App.css';
 import logoDark from '../assets/images/logo.png';
-<<<<<<< HEAD
 import { Redirect } from 'react-router';
 import Login from '../App/components/Login';
 import { AuthContext } from '../App/context/AuthContext';
 
-=======
->>>>>>> origin/develop
 const LandingPage = () => {
     const [isAuthenticated,setAuthState] = useState(false);
     const user = JSON.parse(sessionStorage.getItem('User') as string);
 
     return (
         <>
-            {isAuthenticated  ? <Redirect to="/dashboard" /> : null}
             <Navbar bg="primary" expand="lg">
                 <Container>
                     <Navbar.Brand href="/home">
