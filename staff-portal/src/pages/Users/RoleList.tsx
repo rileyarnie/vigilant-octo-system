@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { forwardRef } from 'react';
+import Config from '../../config';
 import MaterialTable from 'material-table';
 import AddBox from '@material-ui/icons/AddBox';
 import ArrowDownward from '@material-ui/icons/ArrowDownward';
@@ -20,6 +21,7 @@ import axios from 'axios';
 import Alert from '@material-ui/lab/Alert';
 import { Card, Col, Row } from 'react-bootstrap';
 import Breadcrumb from '../../App/components/Breadcrumb';
+import {Actions} from "./ActionsByRole/Actions"
 
 const tableIcons = {
     Add: forwardRef((props, ref: any) => <AddBox {...props} ref={ref} />),
@@ -43,19 +45,26 @@ const tableIcons = {
 function RoleList() {
 
     const columns = [
-        { title: 'id', field: 'id', hidden: true },
-        { title: 'Role Name', field: 'name' }
+        { title: 'id', field: 'id' },
+        { title: 'RoleName', field: 'RoleName' },
+        { title: 'Activation Status', field: 'activation_status' },
+        { title: 'Created On', field: 'created_on' },
+        {title: ''}
+        
     ];
     const [data, setData] = useState([]);
+    const [id,setId] = useState(0)
+    const [roleName,setRoleName] = useState('')
 
     //for error handling
     const [iserror, setIserror] = useState(false);
     const [errorMessages, setErrorMessages] = useState([]);
 
     useEffect(() => {
-        axios.get('/roles/')
+        const base_url = Config.BASE_URL
+        axios.get(`${base_url}/roles`)
             .then(res => {
-                setData(res.data.data);
+                setData(res.data);
             })
             .catch(error => {
                 console.log('Error');
@@ -80,7 +89,7 @@ function RoleList() {
                     setErrorMessages([]);
                 })
                 .catch(error => {
-                    setErrorMessages(['Update failed']);
+                    setErrorMessages(error.message);
                     setIserror(true);
                     resolve();
 
@@ -140,8 +149,19 @@ function RoleList() {
             });
     };
 
+    const handleRowSelection = (roleName,roleId) => {
+        setRoleName(roleName)
+        setId(roleId)
+    }
+
+    const selectedRowProps = {
+        id: id,
+        name: roleName
+    }
+
     return (
         <>
+        <div>
             <Row className='align-items-center page-header'>
                 <Col>
                     <Breadcrumb />
@@ -163,6 +183,12 @@ function RoleList() {
                             title='Role List'
                             columns={columns}
                             data={data}
+                            options={{
+                                selection: true,
+                                showSelectAllCheckbox: false,
+                                showTextRowsSelected: false
+                              }}
+                            onSelectionChange = {(rows)=> handleRowSelection(rows[0]?.RoleName,rows[0]?.id)}  
 
                             // @ts-ignore
                             icons={tableIcons}
@@ -182,8 +208,11 @@ function RoleList() {
                             }}
                         />
                     </Card>
-                </Col>
+               </Col>
+              
             </Row>
+            <Actions {...selectedRowProps as any}></Actions>
+            </div>
         </>
     );
 }

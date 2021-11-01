@@ -32,11 +32,23 @@ const chartData: { items: MenuItemType[] } = {
                     icon: "feather icon-user",
                     children: [
                         {
+                            id: "rolelist",
+                            title: "Role List",
+                            type: "item",
+                            url: "/rolelist"
+                        },
+                        {
+                            id: "createrole",
+                            title: "Create Role",
+                            type: "item",
+                            url: "/createrole"
+                        },
+                        {
                             id: "createUser",
                             title: "Create User",
                             type: "item",
                             url: "/createuser"
-                        },
+                        }
                     ]
                 },
                 {
