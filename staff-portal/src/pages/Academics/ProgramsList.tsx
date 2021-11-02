@@ -19,7 +19,11 @@ import ViewColumn from '@material-ui/icons/ViewColumn';
 import axios from 'axios';
 import Alert from '@material-ui/lab/Alert';
 import Breadcrumb from '../../App/components/Breadcrumb';
-import { Row, Col, Card } from 'react-bootstrap';
+import { Row, Col, Card, Form } from 'react-bootstrap';
+import Config from '../../config';
+import { Switch } from '@material-ui/core';
+import { FormGroup, FormControlLabel } from '@material-ui/core';
+import { chain, find, merge } from 'lodash';
 
 const tableIcons = {
     Add: forwardRef((props, ref: any) => <AddBox {...props} ref={ref} />),
@@ -42,19 +46,31 @@ const tableIcons = {
 };
 
 function Department() {
-
+    const timeTableServiceBaseUrl = Config.TIMETABLE_SERVICE_BASE_URL; 
+    const ACTIVE = 'ACTIVE'
+    const INACTIVE = 'INACTIVE'
     const columns = [
         { title: 'ID', field: 'id', hidden: false },
-        { title: 'Program Name', field: 'name' }
-
-
+        { title: 'Program Name', field: 'name' },
+        {
+          title: 'Activation Status',
+          field: 'internal_action',
+          render: (row) => (
+                <Switch
+                    onChange={(event) => handleSwitchToggle(row)}
+                    inputProps={{ 'aria-label': 'controlled' }}
+                    checked={row.activation_status === ACTIVE?true:false} 
+                />
+            )
+        }
     ];
     const [data, setData] = useState([]);
     const [iserror, setIserror] = useState(false);
     const [errorMessages, setErrorMessages] = useState([]);
     useEffect(() => {
-        axios.get(`/programs/`)
-            .then(res => {
+        axios
+            .get(`${timeTableServiceBaseUrl}/programs/`)
+            .then((res) => {
                 setData(res.data);
             })
             .catch((error) => {
@@ -62,6 +78,44 @@ function Department() {
                 console.error(error);
             });
     }, []);
+    const [checked, setChecked] = useState(true);
+
+    const toggleActivationStatus = async (courseId, isActivated) => {
+        const params = new URLSearchParams();
+        const update = {
+            activation_status: isActivated
+        };
+        params.append('updates', JSON.stringify(update));
+        axios
+            .put(`${timeTableServiceBaseUrl}/programs/${courseId}`, params)
+            .then((res) => {
+                if(res.status === 200){
+                   data.forEach((obj,index)=>{
+                       if(obj.id === courseId){
+                           data[index].activation_status = isActivated
+                           const updatedArr = [...data]
+                           setData(updatedArr)
+                       }
+                   })
+                }
+            })
+            .catch((error) => {
+                //handle error using logging library
+                alert(error)
+                console.error(error);
+            });
+    };
+
+
+    const handleSwitchToggle = async (row) => {
+        if (row.activation_status === ACTIVE) {
+             toggleActivationStatus(row.id, INACTIVE);
+        }
+        if (row.activation_status === INACTIVE) {
+             toggleActivationStatus(row.id, ACTIVE);
+        }
+    };
+
     const handleRowUpdate = (newData, oldData, resolve) => {
         //validation
         let errorList = [];
@@ -69,8 +123,9 @@ function Department() {
             errorList.push('Please enter Program name');
         }
         if (errorList.length < 1) {
-            axios.put('/programs/' + newData.departmentId, newData)
-                .then(res => {
+            axios
+                .put('/programs/' + newData.departmentId, newData)
+                .then((res) => {
                     const dataUpdate = [...data];
                     const index = oldData.tableData.departmentId;
                     dataUpdate[index] = newData;
@@ -79,12 +134,11 @@ function Department() {
                     setIserror(false);
                     setErrorMessages([]);
                 })
-                .catch(error => {
+                .catch((error) => {
                     setErrorMessages(['Update failed!']);
                     setIserror(true);
                     resolve();
                 });
-
         } else {
             setErrorMessages(errorList);
             setIserror(true);
@@ -93,7 +147,7 @@ function Department() {
     };
     return (
         <>
-            <Row className='align-items-center page-header'>
+            <Row className="align-items-center page-header">
                 <Col>
                     <Breadcrumb />
                 </Col>
@@ -102,16 +156,16 @@ function Department() {
                 <Col>
                     <Card>
                         <div>
-                            {iserror &&
-                            <Alert severity='error'>
-                                {errorMessages.map((msg, i) => {
-                                    return <div key={i}>{msg}</div>;
-                                })}
-                            </Alert>
-                            }
+                            {iserror && (
+                                <Alert severity="error">
+                                    {errorMessages.map((msg, i) => {
+                                        return <div key={i}>{msg}</div>;
+                                    })}
+                                </Alert>
+                            )}
                         </div>
                         <MaterialTable
-                            title='Programs'
+                            title="Programs"
                             columns={columns}
                             data={data}
                             // @ts-ignore
@@ -120,10 +174,9 @@ function Department() {
                                 onRowUpdate: (newData, oldData) =>
                                     new Promise((resolve) => {
                                         handleRowUpdate(newData, oldData, resolve);
-                                    }),
-                        }}
+                                    })
+                            }}
                         />
-
                     </Card>
                 </Col>
             </Row>
