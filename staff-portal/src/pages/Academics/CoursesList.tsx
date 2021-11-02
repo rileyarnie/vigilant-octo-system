@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect,useRef } from 'react';
 import { forwardRef } from 'react';
 import MaterialTable from 'material-table';
 import AddBox from '@material-ui/icons/AddBox';
@@ -19,8 +19,9 @@ import ViewColumn from '@material-ui/icons/ViewColumn';
 import axios from 'axios';
 import Alert from '@material-ui/lab/Alert';
 import Breadcrumb from '../../App/components/Breadcrumb';
-import { Row, Col, Card } from 'react-bootstrap';
-
+import { Row, Col, Card, Form } from 'react-bootstrap';
+import Config from '../../config';
+import { Switch } from '@material-ui/core';
 const tableIcons = {
     Add: forwardRef((props, ref: any) => <AddBox {...props} ref={ref} />),
     Check: forwardRef((props, ref: any) => <Check {...props} ref={ref} />),
@@ -41,30 +42,82 @@ const tableIcons = {
     ViewColumn: forwardRef((props, ref: any) => <ViewColumn {...props} ref={ref} />)
 };
 
-function Department() {
-
-    const columns = [
-        { title: 'ID', field: 'id', hidden: false },
-        { title: 'Course name', field: 'name' },
-
-
-    ];
-    const [data, setData] = useState([]);
-    const [iserror] = useState(false);
-    const [errorMessages] = useState([]);
+function CoursesList() {
+    const timeTableServiceBaseUrl = Config.TIMETABLE_SERVICE_BASE_URL;
+    const ACTIVE = 'ACTIVE'
+    const INACTIVE = 'INACTIVE'
     useEffect(() => {
-        axios.get(`/courses`)
-            .then(res => {
+        axios
+            .get(`${timeTableServiceBaseUrl}/courses`)
+            .then((res) => {
                 setData(res.data);
             })
             .catch((error) => {
                 //handle error using logging library
+                alert(error.message)
                 console.error(error);
             });
     }, []);
+
+    const [data, setData] = useState([]);
+    const [iserror] = useState(false);
+    const [errorMessages] = useState([]);
+    const [checked, setChecked] = useState(true);
+
+    const handleSwitchToggle = async (row) => {
+        if (row.activation_status === ACTIVE) {
+            setCourseActivationStatus(row.id, INACTIVE);
+        }
+        if (row.activation_status === INACTIVE) {
+            setCourseActivationStatus(row.id, ACTIVE);
+        }
+    };
+    const columns = [
+        { title: 'ID', field: 'id' },
+        { title: 'Course name', field: 'name' },
+        { title: 'Status', field: 'activation_status' },
+        {
+            title: 'Toggle Activation Status',
+            field: 'internal_action',
+            render: (row) => (
+                <Switch
+                    onChange={(event) => handleSwitchToggle(row)}
+                    inputProps={{ 'aria-label': 'controlled' }}
+                    checked={row.activation_status === 'ACTIVE'?true:false} 
+                />
+            )
+        }
+    ];
+
+    const setCourseActivationStatus = async (courseId:number, activationStatus:string) => {
+        const params = new URLSearchParams();
+        const update = {
+            activation_status: activationStatus
+        };
+        params.append('updates', JSON.stringify(update));
+        axios
+            .put(`${timeTableServiceBaseUrl}/courses/${courseId}`, params)
+            .then((res) => {
+                if(res.status === 200){
+                   data.forEach((obj,index)=>{
+                       if(obj.id === courseId){
+                           data[index].activation_status = activationStatus
+                           const updatedArr = [...data]
+                           setData(updatedArr)
+                       }
+                   })
+                }
+            })
+            .catch((error) => {
+                alert(error)
+                console.error(error);
+            });
+    };
+
+   
     return (
         <>
-            <Row className='align-items-center page-header'>
+            <Row className="align-items-center page-header">
                 <Col>
                     <Breadcrumb />
                 </Col>
@@ -73,29 +126,26 @@ function Department() {
                 <Col>
                     <Card>
                         <div>
-                            {iserror &&
-                            <Alert severity='error'>
-                                {errorMessages.map((msg, i) => {
-                                    return <div key={i}>{msg}</div>;
-                                })}
-                            </Alert>
-                            }
+                            {iserror && (
+                                <Alert severity="error">
+                                    {errorMessages.map((msg, i) => {
+                                        return <div key={i}>{msg}</div>;
+                                    })}
+                                </Alert>
+                            )}
                         </div>
                         <MaterialTable
-                            title='Courses'
+                            title="Courses"
                             columns={columns}
                             data={data}
                             // @ts-ignore
                             icons={tableIcons}
-                            editable={{
-
-                            }}
+                            editable={{}}
                         />
-
                     </Card>
                 </Col>
             </Row>
         </>
     );
 }
-export default Department;
+export default CoursesList;
