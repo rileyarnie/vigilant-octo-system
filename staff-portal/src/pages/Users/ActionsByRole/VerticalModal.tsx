@@ -3,7 +3,6 @@ import { Modal, Button } from 'react-bootstrap';
 import {ActionsList} from "../ActionsList"
 
 export const  VerticalModal = (props) => {
-    console.log(props.selectedrowprops)
     return (
       <Modal
         {...props}

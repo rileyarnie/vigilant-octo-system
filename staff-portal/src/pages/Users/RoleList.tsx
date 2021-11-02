@@ -22,6 +22,7 @@ import Alert from '@material-ui/lab/Alert';
 import { Card, Col, Row } from 'react-bootstrap';
 import Breadcrumb from '../../App/components/Breadcrumb';
 import {Actions} from "./ActionsByRole/Actions"
+import { AddActions } from './AddActionsModal/AddActions';
 
 const tableIcons = {
     Add: forwardRef((props, ref: any) => <AddBox {...props} ref={ref} />),
@@ -212,6 +213,8 @@ function RoleList() {
               
             </Row>
             <Actions {...selectedRowProps as any}></Actions>
+            &nbsp;&nbsp;&nbsp;
+            <AddActions {...selectedRowProps as any} ></AddActions> 
             </div>
         </>
     );
