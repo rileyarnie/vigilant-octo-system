@@ -48,7 +48,13 @@ const chartData: { items: MenuItemType[] } = {
                             title: "Create User",
                             type: "item",
                             url: "/createuser"
-                        }
+                        },
+                        {
+                            id: "assign",
+                            title: "Assign Role",
+                            type: "item",
+                            url: "/assignrole"
+                        },
                     ]
                 },
                 {

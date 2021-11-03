@@ -1,8 +1,5 @@
 import Default from './pages/Dashboard/Default';
 import RoleList from './pages/Users/RoleList';
-import CoursesList from './pages/Academics/CoursesList';
-import CreateCourse from './pages/Academics/CreateCourse';
-import ActionsList from './pages/Users/ActionsList';
 import Departments from './pages/Academics/Departments';
 import CreateProgram from './pages/Academics/CreateProgram';
 import CampusDetails from './pages/Academics/CampusDetails';
@@ -13,6 +10,7 @@ import AssignCourse from './pages/Academics/AssignCourse';
 import TrainerList from './pages/Academics/TrainerList';
 
 import VenueList from './pages/Academics/VenueList';
+import AssignRole from './pages/Users/AssignRole';
 import CreateVenue from './pages/Academics/CreateVenue';
 
 
@@ -31,6 +29,7 @@ const routes = [
     { path: '/assigncourses', exact: true, name: 'default', component: AssignCourse },
     { path: '/campusdetails', exact: true, name: 'default', component: CampusDetails },
     { path: '/venuelist', exact: true, name: 'default', component: VenueList },
+    { path: '/assignrole', exact: true, name: 'default', component: AssignRole },
 
 ];
 export default routes;
