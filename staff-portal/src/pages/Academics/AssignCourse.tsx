@@ -19,9 +19,11 @@ import ViewColumn from '@material-ui/icons/ViewColumn';
 import axios from 'axios';
 import Alert from '@material-ui/lab/Alert';
 import Breadcrumb from '../../App/components/Breadcrumb';
-import { Row, Col, Card } from 'react-bootstrap';
+import { Row, Col, Card, Modal } from 'react-bootstrap';
+import {Actions} from '../Users/ActionsByRole/Actions';
+import { Button, ButtonBase, IconButton } from '@material-ui/core';
+import Select from 'react-select/src/Select';
 import Config from '../../config';
-import { Switch } from '@material-ui/core';
 
 const tableIcons = {
     Add: forwardRef((props, ref: any) => <AddBox {...props} ref={ref} />),
@@ -43,104 +45,57 @@ const tableIcons = {
     ViewColumn: forwardRef((props, ref: any) => <ViewColumn {...props} ref={ref} />)
 };
 
-function CampusList() {
-    const baseUrl= Config.baseUrl.timetablingSrv;
-    const ACTIVE = 'ACTIVE'
-    const INACTIVE = 'INACTIVE' 
+function AssignCourse() {
 
     const columns = [
-        { title: 'ID', field: 'id' },
-        { title: 'Campus name', field: 'name' },
-        { title: 'Status', field: 'activation_status' },
-        {
-            title: 'Toggle Activation Status',
-            field: 'internal_action',
-            render: (row) => (
-                <Switch
-                    onChange={(event) => handleSwitchToggle(row)}
-                    inputProps={{ 'aria-label': 'controlled' }}
-                    checked={row.activation_status === 'ACTIVE'?true:false} 
-                />
-            )
-        }
+        { title: 'ID', field: 'id', hidden: false },
+        { title: 'Name', field: 'name' },
+        { title: 'Description', field: 'description' },
+        { title: 'Training Hours', field: 'trainingHours' },
+        { title: 'Timetableable', field: 'timetableable' },
+        { title: 'Technical Assistant', field: 'needsTechnicalAssistant' },
+        { title: 'Prerequisite Courses', field: 'prerequisiteCourses' },
+        { title: 'Approved', field: 'isApproved' },
+
+
     ];
     const [data, setData] = useState([]);
+    const [programId, setProgramId] = useState();
+    const [courseName, setCourseName] = useState();
+    const [courseId, setCourseId] = useState();
     const [iserror, setIserror] = useState(false);
+    const [selectedRows, setSelectedRows] = useState([]);
     const [errorMessages, setErrorMessages] = useState([]);
+    let options = [] as any;
     useEffect(() => {
-        axios.get(`https://jsonplaceholder.typicode.com/users`)
-        //axios.get(`${timetablingSrv}/campuses`)
-
+        let progId = JSON.parse(localStorage.getItem("programId"))
+        axios.get(`${Config.BASE_URL}/courses`)
             .then(res => {
                 setData(res.data);
+                setProgramId(progId)
             })
             .catch((error) => {
                 //handle error using logging library
                 console.error(error);
             });
     }, []);
-    const [checked, setChecked] = useState(true);
-    const setCampusActivationStatus = async (campusId:number, activationStatus:string) => {
-        const params = new URLSearchParams();
-        const update = {
-            activation_status: activationStatus
-        }; 
-        params.append('updates', JSON.stringify(update));
-        axios
-            .put(`${baseUrl}/campuses/${campusId}`, params)
-            .then((res) => {
-                if(res.status === 200){
-                   data.forEach((obj,index)=>{
-                       if(obj.id === campusId){
-                           data[index].activation_status = activationStatus
-                           const updatedArr = [...data]
-                           setData(updatedArr)
-                       }
-                   })
-                }
-            })
-            .catch((error) => {
-                alert(error)
-                console.error(error);
-            });
-    };
 
-    const handleSwitchToggle = async (row) => {
-        if (row.activation_status === ACTIVE) {
-            setCampusActivationStatus(row.id, INACTIVE);
-        }
-        if (row.activation_status === INACTIVE) {
-            setCampusActivationStatus(row.id, ACTIVE);
-        }
-    };
-    const handleRowUpdate = (newData, oldData, resolve) => {
-        //validation
-        let errorList = [];
-        if (newData.name === '') {
-            errorList.push('Please enter campus name');
-        }
-        if (errorList.length > 0) {
-            setErrorMessages(errorList);
-            setIserror(true);
-            resolve();
-            return false;
-        }
-        axios.put('/:campusId' + newData.departmentId, newData)
-            .then(res => {
-                const dataUpdate = [...data];
-                const index = oldData.tableData.departmentId;
-                dataUpdate[index] = newData;
-                setData([...dataUpdate]);
-                resolve();
-                setIserror(false);
-                setErrorMessages([]);
-            })
-            .catch(error => {
-                alert(error.message);
-                setIserror(true);
-                resolve();
-            });
-    };
+    const handleRowSelection = (courseName, courseId, rows) => {
+        setSelectedRows(rows.length < 1 ? null : [...selectedRows, rows[0].id])
+        setCourseName(courseName)
+        setCourseId(courseId)
+    }
+
+    const assignSelectedCourses = (selectedCourses) => {
+        axios.put(`/programs/courses/${programId}`, {courseIds: selectedCourses})
+        .then(res => res)
+        .catch(err => err)
+    }
+    
+    const selectedRowProps = {
+        id: courseId,
+        name: courseName
+    }
 
     return (
         <>
@@ -162,22 +117,35 @@ function CampusList() {
                             }
                         </div>
                         <MaterialTable
-                            title='Campuses'
+                            title='Assign Courses List'
                             columns={columns}
                             data={data}
+                            options={{
+                                selection: true,
+                                showSelectAllCheckbox: false,
+                                showTextRowsSelected: false
+                              }}
+                            onSelectionChange = {(rows)=> handleRowSelection(rows[0]?.name,rows[0]?.id, rows)}
                             // @ts-ignore
                             icons={tableIcons}
-                            editable={{
-                                onRowUpdate: (newData, oldData) =>
-                                    new Promise((resolve) => {
-                                        handleRowUpdate(newData, oldData, resolve);
-                                    }),
-                            }}
                         />
+
                     </Card>
                 </Col>
             </Row>
+
+            <Button
+             style={{display: !courseId ? 'none' : 'block'  }} 
+             variant="contained" 
+             color="secondary"
+             onClick={() => {
+                 assignSelectedCourses(selectedRows)
+             }}
+             >
+            Assign courses
+            </Button>
         </>
     );
 }
-export default CampusList;
+
+export default AssignCourse;

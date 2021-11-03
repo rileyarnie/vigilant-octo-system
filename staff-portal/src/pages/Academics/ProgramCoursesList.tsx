@@ -19,11 +19,11 @@ import ViewColumn from '@material-ui/icons/ViewColumn';
 import axios from 'axios';
 import Alert from '@material-ui/lab/Alert';
 import Breadcrumb from '../../App/components/Breadcrumb';
-import { Row, Col, Card, Form } from 'react-bootstrap';
+import { Row, Col, Card, Modal } from 'react-bootstrap';
+import {Actions} from '../Users/ActionsByRole/Actions';
+import { Button, ButtonBase, IconButton } from '@material-ui/core';
+import Select from 'react-select/src/Select';
 import Config from '../../config';
-import { Switch } from '@material-ui/core';
-import { FormGroup, FormControlLabel } from '@material-ui/core';
-import { chain, find, merge } from 'lodash';
 
 const tableIcons = {
     Add: forwardRef((props, ref: any) => <AddBox {...props} ref={ref} />),
@@ -45,36 +45,41 @@ const tableIcons = {
     ViewColumn: forwardRef((props, ref: any) => <ViewColumn {...props} ref={ref} />)
 };
 
-function Department() {
-    const timeTableServiceBaseUrl = Config.TIMETABLE_SERVICE_BASE_URL; 
-    const ACTIVE = 'ACTIVE'
-    const INACTIVE = 'INACTIVE'
+function ProgramCoursesList() {
+
     const columns = [
         { title: 'ID', field: 'id', hidden: false },
-        { title: 'Program Name', field: 'name' },
-        {
-          title: 'Activation Status',
-          field: 'internal_action',
-          render: (row) => (
-                <Switch
-                    onChange={(event) => handleSwitchToggle(row)}
-                    inputProps={{ 'aria-label': 'controlled' }}
-                    checked={row.activation_status === ACTIVE?true:false} 
-                />
-            )
-        }
+        { title: 'Prerequisite Courses', field: 'prerequisiteCourses' },
+        { title: 'Name', field: 'name' },
+        { title: 'Description', field: 'description' },
+        { title: 'Training Hours', field: 'trainingHours' },
+        { title: 'Timetableable', field: 'timetableable' },
+        { title: 'Technical Assistant', field: 'needsTechnicalAssistant' },
+        { title: 'Prerequisite Courses', field: 'prerequisiteCourses' },
+        { title: 'Approved', field: 'isApproved' },
+
+
     ];
     const [data, setData] = useState([]);
+    const [programId, setProgramId] = useState();
+    const [courseName, setCourseName] = useState();
+    const [courseId, setCourseId] = useState();
     const [iserror, setIserror] = useState(false);
+    const [selectedRows, setSelectedRows] = useState();
     const [errorMessages, setErrorMessages] = useState([]);
+    let options = [] as any;
     useEffect(() => {
-        axios
-            .get(`${timeTableServiceBaseUrl}/programs/`)
-            .then((res) => {
+        let progId = JSON.parse(localStorage.getItem("programId"))
+        axios.get(`${Config.baseUrl.timetablingService}/programs/courses/${progId}`)
+            .then(res => {
                 setData(res.data);
+
+                setProgramId(progId)
             })
             .catch((error) => {
                 //handle error using logging library
+                
+                setErrorMessages([error]);
                 console.error(error);
             });
     }, []);
@@ -87,7 +92,7 @@ function Department() {
         };
         params.append('updates', JSON.stringify(update));
         axios
-            .put(`${timeTableServiceBaseUrl}/programs/${courseId}`, params)
+            .put(`${Config.baseUrl.timetablingService}/programs/${courseId}`, params)
             .then((res) => {
                 if(res.status === 200){
                    data.forEach((obj,index)=>{
@@ -123,16 +128,11 @@ function Department() {
             errorList.push('Please enter Program name');
         }
         if (errorList.length < 1) {
-            axios
-                .put('/programs/' + newData.departmentId, newData)
-                .then((res) => {
-                    const dataUpdate = [...data];
-                    const index = oldData.tableData.departmentId;
-                    dataUpdate[index] = newData;
-                    setData([...dataUpdate]);
-                    resolve();
-                    setIserror(false);
-                    setErrorMessages([]);
+            axios.put(`${Config.baseUrl.timetablingService}/programs/${programId}`, newData)
+                .then(res => {
+
+                    alert('Successfully updated trainer')
+                    window.location.reload()
                 })
                 .catch((error) => {
                     setErrorMessages(['Update failed!']);
@@ -145,6 +145,24 @@ function Department() {
             resolve();
         }
     };
+
+    const handleRowSelection = (courseName, courseId, rows) => {
+        setSelectedRows(rows.length < 1 ? null : rows[0].id)
+        setCourseName(courseName)
+        setCourseId(courseId)
+    }
+
+    const deleteSelectedCourses = (selectedCourses) => {
+        axios.put(`${Config.baseUrl.timetablingService}/programs/${selectedCourses}/${programId}`)
+        .then(res => res)
+        .catch(err => err)
+    }
+    
+    const selectedRowProps = {
+        id: courseId,
+        name: courseName
+    }
+
     return (
         <>
             <Row className="align-items-center page-header">
@@ -165,9 +183,15 @@ function Department() {
                             )}
                         </div>
                         <MaterialTable
-                            title="Programs"
+                            title='Program Courses List'
                             columns={columns}
                             data={data}
+                            options={{
+                                selection: true,
+                                showSelectAllCheckbox: false,
+                                showTextRowsSelected: false
+                              }}
+                            onSelectionChange = {(rows)=> handleRowSelection(rows[0]?.name,rows[0]?.id, rows)}
                             // @ts-ignore
                             icons={tableIcons}
                             editable={{
@@ -180,8 +204,19 @@ function Department() {
                     </Card>
                 </Col>
             </Row>
+
+            <Button
+             style={{display: !courseId ? 'none' : 'block'  }} 
+             variant="contained" 
+             color="secondary"
+             onClick={() => {
+                 deleteSelectedCourses(selectedRows)
+             }}
+             >
+            Remove courses
+            </Button>
         </>
     );
 }
 
-export default Department;
+export default ProgramCoursesList;

@@ -86,7 +86,6 @@ const chartData: { items: MenuItemType[] } = {
                             title: 'Venue List',
                             type: 'item',
                             url: '/venueList'
-                            url: '/campuslist'
                         },
                         {
                             id: 'trainerlist',
