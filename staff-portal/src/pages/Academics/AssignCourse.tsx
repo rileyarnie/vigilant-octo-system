@@ -73,7 +73,8 @@ function AssignCourse() {
             .then(res => {
                 setData(res.data);
                 setProgramId(progId)
-            }) 
+                alert('Courses fetched succesfully')
+            })
             .catch((error) => {
                 //handle error using logging library
                 console.error(error);
@@ -81,16 +82,30 @@ function AssignCourse() {
             });
     }, []);
 
-    const handleRowSelection = (courseName, courseId, rows) => {
+    const fetchCoursesAssignedToProgram = () => {
+        axios.get(`${Config.baseUrl.timetablingSrv}/courses`)
+        .then(res => {
+            setData(res.data);
+            alert('Course data reloaded succesfully')
+        })
+        .catch((error) => {
+            //handle error using logging library
+            console.error(error);
+            setErrorMessages(['Failed to reload'])
+        });
+    }
+    const handleRowSelection = (courseName: string, courseId: number, rows: any) => {
         setSelectedRows(rows.length < 1 ? null : [...selectedRows, rows[0].id])
         setCourseName(courseName)
         setCourseId(courseId)
     }
 
-    const assignSelectedCourses = (selectedCourses) => {
-        axios.put(`/programs/courses/${programId}`, {courseIds: selectedCourses})
+    const assignSelectedCoursesToProgram = (selectedCourses: Array<number>) => {
+        axios.put(`${Config.baseUrl.timetablingSrv}/programs/courses/${programId}`, {courseIds: selectedCourses})
         .then(res => {
-            alert('Succesfully assigned courses')
+            alert('Course assignment succesful.')
+            fetchCoursesAssignedToProgram()
+            return res
         })
         .catch(err => {
             setErrorMessages(['Course assignment failed'])
@@ -130,7 +145,7 @@ function AssignCourse() {
                                 showSelectAllCheckbox: false,
                                 showTextRowsSelected: false
                               }}
-                            onSelectionChange = {(rows)=> handleRowSelection(rows[0]?.name,rows[0]?.id, rows)}
+                            onSelectionChange = {(rows: any)=> handleRowSelection(rows[0]?.name,rows[0]?.id, rows)}
                             // @ts-ignore
                             icons={tableIcons}
                         />
@@ -144,7 +159,7 @@ function AssignCourse() {
              variant="contained" 
              color="secondary"
              onClick={() => {
-                 assignSelectedCourses(selectedRows)
+                 assignSelectedCoursesToProgram(selectedRows)
              }}
              >
             Assign courses

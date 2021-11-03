@@ -68,19 +68,20 @@ function ProgramCoursesList() {
     const [iserror, setIserror] = useState(false);
     const [selectedRows, setSelectedRows] = useState();
     const [errorMessages, setErrorMessages] = useState([]);
+    let progId = JSON.parse(localStorage.getItem("programId"))
     let options = [] as any;
     let progId = JSON.parse(localStorage.getItem("programId"))
     useEffect(() => {
         axios.get(`${Config.baseUrl.timetablingSrv}/programs/courses/${progId}`)
             .then(res => {
                 setData(res.data);
+                setProgramId(progId);
 
-                setProgramId(progId)
+                alert('Courses fetched succesfully')
             })
             .catch((error) => {
                 //handle error using logging library
-                
-                setErrorMessages([error]);
+                setErrorMessages(['Failed to fetch courses']);
                 console.error(error);
             });
     }, []);
@@ -89,48 +90,32 @@ function ProgramCoursesList() {
 
     const fetchCoursesAssignedToProgram = (progId: number) => {
         axios.get(`${Config.baseUrl.timetablingSrv}/programs/courses/${progId}`)
-        .then(res => {
-            setData(res.data);
-        })
-        .catch((error) => {
-            //handle error using logging library
-            setErrorMessages([error]);
-            console.error(error);
-        });
+            .then(res => {
+                setData(res.data);
+                alert('Course data reloaded succesfully');
+            })
+            .catch((error) => {
+                //handle error using logging library
+                setErrorMessages([error]);
+                console.error(error);
+            });
     }
-    const handleRowUpdate = (newData, oldData, resolve) => {
-        //validation
-        let errorList = [];
-        if (newData.name === '') {
-            errorList.push('Please enter Program name');
-        }
-        if (errorList.length < 1) {
-            axios.put(`${Config.baseUrl.timetablingSrv}/programs/${programId}`, newData)
-                .then(res => {
 
-                    alert('Successfully updated trainer')
-                    window.location.reload()
-                })
-                .catch((error) => {
-                    setErrorMessages(['Update failed!']);
-                    setIserror(true);
-                    resolve();
-                });
-        } else {
-            setErrorMessages(errorList);
-            setIserror(true);
-            resolve();
-        }
-    };
-
+    const handleRowSelection = (courseName: string, courseId: string, rows: any) => {
+        setSelectedRows(rows.length < 1 ? null : rows[0].id)
+        setCourseName(courseName)
+        setCourseId(courseId)
+    }
 
     const unassignSelectedCoursesFromTrainer = (selectedCourseId: number) => {
         axios.put(`${Config.baseUrl.timetablingSrv}/programs/${selectedCourseId}/${programId}`)
         .then(res => {
-            alert('Succesfully unassigned course')
+            fetchCoursesAssignedToProgram(progId);
+            alert('Succesfully removed course ' + res.data);
         })
         .catch(err => {
-            setErrorMessages(['Failed to remove course'])
+            setErrorMessages(['Unassigning course failed!']);
+        
         })
     }
     
@@ -171,11 +156,21 @@ function ProgramCoursesList() {
                               ]}
                             // @ts-ignore
                             icons={tableIcons}
-                            
                         />
                     </Card>
                 </Col>
             </Row>
+
+            <Button
+             style={{display: !courseId ? 'none' : 'block'  }} 
+             variant="contained" 
+             color="secondary"
+             onClick={() => {
+                unassignSelectedCoursesFromTrainer(selectedRows)
+             }}
+             >
+            Remove courses
+            </Button>
         </>
     );
 }
