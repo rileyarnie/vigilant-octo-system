@@ -7,6 +7,8 @@ import Departments from './pages/Academics/Departments';
 import CreateProgram from './pages/Academics/CreateProgram';
 import CampusDetails from './pages/Academics/CampusDetails';
 import CreateCampus from './pages/Academics/CreateCampus';
+import CampusList from './pages/Academics/CampusList';
+import VenueList from './pages/Academics/VenueList';
 
 
 const routes = [
@@ -16,8 +18,10 @@ const routes = [
     { path: '/createcampus', exact: true, name: 'default', component: CreateCampus },
     { path: '/department', exact: true, name: 'default', component: Departments },
     { path: '/campuslist', exact: true, name: 'default', component: CampusList },
+    { path: '/department', exact: true, name: 'default', component: Departments },
     { path: '/createprogram', exact: true, name: 'default', component: CreateProgram },
     { path: '/campusdetails', exact: true, name: 'default', component: CampusDetails },
+    { path: '/venuelist', exact: true, name: 'default', component: VenueList },
 
 ];
 export default routes;
