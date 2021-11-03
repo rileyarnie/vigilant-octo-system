@@ -73,10 +73,11 @@ function AssignCourse() {
             .then(res => {
                 setData(res.data);
                 setProgramId(progId)
-            })
+            }) 
             .catch((error) => {
                 //handle error using logging library
                 console.error(error);
+                setErrorMessages(['Failed to fetch courses'])
             });
     }, []);
 
@@ -87,9 +88,13 @@ function AssignCourse() {
     }
 
     const assignSelectedCourses = (selectedCourses) => {
-        axios.put(`${Config.baseUrl.timetablingSrv}/programs/courses/${programId}`, {courseIds: selectedCourses})
-        .then(res => res)
-        .catch(err => err)
+        axios.put(`/programs/courses/${programId}`, {courseIds: selectedCourses})
+        .then(res => {
+            alert('Succesfully assigned courses')
+        })
+        .catch(err => {
+            setErrorMessages(['Course assignment failed'])
+        })
     }
     
     const selectedRowProps = {

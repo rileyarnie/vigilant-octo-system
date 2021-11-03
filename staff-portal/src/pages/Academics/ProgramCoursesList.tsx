@@ -23,6 +23,7 @@ import { Row, Col, Card, Modal } from 'react-bootstrap';
 import {Actions} from '../Users/ActionsByRole/Actions';
 import { Button, ButtonBase, IconButton } from '@material-ui/core';
 import Select from 'react-select/src/Select';
+import DeleteIcon from '@material-ui/icons/Delete';
 import Config from '../../config';
 
 const tableIcons = {
@@ -68,8 +69,8 @@ function ProgramCoursesList() {
     const [selectedRows, setSelectedRows] = useState();
     const [errorMessages, setErrorMessages] = useState([]);
     let options = [] as any;
+    let progId = JSON.parse(localStorage.getItem("programId"))
     useEffect(() => {
-        let progId = JSON.parse(localStorage.getItem("programId"))
         axios.get(`${Config.baseUrl.timetablingSrv}/programs/courses/${progId}`)
             .then(res => {
                 setData(res.data);
@@ -83,35 +84,20 @@ function ProgramCoursesList() {
                 console.error(error);
             });
     }, []);
+
     const [checked, setChecked] = useState(true);
 
-    const toggleActivationStatus = async (courseId, isActivated) => {
-        const params = new URLSearchParams();
-        const update = {
-            activation_status: isActivated
-        };
-        params.append('updates', JSON.stringify(update));
-        axios
-            .put(`${Config.baseUrl.timetablingSrv}/programs/${courseId}`, params)
-            .then((res) => {
-                if(res.status === 200){
-                   data.forEach((obj,index)=>{
-                       if(obj.id === courseId){
-                           data[index].activation_status = isActivated
-                           const updatedArr = [...data]
-                           setData(updatedArr)
-                       }
-                   })
-                }
-            })
-            .catch((error) => {
-                //handle error using logging library
-                alert(error)
-                console.error(error);
-            });
-    };
-
-
+    const fetchCoursesAssignedToProgram = (progId: number) => {
+        axios.get(`${Config.baseUrl.timetablingSrv}/programs/courses/${progId}`)
+        .then(res => {
+            setData(res.data);
+        })
+        .catch((error) => {
+            //handle error using logging library
+            setErrorMessages([error]);
+            console.error(error);
+        });
+    }
     const handleRowUpdate = (newData, oldData, resolve) => {
         //validation
         let errorList = [];
@@ -137,16 +123,15 @@ function ProgramCoursesList() {
         }
     };
 
-    const handleRowSelection = (courseName, courseId, rows) => {
-        setSelectedRows(rows.length < 1 ? null : rows[0].id)
-        setCourseName(courseName)
-        setCourseId(courseId)
-    }
 
-    const deleteSelectedCourses = (selectedCourses) => {
-        axios.put(`${Config.baseUrl.timetablingSrv}/programs/${selectedCourses}/${programId}`)
-        .then(res => res)
-        .catch(err => err)
+    const unassignSelectedCoursesFromTrainer = (selectedCourseId: number) => {
+        axios.put(`${Config.baseUrl.timetablingSrv}/programs/${selectedCourseId}/${programId}`)
+        .then(res => {
+            alert('Succesfully unassigned course')
+        })
+        .catch(err => {
+            setErrorMessages(['Failed to remove course'])
+        })
     }
     
     const selectedRowProps = {
@@ -177,35 +162,20 @@ function ProgramCoursesList() {
                             title='Program Courses List'
                             columns={columns}
                             data={data}
-                            options={{
-                                selection: true,
-                                showSelectAllCheckbox: false,
-                                showTextRowsSelected: false
-                              }}
-                            onSelectionChange = {(rows)=> handleRowSelection(rows[0]?.name,rows[0]?.id, rows)}
+                            actions={[
+                                rowData => ({
+                                  icon: DeleteIcon,
+                                  tooltip: 'Delete Course',
+                                  onClick: () => {unassignSelectedCoursesFromTrainer(rowData.id)},
+                                })
+                              ]}
                             // @ts-ignore
                             icons={tableIcons}
-                            editable={{
-                                onRowUpdate: (newData, oldData) =>
-                                    new Promise((resolve) => {
-                                        handleRowUpdate(newData, oldData, resolve);
-                                    })
-                            }}
+                            
                         />
                     </Card>
                 </Col>
             </Row>
-
-            <Button
-             style={{display: !courseId ? 'none' : 'block'  }} 
-             variant="contained" 
-             color="secondary"
-             onClick={() => {
-                 deleteSelectedCourses(selectedRows)
-             }}
-             >
-            Remove courses
-            </Button>
         </>
     );
 }

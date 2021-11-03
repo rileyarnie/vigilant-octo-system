@@ -107,11 +107,12 @@ const chartData: { items: MenuItemType[] } = {
                             url: '/trainerlist'
                         },
                         {
+
                             id: 'createvenue',
                             title: 'Create Venue',
                             type: 'item',
                             url: '/createvenue'
-                        },
+                        }
                     ]
                 }
 
