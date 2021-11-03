@@ -48,7 +48,7 @@ const chartData: { items: MenuItemType[] } = {
                             title: "Create User",
                             type: "item",
                             url: "/createuser"
-                        },
+                        }
                     ]
                 },
                 {
@@ -86,6 +86,13 @@ const chartData: { items: MenuItemType[] } = {
                             title: 'Venue List',
                             type: 'item',
                             url: '/venueList'
+                            url: '/campuslist'
+                        },
+                        {
+                            id: 'trainerlist',
+                            title: 'Trainer List',
+                            type: 'item',
+                            url: '/trainerlist'
                         },
                     ]
                 }
