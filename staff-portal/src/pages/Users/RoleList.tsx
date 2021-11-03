@@ -62,7 +62,7 @@ function RoleList() {
     const [errorMessages, setErrorMessages] = useState([]);
 
     useEffect(() => {
-        const base_url = Config.BASE_URL
+        const base_url = Config.baseUrl.timetablingSrv
         axios.get(`${base_url}/roles`)
             .then(res => {
                 setData(res.data);

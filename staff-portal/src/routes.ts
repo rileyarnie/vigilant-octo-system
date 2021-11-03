@@ -6,6 +6,7 @@ import CampusDetails from './pages/Academics/CampusDetails';
 import CreateCampus from './pages/Academics/CreateCampus';
 import CampusList from './pages/Academics/CampusList';
 import ProgramCoursesList from './pages/Academics/ProgramCoursesList';
+import CreateTrainer from './pages/Academics/CreateTrainer';
 import AssignCourse from './pages/Academics/AssignCourse';
 import TrainerList from './pages/Academics/TrainerList';
 
@@ -26,6 +27,7 @@ const routes = [
     { path: '/createvenue', exact: true, name: 'default', component: CreateVenue },
     { path: '/createprogram', exact: true, name: 'default', component: CreateProgram },
     { path: '/programcourses', exact: true, name: 'default', component: ProgramCoursesList },
+    { path: '/CreateTrainer', exact: true, name: 'default', component: CreateTrainer },
     { path: '/assigncourses', exact: true, name: 'default', component: AssignCourse },
     { path: '/campusdetails', exact: true, name: 'default', component: CampusDetails },
     { path: '/venuelist', exact: true, name: 'default', component: VenueList },

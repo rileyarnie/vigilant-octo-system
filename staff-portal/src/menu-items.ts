@@ -91,7 +91,14 @@ const chartData: { items: MenuItemType[] } = {
                             id: 'venuelist',
                             title: 'Venue List',
                             type: 'item',
-                            url: '/venueList'
+                            url: '/venueList',
+                        },
+                        {
+                            id: 'createtrainer',
+                            title: 'Create Trainer',
+                            type: 'item',
+                            url: '/CreateTrainer',
+                            
                         },
                         {
                             id: 'trainerlist',

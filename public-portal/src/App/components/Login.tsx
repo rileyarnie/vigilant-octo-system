@@ -101,7 +101,7 @@ const Login = () => {
         const config = {
             headers: { Authorization: `Bearer ${token}` }
         };
-        const base_url = Config.BASE_URL
+        const base_url = Config.baseUrl.timetablingSrv
         axios.get(`${base_url}/users/me`,config).then((res)=>{
             if(res.status === 200){ 
             localStorage.setItem("userInfo",JSON.stringify(res.data[0]))

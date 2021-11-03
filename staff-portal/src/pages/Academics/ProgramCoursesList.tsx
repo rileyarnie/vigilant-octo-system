@@ -70,7 +70,7 @@ function ProgramCoursesList() {
     let options = [] as any;
     useEffect(() => {
         let progId = JSON.parse(localStorage.getItem("programId"))
-        axios.get(`${Config.baseUrl.timetablingService}/programs/courses/${progId}`)
+        axios.get(`${Config.baseUrl.timetablingSrv}/programs/courses/${progId}`)
             .then(res => {
                 setData(res.data);
 
@@ -92,7 +92,7 @@ function ProgramCoursesList() {
         };
         params.append('updates', JSON.stringify(update));
         axios
-            .put(`${Config.baseUrl.timetablingService}/programs/${courseId}`, params)
+            .put(`${Config.baseUrl.timetablingSrv}/programs/${courseId}`, params)
             .then((res) => {
                 if(res.status === 200){
                    data.forEach((obj,index)=>{
@@ -112,15 +112,6 @@ function ProgramCoursesList() {
     };
 
 
-    const handleSwitchToggle = async (row) => {
-        if (row.activation_status === ACTIVE) {
-             toggleActivationStatus(row.id, INACTIVE);
-        }
-        if (row.activation_status === INACTIVE) {
-             toggleActivationStatus(row.id, ACTIVE);
-        }
-    };
-
     const handleRowUpdate = (newData, oldData, resolve) => {
         //validation
         let errorList = [];
@@ -128,7 +119,7 @@ function ProgramCoursesList() {
             errorList.push('Please enter Program name');
         }
         if (errorList.length < 1) {
-            axios.put(`${Config.baseUrl.timetablingService}/programs/${programId}`, newData)
+            axios.put(`${Config.baseUrl.timetablingSrv}/programs/${programId}`, newData)
                 .then(res => {
 
                     alert('Successfully updated trainer')
@@ -153,7 +144,7 @@ function ProgramCoursesList() {
     }
 
     const deleteSelectedCourses = (selectedCourses) => {
-        axios.put(`${Config.baseUrl.timetablingService}/programs/${selectedCourses}/${programId}`)
+        axios.put(`${Config.baseUrl.timetablingSrv}/programs/${selectedCourses}/${programId}`)
         .then(res => res)
         .catch(err => err)
     }

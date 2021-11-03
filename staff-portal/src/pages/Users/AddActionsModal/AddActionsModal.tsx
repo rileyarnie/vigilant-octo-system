@@ -8,7 +8,7 @@ import axios from 'axios';
 import { differenceBy, xor } from 'lodash';
 
 export const AddActionsModal = (props) => {
-    const base_url = Config.BASE_URL;
+    const base_url = Config.baseUrl.timetablingSrv;
     const [actions, setActions] = useState([]);
     const [isMulti, setMulti] = useState(true);
     const [selectedOptions, setSelectedOptions] = useState([]);

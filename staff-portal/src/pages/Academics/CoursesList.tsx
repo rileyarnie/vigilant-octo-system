@@ -43,7 +43,7 @@ const tableIcons = {
 };
 
 function CoursesList() {
-    const timeTableServiceBaseUrl = Config.TIMETABLE_SERVICE_BASE_URL;
+    const timeTableServiceBaseUrl = Config.baseUrl.timetablingSrv;
     const ACTIVE = 'ACTIVE'
     const INACTIVE = 'INACTIVE'
     useEffect(() => {

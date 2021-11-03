@@ -44,7 +44,7 @@ const tableIcons = {
 export const ActionsList = (props) => {
     const [actions, setActions] = useState([]);
     useEffect(() => { 
-        const base_url = Config.BASE_URL
+        const base_url = Config.baseUrl.timetablingSrv
         axios
             .get(`${base_url}/actions/${props.selectedrowprops.selectedrowprops.id}`)
             .then((res) => {

@@ -69,7 +69,7 @@ function AssignCourse() {
     let options = [] as any;
     useEffect(() => {
         let progId = JSON.parse(localStorage.getItem("programId"))
-        axios.get(`${Config.BASE_URL}/courses`)
+        axios.get(`${Config.baseUrl.timetablingSrv}/courses`)
             .then(res => {
                 setData(res.data);
                 setProgramId(progId)
@@ -87,7 +87,7 @@ function AssignCourse() {
     }
 
     const assignSelectedCourses = (selectedCourses) => {
-        axios.put(`/programs/courses/${programId}`, {courseIds: selectedCourses})
+        axios.put(`${Config.baseUrl.timetablingSrv}/programs/courses/${programId}`, {courseIds: selectedCourses})
         .then(res => res)
         .catch(err => err)
     }
