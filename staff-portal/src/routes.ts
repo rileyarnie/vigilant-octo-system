@@ -16,6 +16,7 @@ const routes = [
     { path: '/actions', exact: true, name: 'default', component: ActionsList },
     { path: '/campuslist', exact: true, name: 'default', component: CampusList },
     { path: '/department', exact: true, name: 'default', component: Departments },
+    { path: '/campuslist', exact: true, name: 'default', component: CampusList },
     { path: '/createprogram', exact: true, name: 'default', component: CreateProgram },
 
 ];

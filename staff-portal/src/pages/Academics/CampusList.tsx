@@ -20,6 +20,8 @@ import axios from 'axios';
 import Alert from '@material-ui/lab/Alert';
 import Breadcrumb from '../../App/components/Breadcrumb';
 import { Row, Col, Card } from 'react-bootstrap';
+import Config from '../../config';
+import { Switch } from '@material-ui/core';
 
 const tableIcons = {
     Add: forwardRef((props, ref: any) => <AddBox {...props} ref={ref} />),
@@ -42,18 +44,33 @@ const tableIcons = {
 };
 
 function CampusList() {
+    const baseUrl= Config.baseUrl.timetablingSrv;
+    const ACTIVE = 'ACTIVE'
+    const INACTIVE = 'INACTIVE' 
 
     const columns = [
-        { title: 'ID', field: 'id', hidden: false },
-        { title: 'Campus Name', field: 'name' }
-
-
+        { title: 'ID', field: 'id' },
+        { title: 'Campus name', field: 'name' },
+        { title: 'Status', field: 'activation_status' },
+        {
+            title: 'Toggle Activation Status',
+            field: 'internal_action',
+            render: (row) => (
+                <Switch
+                    onChange={(event) => handleSwitchToggle(row)}
+                    inputProps={{ 'aria-label': 'controlled' }}
+                    checked={row.activation_status === 'ACTIVE'?true:false} 
+                />
+            )
+        }
     ];
     const [data, setData] = useState([]);
-    const [iserror] = useState(false);
-    const [errorMessages] = useState([]);
+    const [iserror, setIserror] = useState(false);
+    const [errorMessages, setErrorMessages] = useState([]);
     useEffect(() => {
-        axios.get(`/campuses/`)
+        axios.get(`https://jsonplaceholder.typicode.com/users`)
+        //axios.get(`${timetablingSrv}/campuses`)
+
             .then(res => {
                 setData(res.data);
             })
@@ -62,6 +79,68 @@ function CampusList() {
                 console.error(error);
             });
     }, []);
+    const [checked, setChecked] = useState(true);
+    const setCampusActivationStatus = async (campusId:number, activationStatus:string) => {
+        const params = new URLSearchParams();
+        const update = {
+            activation_status: activationStatus
+        }; 
+        params.append('updates', JSON.stringify(update));
+        axios
+            .put(`${baseUrl}/campuses/${campusId}`, params)
+            .then((res) => {
+                if(res.status === 200){
+                   data.forEach((obj,index)=>{
+                       if(obj.id === campusId){
+                           data[index].activation_status = activationStatus
+                           const updatedArr = [...data]
+                           setData(updatedArr)
+                       }
+                   })
+                }
+            })
+            .catch((error) => {
+                alert(error)
+                console.error(error);
+            });
+    };
+
+    const handleSwitchToggle = async (row) => {
+        if (row.activation_status === ACTIVE) {
+            setCampusActivationStatus(row.id, INACTIVE);
+        }
+        if (row.activation_status === INACTIVE) {
+            setCampusActivationStatus(row.id, ACTIVE);
+        }
+    };
+    const handleRowUpdate = (newData, oldData, resolve) => {
+        //validation
+        let errorList = [];
+        if (newData.name === '') {
+            errorList.push('Please enter campus name');
+        }
+        if (errorList.length > 0) {
+            setErrorMessages(errorList);
+            setIserror(true);
+            resolve();
+            return false;
+        }
+        axios.put('/:campusId' + newData.departmentId, newData)
+            .then(res => {
+                const dataUpdate = [...data];
+                const index = oldData.tableData.departmentId;
+                dataUpdate[index] = newData;
+                setData([...dataUpdate]);
+                resolve();
+                setIserror(false);
+                setErrorMessages([]);
+            })
+            .catch(error => {
+                alert(error.message);
+                setIserror(true);
+                resolve();
+            });
+    };
 
     return (
         <>
@@ -89,14 +168,16 @@ function CampusList() {
                             // @ts-ignore
                             icons={tableIcons}
                             editable={{
+                                onRowUpdate: (newData, oldData) =>
+                                    new Promise((resolve) => {
+                                        handleRowUpdate(newData, oldData, resolve);
+                                    }),
                             }}
                         />
-
                     </Card>
                 </Col>
             </Row>
         </>
     );
 }
-
 export default CampusList;
