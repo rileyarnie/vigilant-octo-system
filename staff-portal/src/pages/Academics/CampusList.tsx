@@ -68,8 +68,7 @@ function CampusList() {
     const [iserror, setIserror] = useState(false);
     const [errorMessages, setErrorMessages] = useState([]);
     useEffect(() => {
-        axios.get(`https://jsonplaceholder.typicode.com/users`)
-        //axios.get(`${timetablingSrv}/campuses`)
+        axios.get(`${baseUrl}{timetablingSrv}/campuses`)
 
             .then(res => {
                 setData(res.data);
@@ -125,7 +124,7 @@ function CampusList() {
             resolve();
             return false;
         }
-        axios.put('/:campusId' + newData.departmentId, newData)
+        axios.put(`${baseUrl}/:campusId` + newData.departmentId, newData)
             .then(res => {
                 const dataUpdate = [...data];
                 const index = oldData.tableData.departmentId;

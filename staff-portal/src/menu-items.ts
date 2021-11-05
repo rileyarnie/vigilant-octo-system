@@ -52,6 +52,12 @@ const chartData: { items: MenuItemType[] } = {
                             url: "/rolelist"
                         },
                         {
+                            id: "users",
+                            title: "Users",
+                            type: "item",
+                            url: "/users"
+                        },
+                        {
                             id: "assign",
                             title: "Assign Role",
                             type: "item",
@@ -70,12 +76,6 @@ const chartData: { items: MenuItemType[] } = {
                             title: 'Departments',
                             type: 'item',
                             url: '/department'
-                        },
-                        {
-                            id: 'courselist',
-                            title: 'Courses List',
-                            type: 'item',
-                            url: '/courselist'
                         },
                         {
                             id: 'createcampus',
@@ -107,17 +107,43 @@ const chartData: { items: MenuItemType[] } = {
                             type: 'item',
                             url: '/createcourse'
                         },
-                        {
-                            id: 'venuelist',
-                            title: 'Venue List',
-                            type: 'item',
-                            url: '/venueList',
-                        },
+
                         {
                             id: 'campuslist',
                             title: 'Campus List',
                             type: 'item',
                             url: '/campuslist',
+                        },
+                        {
+
+                            id: 'createvenue',
+                            title: 'Create Venue',
+                            type: 'item',
+                            url: '/createvenue'
+                        },
+                        {
+                            id: 'courses',
+                            title: 'Courses',
+                            type: 'item',
+                            url: '/courses'
+                        },
+                        {
+                            id: 'programs',
+                            title: 'Programs',
+                            type: 'item',
+                            url: '/programs'
+                        },
+                        {
+                            id: 'venues',
+                            title: 'Venues',
+                            type: 'item',
+                            url: '/venues',
+                        },
+                        {
+                            id: 'campuses',
+                            title: 'Campuses',
+                            type: 'item',
+                            url: '/campuses'
                         },
                         {
                             id: 'trainerlist',

@@ -12,19 +12,23 @@ import TrainerList from './pages/Academics/TrainerList';
 import VenueList from './pages/Academics/VenueList';
 import AssignRole from './pages/Users/AssignRole';
 import CreateVenue from './pages/Academics/CreateVenue';
-import SemesterList from './pages/Academics/SemsterList';
-import CreateCourse from './pages/Academics/CreateCourse';
-import UserList from './pages/Users/UserList';
+import Programs from './pages/Academics/Programs';
 import CoursesList from './pages/Academics/CoursesList';
+import UserList from './pages/Users/UserList';
+import CreateCourse from './pages/Academics/CreateCourse';
+import SemesterList from './pages/Academics/SemsterList';
 
 
 const routes = [
     { path: '/dashboard', exact: true, name: 'default', component: Default },
-    { path: '/rolelist', exact: true, name: 'default', component: RoleList },
+    { path: '/roles', exact: true, name: 'default', component: RoleList },
     { path: '/rolelist', exact: true, name: 'default', component: RoleList },
     { path: '/userlist', exact: true, name: 'default', component: UserList },
     { path: '/createcampus', exact: true, name: 'default', component: CreateCampus },
+    { path: '/createuser', exact: true, name: 'default', component: CreateUser },
     { path: '/department', exact: true, name: 'default', component: Departments },
+    { path: '/campuses', exact: true, name: 'default', component: CampusList },
+    { path: '/trainers', exact: true, name: 'default', component: TrainerList },
     { path: '/createuser', exact: true, name: 'default', component: CreateUser },
     { path: '/campuslist', exact: true, name: 'default', component: CampusList },
     { path: '/courselist', exact: true, name: 'default', component: CoursesList },
@@ -34,6 +38,13 @@ const routes = [
     { path: '/createcourse', exact: true, name: 'default', component: CreateCourse },
     { path: '/createprogram', exact: true, name: 'default', component: CreateProgram },
     { path: '/programcourses', exact: true, name: 'default', component: ProgramCoursesList },
+    { path: '/createcourse', exact: true, name: 'default', component: CreateCourse },
+    { path: '/assigncourses', exact: true, name: 'default', component: AssignCourse },
+    { path: '/campusdetails', exact: true, name: 'default', component: CampusDetails },
+    { path: '/venues', exact: true, name: 'default', component: VenueList },
+    { path: '/users', exact: true, name: 'default', component: UserList },
+    { path: '/programs', exact: true, name: 'default', component: Programs },
+    { path: '/courses', exact: true, name: 'default', component: CoursesList },
     { path: '/assigncourses', exact: true, name: 'default', component: AssignCourse },
     { path: '/campusdetails', exact: true, name: 'default', component: CampusDetails },
     { path: '/venuelist', exact: true, name: 'default', component: VenueList },

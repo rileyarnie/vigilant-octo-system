@@ -9,8 +9,8 @@ const Config = {
   navFixedLayout: true,
   headerFixedLayout: true,
   baseUrl: {
-    authnzSrv: 'http://localhost:8080',
-    timetablingSrv: 'http://localhost:8081',
+    authnzSrv: 'http://localhost:1338/authnz-service/v0.0.1',
+    timetablingSrv: 'http://localhost:1338/timetabling-service/0.0.1',
   },
 };
 export default Config;
