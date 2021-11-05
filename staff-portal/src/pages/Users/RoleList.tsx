@@ -46,11 +46,10 @@ const tableIcons = {
 function RoleList() {
 
     const columns = [
-        { title: 'id', field: 'id', hidden: true },
-        { title: 'RoleName', field: 'RoleName' },
-        { title: 'Activation Status', field: 'activation_status' },
-        { title: 'Created On', field: 'created_on' },
-        {title: ''}
+        { title: 'id', field: 'id', editable: 'never' as const},   
+        { title: 'RoleName', field: 'RoleName', editable: 'always' as const},
+        { title: 'Activation Status', field: 'activation_status',editable: 'never' as const},
+        { title: 'Created On', field: 'created_on', editable: 'never' as const },
         
     ];
     const [data, setData] = useState([]);
