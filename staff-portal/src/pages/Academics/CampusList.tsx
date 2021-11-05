@@ -44,7 +44,7 @@ const tableIcons = {
 };
 
 function CampusList() {
-    const baseUrl= Config.baseUrl.timetablingSrv;
+    const timetablingSrv= Config.baseUrl.timetablingSrv;
     const ACTIVE = 'ACTIVE'
     const INACTIVE = 'INACTIVE' 
 
@@ -87,7 +87,7 @@ function CampusList() {
         }; 
         params.append('updates', JSON.stringify(update));
         axios
-            .put(`${baseUrl}/campuses/${campusId}`, params)
+            .put(`${timetablingSrv}/campuses/${campusId}`, params)
             .then((res) => {
                 if(res.status === 200){
                    data.forEach((obj,index)=>{

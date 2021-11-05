@@ -8,7 +8,7 @@ import axios from 'axios';
 import { differenceBy, xor } from 'lodash';
 
 export const AddActionsModal = (props) => {
-    const base_url = Config.baseUrl.timetablingSrv;
+    const authnzSrv = Config.baseUrl.authnzSrv;
     const [actions, setActions] = useState([]);
     const [isMulti, setMulti] = useState(true);
     const [selectedOptions, setSelectedOptions] = useState([]);
@@ -16,7 +16,7 @@ export const AddActionsModal = (props) => {
     let options = [] as any;
     useEffect(() => {
         axios
-            .get(`${base_url}/actions`)
+            .get(`${authnzSrv}/actions`)
             .then((res) => {
                 setActions(res.data);
             })
@@ -56,7 +56,7 @@ export const AddActionsModal = (props) => {
         const params = new URLSearchParams();
         params.append('actionID', actionsArr);
         axios
-            .post(`${base_url}/roles/${roleId}/actions`, params)
+            .post(`${authnzSrv}/roles/${roleId}/actions`, params)
             .then((res) => {
                 if (res.status == 200) {
                     alert(res.data);

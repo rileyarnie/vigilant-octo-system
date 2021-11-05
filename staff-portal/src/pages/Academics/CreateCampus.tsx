@@ -23,9 +23,9 @@ class CreateCampus extends Component {
             name: this.state.name,
             description: this.state.description,
         }
-        const baseUrl = Config.baseUrl.timetablingSrv;
+        const timetablingSrv = Config.baseUrl.timetablingSrv;
         console.log(campus)
-        axios.put('${baseUrl}/campuses')
+        axios.put(`${timetablingSrv}/campuses`)
             .then(res => {
                 //handle success
                 alert('Campus created successfully');

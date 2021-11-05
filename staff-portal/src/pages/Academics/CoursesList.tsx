@@ -43,12 +43,12 @@ const tableIcons = {
 };
 
 function CoursesList() {
-    const timeTableServiceBaseUrl = Config.baseUrl.timetablingSrv;
+    const timetablingSrv = Config.baseUrl.timetablingSrv;
     const ACTIVE = 'ACTIVE'
     const INACTIVE = 'INACTIVE'
     useEffect(() => {
         axios
-            .get(`${timeTableServiceBaseUrl}/courses`)
+            .get(`${timetablingSrv}/courses`)
             .then((res) => {
                 setData(res.data);
             })
@@ -96,7 +96,7 @@ function CoursesList() {
         };
         params.append('updates', JSON.stringify(update));
         axios
-            .put(`${timeTableServiceBaseUrl}/courses/${courseId}`, params)
+            .put(`${timetablingSrv}/courses/${courseId}`, params)
             .then((res) => {
                 if(res.status === 200){
                    data.forEach((obj,index)=>{

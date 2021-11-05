@@ -47,12 +47,12 @@ function VenueList() {
 		{ title: 'Venue name', field: 'name' },
 	];
 	const [data, setData] = useState([]);
-	const baseUrl = Config.baseUrl.timetablingSrv;
+	const timetablingSrv = Config.baseUrl.timetablingSrv;
 	const [iserror, setIserror] = useState(false);
 	const [errorMessages, setErrorMessages] = useState([]);
 
 	useEffect(() => {
-		axios.get(`${baseUrl}/venues`)
+		axios.get(`${timetablingSrv}/venues`)
 			.then(res => {
 				setData(res.data);
 			})

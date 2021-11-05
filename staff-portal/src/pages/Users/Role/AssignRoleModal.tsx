@@ -7,7 +7,7 @@ import axios from 'axios';
 import {differenceBy, xor} from 'lodash';
 
 export const AssignRoleModal = (props) => {
-	const baseUrl = Config.baseUrl.authnzSrv;
+	const authnzSrv = Config.baseUrl.authnzSrv;
 	const [roles, setRoles] = useState([]);
 	const [isMulti, setMulti] = useState(true);
 	const [selectedOptions, setSelectedOptions] = useState([]);
@@ -16,7 +16,7 @@ export const AssignRoleModal = (props) => {
 	useEffect(() => {
 		console.log(props)
 		axios
-			.get(`${baseUrl}/roles`)
+			.get(`${authnzSrv}/roles`)
 			.then((res) => {
 				setRoles(res.data);
 			})
@@ -58,7 +58,7 @@ export const AssignRoleModal = (props) => {
 			params.append('roleIds', roleId.toString());
 		})
 		axios
-			.post(`${baseUrl}/users/${userId}/roles`, params)
+			.post(`${authnzSrv}/users/${userId}/roles`, params)
 			.then((res) => {
 				if (res.status == 200) {
 					alert(res.data);

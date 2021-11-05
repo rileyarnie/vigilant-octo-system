@@ -60,9 +60,9 @@ function AssignRole() {
 	const [errorMessages, setErrorMessages] = useState([]);
 
 	useEffect(() => {
-		const baseUrl = Config.baseUrl.authnzSrv;
+		const authnzSrv = Config.baseUrl.authnzSrv;
 		axios
-			.get(`${baseUrl}/users`)
+			.get(`${authnzSrv}/users`)
 			.then((res) => {
 					setData(res.data);
 				})

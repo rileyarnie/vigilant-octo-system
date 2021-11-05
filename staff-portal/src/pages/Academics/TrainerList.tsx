@@ -57,7 +57,7 @@ function TrainerList() {
         { title: 'Department ID', field: 'departmentId' }
     ];
     const [data, setData] = useState([]);
-    const baseUrl = Config.baseUrl.timetablingSrv;
+    const timetablingSrv = Config.baseUrl.timetablingSrv;
     const [iserror, setIserror] = useState(false);
     const [users, setUsers] = useState([]);
     const [departments, setDepartments] = useState([]);
@@ -69,7 +69,7 @@ function TrainerList() {
     const [errorMessages, setErrorMessages] = useState([]);
     useEffect(() => {
         axios
-            .get(`${Config.baseUrl.timetablingSrv}/trainers`)
+            .get(`${timetablingSrv}/trainers`)
             .then((res) => {
                 setData(res.data);
             })
@@ -81,7 +81,7 @@ function TrainerList() {
             });
 
         axios
-            .get(`${Config.baseUrl.timetablingSrv}/users`)
+            .get(`${timetablingSrv}/users`)
             .then((res) => {
                 setUsers(res.data);
             })
@@ -92,7 +92,7 @@ function TrainerList() {
             });
 
         axios
-            .get(`${Config.baseUrl.timetablingSrv}/departments`)
+            .get(`${timetablingSrv}/departments`)
             .then((res) => {
                 setDepartments(res.data);
             })
@@ -105,7 +105,7 @@ function TrainerList() {
 
     const fetchTrainers = () => {
         axios
-            .get(`${Config.baseUrl.timetablingSrv}/trainers`)
+            .get(`${timetablingSrv}/trainers`)
             .then((res) => {
                 setData(res.data);
                 alert('Succesfully updated trainer data');
@@ -130,7 +130,7 @@ function TrainerList() {
 
     const createTrainer = (trainerData) => {
         axios
-            .post(`${Config.baseUrl.timetablingSrv}/trainers`, trainerData)
+            .post(`${timetablingSrv}/trainers`, trainerData)
             .then((res) => {
                 alert('Succesfully created trainer');
                 fetchTrainers();

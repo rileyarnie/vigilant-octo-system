@@ -62,8 +62,8 @@ function RoleList() {
     const [errorMessages, setErrorMessages] = useState([]);
 
     useEffect(() => {
-        const base_url = Config.baseUrl.authnzSrv
-        axios.get(`${base_url}/roles`)
+        const authnzSrv = Config.baseUrl.authnzSrv 
+        axios.get(`${authnzSrv}/roles`)
             .then(res => {
                 setData(res.data);
             })
