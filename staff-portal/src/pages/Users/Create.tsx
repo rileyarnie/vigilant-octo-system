@@ -1,4 +1,4 @@
-import React, { Component } from 'react';
+import React, { useState } from 'react';
 import axios from 'axios';
 import { Row, Col, Card,} from "react-bootstrap";
 import { ValidationForm, TextInput } from 'react-bootstrap4-form-validation';
@@ -6,41 +6,38 @@ import validator from 'validator';
 import Breadcrumb from '../../App/components/Breadcrumb';
 import Config from '../../config';
 
-class CreateUser extends Component {
-    state = {
-        email: ''
-    };
-    handleChange = (e) => {
-        this.setState({
-            [e.target.name]: e.target.value
-        });
+const CreateUser = ()=> {
+    const [email,setEmail] = useState('')
+   const handleChange = (event: any) => {
+        setEmail(event.target.value)
     };
 
-    handleSubmit = (e, formData,) => {
+    const handleSubmit = (e, formData,) => {
         e.preventDefault();
         const params = new URLSearchParams();
-        const baseUrl = Config.baseUrl.authnzSrv;
-        params.append('AADAlias', this.state.email);
-        axios.post(`${baseUrl}/users`, params)
+        const authnzSrv = Config.baseUrl.authnzSrv;
+        params.append('AADAlias', email);
+        axios.post(`${authnzSrv}/users`, params)
             .then(res => {
                 //handle success
                 console.log(res);
+                //clear input on success
+                setEmail('')
             })
             .catch((error) => {
                 //handle error using logging library
                 console.error(error);
-                alert('Bad request');
+                alert(error.message);
             });
 
-        alert(JSON.stringify(formData, null, 2));
     };
 
-    handleErrorSubmit = (e, _formData, errorInputs) => {
+   const handleErrorSubmit = (e, _formData, errorInputs) => {
         console.error(errorInputs);
     };
 
 
-    render() {
+   
         return (
             <>
                 <Row className="align-items-center page-header">
@@ -54,10 +51,10 @@ class CreateUser extends Component {
                             <Card.Body>
                                 <Row>
                                     <Col md={6}>
-                                        <ValidationForm onSubmit={this.handleSubmit} onErrorSubmit={this.handleErrorSubmit}>
+                                        <ValidationForm onSubmit={handleSubmit} onErrorSubmit={handleErrorSubmit}>
                                             <div className='form-group'>
                                                 <label htmlFor='email'><b>Enter AAD Alias</b></label>
-                                                <TextInput name='email' id='email' type='email' placeholder="user@miog.co.ke"  validator={validator.isEmail} errorMessage={{ validator: 'Please enter a valid email' }} value={this.state.email} onChange={this.handleChange} />
+                                                <TextInput name='email' id='email' type='email' placeholder="user@miog.co.ke"  validator={validator.isEmail} errorMessage={{ validator: 'Please enter a valid email' }} value={email} onChange={handleChange} />
                                             </div>
                                             <div className='form-group'>
                                                 <button className='btn btn-danger'>Submit</button>
@@ -72,6 +69,5 @@ class CreateUser extends Component {
             </>
         );
     }
-}
 
 export default CreateUser;
