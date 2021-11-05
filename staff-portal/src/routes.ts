@@ -12,6 +12,7 @@ import TrainerList from './pages/Academics/TrainerList';
 import VenueList from './pages/Academics/VenueList';
 import AssignRole from './pages/Users/AssignRole';
 import CreateVenue from './pages/Academics/CreateVenue';
+import SemesterList from './pages/Academics/SemsterList';
 import CreateCourse from './pages/Academics/CreateCourse';
 import UserList from './pages/Users/UserList';
 import CoursesList from './pages/Academics/CoursesList';
@@ -36,6 +37,7 @@ const routes = [
     { path: '/assigncourses', exact: true, name: 'default', component: AssignCourse },
     { path: '/campusdetails', exact: true, name: 'default', component: CampusDetails },
     { path: '/venuelist', exact: true, name: 'default', component: VenueList },
+    { path: '/semesterlist', exact: true, name: 'default', component: SemesterList },
     { path: '/assignrole', exact: true, name: 'default', component: AssignRole },
 
 ];
