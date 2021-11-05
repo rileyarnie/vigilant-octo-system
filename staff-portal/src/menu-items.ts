@@ -31,23 +31,25 @@ const chartData: { items: MenuItemType[] } = {
                     type: "collapse",
                     icon: "feather icon-user",
                     children: [
+
+                        {
+                            id: "createuser",
+                            title: "Create User",
+                            type: "item",
+                            url: "/createuser"
+                        },
+
+                        {
+                            id: "userlist",
+                            title: "User List",
+                            type: "item",
+                            url: "/userlist"
+                        },
                         {
                             id: "rolelist",
                             title: "Role List",
                             type: "item",
                             url: "/rolelist"
-                        },
-                        {
-                            id: "createrole",
-                            title: "Create Role",
-                            type: "item",
-                            url: "/createrole"
-                        },
-                        {
-                            id: "createUser",
-                            title: "Create User",
-                            type: "item",
-                            url: "/createuser"
                         },
                         {
                             id: "assign",
@@ -82,6 +84,19 @@ const chartData: { items: MenuItemType[] } = {
                             url: '/createcampus'
                         },
                         {
+
+                            id: 'createvenue',
+                            title: 'Create Venue',
+                            type: 'item',
+                            url: '/createvenue'
+                        },
+                        {
+                            id: 'createprogram',
+                            title: 'Create Program',
+                            type: 'item',
+                            url: '/createprogram'
+                        },
+                        {
                             id: 'createcourse',
                             title: 'Create Course',
                             type: 'item',
@@ -94,24 +109,16 @@ const chartData: { items: MenuItemType[] } = {
                             url: '/venueList',
                         },
                         {
-                            id: 'createtrainer',
-                            title: 'Create Trainer',
+                            id: 'campuslist',
+                            title: 'Campus List',
                             type: 'item',
-                            url: '/CreateTrainer',
-                            
+                            url: '/campuslist',
                         },
                         {
                             id: 'trainerlist',
                             title: 'Trainer List',
                             type: 'item',
                             url: '/trainerlist'
-                        },
-                        {
-
-                            id: 'createvenue',
-                            title: 'Create Venue',
-                            type: 'item',
-                            url: '/createvenue'
                         }
                     ]
                 }

@@ -46,7 +46,7 @@ const tableIcons = {
 function RoleList() {
 
     const columns = [
-        { title: 'id', field: 'id' },
+        { title: 'id', field: 'id', hidden: true },
         { title: 'RoleName', field: 'RoleName' },
         { title: 'Activation Status', field: 'activation_status' },
         { title: 'Created On', field: 'created_on' },
@@ -62,7 +62,7 @@ function RoleList() {
     const [errorMessages, setErrorMessages] = useState([]);
 
     useEffect(() => {
-        const base_url = Config.baseUrl.timetablingSrv
+        const base_url = Config.baseUrl.authnzSrv
         axios.get(`${base_url}/roles`)
             .then(res => {
                 setData(res.data);
@@ -79,7 +79,8 @@ function RoleList() {
         }
 
         if (errorList.length < 1) {
-            axios.put('/roles/{roleID}/' + newData.id, newData)
+            const base_url = Config.baseUrl.authnzSrv;
+            axios.put(`${base_url}/roles/{roleID}/` + newData.id, newData)
                 .then(res => {
                     const dataUpdate = [...data];
                     const index = oldData.tableData.id;
@@ -111,7 +112,8 @@ function RoleList() {
         }
 
         if(errorList.length < 1){ //no error
-            axios.put("/roles", newData)
+            const baseUrl = Config.baseUrl.authnzSrv;
+            axios.put(`${baseUrl}/roles`, newData)
                 .then(res => {
                     let dataToAdd = [...data];
                     dataToAdd.push(newData);
@@ -134,8 +136,8 @@ function RoleList() {
 
     }
     const handleRowDelete = (oldData, resolve) => {
-
-        axios.delete('/roles/{roleID}' + oldData.id)
+        const baseUrl = Config.baseUrl.authnzSrv;
+        axios.delete(`${baseUrl}/roles/{roleID}` + oldData.id)
             .then(res => {
                 const dataDelete = [...data];
                 const index = oldData.tableData.id;

@@ -4,6 +4,7 @@ import { Row, Col, Card,} from "react-bootstrap";
 import { ValidationForm, TextInput } from 'react-bootstrap4-form-validation';
 import validator from 'validator';
 import Breadcrumb from '../../App/components/Breadcrumb';
+import Config from '../../config';
 
 class CreateUser extends Component {
     state = {
@@ -18,8 +19,9 @@ class CreateUser extends Component {
     handleSubmit = (e, formData,) => {
         e.preventDefault();
         const params = new URLSearchParams();
+        const baseUrl = Config.baseUrl.authnzSrv;
         params.append('AADAlias', this.state.email);
-        axios.post('/users', params)
+        axios.post(`${baseUrl}/users`, params)
             .then(res => {
                 //handle success
                 console.log(res);

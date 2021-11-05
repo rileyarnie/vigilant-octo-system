@@ -16,6 +16,7 @@ import ViewColumn from '@material-ui/icons/ViewColumn';
 import axios from 'axios';
 import Breadcrumb from '../../App/components/Breadcrumb';
 import { Row, Col, Card } from 'react-bootstrap';
+import Config from '../../config';
 
 const tableIcons = {
     Add: forwardRef((props, ref: any) => <AddBox {...props} ref={ref} />),
@@ -37,14 +38,14 @@ function UserList() {
 
     const columns = [
         { title: 'ID', field: 'id' },
-        { title: 'Name', field: 'name' },
         { title: 'AAD Alias', field: 'AADAlias' },
 
 
     ];
     const [data, setData] = useState([]);
+    const baseUrl = Config.baseUrl.authnzSrv;
     useEffect(() => {
-        axios.get(`/users`)
+        axios.get(`${baseUrl}/users`)
             .then(res => {
                 setData(res.data);
             })

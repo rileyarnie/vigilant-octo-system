@@ -48,12 +48,12 @@ function AssignRole() {
 
 	const columns = [
 		{title: 'id', field: 'id'},
-		{title: 'AAD ALIAS', field: 'aadAlias'},
+		{title: 'AAD ALIAS', field: 'AADAlias'},
 
 	];
 	const [data, setData] = useState([]);
 	const [id, setId] = useState(0);
-	const [aadAlias, setaadAlias] = useState('')
+	const [AADAlias, setAADAlias] = useState('')
 
 	//for error handling
 	const [iserror, setIserror] = useState(false);
@@ -73,12 +73,12 @@ function AssignRole() {
 	}, []);
 	const handleRowSelection = (row) => {
 		setId(row[0]?.id);
-		setaadAlias(row[0]?.aadAlias);
+		setAADAlias(row[0]?.AADAlias);
 		console.log(row)
 	}
 	const selectedRowProps = {
 		id: id,
-		aadAlias: aadAlias
+		AADAlias: AADAlias
 	}
 	return (
 		<>
