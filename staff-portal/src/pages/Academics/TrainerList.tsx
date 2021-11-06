@@ -56,7 +56,7 @@ function TrainerList() {
         { title: 'Trainer type', field: 'trainerType' },
         { title: 'Department ID', field: 'departmentId' }
     ];
-    const [data, setData] = useState([]);
+    const [data, setData] = useState([{id: 1, name: 'Jane Doe', ttype: 'Lecturer'}]);
     const baseUrl = Config.baseUrl.timetablingSrv;
     const baseUrlAuth = Config.baseUrl.authnzSrv
     const [iserror, setIserror] = useState(false);
