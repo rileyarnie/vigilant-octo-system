@@ -44,7 +44,7 @@ const tableIcons = {
 };
 
 function AssignCourse() {
-
+    const baseUrl = Config.baseUrl.timetablingSrv
     const columns = [
         { title: 'ID', field: 'id', hidden: false },
         { title: 'Name', field: 'name' },
@@ -81,7 +81,7 @@ function AssignCourse() {
     }, []);
 
     const fetchCoursesAssignedToProgram = () => {
-        axios.get(`${Config.baseUrl.timetablingSrv}/courses`)
+        axios.get(`${baseUrl}/courses`)
         .then(res => {
             setData(res.data);
             alert('Course data reloaded succesfully')
@@ -99,7 +99,7 @@ function AssignCourse() {
     }
 
     const assignSelectedCoursesToProgram = (selectedCourses: Array<number>) => {
-        axios.put(`${Config.baseUrl.timetablingSrv}/programs/courses/${programId}`, {courseIds: selectedCourses})
+        axios.put(`${baseUrl}/programs/courses/${programId}`, {courseIds: selectedCourses})
         .then(res => {
             alert('Course assignment succesful.')
             fetchCoursesAssignedToProgram()
