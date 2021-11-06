@@ -63,14 +63,13 @@ function ProgramCoursesList() {
     ];
     const [data, setData] = useState([]);
     const [programId, setProgramId] = useState();
-    const [courseName, setCourseName] = useState();
-    const [courseId, setCourseId] = useState();
+    const [courseName, setCourseName] = useState('');
+    const [courseId, setCourseId] = useState(null);
     const [iserror, setIserror] = useState(false);
     const [selectedRows, setSelectedRows] = useState();
     const [errorMessages, setErrorMessages] = useState([]);
-    let progId = JSON.parse(localStorage.getItem("programId"))
     let options = [] as any;
-    let progId = JSON.parse(localStorage.getItem("programId"))
+    let progId = JSON.parse(localStorage.getItem("programId"));
     useEffect(() => {
         axios.get(`${Config.baseUrl.timetablingSrv}/programs/courses/${progId}`)
             .then(res => {
@@ -160,17 +159,6 @@ function ProgramCoursesList() {
                     </Card>
                 </Col>
             </Row>
-
-            <Button
-             style={{display: !courseId ? 'none' : 'block'  }} 
-             variant="contained" 
-             color="secondary"
-             onClick={() => {
-                unassignSelectedCoursesFromTrainer(selectedRows)
-             }}
-             >
-            Remove courses
-            </Button>
         </>
     );
 }

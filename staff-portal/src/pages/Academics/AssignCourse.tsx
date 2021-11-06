@@ -20,9 +20,7 @@ import axios from 'axios';
 import Alert from '@material-ui/lab/Alert';
 import Breadcrumb from '../../App/components/Breadcrumb';
 import { Row, Col, Card, Modal } from 'react-bootstrap';
-import {Actions} from '../Users/ActionsByRole/Actions';
 import { Button, ButtonBase, IconButton } from '@material-ui/core';
-import Select from 'react-select/src/Select';
 import Config from '../../config';
 
 const tableIcons = {
@@ -61,8 +59,8 @@ function AssignCourse() {
     ];
     const [data, setData] = useState([]);
     const [programId, setProgramId] = useState();
-    const [courseName, setCourseName] = useState();
-    const [courseId, setCourseId] = useState();
+    const [courseName, setCourseName] = useState('');
+    const [courseId, setCourseId] = useState(null);
     const [iserror, setIserror] = useState(false);
     const [selectedRows, setSelectedRows] = useState([]);
     const [errorMessages, setErrorMessages] = useState([]);

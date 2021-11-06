@@ -20,6 +20,7 @@ import axios from 'axios';
 import Alert from '@material-ui/lab/Alert';
 import Breadcrumb from '../../App/components/Breadcrumb';
 import { Row, Col, Card } from 'react-bootstrap';
+import Config  from '../../config';
 
 const tableIcons = {
     Add: forwardRef((props, ref: any) => <AddBox {...props} ref={ref} />),
@@ -42,7 +43,7 @@ const tableIcons = {
 };
 
 function Department() {
-
+    const timetablingSrv = Config.baseUrl.timetablingSrv
     const columns = [
         { title: 'ID', field: 'id', hidden: true },
         { title: 'Department name', field: 'name' },
@@ -56,13 +57,14 @@ function Department() {
     const [iserror, setIserror] = useState(false);
     const [errorMessages, setErrorMessages] = useState([]);
     useEffect(() => {
-        axios.get(`/departments`)
+        axios.get(`${timetablingSrv}/departments`)
             .then(res => {
                 setData(res.data);
             })
             .catch((error) => {
                 //handle error using logging library
                 console.error(error);
+                alert(error)
             });
     }, []);
 
@@ -75,7 +77,7 @@ function Department() {
             errorList.push('Please select status');
         }
         if (errorList.length < 1) {
-            axios.put('/departments', newData)
+            axios.post(`${timetablingSrv}/departments`, newData)
                 .then(res => {
                     let dataToAdd = [...data];
                     dataToAdd.push(newData);
@@ -85,7 +87,7 @@ function Department() {
                     setIserror(false);
                 })
                 .catch(error => {
-                    setErrorMessages(['Invalid input details.']);
+                    setErrorMessages([error]);
                     setIserror(true);
                     resolve();
                 });
@@ -102,7 +104,7 @@ function Department() {
             errorList.push('Please enter Department name');
         }
         if (errorList.length < 1) {
-            axios.put('/departments/{departmentId}' + newData.departmentId, newData)
+            axios.put(`${timetablingSrv}/departments/${oldData.id}`, newData)
                 .then(res => {
                     const dataUpdate = [...data];
                     const index = oldData.tableData.departmentId;
@@ -113,7 +115,7 @@ function Department() {
                     setErrorMessages([]);
                 })
                 .catch(error => {
-                    setErrorMessages(['Invalid input details!']);
+                    setErrorMessages(['Failed to update!']);
                     setIserror(true);
                     resolve();
                 });

@@ -134,7 +134,7 @@ function TrainerList() {
             .then((res) => {
                 alert('Succesfully created trainer');
                 fetchTrainers();
-                toggleCreateModal();
+                setModal(false);
             })
             .catch((err) => {
                 setErrorMessages(['Failed to create trainer']);
@@ -181,8 +181,8 @@ function TrainerList() {
             </Row>
             <Modal
                 show={showModal}
-                onExit={() => toggleCreateModal()}
-                onBackdropClick={() => toggleCreateModal()}
+                onHide={toggleCreateModal}
+                onBackdropClick={toggleCreateModal}
                 size="lg"
                 aria-labelledby="contained-modal-title-vcenter"
                 centered
