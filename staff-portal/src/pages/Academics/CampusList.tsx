@@ -51,7 +51,7 @@ function CampusList() {
     const columns = [
         { title: 'ID', field: 'id' },
         { title: 'Campus name', field: 'name' },
-        { title: 'Status', field: 'activation_status' },
+        { title: 'Description', field: 'description' },
         {
             title: 'Toggle Activation Status',
             field: 'internal_action',
@@ -68,7 +68,7 @@ function CampusList() {
     const [iserror, setIserror] = useState(false);
     const [errorMessages, setErrorMessages] = useState([]);
     useEffect(() => {
-        axios.get(`${baseUrl}{timetablingSrv}/campuses`)
+        axios.get(`${timetablingSrv}{timetablingSrv}/campuses`)
 
             .then(res => {
                 setData(res.data);
@@ -76,9 +76,12 @@ function CampusList() {
             .catch((error) => {
                 //handle error using logging library
                 console.error(error);
+                alert('Failed to fetch campuses')
             });
     }, []);
+    
     const [checked, setChecked] = useState(true);
+
     const setCampusActivationStatus = async (campusId:number, activationStatus:string) => {
         const params = new URLSearchParams();
         const update = {
@@ -113,6 +116,7 @@ function CampusList() {
         }
     };
     const handleRowUpdate = (newData, oldData, resolve) => {
+        delete newData.id
         //validation
         let errorList = [];
         if (newData.name === '') {
@@ -124,12 +128,9 @@ function CampusList() {
             resolve();
             return false;
         }
-        axios.put(`${baseUrl}/:campusId` + newData.departmentId, newData)
+        axios.put(`${timetablingSrv}/:campusId` + newData.departmentId, newData)
             .then(res => {
-                const dataUpdate = [...data];
-                const index = oldData.tableData.departmentId;
-                dataUpdate[index] = newData;
-                setData([...dataUpdate]);
+                setData(res.data);
                 resolve();
                 setIserror(false);
                 setErrorMessages([]);
