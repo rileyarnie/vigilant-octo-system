@@ -68,7 +68,7 @@ function CampusList() {
     const [iserror, setIserror] = useState(false);
     const [errorMessages, setErrorMessages] = useState([]);
     useEffect(() => {
-        axios.get(`${timetablingSrv}{timetablingSrv}/campuses`)
+        axios.get(`${timetablingSrv}/campuses`)
 
             .then(res => {
                 setData(res.data);

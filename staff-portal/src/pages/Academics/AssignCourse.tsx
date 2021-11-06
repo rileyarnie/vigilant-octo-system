@@ -44,7 +44,7 @@ const tableIcons = {
 };
 
 function AssignCourse() {
-    const baseUrl = Config.baseUrl.timetablingSrv
+    const timetablingSrv = Config.baseUrl.timetablingSrv
     const columns = [
         { title: 'ID', field: 'id', hidden: false },
         { title: 'Name', field: 'name' },
@@ -65,9 +65,9 @@ function AssignCourse() {
     const [selectedRows, setSelectedRows] = useState([]);
     const [errorMessages, setErrorMessages] = useState([]);
     let options = [] as any;
+    let progId = JSON.parse(localStorage.getItem("programId"))
     useEffect(() => {
-        let progId = JSON.parse(localStorage.getItem("programId"))
-        axios.get(`${Config.baseUrl.timetablingSrv}/courses`)
+        axios.get(`${timetablingSrv}/courses`)
             .then(res => {
                 setData(res.data);
                 setProgramId(progId)
@@ -81,15 +81,15 @@ function AssignCourse() {
     }, []);
 
     const fetchCoursesAssignedToProgram = () => {
-        axios.get(`${baseUrl}/courses`)
+        axios.get(`${timetablingSrv}/programs/courses/${progId}`)
         .then(res => {
             setData(res.data);
-            alert('Course data reloaded succesfully')
+            alert('Course data reloaded succesfully');
         })
         .catch((error) => {
             //handle error using logging library
+            setErrorMessages([error]);
             console.error(error);
-            setErrorMessages(['Failed to reload'])
         });
     }
     const handleRowSelection = (courseName: string, courseId: number, rows: any) => {
@@ -99,7 +99,7 @@ function AssignCourse() {
     }
 
     const assignSelectedCoursesToProgram = (selectedCourses: Array<number>) => {
-        axios.put(`${baseUrl}/programs/courses/${programId}`, {courseIds: selectedCourses})
+        axios.put(`${timetablingSrv}/programs/courses/${programId}`, {courseIds: selectedCourses})
         .then(res => {
             alert('Course assignment succesful.')
             fetchCoursesAssignedToProgram()

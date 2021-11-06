@@ -50,11 +50,10 @@ function ProgramCoursesList() {
 
     const columns = [
         { title: 'ID', field: 'id', hidden: false },
-        { title: 'Prerequisite Courses', field: 'prerequisiteCourses' },
         { title: 'Name', field: 'name' },
         { title: 'Description', field: 'description' },
         { title: 'Training Hours', field: 'trainingHours' },
-        { title: 'Timetableable', field: 'timetableable' },
+        { title: 'Timetableable', field: 'isTimetablable' },
         { title: 'Technical Assistant', field: 'needsTechnicalAssistant' },
         { title: 'Prerequisite Courses', field: 'prerequisiteCourses' },
         { title: 'Approved', field: 'isApproved' },
@@ -68,15 +67,16 @@ function ProgramCoursesList() {
     const [iserror, setIserror] = useState(false);
     const [selectedRows, setSelectedRows] = useState();
     const [errorMessages, setErrorMessages] = useState([]);
+    const timetablingSrv = Config.baseUrl.timetablingSrv;
     let options = [] as any;
     let progId = JSON.parse(localStorage.getItem("programId"));
+    console.log(progId)
     useEffect(() => {
-        axios.get(`${Config.baseUrl.timetablingSrv}/programs/courses/${progId}`)
+        axios.get(`${timetablingSrv}/programs/courses/${progId}`)
             .then(res => {
+                console.log(res.data)
                 setData(res.data);
                 setProgramId(progId);
-
-                alert('Courses fetched succesfully')
             })
             .catch((error) => {
                 //handle error using logging library
@@ -88,7 +88,7 @@ function ProgramCoursesList() {
     const [checked, setChecked] = useState(true);
 
     const fetchCoursesAssignedToProgram = (progId: number) => {
-        axios.get(`${Config.baseUrl.timetablingSrv}/programs/courses/${progId}`)
+        axios.get(`${timetablingSrv}/programs/courses/${progId}`)
             .then(res => {
                 setData(res.data);
                 alert('Course data reloaded succesfully');
@@ -107,10 +107,10 @@ function ProgramCoursesList() {
     }
 
     const unassignSelectedCoursesFromTrainer = (selectedCourseId: number) => {
-        axios.put(`${Config.baseUrl.timetablingSrv}/programs/${selectedCourseId}/${programId}`)
+        axios.put(`${timetablingSrv}/programs/${selectedCourseId}/${programId}`)
         .then(res => {
-            fetchCoursesAssignedToProgram(progId);
             alert('Succesfully removed course ' + res.data);
+            fetchCoursesAssignedToProgram(progId);
         })
         .catch(err => {
             setErrorMessages(['Unassigning course failed!']);

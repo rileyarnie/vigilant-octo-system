@@ -24,6 +24,7 @@ import Config from '../../config';
 import { Switch } from '@material-ui/core';
 import { FormGroup, FormControlLabel } from '@material-ui/core';
 import { chain, find, merge } from 'lodash';
+import { Link } from 'react-router-dom';
 
 const tableIcons = {
 	Add: forwardRef((props, ref: any) => <AddBox {...props} ref={ref} />),
@@ -46,7 +47,7 @@ const tableIcons = {
 };
 
 function Programs() {
-	const baseUrl= Config.baseUrl.timetablingSrv;
+	const timetablingSrv= Config.baseUrl.timetablingSrv;
 	const ACTIVE = 'ACTIVE'
 	const INACTIVE = 'INACTIVE'
 	const columns = [
@@ -62,6 +63,28 @@ function Programs() {
 					checked={row.activation_status === ACTIVE?true:false}
 				/>
 			)
+		},
+		{
+			title: 'Assign courses',
+			field: 'internal_action',
+			render: (row) => (
+				<Link to={"/assigncourses"} onClick={() => localStorage.setItem("programId", row.id )} >
+					<button className="btn btn-danger"> 
+						Assign courses
+					</button>
+				</Link>		
+			)
+		},
+		{
+			title: 'View courses',
+			field: 'internal_action',
+			render: (row) => (
+				<Link to={"/programcourses"} onClick={() => localStorage.setItem("programId", row.id )} >
+					<button className="btn btn-danger"> 
+						View courses
+					</button>
+				</Link>		
+			)
 		}
 	];
 	const [data, setData] = useState([]);
@@ -69,16 +92,17 @@ function Programs() {
 	const [errorMessages, setErrorMessages] = useState([]);
 	useEffect(() => {
 		axios
-			.get(`${baseUrl}/programs/`)
+			.get(`${timetablingSrv}/programs`)
 			.then((res) => {
+				console.log(res)
 				setData(res.data);
 			})
 			.catch((error) => {
 				//handle error using logging library
 				console.error(error);
+				alert(error)
 			});
 	}, []);
-	const [checked, setChecked] = useState(true);
 
 	const toggleActivationStatus = async (courseId, isActivated) => {
 		const params = new URLSearchParams();
@@ -87,7 +111,7 @@ function Programs() {
 		};
 		params.append('updates', JSON.stringify(update));
 		axios
-			.put(`${baseUrl}/programs/${courseId}`, params)
+			.put(`${timetablingSrv}/programs/${courseId}`, params)
 			.then((res) => {
 				if(res.status === 200){
 					data.forEach((obj,index)=>{
@@ -124,7 +148,7 @@ function Programs() {
 		}
 		if (errorList.length < 1) {
 			axios
-				.put(`${baseUrl}/programs/` + newData.programId, newData)
+				.put(`${timetablingSrv}/programs/` + newData.programId, newData)
 				.then((res) => {
 					const dataUpdate = [...data];
 					const index = oldData.tableData.programId;
