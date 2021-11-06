@@ -53,23 +53,26 @@ function TrainerList() {
     const columns = [
         { title: 'ID', field: 'id', hidden: false },
         { title: 'Trainer name', field: 'name' },
-        { title: 'Trainer type', field: 'ttype' },
+        { title: 'Trainer type', field: 'trainerType' },
         { title: 'Department ID', field: 'departmentId' }
     ];
     const [data, setData] = useState([]);
-    const timetablingSrv = Config.baseUrl.timetablingSrv;
+    const baseUrl = Config.baseUrl.timetablingSrv;
+    const baseUrlAuth = Config.baseUrl.authnzSrv
     const [iserror, setIserror] = useState(false);
     const [users, setUsers] = useState([]);
     const [departments, setDepartments] = useState([]);
-    const [trainerType, setTrainerType] = useState('');
-    const [selectedUser, setSelectedUser] = useState();
+    const [trainerType, setTrainerType] = useState('Please select a trainer');
+    const [selectedUser, setSelectedUser] = useState(1);
     const [selectedDept, setDept] = useState();
     const [selectedType, setType] = useState();
+    const [userAADAlias, setAADAlias] = useState('Please select a user')
+    const [departmentName, setDepartmentName] = useState('Please slect a department');
     const [showModal, setModal] = useState(false);
     const [errorMessages, setErrorMessages] = useState([]);
     useEffect(() => {
         axios
-            .get(`${timetablingSrv}/trainers`)
+            .get(`${baseUrl}/trainers`)
             .then((res) => {
                 setData(res.data);
             })
@@ -81,18 +84,18 @@ function TrainerList() {
             });
 
         axios
-            .get(`${timetablingSrv}/users`)
+            .get(`${baseUrlAuth}/users`)
             .then((res) => {
                 setUsers(res.data);
             })
             .catch((error) => {
                 //handle error using logging library
-                console.log('Error');
+                console.log('Error: '+error);
                 setErrorMessages(['Failed to get users']);
             });
 
         axios
-            .get(`${timetablingSrv}/departments`)
+            .get(`${baseUrl}/departments`)
             .then((res) => {
                 setDepartments(res.data);
             })
@@ -105,7 +108,7 @@ function TrainerList() {
 
     const fetchTrainers = () => {
         axios
-            .get(`${timetablingSrv}/trainers`)
+            .get(`${baseUrl}/trainers`)
             .then((res) => {
                 setData(res.data);
                 alert('Succesfully updated trainer data');
@@ -118,10 +121,11 @@ function TrainerList() {
             });
     };
 
-    const handleSubmit = () => {
+    const handleSubmit = (e) => {
+        e.preventDefault()
         const trainer = {
-            name: selectedUser,
-            department: selectedDept,
+            userId: selectedUser,
+            departmentId: selectedDept,
             trainerType: selectedType
         };
 
@@ -129,8 +133,9 @@ function TrainerList() {
     };
 
     const createTrainer = (trainerData) => {
+        console.log(trainerData)
         axios
-            .post(`${timetablingSrv}/trainers`, trainerData)
+            .post(`${baseUrl}/trainers`, trainerData)
             .then((res) => {
                 alert('Succesfully created trainer');
                 fetchTrainers();
@@ -200,11 +205,13 @@ function TrainerList() {
                                 value={users}
                                 required
                                 errorMessage="Please select a user."
-                                onChange={(e) => setSelectedUser(e.target.value)}
+                                onChange={(e) => {
+                                    setSelectedUser(e.target.value)  
+                                }}
                             >
-                                <option value="">--- Please select a user ---</option>
+                                <option value={selectedUser}>{selectedUser}</option>
                                 {users.map((user) => {
-                                    return <option value={user.id}>{user.AADAlias}</option>;
+                                    return <option value={user.id}>{user.name}</option>;
                                 })}
                             </SelectGroup>
                         </div>
@@ -213,12 +220,15 @@ function TrainerList() {
                             <SelectGroup
                                 name="department"
                                 id="department"
-                                value={departments}
+                                value={departmentName}
                                 required
                                 errorMessage="Please select a department."
-                                onChange={(e) => setDept(e.target.value)}
+                                onChange={(e) => {
+                                    setDept(e.target.value)
+                                    setDepartmentName(e.target.value)
+                                }}
                             >
-                                <option value="">--- Please select a department---</option>
+                                <option value="">-{departmentName}</option>
                                 {departments.map((dept) => {
                                     return <option value={dept.id}>{dept.name}</option>;
                                 })}
@@ -233,9 +243,12 @@ function TrainerList() {
                                 value={trainerType}
                                 required
                                 errorMessage="Please select a trainer type."
-                                onChange={(e) => setType(e.target.value)}
+                                onChange={(e) => {
+                                    setType(e.target.value)
+                                    setTrainerType(e.target.value)
+                                }}
                             >
-                                <option value="">--- Please select trainer type---</option>
+                                <option value="">{trainerType}</option>
                                 <option value={TrainerType['Lecturer']}>Lecturer</option>;
                                 <option value={TrainerType['Trainer']}>Trainer</option>;
                                 <option value={TrainerType['Assistant']}>Assistant</option>;
@@ -243,7 +256,7 @@ function TrainerList() {
                         </div>
 
                         <div className="form-group">
-                            <button className="btn btn-danger" onClick={() => handleSubmit()}>
+                            <button className="btn btn-danger" onClick={(e) => handleSubmit(e)}>
                                 Submit
                             </button>
                         </div>
