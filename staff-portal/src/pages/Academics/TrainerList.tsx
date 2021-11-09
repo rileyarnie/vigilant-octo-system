@@ -155,8 +155,9 @@ function TrainerList() {
                 <Col>
                     <Breadcrumb />
                 </Col>
+
                 <Col>
-                    <Button variant="danger" onClick={() => toggleCreateModal()}>
+                    <Button className="float-right" variant="danger" onClick={() => toggleCreateModal()}>
                         Create trainer
                     </Button>
                 </Col>

@@ -19,7 +19,7 @@ import Search from '@material-ui/icons/Search';
 import ViewColumn from '@material-ui/icons/ViewColumn';
 import axios from 'axios';
 import Alert from '@material-ui/lab/Alert';
-import { Card, Col, Row } from 'react-bootstrap';
+import {Button, Card, Col, Row } from 'react-bootstrap';
 import Breadcrumb from '../../App/components/Breadcrumb';
 import {Actions} from "./ActionsByRole/Actions"
 import { AddActions } from './AddActionsModal/AddActions';
@@ -53,6 +53,7 @@ function RoleList() {
         
     ];
     const [data, setData] = useState([]);
+    const [showModal, setModal] = useState(false);
     const [id,setId] = useState(0)
     const [roleName,setRoleName] = useState('')
 
@@ -160,13 +161,20 @@ function RoleList() {
         id: id,
         name: roleName
     }
-
+    const toggleCreateModal = () => {
+        showModal ? setModal(false) : setModal(true);
+    };
     return (
         <>
         <div>
             <Row className='align-items-center page-header'>
                 <Col>
                     <Breadcrumb />
+                </Col>
+                <Col>
+                    <Button className="float-right" variant="danger" onClick={() => toggleCreateModal()}>
+                        Create Role
+                    </Button>
                 </Col>
             </Row>
             <Row>

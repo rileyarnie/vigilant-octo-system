@@ -19,7 +19,7 @@ import ViewColumn from '@material-ui/icons/ViewColumn';
 import axios from 'axios';
 import Alert from '@material-ui/lab/Alert';
 import Breadcrumb from '../../App/components/Breadcrumb';
-import { Row, Col, Card } from 'react-bootstrap';
+import { Row, Col, Card, Button } from 'react-bootstrap';
 import Config from '../../config';
 import { Switch } from '@material-ui/core';
 
@@ -65,6 +65,7 @@ function CampusList() {
         }
     ];
     const [data, setData] = useState([]);
+    const [showModal, setModal] = useState(false);
     const [iserror, setIserror] = useState(false);
     const [errorMessages, setErrorMessages] = useState([]);
     useEffect(() => {
@@ -141,12 +142,19 @@ function CampusList() {
                 resolve();
             });
     };
-
+    const toggleCreateModal = () => {
+        showModal ? setModal(false) : setModal(true);
+    };
     return (
         <>
             <Row className='align-items-center page-header'>
                 <Col>
                     <Breadcrumb />
+                </Col>
+                <Col>
+                    <Button className="float-right" variant="danger" onClick={() => toggleCreateModal()}>
+                        Create Campus
+                    </Button>
                 </Col>
             </Row>
             <Row>

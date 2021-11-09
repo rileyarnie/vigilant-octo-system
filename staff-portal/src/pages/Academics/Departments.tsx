@@ -19,7 +19,7 @@ import ViewColumn from '@material-ui/icons/ViewColumn';
 import axios from 'axios';
 import Alert from '@material-ui/lab/Alert';
 import Breadcrumb from '../../App/components/Breadcrumb';
-import { Row, Col, Card } from 'react-bootstrap';
+import { Row, Col, Card, Button } from 'react-bootstrap';
 import Config  from '../../config';
 
 const tableIcons = {
@@ -55,6 +55,7 @@ function Department() {
     ];
     const [data, setData] = useState([]);
     const [iserror, setIserror] = useState(false);
+    const [showModal, setModal] = useState(false);
     const [errorMessages, setErrorMessages] = useState([]);
     useEffect(() => {
         axios.get(`${timetablingSrv}/departments`)
@@ -126,12 +127,20 @@ function Department() {
             resolve();
         }
     };
+    const toggleCreateModal = () => {
+        showModal ? setModal(false) : setModal(true);
+    };
     
     return (
         <>
             <Row className='align-items-center page-header'>
                 <Col>
                     <Breadcrumb />
+                </Col>
+                <Col>
+                    <Button className="float-right" variant="danger" onClick={() => toggleCreateModal()}>
+                        Create Department
+                    </Button>
                 </Col>
             </Row>
             <Row>
