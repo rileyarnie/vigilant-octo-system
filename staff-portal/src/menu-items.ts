@@ -42,18 +42,35 @@ const chartData: { items: MenuItemType[] } = {
                             title: "Roles",
                             type: "item",
                             url: "/roles"
-                        },
-                        {
-                            id: "assign",
-                            title: "Assign Role",
-                            type: "item",
-                            url: "/assignrole"
-                        },
+                        }
+                     
+                       
                     ]
                 },
                 {
-                    id: 'Academics',
-                    title: 'Academics',
+                    id: 'resources',
+                    title: 'Resources',
+                    type: 'collapse',
+                    icon: 'feather icon-book',
+                    children: [
+                        {
+                            id: 'campuses',
+                            title: 'Campuses',
+                            type: 'item',
+                            url: '/campuses'
+                        },                       
+                        {
+                            id: 'venues',
+                            title: 'Venues',
+                            type: 'item',
+                            url: '/venues',
+                        }
+                    ]
+
+                },
+                {
+                    id: 'Departments',
+                    title: 'Departments',
                     type: 'collapse',
                     icon: 'feather icon-book',
                     children: [
@@ -61,7 +78,19 @@ const chartData: { items: MenuItemType[] } = {
                             id: 'department',
                             title: 'Departments',
                             type: 'item',
-                            url: '/department'
+                            url: '/departments'                           
+                        },
+                        {
+                            id: 'trainers',
+                            title: 'Trainers',
+                            type: 'item',
+                            url: '/trainers'
+                        },
+                        {
+                            id: 'programs',
+                            title: 'Programs',
+                            type: 'item',
+                            url: '/programs'
                         },
                         {
                             id: 'courses',
@@ -74,36 +103,6 @@ const chartData: { items: MenuItemType[] } = {
                             title: 'Semesters',
                             type: 'item',
                             url: '/semesters'
-                        },
-                        {
-                            id: 'courses',
-                            title: 'Courses',
-                            type: 'item',
-                            url: '/courses'
-                        },
-                        {
-                            id: 'programs',
-                            title: 'Programs',
-                            type: 'item',
-                            url: '/programs'
-                        },
-                        {
-                            id: 'venues',
-                            title: 'Venues',
-                            type: 'item',
-                            url: '/venues',
-                        },
-                        {
-                            id: 'campuses',
-                            title: 'Campuses',
-                            type: 'item',
-                            url: '/campuses'
-                        },
-                        {
-                            id: 'trainers',
-                            title: 'Trainers',
-                            type: 'item',
-                            url: '/trainers'
                         },
                     ]
                 }

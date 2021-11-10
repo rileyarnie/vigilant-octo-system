@@ -26,7 +26,7 @@ const routes = [
     { path: '/users', exact: true, name: 'default', component: UserList },
     { path: '/createcampus', exact: true, name: 'default', component: CreateCampus },
     { path: '/createuser', exact: true, name: 'default', component: CreateUser },
-    { path: '/department', exact: true, name: 'default', component: Departments },
+    { path: '/departments', exact: true, name: 'default', component: Departments },
     { path: '/campuses', exact: true, name: 'default', component: CampusList },
     { path: '/trainers', exact: true, name: 'default', component: TrainerList },
     { path: '/createuser', exact: true, name: 'default', component: CreateUser },
