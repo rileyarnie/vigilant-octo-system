@@ -63,7 +63,6 @@ function ProgramCoursesList() {
     const [data, setData] = useState([]);
     const [programId, setProgramId] = useState();
     const [courseName, setCourseName] = useState('');
-    const [showModal, setModal] = useState(false);
     const [courseId, setCourseId] = useState(null);
     const [iserror, setIserror] = useState(false);
     const [selectedRows, setSelectedRows] = useState();
@@ -80,9 +79,7 @@ function ProgramCoursesList() {
                 setProgramId(progId);
             })
             .catch((error) => {
-                //handle error using logging library
                 setErrorMessages(['Failed to fetch courses']);
-                console.error(error);
             });
     }, []);
 
@@ -92,10 +89,8 @@ function ProgramCoursesList() {
         axios.get(`${timetablingSrv}/programs/courses/${progId}`)
             .then(res => {
                 setData(res.data);
-                alert('Course data reloaded succesfully');
             })
             .catch((error) => {
-                //handle error using logging library
                 setErrorMessages([error]);
                 console.error(error);
             });
@@ -123,19 +118,11 @@ function ProgramCoursesList() {
         id: courseId,
         name: courseName
     }
-    const toggleCreateModal = () => {
-        showModal ? setModal(false) : setModal(true);
-    };
     return (
         <>
             <Row className="align-items-center page-header">
                 <Col>
                     <Breadcrumb />
-                </Col>
-                <Col>
-                    <Button className="float-right" variant="danger" onClick={() => toggleCreateModal()}>
-                        Create Cohort
-                    </Button>
                 </Col>
             </Row>
             <Row>

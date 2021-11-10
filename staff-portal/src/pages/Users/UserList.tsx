@@ -57,39 +57,40 @@ function UserList() {
 	}, []);
 	const toggleCreateModal = () => {
 		showModal ? setModal(false) : setModal(true);
-		return (
-			<>
-				<Row className='align-items-center page-header'>
-					<Col>
-						<Breadcrumb/>
-					</Col>
-					<Col>
-						<Button className="float-right" variant="danger" onClick={() => toggleCreateModal()}>
-							Create User
-						</Button>
-					</Col>
-				</Row>
-				<Row>
-					<Col>
-						<Card>
-							<Card.Header>
-								<h5>Users</h5>
-							</Card.Header>
-							<MaterialTable
-								title=''
-								columns={columns}
-								data={data}
-								// @ts-ignore
-								icons={tableIcons}
+	};
 
-							/>
+	return (
+		<>
+			<Row className='align-items-center page-header'>
+				<Col>
+					<Breadcrumb/>
+				</Col>
+				<Col>
+					<Button className="float-right" variant="danger" onClick={() => toggleCreateModal()}>
+						Create  User
+					</Button>
+				</Col>
 
-						</Card>
-					</Col>
-				</Row>
-			</>
-		);
-	}
+			</Row>
+			<Row>
+				<Col>
+					<Card>
+						<Card.Header>
+							<h5>Users</h5>
+						</Card.Header>
+						<MaterialTable
+							title=''
+							columns={columns}
+							data={data}
+							// @ts-ignore
+							icons={tableIcons}
+
+						/>
+
+					</Card>
+				</Col>
+			</Row>
+		</>
+	);
 }
-
 export default UserList;

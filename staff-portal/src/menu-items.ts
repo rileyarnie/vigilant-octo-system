@@ -31,31 +31,17 @@ const chartData: { items: MenuItemType[] } = {
                     type: "collapse",
                     icon: "feather icon-user",
                     children: [
-
-                        {
-                            id: "createuser",
-                            title: "Create User",
-                            type: "item",
-                            url: "/createuser"
-                        },
-
-                        {
-                            id: "userlist",
-                            title: "User List",
-                            type: "item",
-                            url: "/userlist"
-                        },
-                        {
-                            id: "rolelist",
-                            title: "Role List",
-                            type: "item",
-                            url: "/rolelist"
-                        },
                         {
                             id: "users",
                             title: "Users",
                             type: "item",
                             url: "/users"
+                        },
+                        {
+                            id: "roles",
+                            title: "Roles",
+                            type: "item",
+                            url: "/roles"
                         },
                         {
                             id: "assign",
@@ -78,48 +64,16 @@ const chartData: { items: MenuItemType[] } = {
                             url: '/department'
                         },
                         {
-                            id: 'createcampus',
-                            title: 'Create Campus',
+                            id: 'courses',
+                            title: 'Courses',
                             type: 'item',
-                            url: '/createcampus'
+                            url: '/courses'
                         },
                         {
-                            id: 'semesterlist',
-                            title: 'Semester List',
+                            id: 'semesters',
+                            title: 'Semesters',
                             type: 'item',
-                            url: '/semesterlist'
-                        },
-                        {    
-                            id: 'createvenue',
-                            title: 'Create Venue',
-                            type: 'item',
-                            url: '/createvenue'
-                        },
-                        {
-                            id: 'createprogram',
-                            title: 'Create Program',
-                            type: 'item',
-                            url: '/createprogram'
-                        },
-                        {
-                            id: 'createcourse',
-                            title: 'Create Course',
-                            type: 'item',
-                            url: '/createcourse'
-                        },
-
-                        {
-                            id: 'campuslist',
-                            title: 'Campus List',
-                            type: 'item',
-                            url: '/campuslist',
-                        },
-                        {
-
-                            id: 'createvenue',
-                            title: 'Create Venue',
-                            type: 'item',
-                            url: '/createvenue'
+                            url: '/semesters'
                         },
                         {
                             id: 'courses',
@@ -146,11 +100,11 @@ const chartData: { items: MenuItemType[] } = {
                             url: '/campuses'
                         },
                         {
-                            id: 'trainerlist',
-                            title: 'Trainer List',
+                            id: 'trainers',
+                            title: 'Trainers',
                             type: 'item',
-                            url: '/trainerlist'
-                        }
+                            url: '/trainers'
+                        },
                     ]
                 }
 
