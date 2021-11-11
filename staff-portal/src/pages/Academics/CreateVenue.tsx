@@ -3,8 +3,16 @@ import axios from 'axios';
 import { Row, Col, Card,} from "react-bootstrap";
 import { ValidationForm, SelectGroup, TextInput } from 'react-bootstrap4-form-validation';
 import Breadcrumb from '../../App/components/Breadcrumb';
+import Config from '../../config';
 
-class CreateVenue extends Component {
+interface Props extends React.HTMLAttributes<Element> {
+	setModal:any,
+	setProgress:any
+  }
+class CreateVenue extends Component <Props,{}> {
+	constructor(props:any){
+        super(props);
+    };
 	state = {
 		name: '',
 		description: '',
@@ -12,9 +20,9 @@ class CreateVenue extends Component {
 		campusId: '',
 		campuses:[]
 	};
-
+private timetableSrv = Config.baseUrl.timetablingSrv
 	componentDidMount() {
-		axios.get(`/campuses`)
+		axios.get(`${this.timetableSrv}/campuses`)
 			.then(res => {
 				const campuses = res.data;
 				this.setState({ campuses: campuses });
@@ -40,12 +48,15 @@ class CreateVenue extends Component {
 			capacity: this.state.capacity,
 			campusId: this.state.campusId,
 		}
-		console.log(venue)
-		axios.put('/venues')
+		const params = new URLSearchParams();
+		params.append("Venue",JSON.stringify(venue))
+		axios.post(`${this.timetableSrv}/venues`,params)
 			.then(res => {
 				//handle success
 				console.log(res);
+				this.props.setProgress(100)
 				alert('Venue Created Successfully');
+				this.props.setModal(false) 
 			})
 			.catch((error) => {
 				//handle error using logging library
@@ -63,16 +74,14 @@ class CreateVenue extends Component {
 		return (
 			<>
 				<Row className="align-items-center page-header">
-					<Col>
-						<Breadcrumb />
-					</Col>
+
 				</Row>
 				<Row>
 					<Col>
 						<Card>
 							<Card.Body>
 								<Row>
-									<Col md={6}>
+									<Col md={12}>
 										<ValidationForm onSubmit={this.handleSubmit} onErrorSubmit={this.handleErrorSubmit}>
 											<div className='form-group'>
 												<label htmlFor='name'><b>Name of Venue</b></label>
@@ -91,11 +100,14 @@ class CreateVenue extends Component {
 														})
 													}
 												</SelectGroup> <br></br>
+												&nbsp;&nbsp;&nbsp;
 											</div>
+											
 											<div className='form-group'>
-												<button className='btn btn-danger'>Submit</button>
+												<button className='btn btn-danger float-right'>Submit</button>
 											</div>
 										</ValidationForm>
+										<button className="btn btn-info float-left" onClick={()=>this.props.setModal(false)}>Cancel</button> 
 									</Col>
 								</Row>
 							</Card.Body>
