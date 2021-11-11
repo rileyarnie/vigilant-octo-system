@@ -17,6 +17,7 @@ import axios from 'axios';
 import Breadcrumb from '../../App/components/Breadcrumb';
 import {Row, Col, Card, Button} from 'react-bootstrap';
 import Config from '../../config';
+import CreateUser from './CreateUserModal/CreateUser'
 
 const tableIcons = {
 	Add: forwardRef((props, ref: any) => <AddBox {...props} ref={ref}/>),
@@ -66,9 +67,7 @@ function UserList() {
 					<Breadcrumb/>
 				</Col>
 				<Col>
-					<Button className="float-right" variant="danger" onClick={() => toggleCreateModal()}>
-						Create  User
-					</Button>
+					<CreateUser></CreateUser>
 				</Col>
 
 			</Row>
