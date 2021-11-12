@@ -19,8 +19,11 @@ import ViewColumn from '@material-ui/icons/ViewColumn';
 import axios from 'axios';
 import Alert from '@material-ui/lab/Alert';
 import Breadcrumb from '../../App/components/Breadcrumb';
-import { Row, Col, Card, Button } from 'react-bootstrap';
+import { Row, Col, Card, Button, Modal } from 'react-bootstrap';
 import Config  from '../../config';
+import { ValidationForm, SelectGroup, TextInput } from 'react-bootstrap4-form-validation';
+import ProgressBar from 'react-bootstrap/ProgressBar';
+import { Switch } from '@material-ui/core';
 
 const tableIcons = {
     Add: forwardRef((props, ref: any) => <AddBox {...props} ref={ref} />),
@@ -44,18 +47,38 @@ const tableIcons = {
 
 function Department() {
     const timetablingSrv = Config.baseUrl.timetablingSrv
+    const ACTIVE = 'ACTIVE'
+    const INACTIVE = 'INACTIVE' 
+
     const columns = [
         { title: 'ID', field: 'id', hidden: true },
         { title: 'Department name', field: 'name' },
 
         {
-            title: 'Status', field: 'isActive',
-            lookup: { true: 'Active', false: 'Deactivated' }
+            title: 'Status', field: 'activation_status',
+        },
+        {
+            title: 'Toggle Activation Status',
+            field: 'internal_action',
+            render: (row) => (
+                <Switch
+                    onChange={(event) => handleSwitchToggle(row)}
+                    inputProps={{ 'aria-label': 'controlled' }}
+                    checked={row.activation_status === 'ACTIVE'?true:false} 
+                />
+            )
         }
     ];
     const [data, setData] = useState([]);
     const [iserror, setIserror] = useState(false);
+    const [progressBar, setProgress] = useState(0);
+    const [deptname, setDeptName] = useState('');
+    const [activationStatus, setActivationStatus] = useState('');
     const [showModal, setModal] = useState(false);
+    const [deptId, setDeptId] = useState(null);
+    const [selectedDeptName, setSelectedDeptName] = useState('');
+    const [selectedActivationStatus, setSelectedActivationStatus] = useState('');
+    const [isActive, setisActive] = useState(false);
     const [errorMessages, setErrorMessages] = useState([]);
     useEffect(() => {
         axios.get(`${timetablingSrv}/departments`)
@@ -69,66 +92,118 @@ function Department() {
             });
     }, []);
 
-    const handleRowAdd = (newData, resolve) => {
-        let errorList = [];
-        if (newData.name === undefined) {
-            errorList.push('Please enter department name');
-        }
-        if (newData.isActive === undefined) {
-            errorList.push('Please select status');
-        }
-        if (errorList.length < 1) {
-            axios.post(`${timetablingSrv}/departments`, newData)
+    const updateDepartment = (deptId, updates) => {
+        axios.put(`${timetablingSrv}/departments/${deptId}`, updates)
                 .then(res => {
-                    let dataToAdd = [...data];
-                    dataToAdd.push(newData);
-                    setData(dataToAdd);
-                    resolve();
-                    setErrorMessages([]);
-                    setIserror(false);
+                    setProgress(100)
+                    alert("Succesfully updated department")
+                    fetchDepartments();
+                    resetStateCloseModal();
+                    setProgress(0)
                 })
                 .catch(error => {
-                    setErrorMessages([error]);
-                    setIserror(true);
-                    resolve();
+                    console.error(error)
+                    setProgress(0)
+                    alert("Failed to update department")
                 });
-        } else {
-            setErrorMessages(errorList);
-            setIserror(true);
-            resolve();
-        }
-    };
-    const handleRowUpdate = (newData, oldData, resolve) => {
-        //validation
-        let errorList = [];
-        if (newData.name === '') {
-            errorList.push('Please enter Department name');
-        }
-        if (errorList.length < 1) {
-            axios.put(`${timetablingSrv}/departments/${oldData.id}`, newData)
-                .then(res => {
-                    const dataUpdate = [...data];
-                    const index = oldData.tableData.departmentId;
-                    dataUpdate[index] = newData;
-                    setData([...dataUpdate]);
-                    resolve();
-                    setIserror(false);
-                    setErrorMessages([]);
-                })
-                .catch(error => {
-                    setErrorMessages(['Failed to update!']);
-                    setIserror(true);
-                    resolve();
-                });
+    }
 
-        } else {
-            setErrorMessages(errorList);
-            setIserror(true);
-            resolve();
+    const fetchDepartments = () => {        
+        axios.get(`${timetablingSrv}/departments`)
+        .then(res => {
+            setData(res.data);
+            alert("Succesfully fetched departments")
+        })
+        .catch((error) => {
+            //handle error using logging library
+            console.error(error);
+            alert(error)
+        });
+    };
+
+    const handleCreate = (e) => {
+        e.preventDefault()
+        const department = {
+            name: deptname,
+            activation_status: activationStatus,
+            isActive: isActive
+        };
+
+        createDepartment(department)
+    };
+
+    const handleEdit = (e) => {
+        e.preventDefault()
+        const updates = {
+            name: deptname === '' ? selectedDeptName : deptname,
+            activation_status: activationStatus === 'Please enter activation status' ? selectedActivationStatus : activationStatus,
+            isActive: isActive
+        }
+
+        updateDepartment(deptId, updates)
+
+    }
+
+    const createDepartment = (departmentData) => {
+        console.log(departmentData)
+        axios
+            .post(`${timetablingSrv}/departments`, departmentData)
+            .then((res) => {
+                setProgress(100);
+                alert('Succesfully created department');
+                fetchDepartments();
+                resetStateCloseModal()
+                setProgress(0);
+            })
+            .catch((err) => {
+                setProgress(0)
+                setErrorMessages(['Failed to create trainer']);
+            });
+    };
+    
+    const resetStateCloseModal = () => {
+        setDeptId(null);
+        setDeptName('');
+        setActivationStatus('Please enter activation status');
+        setModal(false);
+    }
+
+    const setDepartmentActivationStatus = async (departmentId:number, activationStatus:string) => {
+        const params = new URLSearchParams();
+        const update = {
+            activation_status: activationStatus
+        }; 
+        params.append('updates', JSON.stringify(update));
+        axios
+            .put(`${timetablingSrv}/departments/${departmentId}`, params)
+            .then((res) => {
+                if(res.status === 200){
+                   data.forEach((obj,index)=>{
+                       if(obj.id === deptId){
+                           data[index].activation_status = activationStatus
+                           const updatedArr = [...data]
+                           setData(updatedArr)
+                       }
+                   })
+                }
+            })
+            .catch((error) => {
+                alert(error)
+                console.error(error);
+            });
+    };
+
+    const handleSwitchToggle = async (row) => {
+        if (row.activation_status === ACTIVE) {
+            setDepartmentActivationStatus(row.id, INACTIVE);
+        }
+        if (row.activation_status === INACTIVE) {
+            setDepartmentActivationStatus(row.id, ACTIVE);
         }
     };
+
     const toggleCreateModal = () => {
-        showModal ? setModal(false) : setModal(true);
+        showModal ? resetStateCloseModal() : setModal(true);
     };
     
     return (
@@ -161,20 +236,62 @@ function Department() {
                             data={data}
                             // @ts-ignore
                             icons={tableIcons}
-                            editable={{
-                                onRowAdd: (newData) =>
-                                    new Promise((resolve) => {
-                                        handleRowAdd(newData, resolve);
-                                    }),
-                                onRowUpdate: (newData, oldData) =>
-                                    new Promise((resolve) => {
-                                        handleRowUpdate(newData, oldData, resolve);
-                                    }),
-                            }}
+                            actions={[
+
+                                {
+
+                                  icon: Edit,
+
+                                  tooltip: 'Edit Row',
+
+                                  onClick: (event, rowData) => {
+
+                                    setDeptId(rowData.id)
+                                    setSelectedDeptName(rowData.name)
+                                    setSelectedActivationStatus(rowData.activation_status)
+                                    toggleCreateModal()
+
+
+                                  }
+
+                                } 
+
+                              ]}
                         />
                     </Card>
                 </Col>
             </Row>
+            <Modal
+                backdrop="static"
+                show={showModal}
+                onHide={toggleCreateModal}
+                size="lg"
+                aria-labelledby="contained-modal-title-vcenter"
+                centered
+            >
+                <ProgressBar animated now={progressBar} variant="info" />
+                <Modal.Header closeButton>
+                    <Modal.Title id="contained-modal-title-vcenter">{deptId ? "Edit department" : "Create a department"}</Modal.Title>
+                </Modal.Header>
+                <Modal.Body>
+                    <ValidationForm>
+                        <div className="form-group">
+                            <label htmlFor="departmentName">Department name</label>
+                            <TextInput name='departmentName' id='departmentName' type='text' value={deptname} placeholder={deptId ? selectedDeptName :"Enter department name"} onChange={(e) => setDeptName(e.target.value)}
+                             required /><br />
+                        </div>
+                        <div className="form-group" style={{display: 'flex', justifyContent: 'space-between'}}>
+                            <button className="btn btn-primary" onClick={() => toggleCreateModal()}>
+                                Cancel
+                            </button>
+                            <button className="btn btn-danger" onClick={(e) => deptId ? handleEdit(e) : handleCreate(e)}>
+                                Submit
+                            </button>
+                        </div>
+                    </ValidationForm>
+                </Modal.Body>
+            </Modal>
+
         </>
     );
 }
