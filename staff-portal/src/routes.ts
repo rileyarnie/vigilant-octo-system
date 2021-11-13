@@ -2,7 +2,6 @@ import Default from './pages/Dashboard/Default';
 import RoleList from './pages/Users/RoleList';
 import CreateUser from './pages/Users/Create';
 import Departments from './pages/Academics/Departments';
-import CreateProgram from './pages/Academics/CreateProgram';
 import CampusDetails from './pages/Academics/CampusDetails';
 import CreateCampus from './pages/Academics/CreateCampus';
 import CampusList from './pages/Academics/CampusList';
@@ -34,7 +33,6 @@ const routes = [
     { path: '/trainers', exact: true, name: 'default', component: TrainerList },
     { path: '/createvenue', exact: true, name: 'default', component: CreateVenue },
     { path: '/createcourse', exact: true, name: 'default', component: CreateCourse },
-    { path: '/createprogram', exact: true, name: 'default', component: CreateProgram },
     { path: '/programcourses', exact: true, name: 'default', component: ProgramCoursesList },
     { path: '/createcourse', exact: true, name: 'default', component: CreateCourse },
     { path: '/assigncourses', exact: true, name: 'default', component: AssignCourse },
