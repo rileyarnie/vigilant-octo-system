@@ -17,11 +17,13 @@ import SaveAlt from '@material-ui/icons/SaveAlt';
 import Search from '@material-ui/icons/Search';
 import ViewColumn from '@material-ui/icons/ViewColumn';
 import axios from 'axios';
+import { Switch } from '@material-ui/core';
 import Alert from '@material-ui/lab/Alert';
 import Breadcrumb from '../../App/components/Breadcrumb';
-import { Row, Col, Card, Button } from 'react-bootstrap';
-import Config from '../../config';
-import { Switch } from '@material-ui/core';
+import { Row, Col, Card, Button, Modal } from 'react-bootstrap';
+import Config  from '../../config';
+import { ValidationForm, SelectGroup, TextInput } from 'react-bootstrap4-form-validation';
+import ProgressBar from 'react-bootstrap/ProgressBar';
 
 const tableIcons = {
     Add: forwardRef((props, ref: any) => <AddBox {...props} ref={ref} />),
@@ -44,107 +46,156 @@ const tableIcons = {
 };
 
 function CampusList() {
-    const timetablingSrv= Config.baseUrl.timetablingSrv;
-    const ACTIVE = 'ACTIVE'
-    const INACTIVE = 'INACTIVE' 
+    interface Campus {
+        id: number;
+        name: string;
+        description: string;
+        activation_status: boolean;
+        approval_status: boolean;
+    }
+    const timetablingSrv = Config.baseUrl.timetablingSrv;
+    const [data, setData] = useState([]);
+    const [iserror, setIserror] = useState(false);
+    const [progressBar, setProgress] = useState(0);
+    const [campusName, setCampusName] = useState('');
+    const [description, setDescription] = useState('');
+    const [showModal, setModal] = useState(false);
+    const [campusId, setCampusId] = useState(null);
+    const [selectedCampusName, setSelectedCampusName] = useState('');
+    const [selectedDescription, setSelectedDescription] = useState('');
+
+    const [checked, setChecked] = useState(true);
+    const[disabled,setDisabled] = useState(false)
+    let activationStatus: boolean;
+    const handleActivationStatusToggle = (event, row: Campus) => {
+        setDisabled(true)
+        if (row.activation_status) {
+            activationStatus = false;
+            handleToggleStatusSubmit(event, row);
+        }
+        if (!row.activation_status) {
+            activationStatus = true;
+            handleToggleStatusSubmit(event, row);
+        }
+    };
+    const handleToggleStatusSubmit = (e, row: Campus) => {
+        const campus = {
+            activation_status: activationStatus,
+        };
+        axios
+            .put(`${timetablingSrv}/campuses/${row.id}`, campus)
+            .then((res) => {
+                alert('Success')
+                fetchCampuses();
+                setDisabled(false)
+
+            })
+            .catch((error) => {
+                console.error(error);
+                alert(error);
+                setDisabled(false)
+            });
+    };
+
 
     const columns = [
-        { title: 'ID', field: 'id' },
+        { title: 'ID', field: 'id'},
         { title: 'Campus name', field: 'name' },
         { title: 'Description', field: 'description' },
         {
-            title: 'Toggle Activation Status',
+            title: 'Activation Status',
             field: 'internal_action',
-            render: (row) => (
+            render: (row: Campus) => (
                 <Switch
-                    onChange={(event) => handleSwitchToggle(row)}
+                    onChange={(event) => handleActivationStatusToggle(event, row)}
                     inputProps={{ 'aria-label': 'controlled' }}
-                    checked={row.activation_status === 'ACTIVE'?true:false} 
+                    defaultChecked={row.activation_status === true ? true : false}
                 />
             )
-        }
+        },
     ];
-    const [data, setData] = useState([]);
-    const [showModal, setModal] = useState(false);
-    const [iserror, setIserror] = useState(false);
+
     const [errorMessages, setErrorMessages] = useState([]);
     useEffect(() => {
         axios.get(`${timetablingSrv}/campuses`)
-
             .then(res => {
                 setData(res.data);
             })
             .catch((error) => {
-                //handle error using logging library
                 console.error(error);
-                alert('Failed to fetch campuses')
+                alert(error.message)
             });
     }, []);
-    
-    const [checked, setChecked] = useState(true);
 
-    const setCampusActivationStatus = async (campusId:number, activationStatus:string) => {
-        const params = new URLSearchParams();
-        const update = {
-            activation_status: activationStatus
-        }; 
-        params.append('updates', JSON.stringify(update));
-        axios
-            .put(`${timetablingSrv}/campuses/${campusId}`, params)
-            .then((res) => {
-                if(res.status === 200){
-                   data.forEach((obj,index)=>{
-                       if(obj.id === campusId){
-                           data[index].activation_status = activationStatus
-                           const updatedArr = [...data]
-                           setData(updatedArr)
-                       }
-                   })
-                }
-            })
-            .catch((error) => {
-                alert(error)
-                console.error(error);
-            });
-    };
-
-    const handleSwitchToggle = async (row) => {
-        if (row.activation_status === ACTIVE) {
-            setCampusActivationStatus(row.id, INACTIVE);
-        }
-        if (row.activation_status === INACTIVE) {
-            setCampusActivationStatus(row.id, ACTIVE);
-        }
-    };
-    const handleRowUpdate = (newData, oldData, resolve) => {
-        delete newData.id
-        //validation
-        let errorList = [];
-        if (newData.name === '') {
-            errorList.push('Please enter campus name');
-        }
-        if (errorList.length > 0) {
-            setErrorMessages(errorList);
-            setIserror(true);
-            resolve();
-            return false;
-        }
-        axios.put(`${timetablingSrv}/:campusId` + newData.departmentId, newData)
+    const updateCampus = (deptId, updates) => {
+        axios.put(`${timetablingSrv}/campuses/${campusId}`, updates)
             .then(res => {
-                setData(res.data);
-                resolve();
-                setIserror(false);
-                setErrorMessages([]);
+                setProgress(100)
+                alert("Succesfully updated Campus")
+                fetchCampuses();
+                resetStateCloseModal();
+                setProgress(0)
             })
             .catch(error => {
-                alert(error.message);
-                setIserror(true);
-                resolve();
+                console.error(error)
+                setProgress(0)
+                alert(error.message)
+            });
+    }
+    const fetchCampuses = () => {
+        axios.get(`${timetablingSrv}/campuses`)
+            .then(res => {
+                setData(res.data);
+            })
+            .catch((error) => {
+                console.error(error);
+                alert(error.message)
             });
     };
-    const toggleCreateModal = () => {
-        showModal ? setModal(false) : setModal(true);
+    const handleAdd = (e) => {
+        e.preventDefault()
+        const campus = {
+            name: campusName,
+            description: description,
+        };
+
+        createCampus(campus)
     };
+    const handleEdit = (e) => {
+        e.preventDefault()
+        const updates = {
+            name: campusName === '' ? selectedCampusName : campusName,
+            description: description === '' ? selectedDescription : description,
+        }
+        updateCampus(campusId, updates)
+    }
+    const createCampus = (campusData) => {
+        console.log(campusData)
+        axios
+            .post(`${timetablingSrv}/campuses`, campusData)
+            .then((res) => {
+                setProgress(100);
+                alert('Succesfully created campus');
+                fetchCampuses();
+                resetStateCloseModal()
+                setProgress(0);
+            })
+            .catch((error) => {
+                setProgress(0)
+                alert(error.message);
+            });
+    };
+
+    const resetStateCloseModal = () => {
+        setCampusId(null);
+        setCampusName('');
+        setDescription('');
+        setModal(false);
+    }
+    const toggleCreateModal = () => {
+        showModal ? resetStateCloseModal() : setModal(true);
+    };
+    const handleClose = () => setModal(false);
     return (
         <>
             <Row className='align-items-center page-header'>
@@ -172,19 +223,65 @@ function CampusList() {
                         <MaterialTable
                             title='Campuses'
                             columns={columns}
+                            options={{actionsColumnIndex: -1}}
                             data={data}
                             // @ts-ignore
                             icons={tableIcons}
-                            editable={{
-                                onRowUpdate: (newData, oldData) =>
-                                    new Promise((resolve) => {
-                                        handleRowUpdate(newData, oldData, resolve);
-                                    }),
-                            }}
+                            actions={[
+                                {
+                                    icon: Edit,
+                                    tooltip: 'Edit Row',
+
+                                    onClick: (event, row) => {
+                                        setCampusId(row.id)
+                                        setSelectedCampusName(row.name)
+                                        toggleCreateModal()
+                                        toggleCreateModal()
+                                    }
+
+                                }
+
+                            ]}
                         />
                     </Card>
                 </Col>
             </Row>
+            <Modal
+                show={showModal}
+                onHide={toggleCreateModal}
+                size="lg"
+                backdrop="static"
+                aria-labelledby="contained-modal-title-vcenter"
+                centered
+            >
+                <ProgressBar animated now={progressBar} variant="info" />
+                <Modal.Header closeButton>
+                    <Modal.Title id="contained-modal-title-vcenter">{campusId ? "Edit Campus" : "Create a Campus"}</Modal.Title>
+                </Modal.Header>
+                <Modal.Body>
+                    <ValidationForm>
+                        <div className='form-group'>
+                            <label htmlFor="departmentName">Campus Name</label>
+                            <TextInput name='campusName' id='campusName' type='text' value={campusName} placeholder={campusId ? selectedCampusName :campusName}
+                                       onChange={(e) => setCampusName(e.target.value)}
+                                       required /><br />
+                            <label htmlFor='Date'><b>Description</b></label><br />
+                            <TextInput name='description'  minLength="4" id='description' value={description} type="text" placeholder={campusId ?  selectedDescription :description} required multiline rows="5"
+                                       onChange={(e) => {
+                                           setDescription(e.target.value)
+                                       }}/><br />
+                        </div>
+                        <div className='form-group'>
+                            <button className="btn btn-danger float-right" onClick={(e) => campusId ? handleEdit(e) : handleAdd(e)}>
+                                Submit
+                            </button>
+                        </div>
+                    </ValidationForm>
+                    <button className="btn btn-info float-leftt" onClick={handleClose}>
+                        Close
+                    </button>
+                </Modal.Body>
+            </Modal>
         </>
     );
 }

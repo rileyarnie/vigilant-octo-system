@@ -1,5 +1,5 @@
 {
-  "name": "Elimisha",
+  "name": "elimisha",
   "version": "0.1.0",
   "private": true,
   "homepage": "http://localhost:3000/",
@@ -69,6 +69,7 @@
     "react-dropzone-component": "^3.2.0",
     "react-dual-listbox": "^2.0.0",
     "react-full-screen": "^0.2.4",
+    "react-icons": "^4.3.1",
     "react-image-video-lightbox": "2.0.1",
     "react-images-texts-videos": "0.0.7",
     "react-input-mask": "^2.0.4",
