@@ -17,12 +17,12 @@ import SaveAlt from '@material-ui/icons/SaveAlt';
 import Search from '@material-ui/icons/Search';
 import ViewColumn from '@material-ui/icons/ViewColumn';
 import axios from 'axios';
+import { Switch } from '@material-ui/core';
 import Alert from '@material-ui/lab/Alert';
 import Breadcrumb from '../../App/components/Breadcrumb';
-import { Row, Col, Card, Modal, Button } from 'react-bootstrap';
-import Config from '../../config';
+import { Row, Col, Card, Button, Modal, ProgressBar } from 'react-bootstrap';
+import Config  from '../../config';
 import { ValidationForm, SelectGroup, TextInput } from 'react-bootstrap4-form-validation';
-
 const tableIcons = {
 	Add: forwardRef((props, ref: any) => <AddBox {...props} ref={ref} />),
 	Check: forwardRef((props, ref: any) => <Check {...props} ref={ref} />),
@@ -43,76 +43,163 @@ const tableIcons = {
 	ViewColumn: forwardRef((props, ref: any) => <ViewColumn {...props} ref={ref} />)
 };
 function SemesterList() {
+	const timetablingSrv = Config.baseUrl.timetablingSrv;
+	interface Semester {
+		id: number;
+		name: string;
+		startDate: Date;
+		endDate: Date;
+		activation_status: boolean;
+	}
+
+	let activationStatus: boolean;
+	const handleActivationStatusToggle = (event, row: Semester) => {
+		setDisabled(true)
+		if (row.activation_status) {
+			activationStatus = false;
+			handleToggleStatusSubmit(event, row);
+		}
+		if (!row.activation_status) {
+			activationStatus = true;
+			handleToggleStatusSubmit(event, row);
+		}
+	};
+	const handleToggleStatusSubmit = (e, row: Semester) => {
+		const semester = {
+			activation_status: activationStatus,
+		};
+		axios
+			.put(`${timetablingSrv}/semesters/${row.id}`, semester)
+			.then((res) => {
+				alert('Success')
+				fetchSemesters();
+				setDisabled(false)
+
+			})
+			.catch((error) => {
+				console.error(error);
+				alert(error);
+				setDisabled(false)
+			});
+	};
+
 	const columns = [
-		{ title: 'ID', field: 'id', hidden: false },
-		{ title: 'Name', field: 'name' },
+		{ title: 'ID', field: 'id'},
+		{ title: 'Semester name', field: 'name' },
 		{ title: 'Start Date', field: 'startDate' },
 		{ title: 'End Date', field: 'endDate' },
-		{ title: 'Status', field: 'isActive' },
+		{
+			title: 'Activation Status',
+			field: 'internal_action',
+			render: (row:Semester) => (
+				<Switch
+					onChange={(event) => handleActivationStatusToggle(event, row)}
+					inputProps={{ 'aria-label': 'controlled' }}
+					defaultChecked={row.activation_status === true ? true : false}
+				/>
+			)
+		},
 	];
+	const [checked, setChecked] = useState(true);
+	const [progress, setProgress] = useState(0);
+	const[disabled,setDisabled] = useState(false)
 	const [data, setData] = useState([]);
-	const timetablingSrv = Config.baseUrl.timetablingSrv;
 	const [iserror, setIserror] = useState(false);
-	const [name, setName] = useState('');
+	const [semesterName, setSemesterName] = useState('');
 	const [startDate, setStartDate] = useState('');
 	const [endDate, setEndDate] = useState('');
-	const [status, setStatus] = useState('');
 	const [showModal, setModal] = useState(false);
+	const [semesterId, setSemesterId] = useState(null);
 	const [errorMessages, setErrorMessages] = useState([]);
+	const [selectedSemesterName, setSelectedSemesterName] = useState('');
+	const [selectedStartDate, setSelectedStartDate] = useState('');
+	const [selectedEndDate, setSelectedEndDate] = useState('');
+
 	useEffect(() => {
-		axios
-			.get(`${timetablingSrv}/semesters`)
-			.then((res) => {
+		axios.get(`${timetablingSrv}/semesters`)
+			.then(res => {
 				setData(res.data);
 			})
 			.catch((error) => {
 				console.error(error);
-				alert(error.message);
+				alert(error.message)
 			});
 	}, []);
-
+	const updateSemester = (semesterId, updates) => {
+		axios.put(`${timetablingSrv}/semesters/${semesterId}`, updates)
+			.then(res => {
+				setProgress(100)
+				alert("Succesfully updated Semester")
+				fetchSemesters();
+				resetStateCloseModal();
+				setProgress(0)
+			})
+			.catch(error => {
+				console.error(error)
+				setProgress(0)
+				alert("Failed to update Semester")
+			});
+	}
 	const fetchSemesters = () => {
-		axios
-			.get(`${timetablingSrv}/semesters`)
-			.then((res) => {
+		axios.get(`${timetablingSrv}/semesters`)
+			.then(res => {
 				setData(res.data);
 			})
 			.catch((error) => {
-				alert(error.message);
+				console.error(error);
+				alert(error.message)
 			});
 	};
-	const handleSubmit = (e) => {
+	const handleCreate = (e) => {
 		e.preventDefault()
 		const semester = {
-			 name: name,
-			 startDate: startDate,
-			 endDate: endDate,
-			isActive: status,
-
+			name: semesterName,
+			startDate: startDate,
+			endDate: endDate,
 		};
 
-		createSemester(semester);
+		createSemester(semester)
 	};
-
+	const handleEdit = (e) => {
+		e.preventDefault()
+		const updates = {
+			name: semesterName === '' ? selectedSemesterName : semesterName,
+			startDate: startDate == '' ? selectedStartDate: startDate,
+			endDate: endDate == '' ? selectedEndDate: endDate,
+		}
+		updateSemester(semesterId, updates)
+	}
 	const createSemester = (semesterData) => {
 		console.log(semesterData)
 		axios
 			.post(`${timetablingSrv}/semesters`, semesterData)
 			.then((res) => {
-				alert('Succesfully created semester');
+				setProgress(100);
+				alert('Succesfully created semesters');
 				fetchSemesters();
-				setModal(false);
+				resetStateCloseModal()
+				setProgress(0);
 			})
 			.catch((error) => {
+				setProgress(0)
 				alert(error.message);
 			});
 	};
+
+	const resetStateCloseModal = () => {
+		setSemesterId(null);
+		setSemesterName('');
+		setModal(false);
+	}
+
 	const toggleCreateModal = () => {
-		showModal ? setModal(false) : setModal(true);
+		showModal ? resetStateCloseModal() : setModal(true);
 	};
+	const handleClose = () => setModal(false);
+
 	return (
 		<>
-			<Row className="align-items-center page-header">
+			<Row className='align-items-center page-header'>
 				<Col>
 					<Breadcrumb />
 				</Col>
@@ -126,21 +213,34 @@ function SemesterList() {
 				<Col>
 					<Card>
 						<div>
-							{iserror && (
-								<Alert severity="error">
-									{errorMessages.map((msg, i) => {
-										return <div key={i}>{msg}</div>;
-									})}
-								</Alert>
-							)}
+							{iserror &&
+                            <Alert severity='error'>
+								{errorMessages.map((msg, i) => {
+									return <div key={i}>{msg}</div>;
+								})}
+                            </Alert>
+							}
 						</div>
 						<MaterialTable
-							title="Semesters"
+							title='Semesters'
 							columns={columns}
 							data={data}
+							options={{actionsColumnIndex: -1}}
 							// @ts-ignore
 							icons={tableIcons}
-							editable={{}}
+							actions={[
+								{
+									icon: Edit,
+									tooltip: 'Edit Row',
+									onClick: (event, rowData) => {
+										setSemesterId(rowData.id)
+										setSelectedSemesterName(rowData.name)
+										toggleCreateModal()
+									}
+
+								}
+
+							]}
 						/>
 					</Card>
 				</Col>
@@ -148,48 +248,46 @@ function SemesterList() {
 			<Modal
 				show={showModal}
 				onHide={toggleCreateModal}
-				onBackdropClick={toggleCreateModal}
 				size="lg"
+				backdrop="static"
 				aria-labelledby="contained-modal-title-vcenter"
 				centered
 			>
+				<ProgressBar animated now={progress} variant="info" />
 				<Modal.Header closeButton>
-					<Modal.Title id="contained-modal-title-vcenter">Create a Semester</Modal.Title>
+					<Modal.Title id="contained-modal-title-vcenter">{semesterId ? "Edit Semester" : "Create a Semester"}</Modal.Title>
 				</Modal.Header>
 				<Modal.Body>
 					<ValidationForm>
 						<div className='form-group'>
-							<label htmlFor='name'><b>Enter semester name</b></label>
-							<TextInput name='name' id='name' type='text' placeholder="Enter name" required
-							           onChange={(e) => {
-								           setName(e.target.value)
+							<label htmlFor='name'><b>Semester name</b></label>
+							<TextInput name='semesterName' id='semesterName' type='text' required
+							            placeholder={semesterId ? selectedSemesterName : semesterName} onChange={(e) => {
+								           setSemesterName(e.target.value)
 							           }}/><br />
 							<label htmlFor='Date'><b>Start Date</b></label><br />
-							<TextInput name='startDate' id='startDate'  type="date" required
+							<TextInput name='startDate'  id='startDate'  type="date" required
 							           onChange={(e) => {
 								           setStartDate(e.target.value)
 							           }}/><br />
 							<label htmlFor='Date'><b>End Date</b></label><br />
-							<TextInput name='endDate' id='endDate' type="date" required
+							<TextInput name='endDate'  id='endDate' type="date" required
 							           onChange={(e) => {
 								           setEndDate(e.target.value)
 							           }}/><br />
 						</div>
-						<label htmlFor='requiresClearance'><b>Status</b></label><br />
-						<SelectGroup name="color" id="color" onChange={(e) => {
-							setStatus(e.target.value)
-						}}>
-							<option value="">--- Please select status---</option>
-							<option value="true" >True</option>
-							<option value="false"  >False</option>
-						</SelectGroup><br /><br />
 						<div className='form-group'>
-							<button className='btn btn-danger' onClick={(e) => handleSubmit(e)}>Submit</button>
+							<button className="btn btn-danger float-left" onClick={(e) => semesterId ? handleEdit(e) : handleCreate(e)}>
+								Submit
+							</button>
 						</div>
 					</ValidationForm>
+					<button className="btn btn-info float-right" onClick={handleClose}>
+						Close
+					</button>
 				</Modal.Body>
 			</Modal>
 		</>
 	);
 }
-export default  SemesterList;
+export default SemesterList;
