@@ -87,10 +87,23 @@ const chartData: { items: MenuItemType[] } = {
                             url: '/trainers'
                         },
                         {
-                            id: 'programs',
-                            title: 'Programs',
-                            type: 'item',
-                            url: '/programs'
+                            id: "programs",
+                            title: "Programs",
+                            type: "collapse",
+                            children: [
+                                {
+                                    id: 'programs',
+                                    title: 'Programs',
+                                    type: 'item',
+                                    url: '/programs'
+                                },
+                                {
+                                    id: 'programcohort',
+                                    title: 'Program Cohorts',
+                                    type: 'item',
+                                    url: '/programcohorts'
+                                },
+                            ]
                         },
                         {
                             id: 'courses',
