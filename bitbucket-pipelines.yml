@@ -1,0 +1,38 @@
+image: node:14.15.1
+
+clone:
+  depth: full
+
+pipelines:
+  pull-requests:
+    '**':
+
+    - step:
+        name: Everything public-portal
+        script:
+        - git checkout $BITBUCKET_PR_DESTINATION_BRANCH
+        - git checkout $BITBUCKET_BRANCH
+        - DIFFED_FILES_TO_LINT=$(git diff $BITBUCKET_PR_DESTINATION_BRANCH --diff-filter=d --name-only -- "*.ts" "*.tsx" "*.js" "*.jsx")
+        - cd public-portal
+        - npm install
+        - npx eslint $DIFFED_FILES_TO_LINT
+
+    - step:
+        name: Everything student-portal
+        script:
+        - git checkout $BITBUCKET_PR_DESTINATION_BRANCH
+        - git checkout $BITBUCKET_BRANCH
+        - DIFFED_FILES_TO_LINT=$(git diff $BITBUCKET_PR_DESTINATION_BRANCH --diff-filter=d --name-only -- "*.ts" "*.tsx" "*.js" "*.jsx")
+        - cd student-portal
+        - npm install
+        - npx eslint $DIFFED_FILES_TO_LINT
+
+    - step:
+        name: Everything staff-portal
+        script:
+        - git checkout $BITBUCKET_PR_DESTINATION_BRANCH
+        - git checkout $BITBUCKET_BRANCH
+        - DIFFED_FILES_TO_LINT=$(git diff $BITBUCKET_PR_DESTINATION_BRANCH --diff-filter=d --name-only -- "*.ts" "*.tsx" "*.js" "*.jsx")
+        - cd staff-portal
+        - npm install
+        - npx eslint $DIFFED_FILES_TO_LINT
