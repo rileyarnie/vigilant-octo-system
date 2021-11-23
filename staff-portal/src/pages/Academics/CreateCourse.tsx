@@ -1,9 +1,8 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import React, { Component } from 'react';
 import axios from 'axios';
-import { Row, Col, Card,} from "react-bootstrap";
+import { Row, Col, Card,} from 'react-bootstrap';
 import { ValidationForm, SelectGroup, TextInput } from 'react-bootstrap4-form-validation';
-import validator from 'validator';
-import Breadcrumb from '../../App/components/Breadcrumb';
 import Config from '../../config';
 import Select from 'react-select';
 
@@ -12,21 +11,22 @@ interface Props extends React.HTMLAttributes<Element> {
 	setProgress:any
     fetchCourses:any
   }
-  interface Course {
-    name: string;
-    id: number;
-    prerequisiteCourses: string;
-    description: string;
-    trainingHours: number;
-    isTimetableable: boolean;
-    needsTechnicalAssistant: boolean;
-    activation_status: boolean;
-    approval_status: boolean;
-}
-const timetablingSrv = Config.baseUrl.timetablingSrv
+//   interface Course {
+//     name: string;
+//     id: number;
+//     prerequisiteCourses: string;
+//     description: string;
+//     trainingHours: number;
+//     isTimetableable: boolean;
+//     needsTechnicalAssistant: boolean;
+//     activation_status: boolean;
+//     approval_status: boolean;
+// }
+const timetablingSrv = Config.baseUrl.timetablingSrv;
+// eslint-disable-next-line @typescript-eslint/ban-types
 class CourseCreation extends Component <Props,{}> {
-    options = [] as any
-    coursesArr=[]
+    options = [] as any;
+    coursesArr=[];
     state = {
         name: '',
         prerequisiteCourses: [],
@@ -39,7 +39,7 @@ class CourseCreation extends Component <Props,{}> {
     };
 
     componentDidMount(){
-        this.fetchCoursesAndInitSelect()
+        this.fetchCoursesAndInitSelect();
     }
 
     handleChange = (e) => {
@@ -48,7 +48,7 @@ class CourseCreation extends Component <Props,{}> {
         });
     };
 
-    handleSubmit = (e, formData,) => {
+    handleSubmit = (e) => {
         e.preventDefault();
         const course = {
             name: this.state.name,
@@ -57,15 +57,15 @@ class CourseCreation extends Component <Props,{}> {
             trainingHours: this.state.trainingHours,
             isTimetableable: this.state.isTimetablable,
             needsTechnicalAssistant: this.state.needsTechnicalAssistant
-        }
+        };
 
         axios.post(`${timetablingSrv}/courses`, course)
             .then(res => {
                 //handle success
                 console.log(res);
-                this.props.setProgress(100)
-                this.props.setModal(false)
-                alert('Succesfully created course')
+                this.props.setProgress(100);
+                this.props.setModal(false);
+                alert('Succesfully created course');
                 this.setState({
                     name: '',
                     prerequisiteCourses: '',
@@ -73,33 +73,33 @@ class CourseCreation extends Component <Props,{}> {
                     trainingHours: '',
                     isTimetableable: '',
                     needsTechnicalAssistant: ''
-                })
-                this.props.setProgress(0)
-                this.props.fetchCourses()
+                });
+                this.props.setProgress(0);
+                this.props.fetchCourses();
             })
             .catch((error) => {
                 //handle error using logging library
                 console.error(error);
-                alert(error)
+                alert(error);
             });
     };
 
     handleErrorSubmit = (e, _formData, errorInputs) => {
         console.error(errorInputs);
     };
-
-     selectStyle = {
+    selectStyle = {
         width:'100%',
         height: '30px'
-    }
+    };
     fetchCoursesAndInitSelect = () => {
         axios
             .get(`${timetablingSrv}/courses`)
             .then((res) => {
-               this.state.courses=res.data
-               this.state.courses.map((course)=>{
-                return this.options.push({value:course.id, label:course.name})
-            })    
+                this.setState({
+                    courses: res.data});
+                this.state.courses.map((course)=>{
+                    return this.options.push({value:course.id, label:course.name});
+                });    
             
             })
             .catch((error) => {
@@ -110,10 +110,10 @@ class CourseCreation extends Component <Props,{}> {
     };
     handleSelectChange = (selectedOptions) => {
         selectedOptions?.map((el)=>{
-            this.coursesArr.push(el.value)
-        })
-     //   this.state.selectedCourses=selectedOptions
-    }
+            this.coursesArr.push(el.value);
+        });
+        //   this.state.selectedCourses=selectedOptions
+    };
     customTheme = (theme) => {
         return {
             ...theme,

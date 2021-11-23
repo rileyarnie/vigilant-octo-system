@@ -1,5 +1,7 @@
-import React, { useState, useEffect } from 'react';
-import { forwardRef } from 'react';
+/* eslint-disable @typescript-eslint/no-unused-vars */
+/* eslint-disable @typescript-eslint/no-explicit-any */
+/* eslint-disable react/display-name */
+import React, { useState, useEffect,forwardRef } from 'react';
 import MaterialTable from 'material-table';
 import AddBox from '@material-ui/icons/AddBox';
 import ArrowDownward from '@material-ui/icons/ArrowDownward';
@@ -19,10 +21,7 @@ import ViewColumn from '@material-ui/icons/ViewColumn';
 import axios from 'axios';
 import Alert from '@material-ui/lab/Alert';
 import Breadcrumb from '../../App/components/Breadcrumb';
-import { Row, Col, Card, Button, Modal } from 'react-bootstrap';
-import {Actions} from '../Users/ActionsByRole/Actions';
-import { ButtonBase, IconButton } from '@material-ui/core';
-import Select from 'react-select/src/Select';
+import { Row, Col, Card } from 'react-bootstrap';
 import DeleteIcon from '@material-ui/icons/Delete';
 import Config from '../../config';
 
@@ -63,27 +62,24 @@ function ProgramCoursesList() {
     const [data, setData] = useState([]);
     const [programId, setProgramId] = useState();
     const [courseName, setCourseName] = useState('');
-    const [courseId, setCourseId] = useState(null);
-    const [iserror, setIserror] = useState(false);
-    const [selectedRows, setSelectedRows] = useState();
+    const [courseId] = useState(null);
+    const [iserror] = useState(false);
+    const [, setSelectedRows] = useState();
     const [errorMessages, setErrorMessages] = useState([]);
     const timetablingSrv = Config.baseUrl.timetablingSrv;
-    let options = [] as any;
-    let progId = JSON.parse(localStorage.getItem("programId"));
-    console.log(progId)
+    const progId = JSON.parse(localStorage.getItem('programId'));
+    console.log(progId);
     useEffect(() => {
         axios.get(`${timetablingSrv}/programs/courses/${progId}`)
             .then(res => {
-                console.log(res.data)
+                console.log(res.data);
                 setData(res.data);
                 setProgramId(progId);
             })
-            .catch((error) => {
+            .catch(() => {
                 setErrorMessages(['Failed to fetch courses']);
             });
     }, []);
-
-    const [checked, setChecked] = useState(true);
 
     const fetchCoursesAssignedToProgram = (progId: number) => {
         axios.get(`${timetablingSrv}/programs/courses/${progId}`)
@@ -94,30 +90,21 @@ function ProgramCoursesList() {
                 setErrorMessages([error]);
                 console.error(error);
             });
-    }
+    };
 
-    const handleRowSelection = (courseName: string, courseId: string, rows: any) => {
-        setSelectedRows(rows.length < 1 ? null : rows[0].id)
-        setCourseName(courseName)
-        setCourseId(courseId)
-    }
 
     const unassignSelectedCoursesFromTrainer = (selectedCourseId: number) => {
         axios.put(`${timetablingSrv}/programs/${selectedCourseId}/${programId}`)
-        .then(res => {
-            alert('Succesfully removed course ' + res.data);
-            fetchCoursesAssignedToProgram(progId);
-        })
-        .catch(err => {
-            setErrorMessages(['Unassigning course failed!']);
+            .then(res => {
+                alert('Succesfully removed course ' + res.data);
+                fetchCoursesAssignedToProgram(progId); 
+            })
+            .catch(() => {
+                setErrorMessages(['Unassigning course failed!']);
         
-        })
-    }
+            });
+    };
     
-    const selectedRowProps = {
-        id: courseId,
-        name: courseName
-    }
     return (
         <>
             <Row className="align-items-center page-header">
@@ -143,11 +130,12 @@ function ProgramCoursesList() {
                             data={data}
                             actions={[
                                 rowData => ({
-                                  icon: DeleteIcon,
-                                  tooltip: 'Delete Course',
-                                  onClick: () => {unassignSelectedCoursesFromTrainer(rowData.id)},
+                                    icon: DeleteIcon,
+                                    tooltip: 'Delete Course',
+                                    onClick: () => {unassignSelectedCoursesFromTrainer(rowData.id);},
                                 })
-                              ]}
+                            ]}
+                            // eslint-disable-next-line @typescript-eslint/ban-ts-comment
                             // @ts-ignore
                             icons={tableIcons}
                         />

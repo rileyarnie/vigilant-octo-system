@@ -1,3 +1,5 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
+/* eslint-disable react/display-name */
 import React, { useState, useEffect } from 'react';
 import { forwardRef } from 'react';
 import MaterialTable from 'material-table';
@@ -21,7 +23,7 @@ import Alert from '@material-ui/lab/Alert';
 import Breadcrumb from '../../App/components/Breadcrumb';
 import { Row, Col, Card, Button, Modal } from 'react-bootstrap';
 import Config  from '../../config';
-import { ValidationForm, SelectGroup, TextInput } from 'react-bootstrap4-form-validation';
+import { ValidationForm, TextInput } from 'react-bootstrap4-form-validation';
 import ProgressBar from 'react-bootstrap/ProgressBar';
 import { Switch } from '@material-ui/core';
 
@@ -33,7 +35,7 @@ const tableIcons = {
     DetailPanel: forwardRef((props, ref: any) => <ChevronRight {...props} ref={ref} />),
     Edit: forwardRef((props, ref: any) => <Edit {...props} ref={ref} />),
     Export: forwardRef((props, ref: any) => <SaveAlt {...props} ref={ref} />),
-    Filter: forwardRef((props, ref: any) => <FilterList {...props} ref={ref} />),
+    Filter: forwardRef((props, ref: never) => <FilterList {...props} ref={ref} />),
     FirstPage: forwardRef((props, ref: any) => <FirstPage {...props} ref={ref} />),
     LastPage: forwardRef((props, ref: any) => <LastPage {...props} ref={ref} />),
     NextPage: forwardRef((props, ref: any) => <ChevronRight {...props} ref={ref} />),
@@ -46,9 +48,9 @@ const tableIcons = {
 };
 
 function Department() {
-    const timetablingSrv = Config.baseUrl.timetablingSrv
-    const ACTIVE = 'ACTIVE'
-    const INACTIVE = 'INACTIVE' 
+    const timetablingSrv = Config.baseUrl.timetablingSrv;
+    const ACTIVE = 'ACTIVE';
+    const INACTIVE = 'INACTIVE'; 
 
     const columns = [
         { title: 'ID', field: 'id', hidden: true },
@@ -62,7 +64,7 @@ function Department() {
             field: 'internal_action',
             render: (row) => (
                 <Switch
-                    onChange={(event) => handleSwitchToggle(row)}
+                    onChange={() => handleSwitchToggle(row)}
                     inputProps={{ 'aria-label': 'controlled' }}
                     checked={row.activation_status === 'ACTIVE'?true:false} 
                 />
@@ -70,7 +72,7 @@ function Department() {
         }
     ];
     const [data, setData] = useState([]);
-    const [iserror, setIserror] = useState(false);
+    const [iserror] = useState(false);
     const [progressBar, setProgress] = useState(0);
     const [deptname, setDeptName] = useState('');
     const [activationStatus, setActivationStatus] = useState('');
@@ -78,7 +80,7 @@ function Department() {
     const [deptId, setDeptId] = useState(null);
     const [selectedDeptName, setSelectedDeptName] = useState('');
     const [selectedActivationStatus, setSelectedActivationStatus] = useState('');
-    const [isActive, setisActive] = useState(false);
+    const [isActive] = useState(false);
     const [errorMessages, setErrorMessages] = useState([]);
     useEffect(() => {
         axios.get(`${timetablingSrv}/departments`)
@@ -88,75 +90,75 @@ function Department() {
             .catch((error) => {
                 //handle error using logging library
                 console.error(error);
-                alert(error)
+                alert(error);
             });
     }, []);
 
     const updateDepartment = (deptId, updates) => {
         axios.put(`${timetablingSrv}/departments/${deptId}`, updates)
-                .then(res => {
-                    setProgress(100)
-                    alert("Succesfully updated department")
-                    fetchDepartments();
-                    resetStateCloseModal();
-                    setProgress(0)
-                })
-                .catch(error => {
-                    console.error(error)
-                    setProgress(0)
-                    alert("Failed to update department")
-                });
-    }
+            .then(() => {
+                setProgress(100);
+                alert('Succesfully updated department');
+                fetchDepartments();
+                resetStateCloseModal();
+                setProgress(0);
+            })
+            .catch(error => {
+                console.error(error);
+                setProgress(0);
+                alert('Failed to update department');
+            });
+    };
 
     const fetchDepartments = () => {        
         axios.get(`${timetablingSrv}/departments`)
-        .then(res => {
-            setData(res.data);
-            alert("Succesfully fetched departments")
-        })
-        .catch((error) => {
+            .then(res => {
+                setData(res.data);
+                alert('Succesfully fetched departments');
+            })
+            .catch((error) => {
             //handle error using logging library
-            console.error(error);
-            alert(error)
-        });
+                console.error(error);
+                alert(error);
+            });
     };
 
     const handleCreate = (e) => {
-        e.preventDefault()
+        e.preventDefault();
         const department = {
             name: deptname,
             activation_status: activationStatus,
             isActive: isActive
         };
 
-        createDepartment(department)
+        createDepartment(department);
     };
 
     const handleEdit = (e) => {
-        e.preventDefault()
+        e.preventDefault();
         const updates = {
             name: deptname === '' ? selectedDeptName : deptname,
             activation_status: activationStatus === 'Please enter activation status' ? selectedActivationStatus : activationStatus,
             isActive: isActive
-        }
+        };
 
-        updateDepartment(deptId, updates)
+        updateDepartment(deptId, updates);
 
-    }
+    };
 
     const createDepartment = (departmentData) => {
-        console.log(departmentData)
+        console.log(departmentData);
         axios
             .post(`${timetablingSrv}/departments`, departmentData)
-            .then((res) => {
+            .then(() => {
                 setProgress(100);
                 alert('Succesfully created department');
                 fetchDepartments();
-                resetStateCloseModal()
+                resetStateCloseModal();
                 setProgress(0);
             })
-            .catch((err) => {
-                setProgress(0)
+            .catch(() => {
+                setProgress(0);
                 setErrorMessages(['Failed to create trainer']);
             });
     };
@@ -166,7 +168,7 @@ function Department() {
         setDeptName('');
         setActivationStatus('Please enter activation status');
         setModal(false);
-    }
+    };
 
     const setDepartmentActivationStatus = async (departmentId:number, activationStatus:string) => {
         const params = new URLSearchParams();
@@ -178,17 +180,17 @@ function Department() {
             .put(`${timetablingSrv}/departments/${departmentId}`, params)
             .then((res) => {
                 if(res.status === 200){
-                   data.forEach((obj,index)=>{
-                       if(obj.id === deptId){
-                           data[index].activation_status = activationStatus
-                           const updatedArr = [...data]
-                           setData(updatedArr)
-                       }
-                   })
+                    data.forEach((obj,index)=>{
+                        if(obj.id === deptId){
+                            data[index].activation_status = activationStatus;
+                            const updatedArr = [...data];
+                            setData(updatedArr);
+                        }
+                    });
                 }
             })
             .catch((error) => {
-                alert(error)
+                alert(error);
                 console.error(error);
             });
     };
@@ -234,29 +236,30 @@ function Department() {
                             title='Departments'
                             columns={columns}
                             data={data}
+                            // eslint-disable-next-line @typescript-eslint/ban-ts-comment
                             // @ts-ignore
                             icons={tableIcons}
                             actions={[
 
                                 {
 
-                                  icon: Edit,
+                                    icon: Edit,
 
-                                  tooltip: 'Edit Row',
+                                    tooltip: 'Edit Row',
 
-                                  onClick: (event, rowData) => {
+                                    onClick: (event, rowData) => {
 
-                                    setDeptId(rowData.id)
-                                    setSelectedDeptName(rowData.name)
-                                    setSelectedActivationStatus(rowData.activation_status)
-                                    toggleCreateModal()
+                                        setDeptId(rowData.id);
+                                        setSelectedDeptName(rowData.name);
+                                        setSelectedActivationStatus(rowData.activation_status);
+                                        toggleCreateModal();
 
 
-                                  }
+                                    }
 
                                 } 
 
-                              ]}
+                            ]}
                         />
                     </Card>
                 </Col>
@@ -271,14 +274,20 @@ function Department() {
             >
                 <ProgressBar animated now={progressBar} variant="info" />
                 <Modal.Header closeButton>
-                    <Modal.Title id="contained-modal-title-vcenter">{deptId ? "Edit department" : "Create a department"}</Modal.Title>
+                    <Modal.Title id="contained-modal-title-vcenter">{deptId ? 'Edit department' : 'Create a department'}</Modal.Title>
                 </Modal.Header>
                 <Modal.Body>
                     <ValidationForm>
                         <div className="form-group">
                             <label htmlFor="departmentName">Department name</label>
-                            <TextInput name='departmentName' id='departmentName' type='text' value={deptname} placeholder={deptId ? selectedDeptName :"Enter department name"} onChange={(e) => setDeptName(e.target.value)}
-                             required /><br />
+                            <TextInput
+                                name='departmentName' 
+                                id='departmentName' 
+                                type='text' 
+                                value={deptId ? selectedDeptName : deptname} 
+                                placeholder={deptId ? selectedDeptName :'Enter department name'} 
+                                onChange={(e) => deptId ? setSelectedDeptName(e.target.value) : setDeptName(e.target.value)}
+                                required /><br />
                         </div>
                         <div className="form-group" style={{display: 'flex', justifyContent: 'space-between'}}>
                             <button className="btn btn-primary" onClick={() => toggleCreateModal()}>

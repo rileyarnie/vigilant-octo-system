@@ -1,5 +1,7 @@
-import React, { useState, useEffect } from 'react';
-import { forwardRef } from 'react';
+/* eslint-disable @typescript-eslint/no-explicit-any */
+/* eslint-disable react/react-in-jsx-scope */
+/* eslint-disable react/display-name */
+import { useState, useEffect,forwardRef } from 'react';
 import MaterialTable from 'material-table';
 import AddBox from '@material-ui/icons/AddBox';
 import ArrowDownward from '@material-ui/icons/ArrowDownward';
@@ -19,32 +21,32 @@ import ViewColumn from '@material-ui/icons/ViewColumn';
 import axios from 'axios';
 import Alert from '@material-ui/lab/Alert';
 import Breadcrumb from '../../App/components/Breadcrumb';
-import { Row, Col, Card, Modal } from 'react-bootstrap';
-import { Button, ButtonBase, IconButton } from '@material-ui/core';
+import { Row, Col, Card } from 'react-bootstrap';
+import { Button } from '@material-ui/core';
 import Config from '../../config';
 
 const tableIcons = {
-    Add: forwardRef((props, ref: any) => <AddBox {...props} ref={ref} />),
-    Check: forwardRef((props, ref: any) => <Check {...props} ref={ref} />),
-    Clear: forwardRef((props, ref: any) => <Clear {...props} ref={ref} />),
-    Delete: forwardRef((props, ref: any) => <DeleteOutline {...props} ref={ref} />),
-    DetailPanel: forwardRef((props, ref: any) => <ChevronRight {...props} ref={ref} />),
-    Edit: forwardRef((props, ref: any) => <Edit {...props} ref={ref} />),
-    Export: forwardRef((props, ref: any) => <SaveAlt {...props} ref={ref} />),
-    Filter: forwardRef((props, ref: any) => <FilterList {...props} ref={ref} />),
-    FirstPage: forwardRef((props, ref: any) => <FirstPage {...props} ref={ref} />),
-    LastPage: forwardRef((props, ref: any) => <LastPage {...props} ref={ref} />),
-    NextPage: forwardRef((props, ref: any) => <ChevronRight {...props} ref={ref} />),
-    PreviousPage: forwardRef((props, ref: any) => <ChevronLeft {...props} ref={ref} />),
-    ResetSearch: forwardRef((props, ref: any) => <Clear {...props} ref={ref} />),
-    Search: forwardRef((props, ref: any) => <Search {...props} ref={ref} />),
-    SortArrow: forwardRef((props, ref: any) => <ArrowDownward {...props} ref={ref} />),
-    ThirdStateCheck: forwardRef((props, ref: any) => <Remove {...props} ref={ref} />),
-    ViewColumn: forwardRef((props, ref: any) => <ViewColumn {...props} ref={ref} />)
+    Add: forwardRef((props, ref: never) => <AddBox {...props} ref={ref} />),
+    Check: forwardRef((props, ref: never) => <Check {...props} ref={ref} />),
+    Clear: forwardRef((props, ref: never) => <Clear {...props} ref={ref} />),
+    Delete: forwardRef((props, ref: never) => <DeleteOutline {...props} ref={ref} />),
+    DetailPanel: forwardRef((props, ref: never) => <ChevronRight {...props} ref={ref} />),
+    Edit: forwardRef((props, ref: never) => <Edit {...props} ref={ref} />),
+    Export: forwardRef((props, ref: never) => <SaveAlt {...props} ref={ref} />),
+    Filter: forwardRef((props, ref: never) => <FilterList {...props} ref={ref} />),
+    FirstPage: forwardRef((props, ref: never) => <FirstPage {...props} ref={ref} />),
+    LastPage: forwardRef((props, ref: never) => <LastPage {...props} ref={ref} />),
+    NextPage: forwardRef((props, ref: never) => <ChevronRight {...props} ref={ref} />),
+    PreviousPage: forwardRef((props, ref: never) => <ChevronLeft {...props} ref={ref} />),
+    ResetSearch: forwardRef((props, ref: never) => <Clear {...props} ref={ref} />),
+    Search: forwardRef((props, ref: never) => <Search {...props} ref={ref} />),
+    SortArrow: forwardRef((props, ref: never) => <ArrowDownward {...props} ref={ref} />),
+    ThirdStateCheck: forwardRef((props, ref: never) => <Remove {...props} ref={ref} />),
+    ViewColumn: forwardRef((props, ref: never) => <ViewColumn {...props} ref={ref} />)
 };
 
 function AssignCourse() {
-    const timetablingSrv = Config.baseUrl.timetablingSrv
+    const timetablingSrv = Config.baseUrl.timetablingSrv;
     const columns = [
         { title: 'ID', field: 'id', hidden: false },
         { title: 'Name', field: 'name' },
@@ -59,61 +61,64 @@ function AssignCourse() {
     ];
     const [data, setData] = useState([]);
     const [programId, setProgramId] = useState();
-    const [courseName, setCourseName] = useState('');
+    const [, setCourseName] = useState('');
     const [courseId, setCourseId] = useState(null);
-    const [iserror, setIserror] = useState(false);
+    const [iserror] = useState(false);
     const [selectedRows, setSelectedRows] = useState([]);
     const [errorMessages, setErrorMessages] = useState([]);
-    let options = [] as any;
-    let progId = JSON.parse(localStorage.getItem("programId"))
+    const progId = JSON.parse(localStorage.getItem('programId'));
     useEffect(() => {
         axios.get(`${timetablingSrv}/courses`)
             .then(res => {
                 setData(res.data);
-                setProgramId(progId)
-                alert('Courses fetched succesfully')
+                setProgramId(progId);
+                alert('Courses fetched succesfully');
             })
             .catch((error) => {
                 //handle error using logging library
                 console.error(error);
-                setErrorMessages(['Failed to fetch courses'])
+                setErrorMessages(['Failed to fetch courses']);
             });
+
     }, []);
 
-    const fetchCoursesAssignedToProgram = () => {
-        axios.get(`${timetablingSrv}/programs/courses/${progId}`)
-        .then(res => {
-            setData(res.data);
-            alert('Course data reloaded succesfully');
-        })
-        .catch((error) => {
+    const fetchCourses = () => {
+        axios.get(`${timetablingSrv}/courses`)
+            .then(res => {
+                setData(res.data);
+                alert('Courses fetched succesfully');
+            })
+            .catch((error) => {
             //handle error using logging library
-            setErrorMessages([error]);
-            console.error(error);
-        });
-    }
+                console.error(error);
+                setErrorMessages(['Failed to fetch courses']);
+            });
+    };
+
     const handleRowSelection = (courseName: string, courseId: number, rows: any) => {
-        setSelectedRows(rows.length < 1 ? null : [...selectedRows, rows[0].id])
-        setCourseName(courseName)
-        setCourseId(courseId)
-    }
+        console.log(rows);
+        const courseIds = rows.map(row => row.id); 
+        const uniq = [...new Set(courseIds)];
+        setSelectedRows(uniq);
+        
+        setCourseName(courseName);
+        setCourseId(courseId);
+    };
 
     const assignSelectedCoursesToProgram = (selectedCourses: Array<number>) => {
-        axios.put(`${timetablingSrv}/programs/courses/${programId}`, {courseIds: selectedCourses})
-        .then(res => {
-            alert('Course assignment succesful.')
-            fetchCoursesAssignedToProgram()
-            return res
-        })
-        .catch(err => {
-            setErrorMessages(['Course assignment failed'])
-        })
-    }
-    
-    const selectedRowProps = {
-        id: courseId,
-        name: courseName
-    }
+        console.log('this is the array being given here: '+selectedCourses[0]);
+
+        axios.put(`${timetablingSrv}/programs/courses/${programId}`, {courses: selectedCourses})
+            .then(res => {
+                alert('Course assignment succesful.');
+                fetchCourses();
+                return res;
+            })
+            .catch(() => {
+                setErrorMessages(['Course assignment failed']);
+            });
+    };
+     
 
     return (
         <>
@@ -142,8 +147,9 @@ function AssignCourse() {
                                 selection: true,
                                 showSelectAllCheckbox: false,
                                 showTextRowsSelected: false
-                              }}
+                            }}
                             onSelectionChange = {(rows: any)=> handleRowSelection(rows[0]?.name,rows[0]?.id, rows)}
+                            // eslint-disable-next-line @typescript-eslint/ban-ts-comment
                             // @ts-ignore
                             icons={tableIcons}
                         />
@@ -153,13 +159,14 @@ function AssignCourse() {
             </Row>
 
             <Button
-             style={{display: !courseId ? 'none' : 'block'  }} 
-             variant="contained" 
-             color="secondary"
-             onClick={() => {
-                 assignSelectedCoursesToProgram(selectedRows)
-             }}
-             >
+                style={{display: !courseId ? 'none' : 'block'  }} 
+                variant="contained" 
+                color="secondary"
+                onClick={() => {
+               
+                    assignSelectedCoursesToProgram(selectedRows);
+                }}
+            >
             Assign courses
             </Button>
         </>
