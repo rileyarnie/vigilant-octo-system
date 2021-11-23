@@ -26,22 +26,22 @@ const chartData: { items: MenuItemType[] } = {
             icon: 'feather icon-monitor',
             children: [
                 {
-                    id: "Default",
-                    title: "Users",
-                    type: "collapse",
-                    icon: "feather icon-user",
+                    id: 'Default',
+                    title: 'Users',
+                    type: 'collapse',
+                    icon: 'feather icon-user',
                     children: [
                         {
-                            id: "users",
-                            title: "Users",
-                            type: "item",
-                            url: "/users"
+                            id: 'users',
+                            title: 'Users',
+                            type: 'item',
+                            url: '/users'
                         },
                         {
-                            id: "roles",
-                            title: "Roles",
-                            type: "item",
-                            url: "/roles"
+                            id: 'roles',
+                            title: 'Roles',
+                            type: 'item',
+                            url: '/roles'
                         }
                      
                        
@@ -58,7 +58,7 @@ const chartData: { items: MenuItemType[] } = {
                             title: 'Campuses',
                             type: 'item',
                             url: '/campuses'
-                        },                       
+                        },
                         {
                             id: 'venues',
                             title: 'Venues',
@@ -87,9 +87,9 @@ const chartData: { items: MenuItemType[] } = {
                             url: '/trainers'
                         },
                         {
-                            id: "programs",
-                            title: "Programs",
-                            type: "collapse",
+                            id: 'programs',
+                            title: 'Programs',
+                            type: 'collapse',
                             children: [
                                 {
                                     id: 'programs',
@@ -98,10 +98,10 @@ const chartData: { items: MenuItemType[] } = {
                                     url: '/programs'
                                 },
                                 {
-                                    id: 'programcohort',
-                                    title: 'Program Cohorts',
+                                    id: 'cohort',
+                                    title: 'Cohorts',
                                     type: 'item',
-                                    url: '/programcohorts'
+                                    url: '/cohorts'
                                 },
                             ]
                         },
@@ -123,6 +123,6 @@ const chartData: { items: MenuItemType[] } = {
             ]
         }
     ]
-}
+};
 
 export default chartData;

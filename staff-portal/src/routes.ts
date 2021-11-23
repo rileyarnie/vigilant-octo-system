@@ -44,7 +44,7 @@ const routes = [
     { path: '/campusdetails', exact: true, name: 'default', component: CampusDetails },
     { path: '/semesters', exact: true, name: 'default', component: SemesterList },
     { path: '/assignrole', exact: true, name: 'default', component: AssignRole },
-    { path: '/programcohorts', exact: true, name: 'default', component: ProgramCohorts },
+    { path: '/cohorts', exact: true, name: 'default', component: ProgramCohorts },
 
 
 ];

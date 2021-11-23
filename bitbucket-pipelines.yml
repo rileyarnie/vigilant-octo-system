@@ -12,8 +12,10 @@ pipelines:
         script:
         - git checkout $BITBUCKET_PR_DESTINATION_BRANCH
         - git checkout $BITBUCKET_BRANCH
-        - DIFFED_FILES_TO_LINT=$(git diff $BITBUCKET_PR_DESTINATION_BRANCH --diff-filter=d --name-only -- "*.ts" "*.tsx" "*.js" "*.jsx")
         - cd public-portal
+        - DIFFED_FILES_TO_LINT=$(git diff $BITBUCKET_PR_DESTINATION_BRANCH --relative --diff-filter=d --name-only -- "*.ts" "*.tsx" "*.js" "*.jsx")
+        - echo $DIFFED_FILES_TO_LINT
+        - if [ -z "$DIFFED_FILES_TO_LINT" ]; then exit 0; fi
         - npm install
         - npx eslint $DIFFED_FILES_TO_LINT
 
@@ -22,8 +24,10 @@ pipelines:
         script:
         - git checkout $BITBUCKET_PR_DESTINATION_BRANCH
         - git checkout $BITBUCKET_BRANCH
-        - DIFFED_FILES_TO_LINT=$(git diff $BITBUCKET_PR_DESTINATION_BRANCH --diff-filter=d --name-only -- "*.ts" "*.tsx" "*.js" "*.jsx")
         - cd student-portal
+        - DIFFED_FILES_TO_LINT=$(git diff $BITBUCKET_PR_DESTINATION_BRANCH --relative --diff-filter=d --name-only -- "*.ts" "*.tsx" "*.js" "*.jsx")
+        - echo $DIFFED_FILES_TO_LINT
+        - if [ -z "$DIFFED_FILES_TO_LINT" ]; then exit 0; fi
         - npm install
         - npx eslint $DIFFED_FILES_TO_LINT
 
@@ -32,7 +36,9 @@ pipelines:
         script:
         - git checkout $BITBUCKET_PR_DESTINATION_BRANCH
         - git checkout $BITBUCKET_BRANCH
-        - DIFFED_FILES_TO_LINT=$(git diff $BITBUCKET_PR_DESTINATION_BRANCH --diff-filter=d --name-only -- "*.ts" "*.tsx" "*.js" "*.jsx")
         - cd staff-portal
+        - DIFFED_FILES_TO_LINT=$(git diff $BITBUCKET_PR_DESTINATION_BRANCH --relative --diff-filter=d --name-only -- "*.ts" "*.tsx" "*.js" "*.jsx")
+        - echo $DIFFED_FILES_TO_LINT
+        - if [ -z "$DIFFED_FILES_TO_LINT" ]; then exit 0; fi
         - npm install
         - npx eslint $DIFFED_FILES_TO_LINT

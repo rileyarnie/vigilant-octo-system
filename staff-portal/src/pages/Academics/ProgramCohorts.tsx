@@ -1,5 +1,5 @@
-import React, { useState, useEffect } from 'react';
-import { forwardRef } from 'react';
+import React,{useState,useEffect} from 'react';
+import {forwardRef} from 'react';
 import MaterialTable from 'material-table';
 import AddBox from '@material-ui/icons/AddBox';
 import ArrowDownward from '@material-ui/icons/ArrowDownward';
@@ -9,6 +9,7 @@ import ChevronRight from '@material-ui/icons/ChevronRight';
 import Clear from '@material-ui/icons/Clear';
 import DeleteOutline from '@material-ui/icons/DeleteOutline';
 import Edit from '@material-ui/icons/Edit';
+import { Icons } from 'material-table';
 import FilterList from '@material-ui/icons/FilterList';
 import FirstPage from '@material-ui/icons/FirstPage';
 import LastPage from '@material-ui/icons/LastPage';
@@ -17,127 +18,391 @@ import SaveAlt from '@material-ui/icons/SaveAlt';
 import Search from '@material-ui/icons/Search';
 import ViewColumn from '@material-ui/icons/ViewColumn';
 import axios from 'axios';
-import { makeStyles } from '@material-ui/core/styles';
 import Card from '@material-ui/core/Card';
-import CardActionArea from '@material-ui/core/CardActionArea';
-import CardActions from '@material-ui/core/CardActions';
-import CardContent from '@material-ui/core/CardContent';
-import CardMedia from '@material-ui/core/CardMedia';
-import Typography from '@material-ui/core/Typography';
 import Alert from '@material-ui/lab/Alert';
 import Breadcrumb from '../../App/components/Breadcrumb';
-import { Row, Col, Modal, Button } from 'react-bootstrap';
-import Config  from '../../config';
-import { ValidationForm, SelectGroup, FileInput, TextInput } from 'react-bootstrap4-form-validation';
+import {Row,Col,Modal,Button} from 'react-bootstrap';
+import Config from '../../config';
+import {Switch} from '@material-ui/core';
+import {ValidationForm,SelectGroup,FileInput,TextInput} from 'react-bootstrap4-form-validation';
 import ProgressBar from 'react-bootstrap/ProgressBar';
-import { Switch } from '@material-ui/core';
-const useStyles = makeStyles({
-	root: {
-		maxWidth: 345,
-	},
-});
-const tableIcons = {
-	Add: forwardRef((props, ref: any) => <AddBox {...props} ref={ref} />),
-	Check: forwardRef((props, ref: any) => <Check {...props} ref={ref} />),
-	Clear: forwardRef((props, ref: any) => <Clear {...props} ref={ref} />),
-	Delete: forwardRef((props, ref: any) => <DeleteOutline {...props} ref={ref} />),
-	DetailPanel: forwardRef((props, ref: any) => <ChevronRight {...props} ref={ref} />),
-	Edit: forwardRef((props, ref: any) => <Edit {...props} ref={ref} />),
-	Export: forwardRef((props, ref: any) => <SaveAlt {...props} ref={ref} />),
-	Filter: forwardRef((props, ref: any) => <FilterList {...props} ref={ref} />),
-	FirstPage: forwardRef((props, ref: any) => <FirstPage {...props} ref={ref} />),
-	LastPage: forwardRef((props, ref: any) => <LastPage {...props} ref={ref} />),
-	NextPage: forwardRef((props, ref: any) => <ChevronRight {...props} ref={ref} />),
-	PreviousPage: forwardRef((props, ref: any) => <ChevronLeft {...props} ref={ref} />),
-	ResetSearch: forwardRef((props, ref: any) => <Clear {...props} ref={ref} />),
-	Search: forwardRef((props, ref: any) => <Search {...props} ref={ref} />),
-	SortArrow: forwardRef((props, ref: any) => <ArrowDownward {...props} ref={ref} />),
-	ThirdStateCheck: forwardRef((props, ref: any) => <Remove {...props} ref={ref} />),
-	ViewColumn: forwardRef((props, ref: any) => <ViewColumn {...props} ref={ref} />)
+import CardPreview from './CardPreview';
+
+const tableIcons: Icons = {
+    // eslint-disable-next-line react/display-name
+    Add: forwardRef((props, ref) => < AddBox  {...props} ref={ref} />),
+    // eslint-disable-next-line react/display-name
+    Check: forwardRef((props, ref) => <Check {...props} ref={ref} />),
+    // eslint-disable-next-line react/display-name
+    Clear: forwardRef((props, ref) => <Clear {...props} ref={ref} />),
+    // eslint-disable-next-line react/display-name
+    Delete: forwardRef((props, ref) => <DeleteOutline {...props} ref={ref} />),
+    // eslint-disable-next-line react/display-name
+    DetailPanel: forwardRef((props, ref) => <ChevronRight {...props} ref={ref} />),
+    // eslint-disable-next-line react/display-name
+    Edit: forwardRef((props, ref) => <Edit {...props} ref={ref} />),
+    // eslint-disable-next-line react/display-name
+    Export: forwardRef((props, ref) => <SaveAlt {...props} ref={ref} />),
+    // eslint-disable-next-line react/display-name
+    Filter: forwardRef((props, ref) => <FilterList {...props} ref={ref} />),
+    // eslint-disable-next-line react/display-name
+    FirstPage: forwardRef((props, ref) => <FirstPage {...props} ref={ref} />),
+    // eslint-disable-next-line react/display-name
+    LastPage: forwardRef((props, ref) => <LastPage {...props} ref={ref} />),
+    // eslint-disable-next-line react/display-name
+    NextPage: forwardRef((props, ref) => <ChevronRight {...props} ref={ref} />),
+    // eslint-disable-next-line react/display-name
+    PreviousPage: forwardRef((props, ref) => <ChevronLeft {...props} ref={ref} />),
+    // eslint-disable-next-line react/display-name
+    ResetSearch: forwardRef((props, ref) => <Clear {...props} ref={ref} />),
+    // eslint-disable-next-line react/display-name
+    Search: forwardRef((props, ref) => <Search {...props} ref={ref} />),
+    // eslint-disable-next-line react/display-name
+    SortArrow: forwardRef((props, ref) => <ArrowDownward {...props} ref={ref} />),
+    // eslint-disable-next-line react/display-name
+    ThirdStateCheck: forwardRef((props, ref) => <Remove {...props} ref={ref} />),
+    // eslint-disable-next-line react/display-name
+    ViewColumn: forwardRef((props, ref) => <ViewColumn {...props} ref={ref} />)
 };
 
-function ProgramCohorts() {
-	const timetablingSrv = Config.baseUrl.timetablingSrv;
+function ProgramCohorts(){
+    interface programCohort{
+        id:number,
+        name:string;
+        programId:string,
+        startDate:Date,
+        anticipatedGraduationYear:number,
+        anticipatedGraduationMonth:number,
+        advertDescription:string,
+        bannerImageUrl:string,
+        isActive:boolean
+    }
 
-	const columns = [
-		{ title: 'ID', field: 'id' },
-		{ title: 'Code', field: 'code' },
-		{ title: 'Program Name', field: 'name' },
-		{title: 'Start Date', render: (rowData) => rowData.startDate.slice(0, 10)},
-		{title: 'Graduation Date', render: (rowData) => rowData.anticipatedGraduationMonth + "-" + rowData.anticipatedGraduationYear},
-	];
-	const [data, setData] = useState([]);
-	const [iserror, setIserror] = useState(false);
-	const [progressBar, setProgress] = useState(0);
+    const [data,setData]=useState([]);
+    const [isError]=useState(false);
+    const [,setDisabled]=useState(false);
+    const [progressBar,setProgress]=useState(0);
+    const [programId,setProgramId]=useState(0);
+    const [startDate,setStartDate]=useState('');
+    const [banner,setBanner]=useState('');
+    const [graduationDate,setGraduationDate]=useState('');
+    const [description,setDescription]=useState('');
+    const [imageUploaded,setImageUploaded]=useState('');
+    const [programs,setPrograms]=useState([]);
+    const [programName,setProgramName]=useState('');
+    const [selectedProgramId,setSelectedProgramId]=useState(0);
+    const [selectedGraduationDate]=useState();
+    const [selectedStartDate]=useState();
+    const [selectedDescription]=useState();
+    const [showModal,setModal]=useState(false);
+    const [cohortId,setCohortId]=useState(null);
+    const [errorMessages]=useState([]);
 
-	const [cohortName, setCohortName] = useState('');
-	const [cohorts, setCohorts] = useState([]);
-	const [programs, setPrograms] = useState([]);
-	const [programName, setProgramName] = useState('');
+    const timetablingSrv=Config.baseUrl.timetablingSrv;
+    const year=graduationDate.split('').slice(0,4).join('');
+    const month=graduationDate.slice(5,7);
+    let activationStatus:boolean;
+    const handleActivationStatusToggle=(event,row:programCohort)=>{
+        setDisabled(true);
+        if(row.isActive){
+            activationStatus=false;
+            handleToggleStatusSubmit(event,row);
+        }
+        if(!row.isActive){
+            activationStatus=true;
+            handleToggleStatusSubmit(event,row);
+        }
+    };
+    const handleToggleStatusSubmit=(e,row:programCohort)=>{
+        const cohortStatus={
+            isActive:activationStatus,
+        };
+        axios
+            .put(`${timetablingSrv}/program-cohorts/${row.id}`,cohortStatus)
+            .then(()=>{
+                alert('Success');
+                fetchProgramCohorts();
+                setDisabled(false);
 
-	const [showModal, setModal] = useState(false);
-	const [modalShow, setModalShow] = useState(false);
+            })
+            .catch((error)=>{
+                console.error(error);
+                alert(error);
+                setDisabled(false);
+            });
+    };
 
-	const [cohortId, setCohortId] = useState(null);
-	const [selectedCohortName, setSelectedCohortName] = useState('');
-	const [isActive, setisActive] = useState(false);
-	const [errorMessages, setErrorMessages] = useState([]);
-	useEffect(() => {
-		axios.get(`${timetablingSrv}/program-cohorts`)
-			.then(res => {
-				setData(res.data);
-			})
-			.catch((error) => {
-				//handle error using logging library
-				console.error(error);
-				alert(error)
-			});
-	}, []);
+    const columns=[
+        {title:'ID',field:'id'},
+        {title:'Code',field:'code'},
+        {title:'Program Name',field:'name',},
+        {title:'Start Date',render:(rowData)=>rowData.startDate.slice(0,10)},
+        {
+            title:'Anticipated Graduation Date',
+            render:(rowData)=>rowData.anticipatedGraduationMonth+'-'+rowData.anticipatedGraduationYear
+        },
+        {
+            title:'Activation Status',
+            field:'internal_action',
+            render:(row:programCohort)=>(
+                <Switch
+                    onChange={(event)=>handleActivationStatusToggle(event,row)}
+                    inputProps={{'aria-label':'controlled'}}
+                    defaultChecked={row.isActive===false}
+                />
+            )
+        },
+    ];
+    useEffect(()=>{
+        axios.get(`${timetablingSrv}/program-cohorts`,{params:{programId:setProgramId}})
+            .then(res=>{
+                setData(res.data);
+            })
+            .catch((error)=>{
+                console.error(error);
+                alert(error);
+            });
+        axios.get(`${timetablingSrv}/programs`)
+            .then(res=>{
+                setPrograms(res.data);
+            })
+            .catch((error)=>{
+                console.error(error);
+                alert(error);
+            });
+    },[]);
+    const fetchProgramCohorts=()=>{
+        axios.get(`${timetablingSrv}/program-cohorts`,)
+            .then(res=>{
+                setData(res.data);
+            })
+            .catch((error)=>{
+                console.error(error);
+                alert(error.message);
+            });
+    };
+    const handleUpload=()=>{
+        const form=new FormData();
+        form.append('fileUploaded',imageUploaded);
+        const config={
+            headers:{'content-type':'multipart/form-data'}
+        };
+        axios.post(`${timetablingSrv}/files`,form,config)
+            .then((res)=>{
+                alert('Success');
+                setBanner(res.data);
+                console.log(res);
+                console.log(res.data);
+            })
+            .catch((error)=>{
+                console.error(error);
+                alert(error.message);
+            });
+    };
 
-	const resetStateCloseModal = () => {
-		setCohortId(null);
-		setCohortName('');
-		setModal(false);
-	}
-	const toggleCreateModal = () => {
-		showModal ? resetStateCloseModal() : setModal(true);
-	};
-	return (
-		<>
-			<Row className='align-items-center page-header'>
-				<Col>
-					<Breadcrumb />
-				</Col>
-				<Col>
-					<Button className="float-right" variant="danger" onClick={() => toggleCreateModal()}>
-						Create Program Cohort
-					</Button>
-				</Col>
-			</Row>
-			<Row>
-				<Col>
-					<Card>
-						<div>
-							{iserror &&
+    const updateProgramCohort=(cohortId,updates)=>{
+        axios.put(`${timetablingSrv}/program-cohorts/${cohortId}/`,updates)
+            .then(()=>{
+                setProgress(100);
+                alert('Successfully updated Cohort');
+                fetchProgramCohorts();
+                resetStateCloseModal();
+            })
+            .catch(error=>{
+                console.error(error);
+                setProgress(0);
+                alert(error.message);
+            });
+    };
+    const handleEdit=(e)=>{
+        e.preventDefault();
+        const updates={
+            programId:programId===0?selectedProgramId:programId,
+            startDate:startDate===''?selectedStartDate:startDate,
+            anticipatedGraduationYear:year,
+            anticipatedGraduationMonth:month,
+            advertDescription:description===''?selectedDescription:description,
+            bannerImageUrl:{banner}
+        };
+
+        updateProgramCohort(cohortId,updates);
+
+    };
+
+    const handleCreate=(e)=>{
+        e.preventDefault();
+        const cohort={
+            programId:programId,
+            startDate:startDate,
+            anticipatedGraduationYear:year,
+            anticipatedGraduationMonth:month,
+            advertDescription:description,
+            bannerImageUrl:{banner}
+        };
+        createCohort(cohort);
+    };
+
+    const createCohort=(cohortData)=>{
+        console.log(cohortData);
+        axios
+            .post(`${timetablingSrv}/program-cohorts`,cohortData)
+            .then(()=>{
+                setProgress(100);
+                alert('Successfully created Program Cohort');
+                fetchProgramCohorts();
+                resetStateCloseModal();
+                setProgress(0);
+            })
+            .catch((err)=>{
+                setProgress(0);
+                alert(err.message);
+            });
+    };
+    const resetStateCloseModal=()=>{
+        setCohortId(null);
+        setProgramId(0);
+        setStartDate('');
+        setDescription('');
+        setBanner('');
+        setModal(false);
+        setProgramName('');
+    };
+
+    const toggleCreateModal=()=>{
+        showModal?resetStateCloseModal():setModal(true);
+    };
+    return (
+        <>
+            <Row className='align-items-center page-header'>
+                <Col>
+                    <Breadcrumb/>
+                </Col>
+                <Col>
+                    <Button className="float-right" variant="danger" onClick={()=>toggleCreateModal()}>
+                        Create Program Cohort
+                    </Button>
+                </Col>
+            </Row>
+            <Row>
+                <Col>
+                    <Card>
+                        <div>
+                            {isError&&
                             <Alert severity='error'>
-								{errorMessages.map((msg, i) => {
-									return <div key={i}>{msg}</div>;
-								})}
+                                {errorMessages.map((msg,i)=>{
+                                    return <div key={i}>{msg}</div>;
+                                })}
                             </Alert>
-							}
-						</div>
-						<MaterialTable
-							title='Program Cohorts'
-							columns={columns}
-							data={data}
-							// @ts-ignore
-							icons={tableIcons}
-							options={{actionsColumnIndex: -1}}
-						/>
-					</Card>
-				</Col>
-			</Row>
-		</>
-	);
+                            }
+                        </div>
+                        <MaterialTable
+                            title='Program Cohorts' 
+                            icons={tableIcons}
+                            columns={columns}
+                            data={data}
+                            options={{actionsColumnIndex:-1}}
+                            actions={[
+                                {
+                                    icon:Edit,
+                                    tooltip:'Edit Row',
+                                    onClick:(event,rowData)=>{
+                                        setCohortId(rowData.id);
+                                        toggleCreateModal();
+                                    }
+                                },
+                            ]}
+                        />
+                    </Card>
+                </Col>
+            </Row>
+            <Modal
+                backdrop="static"
+                show={showModal}
+                onHide={toggleCreateModal}
+                size="lg"
+                aria-labelledby="contained-modal-title-vcenter"
+                centered>
+                <ProgressBar animated now={progressBar} variant="info"/>
+                <Modal.Header closeButton>
+                    <Modal.Title
+                        id="contained-modal-title-vcenter">{cohortId?'Edit Program Cohort':'Create a Program Cohort'}</Modal.Title>
+                </Modal.Header>
+                <Modal.Body>
+                    <Row>
+                        <Col sm={8}>
+                            <ValidationForm>
+                                <div className="form-group">
+                                    <label htmlFor="cohortName"><b>Select Program</b></label>
+                                    <SelectGroup name="program" id="program" required
+                                        errorMessage="Please select a Program."
+                                        onChange={(e)=>{
+                                            setSelectedProgramId(e.target.value);
+                                            setProgramId(e.target.value);
+                                        }}>
+                                        <option defaultValue={selectedProgramId} value="">-- Please select --</option>
+                                        {programs.map((program)=>{
+                                            return <option key={program.name} value={program.id}>{program.name}</option>;
+                                        })}
+                                    </SelectGroup><br/>
+                                    <label htmlFor='Date'><b>Start Date</b></label><br/>
+                                    <TextInput name='startDate' id='startDate' type="date" required
+                                        defaultValue={selectedStartDate}
+                                        onChange={(e)=>{
+                                            setStartDate(e.target.value);
+                                        }}/><br/>
+                                    <label htmlFor='Date'><b>Graduation Date</b></label><br/>
+                                    <TextInput name='graduationDate' id='graduationDate' type="month" required
+                                        defaultValue={selectedGraduationDate}
+                                        onChange={(e)=>{
+                                            setGraduationDate(e.target.value);
+                                        }}/><br/>
+                                    <label htmlFor="cohortName"><b>Description</b></label>
+                                    <TextInput name='description' minLength="4" id='description'
+                                        defaultValue={selectedDescription}
+                                        type="text" placeholder={cohortId?setDescription:description}
+                                        required multiline rows="3"
+                                        onChange={(e)=>{
+                                            setDescription(e.target.value);
+                                        }}/><br/>
+                                    <label htmlFor="cohortName"><b>Banner Image</b></label>
+                                    <FileInput name="fileUploaded" id="image" encType="multipart/form-data"
+                                        onInput={(e)=>{
+                                            setImageUploaded(()=>{
+                                                return e.target.files[0];
+                                            });
+                                            handleUpload();
+                                        }} required fileType={['png','jpg','jpeg']} maxFileSize="3mb"
+                                        errorMessage={{
+                                            required:'Please upload an image',
+                                            fileType:'Only image is allowed',
+                                            maxFileSize:'Max file size is 3MB'
+                                        }}/>
+                                </div>
+                                <input name='banner' id='banner' type="hidden" required value={banner}/><br/>
+                                <div className='form-group'>
+                                    <button className="btn btn-info btn-rounded float-right"
+                                        onClick={(e)=>cohortId?handleEdit(e):handleCreate(e)}>
+                                        Submit
+                                    </button>
+                                    <button className="btn btn-danger btn-rounded float-left"
+                                        onClick={()=>toggleCreateModal()}>
+                                        Cancel
+                                    </button>
+                                </div>
+                            </ValidationForm>
+                        </Col>
+                        <Col sm={4}>
+                            <CardPreview
+                                programName={programName}
+                                description={description}
+                                startDate={startDate}
+                                graduationDate={graduationDate}/>
+                        </Col>
+                    </Row>
+                </Modal.Body>
+            </Modal>
+        </>
+    );
 }
+
 export default ProgramCohorts;
