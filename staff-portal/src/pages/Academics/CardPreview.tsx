@@ -12,7 +12,6 @@ const useStyles = makeStyles({
         maxWidth: 345,
     },
 });
-
 interface IProps {
     programName:string,
     description:string,
@@ -36,8 +35,8 @@ const CardPreview = (props:IProps):JSX.Element => {
                     </Typography>
                     <Typography variant="body2" color="textSecondary" component="p">
                         <b>Start Date</b> : {props.startDate}<br/>
-                        <b>Graduation Date</b> : {props.graduationDate}
-                        {props.description}<br/>
+                        <b>Graduation Date</b> : {props.graduationDate}<br/>
+                        {props.description}
                     </Typography>
                 </CardContent>
             </CardActionArea>

@@ -23,6 +23,7 @@ import ProgramCohorts from './pages/Academics/ProgramCohorts';
 const routes = [
     { path: '/dashboard', exact: true, name: 'default', component: Default },
     { path: '/roles', exact: true, name: 'default', component: RoleList },
+    { path: '/cohorts', exact: true, name: 'default', component: ProgramCohorts },
     { path: '/users', exact: true, name: 'default', component: UserList },
     { path: '/createcampus', exact: true, name: 'default', component: CreateCampus },
     { path: '/createuser', exact: true, name: 'default', component: CreateUser },
@@ -44,8 +45,6 @@ const routes = [
     { path: '/campusdetails', exact: true, name: 'default', component: CampusDetails },
     { path: '/semesters', exact: true, name: 'default', component: SemesterList },
     { path: '/assignrole', exact: true, name: 'default', component: AssignRole },
-    { path: '/cohorts', exact: true, name: 'default', component: ProgramCohorts },
-
 
 ];
 export default routes;

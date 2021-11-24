@@ -64,7 +64,6 @@ const tableIcons: Icons = {
     // eslint-disable-next-line react/display-name
     ViewColumn: forwardRef((props, ref) => <ViewColumn {...props} ref={ref} />)
 };
-
 function ProgramCohorts(){
     interface programCohort{
         id:number,
@@ -350,7 +349,7 @@ function ProgramCohorts(){
                                         onChange={(e)=>{
                                             setStartDate(e.target.value);
                                         }}/><br/>
-                                    <label htmlFor='Date'><b>Graduation Date</b></label><br/>
+                                    <label htmlFor='Date'><b>Anticipated Graduation Date</b></label><br/>
                                     <TextInput name='graduationDate' id='graduationDate' type="month" required
                                         defaultValue={selectedGraduationDate}
                                         onChange={(e)=>{
