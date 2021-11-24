@@ -23,11 +23,11 @@ import Alert from '@material-ui/lab/Alert';
 import Breadcrumb from '../../App/components/Breadcrumb';
 import {Row,Col,Modal,Button} from 'react-bootstrap';
 import Config from '../../config';
-import {Switch} from '@material-ui/core';
+import {MenuItem, Select, Switch} from '@material-ui/core';
 import {ValidationForm,SelectGroup,FileInput,TextInput} from 'react-bootstrap4-form-validation';
 import ProgressBar from 'react-bootstrap/ProgressBar';
 import CardPreview from './CardPreview';
-
+import {Link} from 'react-router-dom';
 const tableIcons: Icons = {
     // eslint-disable-next-line react/display-name
     Add: forwardRef((props, ref) => < AddBox  {...props} ref={ref} />),
@@ -151,10 +151,43 @@ function ProgramCohorts(){
                 />
             )
         },
+        {
+            title: 'Actions',
+            field: 'internal_action',
+            render: (row) => (
+                
+                <Select
+                    labelId="demo-simple-select-autowidth-label"
+                    id="demo-simple-select-autowidth"
+                    autoWidth
+                    label="Actions"
+                    onChange={(event)=>{
+                        if(event.target.value === 'Edit'){
+                            setCohortId(row.id);
+                            toggleCreateModal();
+                        }
+                        
+                    }}
+                >
+                    <MenuItem value="Edit">Edit</MenuItem>
+                    <Link to='/cohortscourses'
+                        onClick={() => {
+                            localStorage.setItem('programId', row.programId);
+                            localStorage.setItem('programName', getProgramName(row.programId));
+                            localStorage.setItem('anticipatedGraduation', `${row.anticipatedGraduationMonth}/${row.anticipatedGraduationYear}`);
+                        }}>
+                        <MenuItem value="View courses">View courses</MenuItem>
+                    </Link>
+                </Select>
+            )
+        }
     ];
     useEffect(()=>{
         axios.get(`${timetablingSrv}/program-cohorts`,{params:{programId:setProgramId}})
             .then(res=>{
+                res.data.forEach(program => {
+                    program.name = getProgramName(res.data[0].programId);
+                });
                 setData(res.data);
             })
             .catch((error)=>{
@@ -170,9 +203,12 @@ function ProgramCohorts(){
                 alert(error);
             });
     },[]);
-    const fetchProgramCohorts=()=>{
+    const fetchProgramCohorts=(): void =>{
         axios.get(`${timetablingSrv}/program-cohorts`,)
-            .then(res=>{
+            .then(res => {
+                res.data.forEach(program => {
+                    program.name = getProgramName(res.data[0].programId);
+                });
                 setData(res.data);
             })
             .catch((error)=>{
@@ -180,7 +216,7 @@ function ProgramCohorts(){
                 alert(error.message);
             });
     };
-    const handleUpload=()=>{
+    const handleUpload=(): void =>{
         const form=new FormData();
         form.append('fileUploaded',imageUploaded);
         const config={
@@ -199,7 +235,7 @@ function ProgramCohorts(){
             });
     };
 
-    const updateProgramCohort=(cohortId,updates)=>{
+    const updateProgramCohort=(cohortId,updates): void =>{
         axios.put(`${timetablingSrv}/program-cohorts/${cohortId}/`,updates)
             .then(()=>{
                 setProgress(100);
@@ -213,7 +249,7 @@ function ProgramCohorts(){
                 alert(error.message);
             });
     };
-    const handleEdit=(e)=>{
+    const handleEdit=(e): void =>{
         e.preventDefault();
         const updates={
             programId:programId===0?selectedProgramId:programId,
@@ -228,7 +264,7 @@ function ProgramCohorts(){
 
     };
 
-    const handleCreate=(e)=>{
+    const handleCreate=(e): void =>{
         e.preventDefault();
         const cohort={
             programId:programId,
@@ -241,7 +277,7 @@ function ProgramCohorts(){
         createCohort(cohort);
     };
 
-    const createCohort=(cohortData)=>{
+    const createCohort=(cohortData): void =>{
         console.log(cohortData);
         axios
             .post(`${timetablingSrv}/program-cohorts`,cohortData)
@@ -257,7 +293,7 @@ function ProgramCohorts(){
                 alert(err.message);
             });
     };
-    const resetStateCloseModal=()=>{
+    const resetStateCloseModal=(): void =>{
         setCohortId(null);
         setProgramId(0);
         setStartDate('');
@@ -269,6 +305,11 @@ function ProgramCohorts(){
 
     const toggleCreateModal=()=>{
         showModal?resetStateCloseModal():setModal(true);
+    };
+    const getProgramName = (id: number): string => {
+        return programs.filter(program => {
+            return program.id === id;
+        }).map(name => name.name)[0];
     };
     return (
         <>
@@ -300,16 +341,6 @@ function ProgramCohorts(){
                             columns={columns}
                             data={data}
                             options={{actionsColumnIndex:-1}}
-                            actions={[
-                                {
-                                    icon:Edit,
-                                    tooltip:'Edit Row',
-                                    onClick:(event,rowData)=>{
-                                        setCohortId(rowData.id);
-                                        toggleCreateModal();
-                                    }
-                                },
-                            ]}
                         />
                     </Card>
                 </Col>

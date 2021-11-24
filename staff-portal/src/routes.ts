@@ -18,6 +18,7 @@ import UserList from './pages/Users/UserList';
 import CreateCourse from './pages/Academics/CreateCourse';
 import SemesterList from './pages/Academics/SemesterList';
 import ProgramCohorts from './pages/Academics/ProgramCohorts';
+import ProgramCohortCoursesList from './pages/Academics/ProgramCohortCoursesList';
 
 
 const routes = [
@@ -45,6 +46,9 @@ const routes = [
     { path: '/campusdetails', exact: true, name: 'default', component: CampusDetails },
     { path: '/semesters', exact: true, name: 'default', component: SemesterList },
     { path: '/assignrole', exact: true, name: 'default', component: AssignRole },
+    { path: '/cohorts', exact: true, name: 'default', component: ProgramCohorts },
+    { path: '/cohortscourses', exact: true, name: 'default', component: ProgramCohortCoursesList },
+
 
 ];
 export default routes;
