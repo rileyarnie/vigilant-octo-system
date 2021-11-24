@@ -64,17 +64,14 @@ const tableIcons: Icons = {
     // eslint-disable-next-line react/display-name
     ViewColumn: forwardRef((props, ref) => <ViewColumn {...props} ref={ref} />)
 };
-function ProgramCohorts(){
+
+const ProgramCohorts = ():JSX.Element => {
     interface programCohort{
-        id:number,
-        name:string;
-        programId:string,
-        startDate:Date,
-        anticipatedGraduationYear:number,
-        anticipatedGraduationMonth:number,
-        advertDescription:string,
-        bannerImageUrl:string,
-        isActive:boolean
+        program_cohorts_id:number,
+        program_cohorts_startDate:Date,
+        program_cohorts_anticipatedGraduationYear:number,
+        program_cohorts_anticipatedGraduationMonth:number,
+        program_cohorts_isActive:boolean
     }
 
     const [data,setData]=useState([]);
@@ -103,11 +100,11 @@ function ProgramCohorts(){
     let activationStatus:boolean;
     const handleActivationStatusToggle=(event,row:programCohort)=>{
         setDisabled(true);
-        if(row.isActive){
+        if(row.program_cohorts_isActive){
             activationStatus=false;
             handleToggleStatusSubmit(event,row);
         }
-        if(!row.isActive){
+        if(!row.program_cohorts_isActive){
             activationStatus=true;
             handleToggleStatusSubmit(event,row);
         }
@@ -117,7 +114,7 @@ function ProgramCohorts(){
             isActive:activationStatus,
         };
         axios
-            .put(`${timetablingSrv}/program-cohorts/${row.id}`,cohortStatus)
+            .put(`${timetablingSrv}/program-cohorts/${row.program_cohorts_id}`,cohortStatus)
             .then(()=>{
                 alert('Success');
                 fetchProgramCohorts();
@@ -132,13 +129,17 @@ function ProgramCohorts(){
     };
 
     const columns=[
-        {title:'ID',field:'id'},
-        {title:'Code',field:'code'},
-        {title:'Program Name',field:'name',},
-        {title:'Start Date',render:(rowData)=>rowData.startDate.slice(0,10)},
+        {title:'ID',field:'program_cohorts_id'},
+        {title:'Code',field:'program_cohorts_code'},
+        {title:'Program Name',field:'pg_name'},
+        {title:'Requires Clearance',field:'pg_requiresClearance'},
+        {title:'Duration',field:'pg_duration'},
+        {title:'Certification Type', field: 'pg_certificationType' },        
+        {title:'Start Date', render:(rowData)=>rowData.program_cohorts_startDate.slice(0,10)},
+
         {
             title:'Anticipated Graduation Date',
-            render:(rowData)=>rowData.anticipatedGraduationMonth+'-'+rowData.anticipatedGraduationYear
+            render:(rowData)=>rowData.program_cohorts_anticipatedGraduationMonth+'-'+rowData.program_cohorts_anticipatedGraduationYear
         },
         {
             title:'Activation Status',
@@ -147,7 +148,7 @@ function ProgramCohorts(){
                 <Switch
                     onChange={(event)=>handleActivationStatusToggle(event,row)}
                     inputProps={{'aria-label':'controlled'}}
-                    defaultChecked={row.isActive===false}
+                    defaultChecked={row.program_cohorts_isActive===false}
                 />
             )
         },
@@ -433,6 +434,6 @@ function ProgramCohorts(){
             </Modal>
         </>
     );
-}
+};
 
 export default ProgramCohorts;
