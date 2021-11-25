@@ -173,9 +173,9 @@ const ProgramCohorts = ():JSX.Element => {
                     <MenuItem value="Edit">Edit</MenuItem>
                     <Link to='/cohortscourses'
                         onClick={() => {
-                            localStorage.setItem('programId', row.programId);
-                            localStorage.setItem('programName', getProgramName(row.programId));
-                            localStorage.setItem('anticipatedGraduation', `${row.anticipatedGraduationMonth}/${row.anticipatedGraduationYear}`);
+                            localStorage.setItem('programId', row.pg_id);
+                            localStorage.setItem('programName', row.pg_name);
+                            localStorage.setItem('anticipatedGraduation', `${row.program_cohorts_anticipatedGraduationMonth}/${row.program_cohorts_anticipatedGraduationYear}`);
                         }}>
                         <MenuItem value="View courses">View courses</MenuItem>
                     </Link>
@@ -186,9 +186,6 @@ const ProgramCohorts = ():JSX.Element => {
     useEffect(()=>{
         axios.get(`${timetablingSrv}/program-cohorts`,{params:{programId:setProgramId}})
             .then(res=>{
-                res.data.forEach(program => {
-                    program.name = getProgramName(res.data[0].programId);
-                });
                 setData(res.data);
             })
             .catch((error)=>{
