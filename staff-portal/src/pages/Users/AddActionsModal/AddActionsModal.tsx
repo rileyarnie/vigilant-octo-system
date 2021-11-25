@@ -1,19 +1,30 @@
 import React, { useEffect, useState } from 'react';
 import { Modal, Button } from 'react-bootstrap';
-import { ActionsList } from '../ActionsList';
 import Select from 'react-select';
-import makeAnimated from 'react-select/animated';
 import Config from '../../../config';
 import axios from 'axios';
-import { differenceBy, xor } from 'lodash';
 
-export const AddActionsModal = (props) => {
+interface IProps {
+    onHide: () => void;
+    selectedRowProps:ISelectedRowProps;
+    show:boolean
+}
+
+interface ISelectedRowProps{
+    name:string;
+    id:number
+}
+
+interface IOptions {
+    value:number;
+    label:string;
+}
+export const AddActionsModal = (props:IProps) => {
     const authnzSrv = Config.baseUrl.authnzSrv;
     const [actions, setActions] = useState([]);
-    const [isMulti, setMulti] = useState(true);
+    const [isMulti] = useState(true);
     const [selectedOptions, setSelectedOptions] = useState([]);
-    const [selectedRowActions, setSelectedRowActions] = useState([]);
-    let options = [] as any;
+    const options:IOptions[] = [];
     useEffect(() => {
         axios
             .get(`${authnzSrv}/actions`)
@@ -22,7 +33,7 @@ export const AddActionsModal = (props) => {
             })
             .catch((error) => {
                 console.log('Error');
-                alert(error.message)
+                alert(error.message);
             });
     }, []);
 
@@ -48,34 +59,32 @@ export const AddActionsModal = (props) => {
     };
 
     const handlePostRoles = async () => {
-        let actionsArr = [] as any;
-        let roleId = props.selectedrowprops.id;
+        const actionsArr = [];
+        const roleId = props.selectedRowProps.id;
         selectedOptions.map((option) => {
             return actionsArr.push(option.value);
         });
-        const params = new URLSearchParams();
-        params.append('actionID', actionsArr);
         axios
-            .post(`${authnzSrv}/roles/${roleId}/actions`, params)
+            .post(`${authnzSrv}/roles/${roleId}/actions`,{ 'actionID': actionsArr})
             .then((res) => {
                 if (res.status == 200) {
                     alert(res.data);
                     console.log(res);
-                    props.onHide()
+                    props.onHide();
                 }
             })
             .catch((error) => {
                 //handle error using logging library
                 console.error(error);
                 alert(error.message);
-                props.onHide()
+                props.onHide();
             });
     };
 
     return (
         <Modal {...props} size="lg" aria-labelledby="contained-modal-title-vcenter" centered>
             <Modal.Header closeButton>
-                <Modal.Title id="contained-modal-title-vcenter">{props.selectedrowprops.name} Actions</Modal.Title>
+                <Modal.Title id="contained-modal-title-vcenter">{props.selectedRowProps.name} Actions</Modal.Title>
             </Modal.Header>
             <Modal.Body>
                 <Select
