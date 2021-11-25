@@ -1,3 +1,4 @@
+/* eslint-disable react/display-name */
 import React, {useState, useEffect} from 'react';
 import {forwardRef} from 'react';
 import MaterialTable from 'material-table';
@@ -17,79 +18,87 @@ import axios from 'axios';
 import Breadcrumb from '../../App/components/Breadcrumb';
 import {Row, Col, Card, Button} from 'react-bootstrap';
 import Config from '../../config';
-import CreateUser from './CreateUserModal/CreateUser'
-
-const tableIcons = {
-	Add: forwardRef((props, ref: any) => <AddBox {...props} ref={ref}/>),
-	Check: forwardRef((props, ref: any) => <Check {...props} ref={ref}/>),
-	DetailPanel: forwardRef((props, ref: any) => <ChevronRight {...props} ref={ref}/>),
-	Filter: forwardRef((props, ref: any) => <FilterList {...props} ref={ref}/>),
-	FirstPage: forwardRef((props, ref: any) => <FirstPage {...props} ref={ref}/>),
-	LastPage: forwardRef((props, ref: any) => <LastPage {...props} ref={ref}/>),
-	NextPage: forwardRef((props, ref: any) => <ChevronRight {...props} ref={ref}/>),
-	PreviousPage: forwardRef((props, ref: any) => <ChevronLeft {...props} ref={ref}/>),
-	ResetSearch: forwardRef((props, ref: any) => <Clear {...props} ref={ref}/>),
-	Search: forwardRef((props, ref: any) => <Search {...props} ref={ref}/>),
-	SortArrow: forwardRef((props, ref: any) => <ArrowDownward {...props} ref={ref}/>),
-	ThirdStateCheck: forwardRef((props, ref: any) => <Remove {...props} ref={ref}/>),
-	ViewColumn: forwardRef((props, ref: any) => <ViewColumn {...props} ref={ref}/>)
+import CreateUser from './CreateUserModal/CreateUser';
+import { Icons } from 'material-table';
+const tableIcons:Icons = {
+    Add: forwardRef((props, ref) => <AddBox {...props} ref={ref}/>),
+    Check: forwardRef((props, ref) => <Check {...props} ref={ref}/>),
+    DetailPanel: forwardRef((props, ref) => <ChevronRight {...props} ref={ref}/>),
+    Filter: forwardRef((props, ref) => <FilterList {...props} ref={ref}/>),
+    FirstPage: forwardRef((props, ref) => <FirstPage {...props} ref={ref}/>),
+    LastPage: forwardRef((props, ref) => <LastPage {...props} ref={ref}/>),
+    NextPage: forwardRef((props, ref) => <ChevronRight {...props} ref={ref}/>),
+    PreviousPage: forwardRef((props, ref) => <ChevronLeft {...props} ref={ref}/>),
+    ResetSearch: forwardRef((props, ref) => <Clear {...props} ref={ref}/>),
+    Search: forwardRef((props, ref) => <Search {...props} ref={ref}/>),
+    SortArrow: forwardRef((props, ref) => <ArrowDownward {...props} ref={ref}/>),
+    ThirdStateCheck: forwardRef((props, ref) => <Remove {...props} ref={ref}/>),
+    ViewColumn: forwardRef((props, ref) => <ViewColumn {...props} ref={ref}/>)
 };
 
-function UserList() {
-
-	const columns = [
-		{title: 'ID', field: 'id'},
-		{title: 'AAD Alias', field: 'AADAlias'},
-
-
-	];
-	const [data, setData] = useState([]);
-	const baseUrl = Config.baseUrl.authnzSrv;
-	const [showModal, setModal] = useState(false);
-	useEffect(() => {
-		axios.get(`${baseUrl}/users`)
-			.then(res => {
-				setData(res.data);
-			})
-			.catch(error => {
-				//handle error using logging library
-				console.log('Error');
-			});
-	}, []);
-	const toggleCreateModal = () => {
-		showModal ? setModal(false) : setModal(true);
-	};
-
-	return (
-		<>
-			<Row className='align-items-center page-header'>
-				<Col>
-					<Breadcrumb/>
-				</Col>
-				<Col>
-					<CreateUser></CreateUser>
-				</Col>
-
-			</Row>
-			<Row>
-				<Col>
-					<Card>
-						<Card.Header>
-							<h5>Users</h5>
-						</Card.Header>
-						<MaterialTable
-							title=''
-							columns={columns}
-							data={data}
-							// @ts-ignore
-							icons={tableIcons}
-
-						/>
-
-					</Card>
-				</Col>
-			</Row>
-		</>
-	);
+interface History{
+	push: (path:string) => void
 }
+interface IProps {
+	history:History
+}
+
+const UserList = (props:IProps):JSX.Element => {
+
+    const columns = [
+        {title: 'ID', field: 'id'},
+        {title: 'AAD Alias', field: 'AADAlias'},
+
+
+    ];
+    const [data, setData] = useState([]);
+    const baseUrl = Config.baseUrl.authnzSrv;
+
+    useEffect(() => {
+        axios.get(`${baseUrl}/users`)
+            .then(res => {
+                setData(res.data);
+            })
+            .catch(error => {
+                //handle error using logging library
+                console.log('Error',error.message);
+            });
+    }, []);
+
+    const handleRouteChange = () => {
+        props.history.push('assignrole');
+    };
+
+    return (
+        <>
+            <Row className='align-items-center page-header'>
+                <Col>
+                    <Breadcrumb/>
+                </Col>
+				
+                <Col>				
+                    <CreateUser></CreateUser>
+                </Col>
+                <Button variant="danger" onClick={() =>  handleRouteChange() }>Assign Role</Button>
+            </Row>
+            <Row>
+                <Col>
+                    <Card>
+                        <Card.Header>
+                            <h5>Users</h5>
+                        </Card.Header>
+                        <MaterialTable
+                            title=''
+                            columns={columns}
+                            data={data}
+                            icons={tableIcons}
+
+                        />
+
+                    </Card>
+                </Col>
+            </Row>
+        </>
+    );
+};
 export default UserList;
