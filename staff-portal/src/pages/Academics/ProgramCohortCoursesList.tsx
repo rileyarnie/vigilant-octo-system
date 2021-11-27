@@ -24,7 +24,7 @@ import Breadcrumb from '../../App/components/Breadcrumb';
 import { Row, Col, Card } from 'react-bootstrap';
 import DeleteIcon from '@material-ui/icons/Delete';
 import Config from '../../config';
-
+import { DeactivateCourseCohort } from './DeactivateCourseCohort';
 const tableIcons = {
     Add: forwardRef((props, ref: any) => <AddBox {...props} ref={ref} />),
     Check: forwardRef((props, ref: any) => <Check {...props} ref={ref} />),
@@ -54,14 +54,20 @@ function ProgramCohortCoursesList() {
         { title: 'Semester name', field: 'semName' },
         { title: 'Start date', field: 'startDate' },
         { title: 'End date', field: 'endDate' },
-        { title: 'Action', field: 'action' }
+        { title: 'Action', field: 'action' },
+        {
+            title:'Activation Status',
+            field:'internal_action',
+            render:(row)=>(
+                <DeactivateCourseCohort selectedRow={row}/>
+            )
+        },
     ];
     const [data, setData] = useState([]);
     const [programId, setProgramId] = useState();
     const [courseName, setCourseName] = useState('');
     const [courseId] = useState(null);
     const [iserror] = useState(false);
-    const [, setSelectedRows] = useState();
     const [errorMessages, setErrorMessages] = useState([]);
     const timetablingSrv = Config.baseUrl.timetablingSrv;
     const programName = localStorage.getItem('programName');
