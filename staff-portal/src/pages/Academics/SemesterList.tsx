@@ -103,7 +103,7 @@ function SemesterList() {
 	                defaultChecked={row.activation_status === true ? true : false}
 	            />
 	        )
-	    },
+	    }
 	];
 	const [checked, setChecked] = useState(true);
 	const [progress, setProgress] = useState(0);
@@ -119,16 +119,21 @@ function SemesterList() {
 	const [selectedSemesterName, setSelectedSemesterName] = useState('');
 	const [selectedStartDate, setSelectedStartDate] = useState('');
 	const [selectedEndDate, setSelectedEndDate] = useState('');
+	const [showPublishModal, setShowPublish] = useState(false);
+	const [programs, setPrograms] = useState([]);
 
 	useEffect(() => {
 	    axios.get(`${timetablingSrv}/semesters`)
 	        .then(res => {
+	            console.log(res.data);
 	            setData(res.data);
 	        })
 	        .catch((error) => {
 	            console.error(error);
 	            alert(error.message);
 	        });
+	    fetchProgramCohorts();
+	    fetchPrograms();
 	}, []);
 	const updateSemester = (semesterId, updates) => {
 	    axios.put(`${timetablingSrv}/semesters/${semesterId}`, updates)
@@ -155,9 +160,31 @@ function SemesterList() {
 	            alert(error.message);
 	        });
 	};
+	const fetchProgramCohorts = () => {
+	    axios.get(`${timetablingSrv}/program-cohorts`)
+	        .then(res=>{
+	            console.log(res.data);
+	            setData(res.data);
+	        })
+	        .catch((error)=>{
+	            console.error(error);
+	            alert(error);
+	        });
+	};
+	const fetchPrograms = () => {
+	    axios.get(`${timetablingSrv}/programs`)
+	        .then(res=>{
+	            console.log(programs);
+	            setPrograms(res.data);
+	        })
+	        .catch((error)=>{
+	            console.error(error);
+	            alert(error);
+	        });
+	};
 	const handleCreate = (e) => {
 	    e.preventDefault();
-	    const semester = {
+	    const semester = { 
 	        name: semesterName,
 	        startDate: startDate,
 	        endDate: endDate,
@@ -199,6 +226,9 @@ function SemesterList() {
 
 	const toggleCreateModal = () => {
 	    showModal ? resetStateCloseModal() : setModal(true);
+	};
+	const togglePublishModal = () => {
+	    showPublishModal ? setShowPublish(false) : setShowPublish(true);
 	};
 	const handleClose = () => setModal(false);
 
@@ -251,6 +281,7 @@ function SemesterList() {
 	                </Card>
 	            </Col>
 	        </Row>
+
 	        <Modal
 	            show={showModal}
 	            onHide={toggleCreateModal}
