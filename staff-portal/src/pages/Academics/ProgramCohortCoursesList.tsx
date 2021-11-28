@@ -1,3 +1,4 @@
+/* eslint-disable linebreak-style */
 /* eslint-disable @typescript-eslint/no-unused-vars */
 /* eslint-disable @typescript-eslint/no-explicit-any */
 /* eslint-disable react/display-name */
@@ -12,6 +13,7 @@ import Clear from '@material-ui/icons/Clear';
 import DeleteOutline from '@material-ui/icons/DeleteOutline';
 import Edit from '@material-ui/icons/Edit';
 import FilterList from '@material-ui/icons/FilterList';
+import AssignmentTurnedIn from '@material-ui/icons/AssignmentTurnedIn';
 import FirstPage from '@material-ui/icons/FirstPage';
 import LastPage from '@material-ui/icons/LastPage';
 import Remove from '@material-ui/icons/Remove';
@@ -19,37 +21,50 @@ import SaveAlt from '@material-ui/icons/SaveAlt';
 import Search from '@material-ui/icons/Search';
 import ViewColumn from '@material-ui/icons/ViewColumn';
 import axios from 'axios';
+import { Icons } from 'material-table';
+import LinearProgress from '@material-ui/core/LinearProgress';
 import Alert from '@material-ui/lab/Alert';
 import Breadcrumb from '../../App/components/Breadcrumb';
+import {ValidationForm,SelectGroup,TextInput} from 'react-bootstrap4-form-validation';
 import { Row, Col, Card, Modal, ProgressBar, Button } from 'react-bootstrap';
 import DeleteIcon from '@material-ui/icons/Delete';
 import Config from '../../config';
-import { ValidationForm, SelectGroup, TextInput } from 'react-bootstrap4-form-validation';
-import LinearProgress from '@material-ui/core/LinearProgress';
+import { makeStyles } from '@material-ui/core';
 
 import { DeactivateCourseCohort } from './DeactivateCourseCohort';
-const tableIcons = {
-    Add: forwardRef((props, ref: any) => <AddBox {...props} ref={ref} />),
-    Check: forwardRef((props, ref: any) => <Check {...props} ref={ref} />),
-    Clear: forwardRef((props, ref: any) => <Clear {...props} ref={ref} />),
-    Delete: forwardRef((props, ref: any) => <DeleteOutline {...props} ref={ref} />),
-    DetailPanel: forwardRef((props, ref: any) => <ChevronRight {...props} ref={ref} />),
-    Edit: forwardRef((props, ref: any) => <Edit {...props} ref={ref} />),
-    Export: forwardRef((props, ref: any) => <SaveAlt {...props} ref={ref} />),
-    Filter: forwardRef((props, ref: any) => <FilterList {...props} ref={ref} />),
-    FirstPage: forwardRef((props, ref: any) => <FirstPage {...props} ref={ref} />),
-    LastPage: forwardRef((props, ref: any) => <LastPage {...props} ref={ref} />),
-    NextPage: forwardRef((props, ref: any) => <ChevronRight {...props} ref={ref} />),
-    PreviousPage: forwardRef((props, ref: any) => <ChevronLeft {...props} ref={ref} />),
-    ResetSearch: forwardRef((props, ref: any) => <Clear {...props} ref={ref} />),
-    Search: forwardRef((props, ref: any) => <Search {...props} ref={ref} />),
-    SortArrow: forwardRef((props, ref: any) => <ArrowDownward {...props} ref={ref} />),
-    ThirdStateCheck: forwardRef((props, ref: any) => <Remove {...props} ref={ref} />),
-    ViewColumn: forwardRef((props, ref: any) => <ViewColumn {...props} ref={ref} />)
+const tableIcons: Icons = {
+    Add: forwardRef((props, ref) => < AddBox  {...props} ref={ref} />),
+    Check: forwardRef((props, ref) => <Check {...props} ref={ref} />),
+    Clear: forwardRef((props, ref) => <Clear {...props} ref={ref} />),
+    Delete: forwardRef((props, ref) => <DeleteOutline {...props} ref={ref} />),
+    DetailPanel: forwardRef((props, ref) => <ChevronRight {...props} ref={ref} />),
+    Edit: forwardRef((props, ref) => <Edit {...props} ref={ref} />),
+    Export: forwardRef((props, ref) => <SaveAlt {...props} ref={ref} />),
+    Filter: forwardRef((props, ref) => <FilterList {...props} ref={ref} />),
+    FirstPage: forwardRef((props, ref) => <FirstPage {...props} ref={ref} />),
+    LastPage: forwardRef((props, ref) => <LastPage {...props} ref={ref} />),
+    NextPage: forwardRef((props, ref) => <ChevronRight {...props} ref={ref} />),
+    PreviousPage: forwardRef((props, ref) => <ChevronLeft {...props} ref={ref} />),
+    ResetSearch: forwardRef((props, ref) => <Clear {...props} ref={ref} />),
+    Search: forwardRef((props, ref) => <Search {...props} ref={ref} />),
+    SortArrow: forwardRef((props, ref) => <ArrowDownward {...props} ref={ref} />),
+    ThirdStateCheck: forwardRef((props, ref) => <Remove {...props} ref={ref} />),
+    ViewColumn: forwardRef((props, ref) => <ViewColumn {...props} ref={ref} />)
 };
-
+const useStyles = makeStyles({
+    root: {
+        width: '100%',
+    },
+});
 function ProgramCohortCoursesList() {
-
+    const classes = useStyles();
+    interface programCohortCourse{
+        program_cohort_Id:number,
+        id: number;
+        published:boolean,
+        activation_status:boolean,
+        semester_id:number,
+    }
     const columns = [
         { title: 'Course cohort code', field: 'courseCohortCode', hidden: false },
         { title: 'Course code', field: 'code' },
@@ -74,6 +89,15 @@ function ProgramCohortCoursesList() {
                 <DeactivateCourseCohort selectedRow={row}/>
             )
         },
+        {
+            title: 'Action',
+            field: 'internal_action',
+            render: (row:programCohortCourse) => (
+                <button className="btn btn btn-link" onClick={handleShow}>
+                    {row.semester_id ? <>Change Semester<AssignmentTurnedIn fontSize="inherit" style={{ fontSize: '20px', color: 'black' }} /></> : <>Assign Semester<AssignmentTurnedIn fontSize="inherit" style={{ fontSize: '20px', color: 'black' }} /></>}
+                </button>
+            )
+        }
     ];
     const [data, setData] = useState([]);
     const [programId, setProgramId] = useState();
@@ -81,6 +105,14 @@ function ProgramCohortCoursesList() {
     const [courseId] = useState(null);
     const [semesters, setSemesters] = useState([]);
     const [iserror] = useState(false);
+    const [show, setShow] = useState(false);
+    const [semester,setSemester]=useState([]);
+    const [semesterId, setSemesterId] = useState('');
+    const [selectedSemesterId, setSelectedSemesterId] = useState('');
+    const [,setDisabled]=useState(false);
+    const [progressBar, setProgress] = useState(0);
+    const [loadingBar, setLoadingBar] = useState('block');
+    const [, setSelectedRows] = useState();
     const [errorMessages, setErrorMessages] = useState([]);
     const timetablingSrv = Config.baseUrl.timetablingSrv;
     const programName = localStorage.getItem('programName');
@@ -90,8 +122,6 @@ function ProgramCohortCoursesList() {
     const [showPublishModal, setShowPublish] = useState(false);
     const [showDialog, setDialog] = useState(false);
     const [selectedSemester, setSelectedemester] = useState('Please select semester');
-    const [progressBar, setProgress] = useState(0);
-    const [loadingBar, setLoadingBar] = useState('block');
     useEffect(() => {
         axios.get(`${timetablingSrv}/programs/courses/${progId}`)
             .then(res => {
@@ -101,6 +131,14 @@ function ProgramCohortCoursesList() {
             })
             .catch((err) => {
                 setErrorMessages(['Failed to fetch courses']);
+                console.log(err);
+            });
+        axios.get(`${timetablingSrv}/semesters`)
+            .then(res => {
+                setSemester(res.data);
+            })
+            .catch((err) => {
+                alert(err.message);
                 console.log(err);
             });
         fetchSemesters();
@@ -140,6 +178,33 @@ function ProgramCohortCoursesList() {
         togglePublishModal();
     };
 
+    const assignSemester = (e) => {
+        e.preventDefault();
+        const courseCohort = {
+            'program-cohort-semester': {
+                program_cohort_Id: progId,
+                published:true,
+                semester_id: semesterId
+            }
+        };
+        setCourseCohort(courseCohort);
+    };
+    const setCourseCohort = (semesterData) => {
+        console.log(semesterData);
+        axios
+            .post(`${timetablingSrv}/program-cohort-semesters`, semesterData)
+            .then((res) => {
+                alert('Succesfully Assigned semester');
+                setProgress(100);
+                fetchCoursesAssignedToProgram(progId);
+                resetStateCloseModal();
+            })
+            .catch((error) => {
+                console.log(error);
+                setProgress(0);
+                alert(error.message);
+            });
+    };
     const unassignSelectedCourseFromProgram = (selectedCourseId: number): void => {
         axios.put(`${timetablingSrv}/programs/${selectedCourseId}/${programId}`)
             .then(res => {
@@ -151,6 +216,29 @@ function ProgramCohortCoursesList() {
                 console.log(err);
             });
     };
+    const handleSemesterUpdate=(e,row:programCohortCourse)=>{
+        const courseSemester = {
+            'program-cohort-semester': {
+                semester_id: semesterId
+            }
+        };
+        axios
+            .patch(`${timetablingSrv}/course-cohorts/${row.id}`, courseSemester)
+            .then(()=>{
+                alert('Successfully changed semester ');
+                fetchCoursesAssignedToProgram(progId);
+                resetStateCloseModal();
+                setDisabled(false);
+            });
+    };
+
+    const resetStateCloseModal=(): void =>{
+        setSemesterId(null);
+        setShow(false);
+    };
+    const handleClose = () => setShow(false);
+    const handleShow = () => setShow(true);
+
     const togglePublishModal = () => {
         showPublishModal ? setShowPublish(false) : setShowPublish(true);
     };
@@ -224,9 +312,7 @@ function ProgramCohortCoursesList() {
                 size="lg"
                 backdrop="static"
                 aria-labelledby="contained-modal-title-vcenter"
-                centered
-            >
-                <ProgressBar animated now={progressBar} variant="info"/>
+                centered>
                 <Modal.Header closeButton>
                     <Modal.Title id="contained-modal-title-vcenter">
                         Publish {programName} {programCohortCode}
@@ -237,15 +323,15 @@ function ProgramCohortCoursesList() {
                         <div className='form-group'>
                             <label htmlFor='startDate'><b>Anticipated Start Date</b></label><br />
                             <TextInput name='startDate'  id='startDate'  type="date" required /><br />
-                            <label htmlFor='Date'><b>Number of slots</b></label><br />		   
+                            <label htmlFor='Date'><b>Number of slots</b></label><br />
                             <TextInput name='numSlots' id='numSlots' type="text" placeholder="number of slots" required
                                 onChange={(e)=>{
                                     console.log(e.target.value);
                                 }}/><br/>
                             <SelectGroup
-                                name="semester" 
-                                id="semester" 
-                                required 
+                                name="semester"
+                                id="semester"
+                                required
                                 errorMessage="Please select semester"
                                 onChange={(e) => setSelectedemester(e.target.value)}
                             >
@@ -255,14 +341,14 @@ function ProgramCohortCoursesList() {
                                         <option key={semester.id} value={semester.id}>{semester.name}</option>
                                     ))
                                 }
-                            </SelectGroup>									   
+                            </SelectGroup>
                         </div>
                         <div className='form-group'>
                             <button
                                 className="btn btn-danger float-left"
                                 onClick={(e) => {
                                     toggleDialog();
-                                
+
                                 }}
                             >
 								Publish
@@ -272,6 +358,41 @@ function ProgramCohortCoursesList() {
                     <button className="btn btn-info float-right" onClick={togglePublishModal}>
 						Close
                     </button>
+                </Modal.Body>
+            </Modal>
+            <Modal
+                backdrop="static"
+                show={show}
+                onHide={handleClose}
+                size="lg"
+                aria-labelledby="contained-modal-title-vcenter"
+                centered>
+                <LinearProgress className={classes.root} variant="determinate" value={progressBar} />
+                <Modal.Header closeButton>
+                    <Modal.Title id="contained-modal-title-vcenter">Assign semester </Modal.Title>
+                </Modal.Header>
+                <Modal.Body>
+                    <ValidationForm>
+                        <SelectGroup name="c" id="color" required onChange={(e)=>{
+                            setSemesterId(e.target.value);
+                            setSelectedSemesterId(e.target.value);
+                        }} >
+                            {
+                                semester.map(sem => {
+                                    return(
+                                        <option key={sem.name} defaultValue={selectedSemesterId} value={sem.id} >{sem.name}</option>
+                                    );
+                                })
+                            }
+                        </SelectGroup><br></br>
+                        <div className='form-group'>
+                            <Button className='btn btn-info float-right' onClick={(e) => assignSemester(e)}>Submit
+                            </Button>
+                        </div>
+                        <Button className="btn btn-danger float-left" onClick={handleClose}>
+                            Close
+                        </Button>
+                    </ValidationForm>
                 </Modal.Body>
             </Modal>
         </>
