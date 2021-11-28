@@ -30,6 +30,7 @@ import { Row, Col, Card, Modal, ProgressBar, Button } from 'react-bootstrap';
 import DeleteIcon from '@material-ui/icons/Delete';
 import Config from '../../config';
 import { makeStyles } from '@material-ui/core';
+import SelectCurrency from 'react-select-currency';
 
 import { DeactivateCourseCohort } from './DeactivateCourseCohort';
 const tableIcons: Icons = {
@@ -115,6 +116,7 @@ function ProgramCohortCoursesList() {
     const [, setSelectedRows] = useState();
     const [errorMessages, setErrorMessages] = useState([]);
     const timetablingSrv = Config.baseUrl.timetablingSrv;
+    const financeSrv = Config.baseUrl.financeSrv;
     const programName = localStorage.getItem('programName');
     const anticipatedGraduation = localStorage.getItem('anticipatedGraduation');
     const progId = JSON.parse(localStorage.getItem('programId'));
@@ -122,6 +124,10 @@ function ProgramCohortCoursesList() {
     const [showPublishModal, setShowPublish] = useState(false);
     const [showDialog, setDialog] = useState(false);
     const [selectedSemester, setSelectedemester] = useState('Please select semester');
+    const [narrative, setNarrative] = useState('');
+    const [amount, setAmount] = useState(0);
+    const [currency,setCurrency] = useState('KES');
+    let programCohortSemesterId:number;
     useEffect(() => {
         axios.get(`${timetablingSrv}/programs/courses/${progId}`)
             .then(res => {
@@ -172,8 +178,9 @@ function ProgramCohortCoursesList() {
             });
     };
 
-    const publishSemester = () => {
+    const publishSemesterAndFeeItems = async () => {
         console.log('publish semester');
+        await handleFeeItemsPost();
         toggleDialog();
         togglePublishModal();
     };
@@ -232,6 +239,24 @@ function ProgramCohortCoursesList() {
             });
     };
 
+    const handleFeeItemsPost = async () => {
+        axios
+            .post(financeSrv,{'createFeeItemRequest':{
+                narrative:narrative,
+                amount: amount,
+                currency:currency,
+                programCohortSemesterId: programCohortSemesterId
+            }
+            })
+            .then(()=>{
+                alert('Successfully posted fee items');
+            })
+            .catch((err) => {
+                setErrorMessages(['Post fee items failed!']);
+                console.log(err);
+            });
+    };
+
     const resetStateCloseModal=(): void =>{
         setSemesterId(null);
         setShow(false);
@@ -244,6 +269,23 @@ function ProgramCohortCoursesList() {
     };
     const toggleDialog = () => {
         showDialog ? setDialog(false) : setDialog(true);
+    };
+
+    const onSelectedCurrency = currencyAbbrev => {
+        setCurrency(currencyAbbrev);
+    };
+
+    const handleNarrativeChange = (event) => {
+        setNarrative(event.target.value);
+    };
+
+    const handleAmountChange = (event) => {
+        setAmount(event.target.value);
+    };
+
+    const selectStyle = {
+        width:'100%',
+        height: '30px'
     };
     return (
         <>
@@ -301,7 +343,7 @@ function ProgramCohortCoursesList() {
                     </Modal.Body>
 
                     <Modal.Footer>
-                        <Button variant="secondary" onClick={() => publishSemester()}>Continue to publish</Button>
+                        <Button variant="secondary" onClick={() => publishSemesterAndFeeItems()}>Continue to publish</Button>
                         <Button variant="primary" onClick={() => toggleDialog()}>Continue editing</Button>
                     </Modal.Footer>
                 </Modal.Dialog>
@@ -328,6 +370,7 @@ function ProgramCohortCoursesList() {
                                 onChange={(e)=>{
                                     console.log(e.target.value);
                                 }}/><br/>
+                            <label htmlFor='semester'><b>Semester</b></label><br />    
                             <SelectGroup
                                 name="semester"
                                 id="semester"
@@ -342,10 +385,19 @@ function ProgramCohortCoursesList() {
                                     ))
                                 }
                             </SelectGroup>
+                            <hr/>
+                            <label htmlFor='narrative'><b>Narrative</b></label><br />
+                            <TextInput name='narrative'  id='narrative'  type="text" value = {narrative} onChange = {handleNarrativeChange} required /><br />
+
+                            <label htmlFor='amount'><b>Amount</b></label><br />
+                            <TextInput name='amount'  id='amount'  type="number" value = {amount} onChange = {handleAmountChange} required /><br />
+
+                            <label htmlFor='currency'><b>Currency</b></label><br />     
+                            <SelectCurrency style = {selectStyle} name= 'currency' value={currency} onChange={onSelectedCurrency} />
                         </div>
                         <div className='form-group'>
                             <button
-                                className="btn btn-danger float-left"
+                                className="btn btn-info float-left"
                                 onClick={(e) => {
                                     toggleDialog();
 
@@ -355,7 +407,7 @@ function ProgramCohortCoursesList() {
                             </button>
                         </div>
                     </ValidationForm>
-                    <button className="btn btn-info float-right" onClick={togglePublishModal}>
+                    <button className="btn btn-danger float-right" onClick={togglePublishModal}>
 						Close
                     </button>
                 </Modal.Body>
