@@ -109,7 +109,7 @@ function AssignCourse() {
     const assignSelectedCoursesToProgram = (selectedCourses: Array<number>) => {
         console.log('this is the array being given here: '+selectedCourses[0]);
 
-        axios.put(`${timetablingSrv}/programs/courses/${programId}`, {courses: selectedCourses})
+        axios.put(`${timetablingSrv}/programs/${programId}/courses`, {courses: selectedCourses})
             .then(res => {
                 alert('Course assignment succesful.');
                 fetchCourses();

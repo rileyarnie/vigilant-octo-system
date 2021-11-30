@@ -70,7 +70,7 @@ function ProgramCoursesList() {
     const progId = JSON.parse(localStorage.getItem('programId'));
     console.log(progId);
     useEffect(() => {
-        axios.get(`${timetablingSrv}/programs/courses/${progId}`)
+        axios.get(`${timetablingSrv}/programs/${progId}/courses`)
             .then(res => {
                 console.log(res.data);
                 setData(res.data);
@@ -82,7 +82,7 @@ function ProgramCoursesList() {
     }, []);
 
     const fetchCoursesAssignedToProgram = (progId: number) => {
-        axios.get(`${timetablingSrv}/programs/courses/${progId}`)
+        axios.get(`${timetablingSrv}/programs/${progId}/courses`)
             .then(res => {
                 setData(res.data);
             })

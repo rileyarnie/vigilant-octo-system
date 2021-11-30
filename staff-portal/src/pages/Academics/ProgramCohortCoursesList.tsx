@@ -131,7 +131,7 @@ function ProgramCohortCoursesList() {
     const [currency,setCurrency] = useState('KES');
     let programCohortSemesterId:number;
     useEffect(() => {
-        axios.get(`${timetablingSrv}/programs/courses/${progId}`)
+        axios.get(`${timetablingSrv}/programs/${progId}/courses`)
             .then(res => {
                 setData(res.data);
                 setProgramId(progId);
@@ -154,7 +154,7 @@ function ProgramCohortCoursesList() {
 
     const fetchCoursesAssignedToProgram = (progId: number): void => {
         setLoadingBar('block');
-        axios.get(`${timetablingSrv}/programs/courses/${progId}`)
+        axios.get(`${timetablingSrv}/programs/${progId}courses`)
             .then(res => {
                 setLoadingBar('none');
                 setData(res.data);
