@@ -1,21 +1,21 @@
-import React, { useState } from 'react';
-import { Modal, Button } from 'react-bootstrap';
+import React from 'react';
+import { Button } from 'react-bootstrap';
 import { AssignRoleModal } from './AssignRoleModal';
 
 export const Assign = (props) => {
-	const [modalShow, setModalShow] = React.useState(false);
-	return (
-		<>
-			<Button variant="danger mr-2" onClick={() => setModalShow(true)}>
+    const [modalShow, setModalShow] = React.useState(false);
+    return (
+        <>
+            <Button variant="danger mr-2" onClick={() => setModalShow(true)}>
 				Assign Role
-			</Button>
+            </Button>
 
-			<AssignRoleModal
-				show={modalShow}
-				onHide={() => setModalShow(false)}
-				selectedrowprops= {props}
-			/>
-		</>
-	);
+            <AssignRoleModal
+                show={modalShow}
+                onHide={() => setModalShow(false)}
+                selectedrowprops= {props}
+            />
+        </>
+    );
 };
 

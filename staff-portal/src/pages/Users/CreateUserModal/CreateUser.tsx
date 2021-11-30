@@ -6,16 +6,16 @@ const CreateUser = () => {
     const [modalShow, setModalShow] = React.useState(false);
     return (
         <>
-      <Button variant="danger" className="float-right" onClick={() => setModalShow(true)}>
+            <Button variant="danger" className="float-right" onClick={() => setModalShow(true)}>
         Create User
-      </Button>
+            </Button>
 
-      <CreateUserModal
-        show={modalShow}
-        onHide={() => setModalShow(false)}
-        setModalShow = {setModalShow}
-      />
-    </>
+            <CreateUserModal
+                show={modalShow}
+                onHide={() => setModalShow(false)}
+                setModalShow = {setModalShow}
+            />
+        </>
     );
 };
 

@@ -7,8 +7,8 @@ import Config from '../../config';
 import Select from 'react-select';
 
 interface Props extends React.HTMLAttributes<Element> {
-	setModal:any,
-	setProgress:any
+        setModal:any,
+        setProgress:any
     fetchCourses:any
   }
 //   interface Course {

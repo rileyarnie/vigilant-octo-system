@@ -1,5 +1,5 @@
 const SYS = {
-  BLANK_LINK: "#"
+    BLANK_LINK: '#'
 };
 
 export default SYS;

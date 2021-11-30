@@ -1,6 +1,7 @@
-import React, { useState, useEffect, useRef } from 'react';
+/* eslint-disable react/display-name */
+import React, { useState, useEffect} from 'react';
 import { forwardRef } from 'react';
-import MaterialTable from 'material-table';
+import MaterialTable, { Icons } from 'material-table';
 import AddBox from '@material-ui/icons/AddBox';
 import ArrowDownward from '@material-ui/icons/ArrowDownward';
 import Check from '@material-ui/icons/Check';
@@ -19,36 +20,32 @@ import ViewColumn from '@material-ui/icons/ViewColumn';
 import axios from 'axios';
 import Alert from '@material-ui/lab/Alert';
 import Breadcrumb from '../../App/components/Breadcrumb';
-import { Row, Col, Card, Form, Button, Modal, ProgressBar } from 'react-bootstrap';
+import { Row, Col, Card, Button, Modal, ProgressBar } from 'react-bootstrap';
 import Config from '../../config';
 import { Switch } from '@material-ui/core';
 import CourseCreation from './CreateCourse';
-import EditCourse from './EditCourse';
-const tableIcons = {
-    Add: forwardRef((props, ref: any) => <AddBox {...props} ref={ref} />),
-    Check: forwardRef((props, ref: any) => <Check {...props} ref={ref} />),
-    Clear: forwardRef((props, ref: any) => <Clear {...props} ref={ref} />),
-    Delete: forwardRef((props, ref: any) => <DeleteOutline {...props} ref={ref} />),
-    DetailPanel: forwardRef((props, ref: any) => <ChevronRight {...props} ref={ref} />),
-    Edit: forwardRef((props, ref: any) => <Edit {...props} ref={ref} />),
-    Export: forwardRef((props, ref: any) => <SaveAlt {...props} ref={ref} />),
-    Filter: forwardRef((props, ref: any) => <FilterList {...props} ref={ref} />),
-    FirstPage: forwardRef((props, ref: any) => <FirstPage {...props} ref={ref} />),
-    LastPage: forwardRef((props, ref: any) => <LastPage {...props} ref={ref} />),
-    NextPage: forwardRef((props, ref: any) => <ChevronRight {...props} ref={ref} />),
-    PreviousPage: forwardRef((props, ref: any) => <ChevronLeft {...props} ref={ref} />),
-    ResetSearch: forwardRef((props, ref: any) => <Clear {...props} ref={ref} />),
-    Search: forwardRef((props, ref: any) => <Search {...props} ref={ref} />),
-    SortArrow: forwardRef((props, ref: any) => <ArrowDownward {...props} ref={ref} />),
-    ThirdStateCheck: forwardRef((props, ref: any) => <Remove {...props} ref={ref} />),
-    ViewColumn: forwardRef((props, ref: any) => <ViewColumn {...props} ref={ref} />)
+const tableIcons: Icons = {
+    Add: forwardRef((props, ref) => < AddBox  {...props} ref={ref} />),
+    Check: forwardRef((props, ref) => <Check {...props} ref={ref} />),
+    Clear: forwardRef((props, ref) => <Clear {...props} ref={ref} />),
+    Delete: forwardRef((props, ref) => <DeleteOutline {...props} ref={ref} />),
+    DetailPanel: forwardRef((props, ref) => <ChevronRight {...props} ref={ref} />),
+    Edit: forwardRef((props, ref) => <Edit {...props} ref={ref} />),
+    Export: forwardRef((props, ref) => <SaveAlt {...props} ref={ref} />),
+    Filter: forwardRef((props, ref) => <FilterList {...props} ref={ref} />),
+    FirstPage: forwardRef((props, ref) => <FirstPage {...props} ref={ref} />),
+    LastPage: forwardRef((props, ref) => <LastPage {...props} ref={ref} />),
+    NextPage: forwardRef((props, ref) => <ChevronRight {...props} ref={ref} />),
+    PreviousPage: forwardRef((props, ref) => <ChevronLeft {...props} ref={ref} />),
+    ResetSearch: forwardRef((props, ref) => <Clear {...props} ref={ref} />),
+    Search: forwardRef((props, ref) => <Search {...props} ref={ref} />),
+    SortArrow: forwardRef((props, ref) => <ArrowDownward {...props} ref={ref} />),
+    ThirdStateCheck: forwardRef((props, ref) => <Remove {...props} ref={ref} />),
+    ViewColumn: forwardRef((props, ref) => <ViewColumn {...props} ref={ref} />)
 };
 
 function CoursesList(props) {
     const timetablingSrv = Config.baseUrl.timetablingSrv;
-    const ACTIVE = 'ACTIVE';
-    const INACTIVE = 'INACTIVE';
-
     interface Course {
         name: string;
         id: number;
@@ -78,38 +75,36 @@ function CoursesList(props) {
     };
     const [data, setData] = useState([]);
     const [showModal, setModal] = useState(false);
-    const [showEditModal, setEditModal] = useState(false);
     const [iserror] = useState(false);
     const [errorMessages] = useState([]);
-    const [checked, setChecked] = useState(true);
     const [progress, setProgress] = useState(0);
-    const[disabled,setDisabled] = useState(false)
+    const[disabled,setDisabled] = useState(false);
     //const [selectedCourse,setSelectedCourse] = useState({} as Course)
     let approvalStatus: boolean;
     let activationStatus: boolean;
     const handleActivationStatusToggle = (event, row: Course) => {
-        setDisabled(true)
+        setDisabled(true);
         if (row.activation_status) {
             activationStatus = false;
-            approvalStatus=row.approval_status
+            approvalStatus=row.approval_status;
             handleToggleStatusSubmit(event, row);
         }
         if (!row.activation_status) {
             activationStatus = true;
-            approvalStatus=row.approval_status
+            approvalStatus=row.approval_status;
             handleToggleStatusSubmit(event, row);
         }
     };
     const handleApprovalStatusToggle = (event, row: Course) => {
-        setDisabled(true)
+        setDisabled(true);
         if (row.approval_status) {
             approvalStatus = false;
-            activationStatus=row.activation_status            
+            activationStatus=row.activation_status;            
             handleToggleStatusSubmit(event, row);
         }
         if (!row.approval_status) {
             approvalStatus = true;
-            activationStatus=row.activation_status            
+            activationStatus=row.activation_status;            
             handleToggleStatusSubmit(event, row);
         }
     };
@@ -121,17 +116,17 @@ function CoursesList(props) {
         };
         axios
             .put(`${timetablingSrv}/courses/${row.id}`, course)
-            .then((res) => {
-                alert('Success')
+            .then(() => {
+                alert('Success');
                 fetchCourses();
-                setDisabled(false)
+                setDisabled(false);
                 
             })
             .catch((error) => {
                 //handle error using logging library
                 console.error(error);
                 alert(error);
-                setDisabled(false)
+                setDisabled(false);
             });
     };
 
@@ -146,7 +141,7 @@ function CoursesList(props) {
                 <Switch
                     onChange={(event) => handleActivationStatusToggle(event, row)}
                     inputProps={{ 'aria-label': 'controlled' }}
-                    defaultChecked={row.activation_status === true ? true : false}
+                    defaultChecked={row.activation_status===true}
                 />
             )
         },
@@ -157,7 +152,7 @@ function CoursesList(props) {
                 <Switch
                     onChange={(event) => handleApprovalStatusToggle(event, row)}
                     inputProps={{ 'aria-label': 'controlled' }}
-                    defaultChecked={row.approval_status === true ? true : false}
+                    defaultChecked={row.approval_status===true}
                     disabled={disabled}
                 />
             )
@@ -195,19 +190,7 @@ function CoursesList(props) {
                             title="Courses"
                             columns={columns}
                             data={data}
-                            // @ts-ignore
                             icons={tableIcons}
-                            actions={[
-                                {
-                                    icon: Edit,
-                                    tooltip: 'Edit Row',
-                                    onClick: (event, rowData) => {
-                                        // Code to display custom Dialog here
-                                        // setSelectedCourse(rowData)
-                                        setEditModal(true);
-                                    }
-                                }
-                            ]}
                         />
                     </Card>
                 </Col>
@@ -218,7 +201,7 @@ function CoursesList(props) {
                     <Modal.Title id="contained-modal-title-vcenter">Create Course</Modal.Title>
                 </Modal.Header>
                 <Modal.Body>
-                    <CourseCreation setModal={setModal} setProgress={setProgress} fetchCourses={fetchCourses}></CourseCreation> 
+                    <CourseCreation setModal={setModal} setProgress={setProgress} fetchCourses={fetchCourses}> </CourseCreation>
                 </Modal.Body>
             </Modal>
             {/* <Modal {...props} size="md" aria-labelledby="contained-modal-title-vcenter" centered show={showEditModal}  backdrop="static">
@@ -227,7 +210,7 @@ function CoursesList(props) {
                     <Modal.Title id="contained-modal-title-vcenter">Edit {selectedCourse.name}</Modal.Title>
                 </Modal.Header>
                 <Modal.Body>
-				<EditCourse setEditModal={setEditModal} setProgress = {setProgress} fetchCourses={fetchCourses} selectedCourse={selectedCourse}></EditCourse>
+                                <EditCourse setEditModal={setEditModal} setProgress = {setProgress} fetchCourses={fetchCourses} selectedCourse={selectedCourse}></EditCourse>
                 </Modal.Body>
             </Modal>             */}
         </>

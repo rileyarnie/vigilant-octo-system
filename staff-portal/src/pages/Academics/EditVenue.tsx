@@ -1,23 +1,17 @@
+/* eslint-disable react/prop-types */
 import React, { useState } from 'react';
 import axios from 'axios';
 import { Row, Col, Card } from 'react-bootstrap';
 import { ValidationForm, TextInput } from 'react-bootstrap4-form-validation';
 import validator from 'validator';
-import Breadcrumb from '../../App/components/Breadcrumb';
 import Config from '../../config';
 
 const EditVenue = (props) => {
-    const [venueName,setVenueName] = useState('')
-    let venues:venue[] =  props.data
-
-    interface venue{
-        name:string,
-        id:number
-    }
+    const [venueName,setVenueName] = useState('');
     const timetableSrv = Config.baseUrl.timetablingSrv;
     const venueChangeHandler = (event) =>{
-        setVenueName(event.target.value)
-    }
+        setVenueName(event.target.value);
+    };
     const handleSubmit = (event) => {
         event.preventDefault();
         const params = new URLSearchParams();
@@ -26,21 +20,20 @@ const EditVenue = (props) => {
         };
         params.append('Venue', JSON.stringify(modifiedVenue));
         axios.put(`${timetableSrv}/venues/${props.id}`, params)
-             .then((res)=>{
-                props.setProgress(100)       
-                alert(res.status) 
-                props.setEditModal(false)
-                props.fetchVenues()
-                props.setProgress(0)                  
-             })
-             .catch((err)=>{
-                 alert(err.message)
-                 console.log(err)
-             })
+            .then((res)=>{
+                props.setProgress(100);       
+                alert(res.status); 
+                props.setEditModal(false);
+                props.fetchVenues();
+                props.setProgress(0);                  
+            })
+            .catch((err)=>{
+                alert(err.message);
+                console.log(err);
+            });
     };
     return (
         <div>
-            <Row className="align-items-center page-header"></Row>
             <Row>
                 <Col>
                     <Card>

@@ -1,6 +1,7 @@
+/* eslint-disable react/display-name */
 import React, { useState, useEffect } from 'react';
 import { forwardRef } from 'react';
-import MaterialTable from 'material-table';
+import MaterialTable, { Icons } from 'material-table';
 import AddBox from '@material-ui/icons/AddBox';
 import ArrowDownward from '@material-ui/icons/ArrowDownward';
 import Check from '@material-ui/icons/Check';
@@ -21,24 +22,24 @@ import Alert from '@material-ui/lab/Alert';
 import Breadcrumb from '../../App/components/Breadcrumb';
 import { Row, Col, Card } from 'react-bootstrap';
 
-const tableIcons = {
-    Add: forwardRef((props, ref: any) => <AddBox {...props} ref={ref} />),
-    Check: forwardRef((props, ref: any) => <Check {...props} ref={ref} />),
-    Clear: forwardRef((props, ref: any) => <Clear {...props} ref={ref} />),
-    Delete: forwardRef((props, ref: any) => <DeleteOutline {...props} ref={ref} />),
-    DetailPanel: forwardRef((props, ref: any) => <ChevronRight {...props} ref={ref} />),
-    Edit: forwardRef((props, ref: any) => <Edit {...props} ref={ref} />),
-    Export: forwardRef((props, ref: any) => <SaveAlt {...props} ref={ref} />),
-    Filter: forwardRef((props, ref: any) => <FilterList {...props} ref={ref} />),
-    FirstPage: forwardRef((props, ref: any) => <FirstPage {...props} ref={ref} />),
-    LastPage: forwardRef((props, ref: any) => <LastPage {...props} ref={ref} />),
-    NextPage: forwardRef((props, ref: any) => <ChevronRight {...props} ref={ref} />),
-    PreviousPage: forwardRef((props, ref: any) => <ChevronLeft {...props} ref={ref} />),
-    ResetSearch: forwardRef((props, ref: any) => <Clear {...props} ref={ref} />),
-    Search: forwardRef((props, ref: any) => <Search {...props} ref={ref} />),
-    SortArrow: forwardRef((props, ref: any) => <ArrowDownward {...props} ref={ref} />),
-    ThirdStateCheck: forwardRef((props, ref: any) => <Remove {...props} ref={ref} />),
-    ViewColumn: forwardRef((props, ref: any) => <ViewColumn {...props} ref={ref} />)
+const tableIcons: Icons = {
+    Add: forwardRef((props, ref) => < AddBox  {...props} ref={ref} />),
+    Check: forwardRef((props, ref) => <Check {...props} ref={ref} />),
+    Clear: forwardRef((props, ref) => <Clear {...props} ref={ref} />),
+    Delete: forwardRef((props, ref) => <DeleteOutline {...props} ref={ref} />),
+    DetailPanel: forwardRef((props, ref) => <ChevronRight {...props} ref={ref} />),
+    Edit: forwardRef((props, ref) => <Edit {...props} ref={ref} />),
+    Export: forwardRef((props, ref) => <SaveAlt {...props} ref={ref} />),
+    Filter: forwardRef((props, ref) => <FilterList {...props} ref={ref} />),
+    FirstPage: forwardRef((props, ref) => <FirstPage {...props} ref={ref} />),
+    LastPage: forwardRef((props, ref) => <LastPage {...props} ref={ref} />),
+    NextPage: forwardRef((props, ref) => <ChevronRight {...props} ref={ref} />),
+    PreviousPage: forwardRef((props, ref) => <ChevronLeft {...props} ref={ref} />),
+    ResetSearch: forwardRef((props, ref) => <Clear {...props} ref={ref} />),
+    Search: forwardRef((props, ref) => <Search {...props} ref={ref} />),
+    SortArrow: forwardRef((props, ref) => <ArrowDownward {...props} ref={ref} />),
+    ThirdStateCheck: forwardRef((props, ref) => <Remove {...props} ref={ref} />),
+    ViewColumn: forwardRef((props, ref) => <ViewColumn {...props} ref={ref} />)
 };
 
 function CampusDetails() {
@@ -49,10 +50,10 @@ function CampusDetails() {
         { title: 'Details', field: 'details' },
     ];
     const [data, setData] = useState([]);
-    const [iserror, setIserror] = useState(false);
-    const [errorMessages, setErrorMessages] = useState([]);
+    const [iserror] = useState(false);
+    const [errorMessages] = useState([]);
     useEffect(() => {
-        axios.get(`/campuses`)
+        axios.get('/campuses')
             .then(res => {
                 setData(res.data);
             })
@@ -87,7 +88,6 @@ function CampusDetails() {
                             title='Campuses'
                             columns={columns}
                             data={data}
-                            // @ts-ignore
                             icons={tableIcons}
                             editable={{
                             }}

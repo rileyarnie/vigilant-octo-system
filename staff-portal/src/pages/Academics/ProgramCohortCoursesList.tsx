@@ -1,6 +1,5 @@
 /* eslint-disable linebreak-style */
 /* eslint-disable @typescript-eslint/no-unused-vars */
-/* eslint-disable @typescript-eslint/no-explicit-any */
 /* eslint-disable react/display-name */
 import React, { useState, useEffect,forwardRef } from 'react';
 import MaterialTable from 'material-table';
@@ -65,6 +64,9 @@ function ProgramCohortCoursesList() {
         published:boolean,
         activation_status:boolean,
         semester_id:number,
+        courseName:string, 
+        programName:string, 
+        semesterName: string,
     }
     const columns = [
         { title: 'Course cohort code', field: 'courseCohortCode', hidden: false },
@@ -76,9 +78,9 @@ function ProgramCohortCoursesList() {
         {
             title: 'Publish',
             field: 'internal_action',
-            render: (row:any) => (
+            render: (row:programCohortCourse) => (
                 <Button variant="danger" onClick={() => togglePublishModal()}>
-					Publish Semester
+                                        Publish Semester
                 </Button>
             )
         },
@@ -318,8 +320,6 @@ function ProgramCohortCoursesList() {
                                     onClick: () => {unassignSelectedCourseFromProgram(rowData.id);},
                                 })
                             ]}
-                            // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-                            // @ts-ignore
                             icons={tableIcons}
                         />
                     </Card>
@@ -403,12 +403,12 @@ function ProgramCohortCoursesList() {
 
                                 }}
                             >
-								Publish
+                                                                Publish
                             </button>
                         </div>
                     </ValidationForm>
                     <button className="btn btn-danger float-right" onClick={togglePublishModal}>
-						Close
+                                                Close
                     </button>
                 </Modal.Body>
             </Modal>

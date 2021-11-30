@@ -1,3 +1,4 @@
+/* eslint-disable react/display-name */
 import React,{useState,useEffect} from 'react';
 import {forwardRef} from 'react';
 import MaterialTable from 'material-table';
@@ -28,40 +29,24 @@ import {ValidationForm,SelectGroup,FileInput,TextInput} from 'react-bootstrap4-f
 import ProgressBar from 'react-bootstrap/ProgressBar';
 import CardPreview from './CardPreview';
 import {Link} from 'react-router-dom';
+
 const tableIcons: Icons = {
-    // eslint-disable-next-line react/display-name
     Add: forwardRef((props, ref) => < AddBox  {...props} ref={ref} />),
-    // eslint-disable-next-line react/display-name
     Check: forwardRef((props, ref) => <Check {...props} ref={ref} />),
-    // eslint-disable-next-line react/display-name
     Clear: forwardRef((props, ref) => <Clear {...props} ref={ref} />),
-    // eslint-disable-next-line react/display-name
     Delete: forwardRef((props, ref) => <DeleteOutline {...props} ref={ref} />),
-    // eslint-disable-next-line react/display-name
     DetailPanel: forwardRef((props, ref) => <ChevronRight {...props} ref={ref} />),
-    // eslint-disable-next-line react/display-name
     Edit: forwardRef((props, ref) => <Edit {...props} ref={ref} />),
-    // eslint-disable-next-line react/display-name
     Export: forwardRef((props, ref) => <SaveAlt {...props} ref={ref} />),
-    // eslint-disable-next-line react/display-name
     Filter: forwardRef((props, ref) => <FilterList {...props} ref={ref} />),
-    // eslint-disable-next-line react/display-name
     FirstPage: forwardRef((props, ref) => <FirstPage {...props} ref={ref} />),
-    // eslint-disable-next-line react/display-name
     LastPage: forwardRef((props, ref) => <LastPage {...props} ref={ref} />),
-    // eslint-disable-next-line react/display-name
     NextPage: forwardRef((props, ref) => <ChevronRight {...props} ref={ref} />),
-    // eslint-disable-next-line react/display-name
     PreviousPage: forwardRef((props, ref) => <ChevronLeft {...props} ref={ref} />),
-    // eslint-disable-next-line react/display-name
     ResetSearch: forwardRef((props, ref) => <Clear {...props} ref={ref} />),
-    // eslint-disable-next-line react/display-name
     Search: forwardRef((props, ref) => <Search {...props} ref={ref} />),
-    // eslint-disable-next-line react/display-name
     SortArrow: forwardRef((props, ref) => <ArrowDownward {...props} ref={ref} />),
-    // eslint-disable-next-line react/display-name
     ThirdStateCheck: forwardRef((props, ref) => <Remove {...props} ref={ref} />),
-    // eslint-disable-next-line react/display-name
     ViewColumn: forwardRef((props, ref) => <ViewColumn {...props} ref={ref} />)
 };
 

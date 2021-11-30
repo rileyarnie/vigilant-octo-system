@@ -1,5 +1,6 @@
+/* eslint-disable react/prop-types */
 import React, { useState } from 'react';
-import { Modal, Button } from 'react-bootstrap';
+import { Modal } from 'react-bootstrap';
 import { Row, Col, Card, ProgressBar } from 'react-bootstrap';
 import { ValidationForm, TextInput } from 'react-bootstrap4-form-validation';
 import validator from 'validator';
@@ -8,11 +9,11 @@ import Config from '../../../config';
 
 const CreateUserModal = (props) => {
     const [email, setEmail] = useState('');
-    const handleChange = (event: any) => {
+    const handleChange = (event) => {
         setEmail(event.target.value);
     };
     const [progress, setProgress] = useState(0);
-    const handleSubmit = (e, formData) => {
+    const handleSubmit = (e) => {
         e.preventDefault();
         setProgress(10);
         const params = new URLSearchParams();
@@ -22,8 +23,8 @@ const CreateUserModal = (props) => {
             .post(`${authnzSrv}/users`, params)
             .then((res) => {
                 setProgress(100);
-                alert(res.status)
-                props.onHide()
+                alert(res.status);
+                props.onHide();
                 //clear input on success
                 setEmail('');
             })
