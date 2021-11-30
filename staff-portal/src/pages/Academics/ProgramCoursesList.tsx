@@ -94,7 +94,7 @@ function ProgramCoursesList() {
 
 
     const unassignSelectedCoursesFromTrainer = (selectedCourseId: number) => {
-        axios.put(`${timetablingSrv}/programs/${selectedCourseId}/${programId}`)
+        axios.put(`${timetablingSrv}/programs/${programId}/courses/${selectedCourseId}`)
             .then(res => {
                 alert('Succesfully removed course ' + res.data);
                 fetchCoursesAssignedToProgram(progId); 
