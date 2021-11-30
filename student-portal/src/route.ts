@@ -2,7 +2,7 @@ interface RouteObject {
     path: string;
     exact?: boolean;
     name?: string;
-    component: any;
+    component: null;
 }
 const route: RouteObject[] = [
 ];

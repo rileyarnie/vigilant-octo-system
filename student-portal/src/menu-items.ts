@@ -29,6 +29,6 @@ const chartData: { items: MenuItemType[] } = {
             ]
         }
     ]
-}
+};
 
 export default chartData;
