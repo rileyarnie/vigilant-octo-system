@@ -63,7 +63,7 @@ function CampusList() {
     const [showModal, setModal] = useState(false);
     const [campusId, setCampusId] = useState(null);
     const [selectedCampusName, setSelectedCampusName] = useState('');
-    const [selectedDescription] = useState('');
+    const [selectedDescription, setSelectedDescription] = useState('');
     const[,setDisabled] = useState(false);
     let activationStatus: boolean;
     const handleActivationStatusToggle = (event, row: Campus) => {
@@ -232,7 +232,8 @@ function CampusList() {
 
                                     onClick: (event, row) => {
                                         setCampusId(row.id);
-                                        setSelectedCampusName(row.name);
+                                        setSelectedCampusName(row.name); 
+                                        setSelectedDescription(row.description);                                       
                                         toggleCreateModal();
                                         toggleCreateModal();
                                     }
@@ -270,12 +271,12 @@ function CampusList() {
                                 }}/><br />
                         </div>
                         <div className='form-group'>
-                            <button className="btn btn-danger float-right" onClick={(e) => campusId ? handleEdit(e) : handleAdd(e)}>
+                            <button className="btn btn-info float-right" onClick={(e) => campusId ? handleEdit(e) : handleAdd(e)}>
                                 Submit
                             </button>
                         </div>
                     </ValidationForm>
-                    <button className="btn btn-info float-leftt" onClick={handleClose}>
+                    <button className="btn btn-danger float-leftt" onClick={handleClose}>
                         Close
                     </button>
                 </Modal.Body>
