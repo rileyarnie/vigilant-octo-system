@@ -48,8 +48,9 @@ const tableIcons: Icons = {
 };
 function VenueList(props) {
     const columns = [
-        { title: 'ID', field: 'id', hidden: true },
-        { title: 'Venue name', field: 'name' }
+        { title: 'ID', field: 'id' },
+        { title: 'Venue name', field: 'name'},
+        {title: 'Capacity', field: 'capacity'}
     ];
     interface venue{
         name:string,
