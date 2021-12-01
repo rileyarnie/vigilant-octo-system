@@ -25,6 +25,7 @@ import {Button, Card, Col, Row } from 'react-bootstrap';
 import Breadcrumb from '../../App/components/Breadcrumb';
 import {Actions} from './ActionsByRole/Actions';
 import { AddActions } from './AddActionsModal/AddActions';
+import CreateRole from './Role/CreateRole';
 
 const tableIcons: Icons = {
     Add: forwardRef((props, ref) => < AddBox  {...props} ref={ref} />),
@@ -64,6 +65,10 @@ function RoleList() {
     const [errorMessages, setErrorMessages] = useState([]);
 
     useEffect(() => {
+        fetchRoles();
+    }, []);
+
+    const fetchRoles = () => {
         const authnzSrv = Config.baseUrl.authnzSrv; 
         axios.get(`${authnzSrv}/roles`)
             .then(res => {
@@ -72,8 +77,7 @@ function RoleList() {
             .catch(error => {
                 console.log(error);
             });
-    }, []);
-
+    };
     const handleRowUpdate = (newData, oldData, resolve) => {
         const errorList = [];
         if (newData.role_name === '') {
@@ -172,9 +176,7 @@ function RoleList() {
                         <Breadcrumb />
                     </Col>
                     <Col>
-                        <Button className="float-right" variant="danger" onClick={() => toggleCreateModal()}>
-                        Create Role
-                        </Button>
+                        <CreateRole fetchRoles = {fetchRoles}/>
                     </Col>
                 </Row>
                 <Row>
