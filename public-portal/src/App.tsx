@@ -1,8 +1,9 @@
-import React from 'react';
-import logo from './logo.svg';
-import './App.css';
+// eslint-disable-next-line no-use-before-define
+import React from 'react'
+import logo from './logo.svg'
+import './App.css'
 
-function App() {
+function App () {
   return (
     <div className="App">
       <header className="App-header">
@@ -20,7 +21,7 @@ function App() {
         </a>
       </header>
     </div>
-  );
+  )
 }
 
-export default App;
+export default App

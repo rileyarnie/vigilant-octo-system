@@ -1,18 +1,18 @@
-import React, { useState } from 'react';
-import 'bootstrap/dist/css/bootstrap.min.css';
-import { Navbar, Container, Nav } from 'react-bootstrap';
-import Institute from '../assets/images/system/miog.jpg';
-import '../App.css';
-import logoDark from '../assets/images/logo.png';
-import { Redirect } from 'react-router';
-import Login from '../App/components/Login';
-import { AuthContext } from '../App/context/AuthContext';
+// eslint-disable-next-line no-use-before-define
+import React, { useState } from 'react'
+import 'bootstrap/dist/css/bootstrap.min.css'
+import { Navbar, Container, Nav } from 'react-bootstrap'
+import Institute from '../assets/images/system/miog.jpg'
+import '../App.css'
+import logoDark from '../assets/images/logo.png'
+import Login from '../App/components/Login'
+import { AuthContext } from '../App/context/AuthContext'
 
 const LandingPage = () => {
-    const [isAuthenticated,setAuthState] = useState(false);
-    const user = JSON.parse(sessionStorage.getItem('User') as string);
+  const [isAuthenticated, setAuthState] = useState(false)
+  // const user = JSON.parse(sessionStorage.getItem('User') as string)
 
-    return (
+  return (
         <>
             <Navbar bg="primary" expand="lg">
                 <Container>
@@ -24,8 +24,8 @@ const LandingPage = () => {
                         <Nav className="mr-auto ">
                             <AuthContext.Provider
                                 value={{
-                                    isAuthenticated,
-                                    setAuthState
+                                  isAuthenticated,
+                                  setAuthState
                                 }}
                             >
                                 <Nav.Link href="home">Home</Nav.Link>
@@ -67,7 +67,7 @@ const LandingPage = () => {
                 </svg>
             </div>
         </>
-    );
-};
+  )
+}
 
-export default LandingPage;
+export default LandingPage

@@ -1,13 +1,5 @@
-import React from "react";
-
-
-interface IAuthContext{
-    authState: boolean;
-    setAuthState?:()=> void
-}
-
+import React from 'react'
 const defaultState = {
-    authState:false
+  authState: false
 }
-
 export const AuthContext = React.createContext<any>(defaultState)
