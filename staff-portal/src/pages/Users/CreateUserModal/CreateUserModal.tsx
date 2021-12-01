@@ -1,7 +1,7 @@
 /* eslint-disable react/prop-types */
 import React, { useState } from 'react';
 import { Modal } from 'react-bootstrap';
-import { Row, Col, Card, ProgressBar } from 'react-bootstrap';
+import { Row, Col,ProgressBar } from 'react-bootstrap';
 import { ValidationForm, TextInput } from 'react-bootstrap4-form-validation';
 import validator from 'validator';
 import axios from 'axios';
@@ -24,7 +24,9 @@ const CreateUserModal = (props) => {
             .then((res) => {
                 setProgress(100);
                 alert(res.status);
+                props.fetchUsers();
                 props.onHide();
+                setProgress(0);
                 //clear input on success
                 setEmail('');
             })
@@ -53,38 +55,34 @@ const CreateUserModal = (props) => {
                     </Row>
                     <Row>
                         <Col>
-                            <Card>
-                                <Card.Body>
-                                    <Row>
-                                        <Col md={12}>
-                                            <ValidationForm onSubmit={handleSubmit} onErrorSubmit={handleErrorSubmit}>
-                                                <div className="form-group">
-                                                    <label htmlFor="email">
-                                                        <b>Enter AAD Alias</b>
-                                                    </label>
-                                                    <TextInput
-                                                        name="email"
-                                                        id="email"
-                                                        type="email"
-                                                        placeholder="user@miog.co.ke"
-                                                        validator={validator.isEmail}
-                                                        errorMessage={{ validator: 'Please enter a valid email' }}
-                                                        value={email}
-                                                        onChange={handleChange}
-                                                    />
+                            <Row>
+                                <Col md={12}>
+                                    <ValidationForm onSubmit={handleSubmit} onErrorSubmit={handleErrorSubmit}>
+                                        <div className="form-group">
+                                            <label htmlFor="email">
+                                                <b>Enter AAD Alias</b>
+                                            </label>
+                                            <TextInput
+                                                name="email"
+                                                id="email"
+                                                type="email"
+                                                placeholder="user@miog.co.ke"
+                                                validator={validator.isEmail}
+                                                errorMessage={{ validator: 'Please enter a valid email' }}
+                                                value={email}
+                                                onChange={handleChange}
+                                            />
                                                 &nbsp;&nbsp;&nbsp;
-                                                </div>
+                                        </div>
  
-                                                <div className="form-group">
-                                                    <button className="btn btn-danger float-right">Submit</button>
+                                        <div className="form-group">
+                                            <button className="btn btn-info float-right">Submit</button>
                                                     
-                                                </div>
-                                            </ValidationForm>
-                                            <button className="btn btn-info float-left" onClick={()=>props.onHide()}>Cancel</button>
-                                        </Col>
-                                    </Row>
-                                </Card.Body>
-                            </Card>
+                                        </div>
+                                    </ValidationForm>
+                                    <button className="btn btn-danger float-left" onClick={()=>props.onHide()}>Cancel</button>
+                                </Col>
+                            </Row>                         
                         </Col>
                     </Row>
                 </>

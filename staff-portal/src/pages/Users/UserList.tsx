@@ -55,16 +55,19 @@ const UserList = (props:IProps):JSX.Element => {
     const baseUrl = Config.baseUrl.authnzSrv;
 
     useEffect(() => {
+        fetchUsers();
+    }, []);
+
+    const fetchUsers = () => {
         axios.get(`${baseUrl}/users`)
             .then(res => {
                 setData(res.data);
             })
             .catch(error => {
-                //handle error using logging library
+            //handle error using logging library
                 console.log('Error',error.message);
             });
-    }, []);
-
+    };
     const handleRouteChange = () => {
         props.history.push('assignrole');
     };
@@ -77,7 +80,7 @@ const UserList = (props:IProps):JSX.Element => {
                 </Col>
 				
                 <Col>				
-                    <CreateUser></CreateUser>
+                    <CreateUser fetchUsers = {fetchUsers}></CreateUser>
                 </Col>
                 <Button variant="danger" onClick={() =>  handleRouteChange() }>Assign Role</Button>
             </Row>

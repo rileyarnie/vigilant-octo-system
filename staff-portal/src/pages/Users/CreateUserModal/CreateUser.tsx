@@ -2,7 +2,10 @@ import React from 'react';
 import { Button } from 'react-bootstrap';
 import CreateUserModal from './CreateUserModal';
 
-const CreateUser = () => {
+interface IProps  {
+    fetchUsers : () => void
+}
+const CreateUser = (props:IProps) => {
     const [modalShow, setModalShow] = React.useState(false);
     return (
         <>
@@ -14,6 +17,7 @@ const CreateUser = () => {
                 show={modalShow}
                 onHide={() => setModalShow(false)}
                 setModalShow = {setModalShow}
+                fetchUsers = {props.fetchUsers}
             />
         </>
     );
