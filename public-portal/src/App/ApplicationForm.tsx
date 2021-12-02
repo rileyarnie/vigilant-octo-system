@@ -7,7 +7,11 @@ import { CountryDropdown } from 'react-country-region-selector'
 import { SelectGroup, FileInput, TextInput, ValidationForm } from 'react-bootstrap4-form-validation'
 import { Alerts, ToastifyAlerts } from '../lib/Alert'
 const alerts: Alerts = new ToastifyAlerts()
-function ApplicationForm () {
+
+interface IProps {
+    programCohortId:number
+}
+export function ApplicationForm (props:IProps) {
     interface camp {
         id: number,
         name: string,
@@ -116,7 +120,8 @@ function ApplicationForm () {
             courseStartDate: courseStartDate,
             campus: campus,
             sponsor: sponsor,
-            countryOfResidence: countryOfResidence
+            countryOfResidence: countryOfResidence,
+            programCohortId: props.programCohortId
           },
           nextOfKin: {
             name: nextOfKinName,
