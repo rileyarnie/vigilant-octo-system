@@ -5,7 +5,8 @@ import axios from 'axios'
 import Config from '../config'
 import { CountryDropdown } from 'react-country-region-selector'
 import { SelectGroup, FileInput, TextInput, ValidationForm } from 'react-bootstrap4-form-validation'
-
+import { Alerts, ToastifyAlerts } from '../lib/Alert'
+const alerts: Alerts = new ToastifyAlerts()
 function ApplicationForm () {
     interface camp {
         id: number,
@@ -73,7 +74,7 @@ function ApplicationForm () {
         })
         .catch((error) => {
           console.error(error)
-          alert(error)
+          alerts.showError(error.message)
         })
     }, [])
     const handleUpload = () => {
@@ -84,13 +85,13 @@ function ApplicationForm () {
       }
       axios.post(`${timetablingSrv}/files`, form, config)
         .then((res) => {
-          alert('Success')
+          alerts.showSuccess('File uploaded successfully')
           setDocumentsUrl(res.data)
           console.log(res.data)
         })
         .catch((error) => {
           console.log(error)
-          alert(error.message)
+          alerts.showError(error.message)
         })
     }
 
@@ -135,12 +136,11 @@ function ApplicationForm () {
         .post(`${simSrv}/program-cohort-applications`, applicationData)
         .then((res) => {
           setApplicationDetails(res.data)
-          alert('Thank you for your application')
           setShow(true)
         })
-        .catch((err) => {
-          console.log(err)
-          alert(err.message)
+        .catch((error) => {
+          console.log(error)
+          alerts.showError(error.message)
         })
     }
     const handleClose = () => setShow(false)
