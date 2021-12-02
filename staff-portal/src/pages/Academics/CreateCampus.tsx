@@ -4,6 +4,8 @@ import { Row, Col, Card,} from 'react-bootstrap';
 import Config from '../../config';
 import { ValidationForm, TextInput } from 'react-bootstrap4-form-validation';
 import Breadcrumb from '../../App/components/Breadcrumb';
+import { Alerts, ToastifyAlerts } from '../lib/Alert';
+const alerts: Alerts = new ToastifyAlerts();
 class CreateCampus extends Component {
     state = {
         name: '',
@@ -26,8 +28,7 @@ class CreateCampus extends Component {
         console.log(campus);
         axios.put(`${timetablingSrv}/campuses`)
             .then(res => {
-                //handle success
-                alert('Campus created successfully');
+                alerts.showSuccess('Campus created successfully');
                 this.setState({
                     name: '',
                     description: ''
@@ -37,7 +38,7 @@ class CreateCampus extends Component {
             .catch((error) => {
                 //handle error using logging library
                 console.error(error);
-                alert(error.message);
+                alerts.showError(error.message);
                 this.setState({
                     name: '',
                     description: ''

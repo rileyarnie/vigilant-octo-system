@@ -21,7 +21,7 @@ import axios from 'axios';
 import Alert from '@material-ui/lab/Alert';
 import Breadcrumb from '../../App/components/Breadcrumb';
 import { Row, Col, Card } from 'react-bootstrap';
-
+import { Alerts, ToastifyAlerts } from '../lib/Alert';
 const tableIcons: Icons = {
     Add: forwardRef((props, ref) => < AddBox  {...props} ref={ref} />),
     Check: forwardRef((props, ref) => <Check {...props} ref={ref} />),
@@ -41,7 +41,7 @@ const tableIcons: Icons = {
     ThirdStateCheck: forwardRef((props, ref) => <Remove {...props} ref={ref} />),
     ViewColumn: forwardRef((props, ref) => <ViewColumn {...props} ref={ref} />)
 };
-
+const alerts: Alerts = new ToastifyAlerts();
 function CampusDetails() {
 
     const columns = [
@@ -60,7 +60,7 @@ function CampusDetails() {
             .catch((error) => {
                 //handle error using logging library
                 console.error(error);
-                alert(error.message);
+                alerts.showError(error.message);
             });
     }, []);
 

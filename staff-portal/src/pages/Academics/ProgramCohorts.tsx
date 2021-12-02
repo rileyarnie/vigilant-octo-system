@@ -29,7 +29,8 @@ import {ValidationForm,SelectGroup,FileInput,TextInput} from 'react-bootstrap4-f
 import ProgressBar from 'react-bootstrap/ProgressBar';
 import CardPreview from './CardPreview';
 import {Link} from 'react-router-dom';
-
+import { Alerts, ToastifyAlerts } from '../lib/Alert';
+const alerts: Alerts = new ToastifyAlerts();
 const tableIcons: Icons = {
     Add: forwardRef((props, ref) => < AddBox  {...props} ref={ref} />),
     Check: forwardRef((props, ref) => <Check {...props} ref={ref} />),
@@ -49,7 +50,6 @@ const tableIcons: Icons = {
     ThirdStateCheck: forwardRef((props, ref) => <Remove {...props} ref={ref} />),
     ViewColumn: forwardRef((props, ref) => <ViewColumn {...props} ref={ref} />)
 };
-
 const ProgramCohorts = ():JSX.Element => {
     interface programCohort{
         program_cohorts_id:number,
@@ -101,14 +101,15 @@ const ProgramCohorts = ():JSX.Element => {
         axios
             .put(`${timetablingSrv}/program-cohorts/${row.program_cohorts_id}`,cohortStatus)
             .then(()=>{
-                alert('Success');
+                const msg = activationStatus? 'Successfully activated Program Cohorts' : 'Successfully Deactivated Program Cohort';
+                alerts.showSuccess(msg);
                 fetchProgramCohorts();
                 setDisabled(false);
 
             })
             .catch((error)=>{
                 console.error(error);
-                alert(error);
+                alerts.showError(error.message);
                 setDisabled(false);
             });
     };
@@ -176,7 +177,7 @@ const ProgramCohorts = ():JSX.Element => {
             })
             .catch((error)=>{
                 console.error(error);
-                alert(error);
+                alerts.showError(error.message);
             });
         axios.get(`${timetablingSrv}/programs`)
             .then(res=>{
@@ -184,7 +185,7 @@ const ProgramCohorts = ():JSX.Element => {
             })
             .catch((error)=>{
                 console.error(error);
-                alert(error);
+                alerts.showError(error.message);
             });
     },[]);
     const fetchProgramCohorts=(): void =>{
@@ -197,7 +198,7 @@ const ProgramCohorts = ():JSX.Element => {
             })
             .catch((error)=>{
                 console.error(error);
-                alert(error.message);
+                alerts.showError(error.message);
             });
     };
     const handleUpload=(): void =>{
@@ -208,14 +209,14 @@ const ProgramCohorts = ():JSX.Element => {
         };
         axios.post(`${timetablingSrv}/files`,form,config)
             .then((res)=>{
-                alert('Success');
+                alerts.showSuccess('successfully uploaded');
                 setBanner(res.data);
                 console.log(res);
                 console.log(res.data);
             })
             .catch((error)=>{
                 console.error(error);
-                alert(error.message);
+                alerts.showError(error.message);
             });
     };
 
@@ -223,14 +224,14 @@ const ProgramCohorts = ():JSX.Element => {
         axios.put(`${timetablingSrv}/program-cohorts/${cohortId}/`,updates)
             .then(()=>{
                 setProgress(100);
-                alert('Successfully updated Cohort');
+                alerts.showSuccess('Successfully updated Cohort');
                 fetchProgramCohorts();
                 resetStateCloseModal();
             })
             .catch(error=>{
                 console.error(error);
                 setProgress(0);
-                alert(error.message);
+                alerts.showError(error.message);
             });
     };
     const handleEdit=(e): void =>{
@@ -267,14 +268,14 @@ const ProgramCohorts = ():JSX.Element => {
             .post(`${timetablingSrv}/program-cohorts`,cohortData)
             .then(()=>{
                 setProgress(100);
-                alert('Successfully created Program Cohort');
+                alerts.showSuccess('Successfully created Program Cohort');
                 fetchProgramCohorts();
                 resetStateCloseModal();
                 setProgress(0);
             })
-            .catch((err)=>{
+            .catch((error)=>{
                 setProgress(0);
-                alert(err.message);
+                alerts.showError(error.message);
             });
     };
     const resetStateCloseModal=(): void =>{

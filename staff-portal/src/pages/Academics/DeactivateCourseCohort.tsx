@@ -2,8 +2,8 @@ import axios from 'axios';
 import React, { useState } from 'react';
 import { Modal, Button, Col } from 'react-bootstrap';
 import Config from '../../config';
-
-
+import { Alerts, ToastifyAlerts } from '../lib/Alert';
+const alerts: Alerts = new ToastifyAlerts();
 interface ICourseCohort {
   id:number;
   isActive:boolean;
@@ -15,7 +15,6 @@ interface ICourseCohort {
 interface IProps {
   selectedRow:ICourseCohort
 }
-
 export const DeactivateCourseCohort = (props:IProps) => {
    
     const timetablingSrv = Config.baseUrl.timetablingSrv;
@@ -48,14 +47,15 @@ export const DeactivateCourseCohort = (props:IProps) => {
         axios
             .patch(`${timetablingSrv}/course-cohorts/${props.selectedRow.id}`, courseCohort)
             .then(() => {
-                alert('Success');
+                const msg = activationStatus? 'Successfully activated course cohort' : 'Successfully Deactivated course cohort';
+                alerts.showSuccess(msg);
                 setShowModal(false);
           
             })
             .catch((error) => {
                 //handle error using logging library
                 console.error(error.message);
-                alert(error.message);
+                alerts.showError(error.message);
             });
     };
     return (

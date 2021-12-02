@@ -5,7 +5,8 @@ import { ValidationForm, TextInput } from 'react-bootstrap4-form-validation';
 import validator from 'validator';
 import Breadcrumb from '../../App/components/Breadcrumb';
 import Config from '../../config';
-
+import { Alerts, ToastifyAlerts } from '../lib/Alert';
+const alerts: Alerts = new ToastifyAlerts();
 const CreateUser = ()=> {
     const [email,setEmail] = useState('');
     const handleChange = (event) => {
@@ -19,15 +20,14 @@ const CreateUser = ()=> {
         params.append('AADAlias', email);
         axios.post(`${authnzSrv}/users`, params)
             .then(res => {
-                //handle success
                 console.log(res);
-                //clear input on success
+                alerts.showSuccess('User created successfully');
                 setEmail('');
             })
             .catch((error) => {
                 //handle error using logging library
                 console.error(error);
-                alert(error.message);
+                alerts.showError(error.message);
             });
 
     };
@@ -35,9 +35,6 @@ const CreateUser = ()=> {
     const handleErrorSubmit = (e, _formData, errorInputs) => {
         console.error(errorInputs);
     };
-
-
-   
     return (
         <>
             <Row className="align-items-center page-header">

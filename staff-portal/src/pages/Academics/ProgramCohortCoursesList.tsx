@@ -30,8 +30,9 @@ import DeleteIcon from '@material-ui/icons/Delete';
 import Config from '../../config';
 import { makeStyles } from '@material-ui/core';
 import SelectCurrency from 'react-select-currency';
-
 import { DeactivateCourseCohort } from './DeactivateCourseCohort';
+import { Alerts, ToastifyAlerts } from '../lib/Alert';
+const alerts: Alerts = new ToastifyAlerts();
 const tableIcons: Icons = {
     Add: forwardRef((props, ref) => < AddBox  {...props} ref={ref} />),
     Check: forwardRef((props, ref) => <Check {...props} ref={ref} />),
@@ -137,17 +138,18 @@ function ProgramCohortCoursesList() {
                 setProgramId(progId);
                 setLoadingBar('none');
             })
-            .catch((err) => {
-                setErrorMessages(['Failed to fetch courses']);
-                console.log(err);
+            .catch((error) => {
+                console.log(error);
+                alerts.showError(error.message);
+
             });
         axios.get(`${timetablingSrv}/semesters`)
             .then(res => {
                 setSemester(res.data);
             })
-            .catch((err) => {
-                alert(err.message);
-                console.log(err);
+            .catch((error) => {
+                console.log(error);
+                alerts.showError(error.message);
             });
         fetchSemesters();
     }, []);
@@ -160,8 +162,8 @@ function ProgramCohortCoursesList() {
                 setData(res.data);
             })
             .catch((error) => {
-                setErrorMessages([error]);
                 console.error(error);
+                alerts.showError(error.message);
             });
     };
 
@@ -176,7 +178,7 @@ function ProgramCohortCoursesList() {
             })
             .catch((error) => {
                 console.error(error);
-                alert(error.message);
+                alerts.showError(error.message);
             });
     };
 
@@ -203,7 +205,7 @@ function ProgramCohortCoursesList() {
         axios
             .post(`${timetablingSrv}/program-cohort-semesters`, semesterData)
             .then((res) => {
-                alert('Succesfully Assigned semester');
+                alerts.showSuccess('Succesfully Assigned semester');
                 setProgress(100);
                 fetchCoursesAssignedToProgram(progId);
                 resetStateCloseModal();
@@ -211,18 +213,19 @@ function ProgramCohortCoursesList() {
             .catch((error) => {
                 console.log(error);
                 setProgress(0);
-                alert(error.message);
+                alerts.showError(error.message);
             });
     };
     const unassignSelectedCourseFromProgram = (selectedCourseId: number): void => {
         axios.put(`${timetablingSrv}/programs/${programId}/courses/${selectedCourseId}`)
             .then(res => {
-                alert('Succesfully removed course ' + res.data);
+                alerts.showSuccess('Succesfully removed course');
                 fetchCoursesAssignedToProgram(progId); 
             })
-            .catch((err) => {
-                setErrorMessages(['Unassigning course failed!']);
-                console.log(err);
+            .catch((error) => {
+                console.log(error);
+                alerts.showError(error.message);
+
             });
     };
     const handleSemesterUpdate=(e,row:programCohortCourse)=>{
@@ -234,10 +237,14 @@ function ProgramCohortCoursesList() {
         axios
             .patch(`${timetablingSrv}/course-cohorts/${row.id}`, courseSemester)
             .then(()=>{
-                alert('Successfully changed semester ');
+                alerts.showSuccess('Successfully changed semester');
                 fetchCoursesAssignedToProgram(progId);
                 resetStateCloseModal();
                 setDisabled(false);
+            })
+            .catch((error) => {
+                alerts.showError(error.message);
+                console.log(error);
             });
     };
 
@@ -251,11 +258,11 @@ function ProgramCohortCoursesList() {
             }
             })
             .then(()=>{
-                alert('Successfully posted fee items');
+                alerts.showSuccess('Successfully posted fee items');
             })
-            .catch((err) => {
-                setErrorMessages(['Post fee items failed!']);
-                console.log(err);
+            .catch((error) => {
+                alerts.showError(error.message);
+                console.log(error);
             });
     };
 

@@ -3,17 +3,17 @@ import {Modal, Button} from 'react-bootstrap';
 import Select from 'react-select';
 import Config from '../../../config';
 import axios from 'axios';
-
+import { Alerts, ToastifyAlerts } from '../../lib/Alert';
+const alerts: Alerts = new ToastifyAlerts();
 interface ISelectedRow{
-	AADAlias:string;
-	id:number;	
+    AADAlias:string;
+    id:number;    
 }
 interface IProps{
-	onHide: () => void;
-	show: boolean;
-	selectedrowprops:ISelectedRow
+    onHide: () => void;
+    show: boolean;
+    selectedrowprops:ISelectedRow
 }
-
 export const AssignRoleModal = (props:IProps):JSX.Element => {
     const authnzSrv = Config.baseUrl.authnzSrv;
     const [roles, setRoles] = useState([]);
@@ -29,7 +29,7 @@ export const AssignRoleModal = (props:IProps):JSX.Element => {
             })
             .catch((error) => {
                 console.log('Error');
-                alert(error.message);
+                alerts.showError(error.message);
             });
     }, []);
 
@@ -68,14 +68,14 @@ export const AssignRoleModal = (props:IProps):JSX.Element => {
             .post(`${authnzSrv}/users/${userId}/roles`, params)
             .then((res) => {
                 if (res.status == 200) {
-                    alert(res.data);
+                    alerts.showSuccess('Successfully assigned role to user');
                     console.log(res);
                     props.onHide();
                 }
             })
             .catch((error) => {
                 console.error(error);
-                alert(error.message);
+                alerts.showError(error.message);
                 props.onHide();
             });
     };
@@ -96,7 +96,7 @@ export const AssignRoleModal = (props:IProps):JSX.Element => {
             </Modal.Body>
             <Modal.Footer>
                 <Button variant="danger" onClick={handlePostRoles}>
-					Save
+                    Save
                 </Button>
             </Modal.Footer>
         </Modal>

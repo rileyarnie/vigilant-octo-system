@@ -25,6 +25,8 @@ import { Row, Col, Card, Button, Modal, ProgressBar } from 'react-bootstrap';
 import Config  from '../../config';
 import { ValidationForm, TextInput } from 'react-bootstrap4-form-validation';
 import {Icons} from 'material-table';
+import { Alerts, ToastifyAlerts } from '../lib/Alert';
+const alerts: Alerts = new ToastifyAlerts();
 const tableIcons: Icons = {
     Add: forwardRef((props, ref) => < AddBox  {...props} ref={ref} />),
     Check: forwardRef((props, ref) => <Check {...props} ref={ref} />),
@@ -73,14 +75,15 @@ function SemesterList() {
         axios
             .put(`${timetablingSrv}/semesters/${row.id}`, semester)
             .then(() => {
-                alert('Success');
+                const msg = activationStatus? 'Successfully activated semester' : 'Successfully Deactivated semester';
+                alerts.showSuccess(msg);
                 fetchSemesters();
                 setDisabled(false);
 
             })
             .catch((error) => {
                 console.error(error);
-                alert(error);
+                alerts.showError(error.message);
                 setDisabled(false);
             });
     };
@@ -125,7 +128,7 @@ function SemesterList() {
             })
             .catch((error) => {
                 console.error(error);
-                alert(error.message);
+                alerts.showError(error.message);
             });
         fetchProgramCohorts();
         fetchPrograms();
@@ -134,7 +137,7 @@ function SemesterList() {
         axios.put(`${timetablingSrv}/semesters/${semesterId}`, updates)
             .then(() => {
                 setProgress(100);
-                alert('Succesfully updated Semester');
+                alerts.showSuccess('Successfully updated Semester');
                 fetchSemesters();
                 resetStateCloseModal();
                 setProgress(0);
@@ -142,7 +145,7 @@ function SemesterList() {
             .catch(error => {
                 console.error(error);
                 setProgress(0);
-                alert('Failed to update Semester');
+                alerts.showError(error.message);
             });
     };
     const fetchSemesters = () => {
@@ -152,7 +155,7 @@ function SemesterList() {
             })
             .catch((error) => {
                 console.error(error);
-                alert(error.message);
+                alerts.showError(error.message);
             });
     };
     const fetchProgramCohorts = () => {
@@ -163,7 +166,7 @@ function SemesterList() {
             })
             .catch((error)=>{
                 console.error(error);
-                alert(error);
+                alerts.showError(error.message);
             });
     };
     const fetchPrograms = () => {
@@ -174,7 +177,7 @@ function SemesterList() {
             })
             .catch((error)=>{
                 console.error(error);
-                alert(error);
+                alerts.showError(error.message);
             });
     };
     const handleCreate = (e) => {
@@ -202,14 +205,14 @@ function SemesterList() {
             .post(`${timetablingSrv}/semesters`, semesterData)
             .then(() => {
                 setProgress(100);
-                alert('Successfully created semesters');
+                alerts.showSuccess('Successfully created semesters');
                 fetchSemesters();
                 resetStateCloseModal();
                 setProgress(0);
             })
             .catch((error) => {
                 setProgress(0);
-                alert(error.message);
+                alerts.showError(error.message);
             });
     };
 

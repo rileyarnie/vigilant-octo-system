@@ -5,7 +5,8 @@ import { Row, Col, Card } from 'react-bootstrap';
 import { ValidationForm, TextInput } from 'react-bootstrap4-form-validation';
 import validator from 'validator';
 import Config from '../../config';
-
+import { Alerts, ToastifyAlerts } from '../lib/Alert';
+const alerts: Alerts = new ToastifyAlerts();
 const EditVenue = (props) => {
     const [venueName,setVenueName] = useState('');
     const timetableSrv = Config.baseUrl.timetablingSrv;
@@ -20,16 +21,16 @@ const EditVenue = (props) => {
         };
         params.append('Venue', JSON.stringify(modifiedVenue));
         axios.put(`${timetableSrv}/venues/${props.id}`, params)
-            .then((res)=>{
-                props.setProgress(100);       
-                alert(res.status); 
+            .then(()=>{
+                props.setProgress(100);
+                alerts.showSuccess('successfully updated Venue details');
                 props.setEditModal(false);
                 props.fetchVenues();
                 props.setProgress(0);                  
             })
-            .catch((err)=>{
-                alert(err.message);
-                console.log(err);
+            .catch((error)=>{
+                console.log(error);
+                alerts.showError(error.message);
             });
     };
     return (

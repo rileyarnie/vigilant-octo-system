@@ -6,7 +6,8 @@ import { ValidationForm, TextInput } from 'react-bootstrap4-form-validation';
 import validator from 'validator';
 import axios from 'axios';
 import Config from '../../../config';
-
+import { Alerts, ToastifyAlerts } from '../../lib/Alert';
+const alerts: Alerts = new ToastifyAlerts();
 const CreateUserModal = (props) => {
     const [email, setEmail] = useState('');
     const handleChange = (event) => {
@@ -23,7 +24,7 @@ const CreateUserModal = (props) => {
             .post(`${authnzSrv}/users`, params)
             .then((res) => {
                 setProgress(100);
-                alert(res.status);
+                alerts.showSuccess('successfully created user');
                 props.fetchUsers();
                 props.onHide();
                 setProgress(0);
@@ -34,7 +35,7 @@ const CreateUserModal = (props) => {
                 setProgress(0);
                 //handle error using logging library
                 console.error(error);
-                alert(error.message);
+                alerts.showError(error.message);
             });
     };
 
@@ -82,7 +83,7 @@ const CreateUserModal = (props) => {
                                     </ValidationForm>
                                     <button className="btn btn-danger float-left" onClick={()=>props.onHide()}>Cancel</button>
                                 </Col>
-                            </Row>                         
+                            </Row>
                         </Col>
                     </Row>
                 </>

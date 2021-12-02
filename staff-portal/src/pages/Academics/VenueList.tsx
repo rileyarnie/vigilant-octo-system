@@ -26,7 +26,8 @@ import Config from '../../config';
 import { Modal } from 'react-bootstrap';
 import CreateVenue from './CreateVenue';
 import EditVenue from './EditVenue';
-
+import { Alerts, ToastifyAlerts } from '../lib/Alert';
+const alerts: Alerts = new ToastifyAlerts();
 const tableIcons: Icons = {
     Add: forwardRef((props, ref) => < AddBox  {...props} ref={ref} />),
     Check: forwardRef((props, ref) => <Check {...props} ref={ref} />),
@@ -77,7 +78,7 @@ function VenueList(props) {
             })
             .catch((error) => {
                 console.error(error);
-                alert(error.message);
+                alerts.showError(error.message);
             });
     };
     const [progress,setProgress] = useState(0);
@@ -136,7 +137,7 @@ function VenueList(props) {
                     <Modal.Title id="contained-modal-title-vcenter">Create Venue</Modal.Title>
                 </Modal.Header>
                 <Modal.Body>
-                    <CreateVenue setModal={setModal} setProgress={setProgress} ></CreateVenue>        
+                    <CreateVenue setModal={setModal} setProgress={setProgress} > </CreateVenue>
                 </Modal.Body>
 
             </Modal>
@@ -146,7 +147,7 @@ function VenueList(props) {
                     <Modal.Title id="contained-modal-title-vcenter">Edit {selectedVenue.name} </Modal.Title>
                 </Modal.Header>
                 <Modal.Body>
-                    <EditVenue {...selectedVenue }setData={setData} data={data} setEditModal={setEditModal} setProgress = {setProgress} fetchVenues={fetchVenues}></EditVenue>                
+                    <EditVenue {...selectedVenue } setData={setData} data={data} setEditModal={setEditModal} setProgress = {setProgress} fetchVenues={fetchVenues}> </EditVenue>
                 </Modal.Body>
 
             </Modal>

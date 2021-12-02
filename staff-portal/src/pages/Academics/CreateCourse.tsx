@@ -5,7 +5,8 @@ import { Row, Col, Card,} from 'react-bootstrap';
 import { ValidationForm, SelectGroup, TextInput } from 'react-bootstrap4-form-validation';
 import Config from '../../config';
 import Select from 'react-select';
-
+import { Alerts, ToastifyAlerts } from '../lib/Alert';
+const alerts: Alerts = new ToastifyAlerts();
 interface Props extends React.HTMLAttributes<Element> {
         setModal:any,
         setProgress:any
@@ -65,7 +66,7 @@ class CourseCreation extends Component <Props,{}> {
                 console.log(res);
                 this.props.setProgress(100);
                 this.props.setModal(false);
-                alert('Succesfully created course');
+                alerts.showSuccess('Succesfully created course');
                 this.setState({
                     name: '',
                     prerequisiteCourses: '',
@@ -80,7 +81,7 @@ class CourseCreation extends Component <Props,{}> {
             .catch((error) => {
                 //handle error using logging library
                 console.error(error);
-                alert(error);
+                alerts.showError(error.message);
             });
     };
 
@@ -103,9 +104,8 @@ class CourseCreation extends Component <Props,{}> {
             
             })
             .catch((error) => {
-                //handle error using logging library
-                // alert(error.message)
                 console.error(error);
+                alerts.showError(error.message);
             });
     };
     handleSelectChange = (selectedOptions) => {

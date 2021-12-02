@@ -26,7 +26,8 @@ import { Icons } from 'material-table';
 import { ValidationForm, TextInput } from 'react-bootstrap4-form-validation';
 import ProgressBar from 'react-bootstrap/ProgressBar';
 import { Switch } from '@material-ui/core';
-
+import { Alerts, ToastifyAlerts } from '../lib/Alert';
+const alerts: Alerts = new ToastifyAlerts();
 const tableIcons: Icons = {
     Add: forwardRef((props, ref) => < AddBox  {...props} ref={ref} />),
     Check: forwardRef((props, ref) => <Check {...props} ref={ref} />),
@@ -46,7 +47,6 @@ const tableIcons: Icons = {
     ThirdStateCheck: forwardRef((props, ref) => <Remove {...props} ref={ref} />),
     ViewColumn: forwardRef((props, ref) => <ViewColumn {...props} ref={ref} />)
 };
-
 function Department() {
     const timetablingSrv = Config.baseUrl.timetablingSrv;
     const ACTIVE = 'ACTIVE';
@@ -55,10 +55,7 @@ function Department() {
     const columns = [
         { title: 'ID', field: 'id', hidden: true },
         { title: 'Department name', field: 'name' },
-
-        {
-            title: 'Status', field: 'activation_status',
-        },
+        {title: 'Status', field: 'activation_status' },
         {
             title: 'Toggle Activation Status',
             field: 'internal_action',
@@ -81,7 +78,7 @@ function Department() {
     const [selectedDeptName, setSelectedDeptName] = useState('');
     const [selectedActivationStatus, setSelectedActivationStatus] = useState('');
     const [isActive] = useState(false);
-    const [errorMessages, setErrorMessages] = useState([]);
+    const [errorMessages] = useState([]);
     useEffect(() => {
         axios.get(`${timetablingSrv}/departments`)
             .then(res => {
@@ -90,7 +87,7 @@ function Department() {
             .catch((error) => {
                 //handle error using logging library
                 console.error(error);
-                alert(error);
+                alerts.showError(error.message);
             });
     }, []);
 
@@ -98,7 +95,7 @@ function Department() {
         axios.put(`${timetablingSrv}/departments/${deptId}`, updates)
             .then(() => {
                 setProgress(100);
-                alert('Successfully updated department');
+                alerts.showSuccess('Successfully updated department');
                 fetchDepartments();
                 resetStateCloseModal();
                 setProgress(0);
@@ -106,7 +103,7 @@ function Department() {
             .catch(error => {
                 console.error(error);
                 setProgress(0);
-                alert('Failed to update department');
+                alerts.showError(error.message);
             });
     };
 
@@ -114,12 +111,11 @@ function Department() {
         axios.get(`${timetablingSrv}/departments`)
             .then(res => {
                 setData(res.data);
-                alert('Successfully fetched departments');
             })
             .catch((error) => {
             //handle error using logging library
                 console.error(error);
-                alert(error);
+                alerts.showError(error.message);
             });
     };
 
@@ -152,14 +148,13 @@ function Department() {
             .post(`${timetablingSrv}/departments`, departmentData)
             .then(() => {
                 setProgress(100);
-                alert('Successfully created department');
                 fetchDepartments();
                 resetStateCloseModal();
                 setProgress(0);
             })
-            .catch(() => {
+            .catch((error) => {
                 setProgress(0);
-                setErrorMessages(['Failed to create trainer']);
+                alerts.showError(error.message);
             });
     };
     
@@ -190,7 +185,7 @@ function Department() {
                 }
             })
             .catch((error) => {
-                alert(error);
+                alerts.showError(error.message);
                 console.error(error);
             });
     };

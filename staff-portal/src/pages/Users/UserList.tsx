@@ -20,6 +20,9 @@ import {Row, Col, Card, Button} from 'react-bootstrap';
 import Config from '../../config';
 import CreateUser from './CreateUserModal/CreateUser';
 import { Icons } from 'material-table';
+import { Alerts, ToastifyAlerts } from '../lib/Alert';
+const alerts: Alerts = new ToastifyAlerts();
+
 const tableIcons:Icons = {
     Add: forwardRef((props, ref) => <AddBox {...props} ref={ref}/>),
     Check: forwardRef((props, ref) => <Check {...props} ref={ref}/>),
@@ -37,10 +40,10 @@ const tableIcons:Icons = {
 };
 
 interface History{
-	push: (path:string) => void
+    push: (path:string) => void
 }
 interface IProps {
-	history:History
+    history:History
 }
 
 const UserList = (props:IProps):JSX.Element => {
@@ -48,7 +51,6 @@ const UserList = (props:IProps):JSX.Element => {
     const columns = [
         {title: 'ID', field: 'id'},
         {title: 'AAD Alias', field: 'AADAlias'},
-
 
     ];
     const [data, setData] = useState([]);
@@ -66,6 +68,7 @@ const UserList = (props:IProps):JSX.Element => {
             .catch(error => {
             //handle error using logging library
                 console.log('Error',error.message);
+                alerts.showError(error.message);
             });
     };
     const handleRouteChange = () => {
@@ -78,8 +81,8 @@ const UserList = (props:IProps):JSX.Element => {
                 <Col>
                     <Breadcrumb/>
                 </Col>
-				
-                <Col>				
+                
+                <Col>                
                     <CreateUser fetchUsers = {fetchUsers}></CreateUser>
                 </Col>
                 <Button variant="danger" onClick={() =>  handleRouteChange() }>Assign Role</Button>

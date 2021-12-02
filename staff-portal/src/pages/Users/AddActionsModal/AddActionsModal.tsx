@@ -3,7 +3,8 @@ import { Modal, Button } from 'react-bootstrap';
 import Select from 'react-select';
 import Config from '../../../config';
 import axios from 'axios';
-
+import { Alerts, ToastifyAlerts } from '../../lib/Alert';
+const alerts: Alerts = new ToastifyAlerts();
 interface IProps {
     onHide: () => void;
     selectedRowProps:ISelectedRowProps;
@@ -32,8 +33,8 @@ export const AddActionsModal = (props:IProps) => {
                 setActions(res.data);
             })
             .catch((error) => {
-                console.log('Error');
-                alert(error.message);
+                console.log(error);
+                alerts.showError(error.message);
             });
     }, []);
 
@@ -68,7 +69,7 @@ export const AddActionsModal = (props:IProps) => {
             .post(`${authnzSrv}/roles/${roleId}/actions`,{ 'actionID': actionsArr})
             .then((res) => {
                 if (res.status == 200) {
-                    alert(res.data);
+                    alerts.showSuccess('Successfully assigned actions to role');
                     console.log(res);
                     props.onHide();
                 }
@@ -76,7 +77,7 @@ export const AddActionsModal = (props:IProps) => {
             .catch((error) => {
                 //handle error using logging library
                 console.error(error);
-                alert(error.message);
+                alerts.showError(error.message);
                 props.onHide();
             });
     };

@@ -23,7 +23,8 @@ import Breadcrumb from '../../App/components/Breadcrumb';
 import { Row, Col, Card, Modal, Button } from 'react-bootstrap';
 import Config from '../../config';
 import { ValidationForm, SelectGroup } from 'react-bootstrap4-form-validation';
-
+import { Alerts, ToastifyAlerts } from '../lib/Alert';
+const alerts: Alerts = new ToastifyAlerts();
 const tableIcons: Icons = {
     Add: forwardRef((props, ref) => < AddBox  {...props} ref={ref} />),
     Check: forwardRef((props, ref) => <Check {...props} ref={ref} />),
@@ -43,8 +44,6 @@ const tableIcons: Icons = {
     ThirdStateCheck: forwardRef((props, ref) => <Remove {...props} ref={ref} />),
     ViewColumn: forwardRef((props, ref) => <ViewColumn {...props} ref={ref} />)
 };
-
-
 enum TrainerType {
     Lecturer = 'LECTURER',
     Trainer = 'TRAINER',
@@ -70,7 +69,7 @@ function TrainerList() {
     const [selectedType, setType] = useState();
     const [departmentName, setDepartmentName] = useState('Please select a department');
     const [showModal, setModal] = useState(false);
-    const [errorMessages, setErrorMessages] = useState([]);
+    const [errorMessages] = useState([]);
     useEffect(() => {
         axios
             .get(`${baseUrl}/trainers`)
@@ -80,8 +79,7 @@ function TrainerList() {
             .catch((error) => {
                 //handle error using logging library
                 console.error(error);
-                alert(error.message);
-                setErrorMessages(['Failed to get trainers']);
+                alerts.showError(error.message);
             });
 
         axios
@@ -92,7 +90,7 @@ function TrainerList() {
             .catch((error) => {
                 //handle error using logging library
                 console.log('Error: '+error);
-                setErrorMessages(['Failed to get users']);
+                alerts.showError(error.message);
             });
 
         axios
@@ -103,7 +101,7 @@ function TrainerList() {
             .catch((error) => {
                 //handle error using logging library
                 console.error(error);
-                setErrorMessages(['Failed to get departments']);
+                alerts.showError(error.message);
             });
     }, []);
 
@@ -112,13 +110,11 @@ function TrainerList() {
             .get(`${baseUrl}/trainers`)
             .then((res) => {
                 setData(res.data);
-                alert('Successfully updated trainer data');
             })
             .catch((error) => {
                 //handle error using logging library
                 console.error(error);
-                alert(error.message);
-                setErrorMessages(['Failed to get trainers']);
+                alerts.showError(error.message);
             });
     };
 
@@ -138,12 +134,14 @@ function TrainerList() {
         axios
             .post(`${baseUrl}/trainers`, trainerData)
             .then(() => {
-                alert('Successfully created trainer');
+                alerts.showSuccess('Successfully created trainer');
                 fetchTrainers();
                 setModal(false);
             })
-            .catch((err) => {
-                alert(err.message);
+            .catch((error) => {
+                //handle error using logging library
+                console.error(error);
+                alerts.showError(error.message);
             });
     };
 

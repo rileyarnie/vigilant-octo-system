@@ -23,9 +23,10 @@ import Breadcrumb from '../../App/components/Breadcrumb';
 import { Row, Col, Card } from 'react-bootstrap';
 import { Button } from '@material-ui/core';
 import Config from '../../config';
+import { Alerts, ToastifyAlerts } from '../lib/Alert';
 
 const tableIcons: Icons = {
-    Add: forwardRef((props, ref) => < AddBox  {...props} ref={ref} />),
+    Add: forwardRef((props, ref) => <AddBox  {...props} ref={ref} />),
     Check: forwardRef((props, ref) => <Check {...props} ref={ref} />),
     Clear: forwardRef((props, ref) => <Clear {...props} ref={ref} />),
     Delete: forwardRef((props, ref) => <DeleteOutline {...props} ref={ref} />),
@@ -43,10 +44,8 @@ const tableIcons: Icons = {
     ThirdStateCheck: forwardRef((props, ref) => <Remove {...props} ref={ref} />),
     ViewColumn: forwardRef((props, ref) => <ViewColumn {...props} ref={ref} />)
 };
-
-
+const alerts: Alerts = new ToastifyAlerts();
 function AssignCourse() {
-
     const timetablingSrv = Config.baseUrl.timetablingSrv;
     const columns = [
         { title: 'ID', field: 'id', hidden: false },
@@ -57,8 +56,6 @@ function AssignCourse() {
         { title: 'Technical Assistant', field: 'needsTechnicalAssistant' },
         { title: 'Prerequisite Courses', field: 'prerequisiteCourses' },
         { title: 'Approved', field: 'isApproved' },
-
-
     ];
     const [data, setData] = useState([]);
     const [programId, setProgramId] = useState();
@@ -66,19 +63,18 @@ function AssignCourse() {
     const [courseId, setCourseId] = useState(null);
     const [iserror] = useState(false);
     const [selectedRows, setSelectedRows] = useState([]);
-    const [errorMessages, setErrorMessages] = useState([]);
+    const [errorMessages] = useState([]);
     const progId = JSON.parse(localStorage.getItem('programId'));
     useEffect(() => {
         axios.get(`${timetablingSrv}/courses`)
             .then(res => {
                 setData(res.data);
                 setProgramId(progId);
-                alert('Courses fetched succesfully');
             })
             .catch((error) => {
                 //handle error using logging library
                 console.error(error);
-                setErrorMessages(['Failed to fetch courses']);
+                alerts.showError(error.message);
             });
 
     }, []);
@@ -87,12 +83,11 @@ function AssignCourse() {
         axios.get(`${timetablingSrv}/courses`)
             .then(res => {
                 setData(res.data);
-                alert('Courses fetched succesfully');
             })
             .catch((error) => {
             //handle error using logging library
                 console.error(error);
-                setErrorMessages(['Failed to fetch courses']);
+                alerts.showError(error.message);
             });
     };
 
@@ -111,12 +106,12 @@ function AssignCourse() {
 
         axios.put(`${timetablingSrv}/programs/${programId}/courses`, {courses: selectedCourses})
             .then(res => {
-                alert('Course assignment succesful.');
+                alerts.showSuccess('Course assignment successful');
                 fetchCourses();
                 return res;
             })
-            .catch(() => {
-                setErrorMessages(['Course assignment failed']);
+            .catch((error) => {
+                alerts.showError(error.message);
             });
     };
      

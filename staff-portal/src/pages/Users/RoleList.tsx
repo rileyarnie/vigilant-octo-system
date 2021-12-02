@@ -21,12 +21,13 @@ import ViewColumn from '@material-ui/icons/ViewColumn';
 import axios from 'axios';
 import { Icons } from 'material-table';
 import Alert from '@material-ui/lab/Alert';
-import {Button, Card, Col, Row } from 'react-bootstrap';
+import {Card, Col, Row } from 'react-bootstrap';
 import Breadcrumb from '../../App/components/Breadcrumb';
 import {Actions} from './ActionsByRole/Actions';
 import { AddActions } from './AddActionsModal/AddActions';
 import CreateRole from './Role/CreateRole';
-
+import { Alerts, ToastifyAlerts } from '../lib/Alert';
+const alerts: Alerts = new ToastifyAlerts();
 const tableIcons: Icons = {
     Add: forwardRef((props, ref) => < AddBox  {...props} ref={ref} />),
     Check: forwardRef((props, ref) => <Check {...props} ref={ref} />),
@@ -56,7 +57,6 @@ function RoleList() {
         
     ];
     const [data, setData] = useState([]);
-    const [showModal, setModal] = useState(false);
     const [id,setId] = useState(0);
     const [roleName,setRoleName] = useState('');
 
@@ -69,13 +69,14 @@ function RoleList() {
     }, []);
 
     const fetchRoles = () => {
-        const authnzSrv = Config.baseUrl.authnzSrv; 
+        const authnzSrv = Config.baseUrl.authnzSrv;
         axios.get(`${authnzSrv}/roles`)
             .then(res => {
                 setData(res.data);
             })
             .catch(error => {
                 console.log(error);
+                alerts.showError(error.message);
             });
     };
     const handleRowUpdate = (newData, oldData, resolve) => {
@@ -97,7 +98,7 @@ function RoleList() {
                     setErrorMessages([]);
                 })
                 .catch(error => {
-                    setErrorMessages(error.message);
+                    alerts.showError(error.message);
                     setIserror(true);
                     resolve();
 
@@ -125,11 +126,12 @@ function RoleList() {
                     dataToAdd.push(newData);
                     setData(dataToAdd);
                     resolve();
+                    alerts.showSuccess('Role created successfully');
                     setErrorMessages([]);
                     setIserror(false);
                 })
                 .catch(error => {
-                    alert(error.message);
+                    alerts.showError(error.message);
                 });
         }else{
             setErrorMessages(errorList);
@@ -152,7 +154,7 @@ function RoleList() {
             .catch((error) => {
                 //handle error using logging library
                 console.error(error);
-                alert(error.message);
+                alerts.showError(error.message);
             });
     };
 
@@ -164,9 +166,6 @@ function RoleList() {
     const selectedRowProps = {
         id: id,
         name: roleName
-    };
-    const toggleCreateModal = () => {
-        showModal ? setModal(false) : setModal(true);
     };
     return (
         <>

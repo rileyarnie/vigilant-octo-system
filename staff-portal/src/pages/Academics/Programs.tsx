@@ -26,7 +26,8 @@ import {Row, Col, Card, Button, Modal, ProgressBar} from 'react-bootstrap';
 import Config from '../../config';
 import {Link} from 'react-router-dom';
 import {ValidationForm, SelectGroup, TextInput} from 'react-bootstrap4-form-validation';
-
+import { Alerts, ToastifyAlerts } from '../lib/Alert';
+const alerts: Alerts = new ToastifyAlerts();
 const tableIcons: Icons = {
     Add: forwardRef((props, ref) => < AddBox  {...props} ref={ref} />),
     Check: forwardRef((props, ref) => <Check {...props} ref={ref} />),
@@ -46,7 +47,6 @@ const tableIcons: Icons = {
     ThirdStateCheck: forwardRef((props, ref) => <Remove {...props} ref={ref} />),
     ViewColumn: forwardRef((props, ref) => <ViewColumn {...props} ref={ref} />)
 };
-
 function Programs() {
     const timetablingSrv = Config.baseUrl.timetablingSrv;
 
@@ -95,14 +95,15 @@ function Programs() {
             axios
                 .put(`${timetablingSrv}/programs/${row.id}`, program)
                 .then(() => {
-                    alert('Success');
+                    const msg = activationStatus? 'Successfully activated program' : 'Successfully Deactivated program';
+                    alerts.showSuccess(msg);
                     fetchPrograms();
                     setDisabled(false);
 
                 })
                 .catch((error) => {
                     console.error(error);
-                    alert(error);
+                    alerts.showError(error.message);
                     setDisabled(false);
                 });
         };
@@ -153,7 +154,7 @@ function Programs() {
                 })
                 .catch((error) => {
                     console.error(error);
-                    alert(error.message);
+                    alerts.showError(error.message);
                 });
         }, []);
 
@@ -164,7 +165,7 @@ function Programs() {
                 })
                 .catch((error) => {
                     console.error(error);
-                    alert(error.message);
+                    alerts.showError(error.message);
                 });
         };
         const handleCreate = (e) => {
@@ -186,14 +187,14 @@ function Programs() {
                 .post(`${timetablingSrv}/programs`, programData)
                 .then(() => {
                     setProgress(100);
-                    alert('Successfully created a Program');
+                    alerts.showSuccess('Successfully created a Program');
                     fetchPrograms();
                     resetStateCloseModal();
                     setProgress(0);
                 })
                 .catch((error) => {
                     setProgress(0);
-                    alert(error.message);
+                    alerts.showError(error.message);
                 });
         };
         const resetStateCloseModal = () => {

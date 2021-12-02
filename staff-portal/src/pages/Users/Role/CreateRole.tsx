@@ -5,7 +5,8 @@ import { ValidationForm, TextInput } from 'react-bootstrap4-form-validation';
 import validator from 'validator';
 import Config from '../../../config';
 import axios from 'axios';
-
+import { Alerts, ToastifyAlerts } from '../../lib/Alert';
+const alerts: Alerts = new ToastifyAlerts();
 interface IProps {
     fetchRoles: () => void
 }
@@ -22,12 +23,12 @@ const CreateRole = (props:IProps) => {
     const handleRoleSubmit = () => {
         axios.put(`${authnzSrv}/roles`, { 'roleName': roleName })
             .then(() => {
-                alert('Successfuly created role');
+                alerts.showSuccess('Success created role');
                 props.fetchRoles();
                 setShowCreateModal(false);
             })
             .catch(error => {
-                alert(error.message);
+                alerts.showError(error.message);
                 console.log(error);
             });
     };

@@ -24,7 +24,8 @@ import {Card, Col, Row} from 'react-bootstrap';
 import Breadcrumb from '../../App/components/Breadcrumb';
 import { Icons } from 'material-table';
 import {Assign} from './Role/Assign';
-
+import { Alerts, ToastifyAlerts } from '../lib/Alert';
+const alerts: Alerts = new ToastifyAlerts();
 const tableIcons: Icons = {
     Add: forwardRef((props, ref) => < AddBox  {...props} ref={ref} />),
     Check: forwardRef((props, ref) => <Check {...props} ref={ref} />),
@@ -44,7 +45,6 @@ const tableIcons: Icons = {
     ThirdStateCheck: forwardRef((props, ref) => <Remove {...props} ref={ref} />),
     ViewColumn: forwardRef((props, ref) => <ViewColumn {...props} ref={ref} />)
 };
-
 function AssignRole() {
 
     const columns = [
@@ -69,7 +69,7 @@ function AssignRole() {
             })
             .catch(error => {
                 console.log('Error');
-                alert(error.message);
+                alerts.showError(error.message);
             });
     }, []);
     const handleRowSelection = (row) => {
@@ -117,7 +117,7 @@ function AssignRole() {
                     </Col>
 
                 </Row>
-				&nbsp;&nbsp;&nbsp;
+                &nbsp;&nbsp;&nbsp;
                 <Assign {...selectedRowProps} ></Assign>
             </div>
         </>

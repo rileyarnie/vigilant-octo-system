@@ -5,7 +5,8 @@ import { Row, Col, Card} from 'react-bootstrap';
 import { ValidationForm} from 'react-bootstrap4-form-validation';
 import Config from '../../config';
 import { Switch,FormGroup,FormControlLabel } from '@material-ui/core';
-
+import { Alerts, ToastifyAlerts } from '../lib/Alert';
+const alerts: Alerts = new ToastifyAlerts();
 interface Props extends React.HTMLAttributes<Element> {
     setEditModal:(boolean) => void;
     setProgress:(number) => void;
@@ -50,7 +51,7 @@ class EditCourse extends Component <Props> {
             .then(res => {
                 //handle success
                 console.log(res);
-                alert('Successfully edited course');
+                alerts.showSuccess('Course edited Successfully');
                 this.props.fetchCourses();
                 this.props.setProgress(100);
                 this.props.setEditModal(false);
@@ -59,7 +60,7 @@ class EditCourse extends Component <Props> {
             .catch((error) => {
                 //handle error using logging library
                 console.error(error);
-                alert(error);
+                alerts.showError(error.message);
             });
 
     };

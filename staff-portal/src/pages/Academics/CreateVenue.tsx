@@ -4,7 +4,8 @@ import axios from 'axios';
 import { Row, Col, Card,} from 'react-bootstrap';
 import { ValidationForm, SelectGroup, TextInput } from 'react-bootstrap4-form-validation';
 import Config from '../../config';
-
+import { Alerts, ToastifyAlerts } from '../lib/Alert';
+const alerts: Alerts = new ToastifyAlerts();
 interface Props extends React.HTMLAttributes<Element> {
     setModal:any,
     setProgress:any
@@ -30,7 +31,7 @@ componentDidMount() {
         .catch((error) => {
             //handle error using logging library
             console.error(error);
-            alert(error.message);
+            alerts.showError(error.message);
         });
 }
 
@@ -55,13 +56,13 @@ componentDidMount() {
                 //handle success
                 console.log(res);
                 this.props.setProgress(100);
-                alert('Venue Created Successfully');
+                alerts.showSuccess('Venue Created Successfully');
                 this.props.setModal(false); 
             })
             .catch((error) => {
                 //handle error using logging library
                 console.error(error);
-                alert(error.message);
+                alerts.showError(error.message);
             });
     };
 

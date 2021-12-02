@@ -24,6 +24,8 @@ import { Row, Col, Card, Button, Modal, ProgressBar } from 'react-bootstrap';
 import Config from '../../config';
 import { Switch } from '@material-ui/core';
 import CourseCreation from './CreateCourse';
+import { Alerts, ToastifyAlerts } from '../lib/Alert';
+const alerts: Alerts = new ToastifyAlerts();
 const tableIcons: Icons = {
     Add: forwardRef((props, ref) => < AddBox  {...props} ref={ref} />),
     Check: forwardRef((props, ref) => <Check {...props} ref={ref} />),
@@ -43,7 +45,6 @@ const tableIcons: Icons = {
     ThirdStateCheck: forwardRef((props, ref) => <Remove {...props} ref={ref} />),
     ViewColumn: forwardRef((props, ref) => <ViewColumn {...props} ref={ref} />)
 };
-
 function CoursesList(props) {
     const timetablingSrv = Config.baseUrl.timetablingSrv;
     interface Course {
@@ -68,9 +69,8 @@ function CoursesList(props) {
                 setData(res.data);
             })
             .catch((error) => {
-                //handle error using logging library
-                // alert(error.message)
                 console.error(error);
+                alerts.showError(error.message);
             });
     };
     const [data, setData] = useState([]);
@@ -117,7 +117,8 @@ function CoursesList(props) {
         axios
             .put(`${timetablingSrv}/courses/${row.id}`, course)
             .then(() => {
-                alert('Success');
+                const msg = activationStatus? 'Successfully activated course' : 'Successfully Deactivated course';
+                alerts.showSuccess(msg);
                 fetchCourses();
                 setDisabled(false);
                 
@@ -125,7 +126,7 @@ function CoursesList(props) {
             .catch((error) => {
                 //handle error using logging library
                 console.error(error);
-                alert(error);
+                alerts.showError(error.message);
                 setDisabled(false);
             });
     };
@@ -204,15 +205,6 @@ function CoursesList(props) {
                     <CourseCreation setModal={setModal} setProgress={setProgress} fetchCourses={fetchCourses}> </CourseCreation>
                 </Modal.Body>
             </Modal>
-            {/* <Modal {...props} size="md" aria-labelledby="contained-modal-title-vcenter" centered show={showEditModal}  backdrop="static">
-            <ProgressBar striped variant="info" animated now={progress} />
-                <Modal.Header>
-                    <Modal.Title id="contained-modal-title-vcenter">Edit {selectedCourse.name}</Modal.Title>
-                </Modal.Header>
-                <Modal.Body>
-                                <EditCourse setEditModal={setEditModal} setProgress = {setProgress} fetchCourses={fetchCourses} selectedCourse={selectedCourse}></EditCourse>
-                </Modal.Body>
-            </Modal>             */}
         </>
     );
 }
