@@ -25,6 +25,7 @@ import { Row, Col, Card, Button, Modal } from 'react-bootstrap';
 import Config  from '../../config';
 import { ValidationForm, TextInput } from 'react-bootstrap4-form-validation';
 import ProgressBar from 'react-bootstrap/ProgressBar';
+import { Alerts, ToastifyAlerts } from '../lib/Alert';
 
 const tableIcons: Icons = {
     Add: forwardRef((props, ref) => < AddBox  {...props} ref={ref} />),
@@ -45,7 +46,7 @@ const tableIcons: Icons = {
     ThirdStateCheck: forwardRef((props, ref) => <Remove {...props} ref={ref} />),
     ViewColumn: forwardRef((props, ref) => <ViewColumn {...props} ref={ref} />)
 };
-
+const alerts: Alerts = new ToastifyAlerts();
 function CampusList() {
     interface Campus {
         id: number;
@@ -84,14 +85,15 @@ function CampusList() {
         axios
             .put(`${timetablingSrv}/campuses/${row.id}`, campus)
             .then(() => {
-                alert('Success');
+                const msg = activationStatus? 'Successfully activated campus' : 'Successfully Deactivated campus';
+                alerts.showSuccess(msg);
                 fetchCampuses();
                 setDisabled(false);
 
             })
             .catch((error) => {
                 console.error(error);
-                alert(error);
+                alerts.showError(error.message);
                 setDisabled(false);
             });
     };
@@ -122,7 +124,7 @@ function CampusList() {
             })
             .catch((error) => {
                 console.error(error);
-                alert(error.message);
+                alerts.showError(error.message);
             });
     }, []);
 
@@ -130,7 +132,7 @@ function CampusList() {
         axios.put(`${timetablingSrv}/campuses/${campusId}`, updates)
             .then(() => {
                 setProgress(100);
-                alert('Successfully updated Campus');
+                alerts.showSuccess('Successfully updated Campus');
                 fetchCampuses();
                 resetStateCloseModal();
                 setProgress(0);
@@ -138,7 +140,7 @@ function CampusList() {
             .catch(error => {
                 console.error(error);
                 setProgress(0);
-                alert(error.message);
+                alerts.showError(error.message);
             });
     };
     const fetchCampuses = () => {
@@ -148,7 +150,7 @@ function CampusList() {
             })
             .catch((error) => {
                 console.error(error);
-                alert(error.message);
+                alerts.showError(error.message);
             });
     };
     const handleAdd = (e) => {
@@ -174,14 +176,14 @@ function CampusList() {
             .post(`${timetablingSrv}/campuses`, campusData)
             .then(() => {
                 setProgress(100);
-                alert('Successfully created campus');
+                alerts.showSuccess('Successfully created Campus');
                 fetchCampuses();
                 resetStateCloseModal();
                 setProgress(0);
             })
             .catch((error) => {
                 setProgress(0);
-                alert(error.message);
+                alerts.showError(error.message);
             });
     };
 
@@ -232,8 +234,8 @@ function CampusList() {
 
                                     onClick: (event, row) => {
                                         setCampusId(row.id);
-                                        setSelectedCampusName(row.name); 
-                                        setSelectedDescription(row.description);                                       
+                                        setSelectedCampusName(row.name);
+                                        setSelectedDescription(row.description);
                                         toggleCreateModal();
                                         toggleCreateModal();
                                     }
@@ -276,7 +278,7 @@ function CampusList() {
                             </button>
                         </div>
                     </ValidationForm>
-                    <button className="btn btn-danger float-leftt" onClick={handleClose}>
+                    <button className="btn btn-danger float-left" onClick={handleClose}>
                         Close
                     </button>
                 </Modal.Body>

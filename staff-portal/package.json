@@ -95,6 +95,7 @@
     "react-text-mask": "^5.4.3",
     "react-to-print": "^2.5.0",
     "react-toast-notifications": "^2.2.5",
+    "react-toastify": "^8.1.0",
     "react-window-size": "^1.2.2",
     "reactour": "^1.15.4",
     "recharts": "^1.8.5",
