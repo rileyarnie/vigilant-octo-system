@@ -4,6 +4,7 @@ import Select from 'react-select';
 import Config from '../../../config';
 import axios from 'axios';
 import { Alerts, ToastifyAlerts } from '../../lib/Alert';
+import {customSelectTheme} from '../../lib/SelectThemes';
 const alerts: Alerts = new ToastifyAlerts();
 interface ISelectedRow{
     AADAlias:string;
@@ -33,18 +34,7 @@ export const AssignRoleModal = (props:IProps):JSX.Element => {
             });
     }, []);
 
-    const customTheme = (theme) => {
-        return {
-            ...theme,
-            colors: {
-                ...theme.colors,
-                primary25: 'pink',
-                primary: 'blue',
-                text: 'black',
-                backgroundColor: 'yellow'
-            }
-        };
-    };
+
 
     roles.map((role) => {
         return options.push({value: role.id, label: role.RoleName});
@@ -86,7 +76,7 @@ export const AssignRoleModal = (props:IProps):JSX.Element => {
             </Modal.Header>
             <Modal.Body>
                 <Select
-                    theme={customTheme}
+                    theme={customSelectTheme}
                     options={options}
                     isMulti={isMulti}
                     placeholder="Select roles for this user"

@@ -6,6 +6,7 @@ import { ValidationForm, SelectGroup, TextInput } from 'react-bootstrap4-form-va
 import Config from '../../config';
 import Select from 'react-select';
 import { Alerts, ToastifyAlerts } from '../lib/Alert';
+import { customSelectTheme } from '../lib/SelectThemes';
 const alerts: Alerts = new ToastifyAlerts();
 interface Props extends React.HTMLAttributes<Element> {
         setModal:any,
@@ -114,18 +115,7 @@ class CourseCreation extends Component <Props,{}> {
         });
         //   this.state.selectedCourses=selectedOptions
     };
-    customTheme = (theme) => {
-        return {
-            ...theme,
-            colors: {
-                ...theme.colors,
-                primary25: 'pink',
-                primary: 'blue',
-                text: 'black',
-                backgroundColor: 'yellow'
-            }
-        };
-    };
+
     render() {
         return (
             <>
@@ -143,7 +133,7 @@ class CourseCreation extends Component <Props,{}> {
                                                 <TextInput name='name' required value={this.state.name} id='name' type='text' placeholder="Enter name"  onChange={this.handleChange} /><br />
                                                 <label htmlFor='name'><b>Course pre-requisites</b></label>
                                                 <Select
-                                                    theme={this.customTheme}
+                                                    theme={customSelectTheme}
                                                     options={this.options}
                                                     isMulti={true}
                                                     placeholder="Select Prerequisites for this course"

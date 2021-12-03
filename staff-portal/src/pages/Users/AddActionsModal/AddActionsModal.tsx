@@ -4,6 +4,7 @@ import Select from 'react-select';
 import Config from '../../../config';
 import axios from 'axios';
 import { Alerts, ToastifyAlerts } from '../../lib/Alert';
+import {customSelectTheme} from '../../lib/SelectThemes';
 const alerts: Alerts = new ToastifyAlerts();
 interface IProps {
     onHide: () => void;
@@ -38,18 +39,6 @@ export const AddActionsModal = (props:IProps) => {
             });
     }, []);
 
-    const customTheme = (theme) => {
-        return {
-            ...theme,
-            colors: {
-                ...theme.colors,
-                primary25: 'pink',
-                primary: 'blue',
-                text: 'black',
-                backgroundColor: 'yellow'
-            }
-        };
-    };
 
     actions.map((action) => {
         return options.push({ value: action.id, label: action.ActionName });
@@ -89,7 +78,7 @@ export const AddActionsModal = (props:IProps) => {
             </Modal.Header>
             <Modal.Body>
                 <Select
-                    theme={customTheme}
+                    theme={customSelectTheme}
                     options={options}
                     isMulti={isMulti}
                     placeholder="Select Actions for this Role"

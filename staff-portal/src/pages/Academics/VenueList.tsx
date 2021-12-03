@@ -55,8 +55,8 @@ function VenueList(props) {
         {title: 'Campus', field: 'campus_name'}
     ];
     interface venue{
-        name:string,
-        id:number
+        venue_name:string,
+        venue_id:number
     }
     const [data, setData] = useState([]);
     const timetablingSrv = Config.baseUrl.timetablingSrv;
@@ -138,14 +138,14 @@ function VenueList(props) {
                     <Modal.Title id="contained-modal-title-vcenter">Create Venue</Modal.Title>
                 </Modal.Header>
                 <Modal.Body>
-                    <CreateVenue setModal={setModal} setProgress={setProgress} > </CreateVenue>
+                    <CreateVenue setModal={setModal} setProgress={setProgress} fetchVenues={fetchVenues}> </CreateVenue>
                 </Modal.Body>
 
             </Modal>
             <Modal {...props} size="lg" aria-labelledby="contained-modal-title-vcenter" centered show={showEditModal}>
                 <ProgressBar striped variant="info" animated now={progress} />    
                 <Modal.Header>
-                    <Modal.Title id="contained-modal-title-vcenter">Edit {selectedVenue.name} </Modal.Title>
+                    <Modal.Title id="contained-modal-title-vcenter">Edit {selectedVenue.venue_name} </Modal.Title>
                 </Modal.Header>
                 <Modal.Body>
                     <EditVenue {...selectedVenue } setData={setData} data={data} setEditModal={setEditModal} setProgress = {setProgress} fetchVenues={fetchVenues}> </EditVenue>

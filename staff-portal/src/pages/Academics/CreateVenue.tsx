@@ -2,13 +2,17 @@
 import React, { Component } from 'react';
 import axios from 'axios';
 import { Row, Col, Card,} from 'react-bootstrap';
-import { ValidationForm, SelectGroup, TextInput } from 'react-bootstrap4-form-validation';
+import { ValidationForm, TextInput } from 'react-bootstrap4-form-validation';
 import Config from '../../config';
 import { Alerts, ToastifyAlerts } from '../lib/Alert';
+import validator from 'validator';
+import Select from 'react-select';
+import { customSelectTheme } from '../lib/SelectThemes';
 const alerts: Alerts = new ToastifyAlerts();
 interface Props extends React.HTMLAttributes<Element> {
-    setModal:any,
-    setProgress:any
+    setModal:(boolean)=>void,
+    setProgress:(number)=>void,
+    fetchVenues:()=>void
   }
 class CreateVenue extends Component <Props> {
     constructor(props:any){
@@ -21,12 +25,17 @@ class CreateVenue extends Component <Props> {
         campusId: '',
         campuses:[]
     };
+options = [] as any;
 private timetableSrv = Config.baseUrl.timetablingSrv
 componentDidMount() {
     axios.get(`${this.timetableSrv}/campuses`)
         .then(res => {
             const campuses = res.data;
             this.setState({ campuses: campuses });
+            this.state.campuses.map(campus => {
+                return this.options.push({value:campus.id, label:campus.name});
+                
+            });
         })
         .catch((error) => {
             //handle error using logging library
@@ -41,6 +50,12 @@ componentDidMount() {
         });
     };
 
+    handleSelectChange = (selectedOption) => {
+        this.setState({
+            campusId:selectedOption.value
+        });
+    }
+
     handleSubmit = (e,) => {
         e.preventDefault();
         const venue = {
@@ -49,15 +64,13 @@ componentDidMount() {
             capacity: this.state.capacity,
             campusId: this.state.campusId,
         };
-        const params = new URLSearchParams();
-        params.append('Venue',JSON.stringify(venue));
-        axios.post(`${this.timetableSrv}/venues`,params)
-            .then(res => {
-                //handle success
-                console.log(res);
+        axios.post(`${this.timetableSrv}/venues`,{'Venue':venue})
+            .then(() => {
                 this.props.setProgress(100);
                 alerts.showSuccess('Venue Created Successfully');
+                this.props.fetchVenues();
                 this.props.setModal(false); 
+                this.props.setProgress(0);                
             })
             .catch((error) => {
                 //handle error using logging library
@@ -69,7 +82,6 @@ componentDidMount() {
     handleErrorSubmit = (e, _formData, errorInputs) => {
         console.error(errorInputs);
     };
-
 
     render() {
         return (
@@ -90,17 +102,16 @@ componentDidMount() {
                                                 <label htmlFor='description'><b>Description</b></label><br />
                                                 <TextInput name='description' id='description' type='textarea' required placeholder="Enter description" onChange={this.handleChange} /><br /><br />
                                                 <label htmlFor='description'><b>Capacity</b></label>
-                                                <TextInput name='capacity' id='capacity' type='text' required placeholder="Enter capacity" onChange={this.handleChange} /><br />
-                                                <label htmlFor='campusIdd'><b>Campus</b></label><br></br>
-                                                <SelectGroup name="c" id="color" required onChange={this.handleChange}>
-                                                    {
-                                                        this.state.campuses.map(campus => {
-                                                            return(
-                                                                <option key={campus.id} value={campus.id} >{campus.name}</option>
-                                                            );
-                                                        })
-                                                    }
-                                                </SelectGroup> <br></br>
+                                                <TextInput name='capacity' id='capacity' type='text' required placeholder="Enter capacity" onChange={this.handleChange}  validator={validator.isNumeric} errorMessage={{ validator: 'Please enter a valid number' }} /><br />
+                                                <label htmlFor='name'><b>Campus</b></label>
+                                                <Select
+                                                    theme={customSelectTheme}
+                                                    options={this.options}
+                                                    isMulti={false}
+                                                    placeholder="Select campus"
+                                                    noOptionsMessage={() => 'No available courses'}
+                                                    onChange={this.handleSelectChange}
+                                                />
                                                 &nbsp;&nbsp;&nbsp;
                                             </div>
                                             

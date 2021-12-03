@@ -15,12 +15,10 @@ const EditVenue = (props) => {
     };
     const handleSubmit = (event) => {
         event.preventDefault();
-        const params = new URLSearchParams();
         const modifiedVenue = {
             name: venueName
         };
-        params.append('Venue', JSON.stringify(modifiedVenue));
-        axios.put(`${timetableSrv}/venues/${props.id}`, params)
+        axios.put(`${timetableSrv}/venues/${props.venue_id}`, {'Venue': modifiedVenue})
             .then(()=>{
                 props.setProgress(100);
                 alerts.showSuccess('successfully updated Venue details');
