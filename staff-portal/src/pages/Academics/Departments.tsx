@@ -77,7 +77,7 @@ function Department() {
     const [showModal, setModal] = useState(false);
     const [deptId, setDeptId] = useState(null);
     const [selectedDeptName, setSelectedDeptName] = useState('');
-    const [isActive] = useState(false);
+    const [isActive, setSelectedStatus] = useState(false);
     const [errorMessages] = useState([]);
     const[,setDisabled] = useState(false);
     let activationStatus:boolean;
@@ -141,13 +141,13 @@ function Department() {
             });
     };
 
-    const fetchDepartments = () => {        
+    const fetchDepartments = () => {
         axios.get(`${timetablingSrv}/departments`)
             .then(res => {
                 setData(res.data);
             })
             .catch((error) => {
-            //handle error using logging library
+                //handle error using logging library
                 console.error(error);
                 alerts.showError(error.message);
             });
@@ -191,7 +191,7 @@ function Department() {
                 alerts.showError(error.message);
             });
     };
-    
+
     const resetStateCloseModal = () => {
         setDeptId(null);
         setDeptName('');
@@ -242,12 +242,13 @@ function Department() {
 
                                         setDeptId(rowData.id);
                                         setSelectedDeptName(rowData.name);
+                                        setSelectedStatus(rowData.isActive);
                                         toggleCreateModal();
 
 
                                     }
 
-                                } 
+                                }
 
                             ]}
                         />
@@ -271,11 +272,11 @@ function Department() {
                         <div className="form-group">
                             <label htmlFor="departmentName">Department name</label>
                             <TextInput
-                                name='departmentName' 
-                                id='departmentName' 
-                                type='text' 
-                                value={deptId ? selectedDeptName : deptname} 
-                                placeholder={deptId ? selectedDeptName :'Enter department name'} 
+                                name='departmentName'
+                                id='departmentName'
+                                type='text'
+                                value={deptId ? selectedDeptName : deptname}
+                                placeholder={deptId ? selectedDeptName :'Enter department name'}
                                 onChange={(e) => deptId ? setSelectedDeptName(e.target.value) : setDeptName(e.target.value)}
                                 required /><br />
                         </div>

@@ -9,24 +9,12 @@ import { Alerts, ToastifyAlerts } from '../lib/Alert';
 import { customSelectTheme } from '../lib/SelectThemes';
 const alerts: Alerts = new ToastifyAlerts();
 interface Props extends React.HTMLAttributes<Element> {
-        setModal:any,
-        setProgress:any
+    setModal:any,
+    setProgress:any
     fetchCourses:any
-  }
-//   interface Course {
-//     name: string;
-//     id: number;
-//     prerequisiteCourses: string;
-//     description: string;
-//     trainingHours: number;
-//     isTimetableable: boolean;
-//     needsTechnicalAssistant: boolean;
-//     activation_status: boolean;
-//     approval_status: boolean;
-// }
+}
 const timetablingSrv = Config.baseUrl.timetablingSrv;
-// eslint-disable-next-line @typescript-eslint/ban-types
-class CourseCreation extends Component <Props,{}> {
+class CourseCreation extends Component <Props> {
     options = [] as any;
     coursesArr=[];
     state = {
@@ -67,7 +55,7 @@ class CourseCreation extends Component <Props,{}> {
                 console.log(res);
                 this.props.setProgress(100);
                 this.props.setModal(false);
-                alerts.showSuccess('Succesfully created course');
+                alerts.showSuccess('Course created succesfully');
                 this.setState({
                     name: '',
                     prerequisiteCourses: '',
@@ -101,8 +89,8 @@ class CourseCreation extends Component <Props,{}> {
                     courses: res.data});
                 this.state.courses.map((course)=>{
                     return this.options.push({value:course.id, label:course.name});
-                });    
-            
+                });
+
             })
             .catch((error) => {
                 console.error(error);
@@ -113,7 +101,6 @@ class CourseCreation extends Component <Props,{}> {
         selectedOptions?.map((el)=>{
             this.coursesArr.push(el.value);
         });
-        //   this.state.selectedCourses=selectedOptions
     };
 
     render() {
@@ -162,7 +149,7 @@ class CourseCreation extends Component <Props,{}> {
                                                 <button className='btn btn-info float-right'>Submit</button>
                                             </div>
                                         </ValidationForm>
-                                        <button className="btn btn-danger float-left" onClick={()=>this.props.setModal(false)}>Cancel</button> 
+                                        <button className="btn btn-danger float-left" onClick={()=>this.props.setModal(false)}>Cancel</button>
                                     </Col>
                                 </Row>
                             </Card.Body>
