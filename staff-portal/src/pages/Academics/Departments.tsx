@@ -49,36 +49,70 @@ const tableIcons: Icons = {
 };
 function Department() {
     const timetablingSrv = Config.baseUrl.timetablingSrv;
-    const ACTIVE = 'ACTIVE';
-    const INACTIVE = 'INACTIVE'; 
-
+    interface department {
+        name: string;
+        id: number;
+        isActive: boolean;
+    }
     const columns = [
         { title: 'ID', field: 'id', hidden: true },
         { title: 'Department name', field: 'name' },
-        {title: 'Status', field: 'activation_status' },
+        {title: 'Status', field: 'isActive' },
         {
-            title: 'Toggle Activation Status',
+            title: 'Activation Status',
             field: 'internal_action',
-            render: (row) => (
+            render: (row: department) => (
                 <Switch
-                    onChange={() => handleSwitchToggle(row)}
+                    onChange={(event) => handleActivationStatusToggle(event, row)}
                     inputProps={{ 'aria-label': 'controlled' }}
-                    checked={row.activation_status==='ACTIVE'}
+                    defaultChecked={row.isActive===true}
                 />
             )
-        }
+        },
     ];
     const [data, setData] = useState([]);
     const [iserror] = useState(false);
     const [progressBar, setProgress] = useState(0);
     const [deptname, setDeptName] = useState('');
-    const [activationStatus, setActivationStatus] = useState('');
     const [showModal, setModal] = useState(false);
     const [deptId, setDeptId] = useState(null);
     const [selectedDeptName, setSelectedDeptName] = useState('');
-    const [selectedActivationStatus, setSelectedActivationStatus] = useState('');
     const [isActive] = useState(false);
     const [errorMessages] = useState([]);
+    const[,setDisabled] = useState(false);
+    let activationStatus:boolean;
+    const handleActivationStatusToggle=(event,row:department)=>{
+        setDisabled(true);
+        if(row.isActive){
+            activationStatus=false;
+            handleToggleStatusSubmit(event,row);
+        }
+        if(!row.isActive){
+            activationStatus=true;
+            handleToggleStatusSubmit(event,row);
+        }
+    };
+    const handleToggleStatusSubmit=(e,row:department)=>{
+        const departmentStatus={
+            name:row.name,
+            isActive:activationStatus,
+        };
+        axios
+            .put(`${timetablingSrv}/departments/${row.id}`,departmentStatus)
+            .then(()=>{
+                const msg = activationStatus? 'Department activated successfully' : 'Department deactivated successfully';
+                alerts.showSuccess(msg);
+                fetchDepartments();
+                setDisabled(false);
+
+            })
+            .catch((error)=>{
+                console.error(error);
+                alerts.showError(error.message);
+                setDisabled(false);
+            });
+    };
+
     useEffect(() => {
         axios.get(`${timetablingSrv}/departments`)
             .then(res => {
@@ -134,7 +168,6 @@ function Department() {
         e.preventDefault();
         const updates = {
             name: deptname === '' ? selectedDeptName : deptname,
-            activation_status: activationStatus === 'Please enter activation status' ? selectedActivationStatus : activationStatus,
             isActive: isActive
         };
 
@@ -149,6 +182,7 @@ function Department() {
             .then(() => {
                 setProgress(100);
                 fetchDepartments();
+                alerts.showSuccess('Successfully created Department');
                 resetStateCloseModal();
                 setProgress(0);
             })
@@ -161,48 +195,12 @@ function Department() {
     const resetStateCloseModal = () => {
         setDeptId(null);
         setDeptName('');
-        setActivationStatus('Please enter activation status');
         setModal(false);
     };
-
-    const setDepartmentActivationStatus = async (departmentId:number, activationStatus:string) => {
-        const params = new URLSearchParams();
-        const update = {
-            activation_status: activationStatus
-        }; 
-        params.append('updates', JSON.stringify(update));
-        axios
-            .put(`${timetablingSrv}/departments/${departmentId}`, params)
-            .then((res) => {
-                if(res.status === 200){
-                    data.forEach((obj,index)=>{
-                        if(obj.id === deptId){
-                            data[index].activation_status = activationStatus;
-                            const updatedArr = [...data];
-                            setData(updatedArr);
-                        }
-                    });
-                }
-            })
-            .catch((error) => {
-                alerts.showError(error.message);
-                console.error(error);
-            });
-    };
-
-    const handleSwitchToggle = async (row) => {
-        if (row.activation_status === ACTIVE) {
-            setDepartmentActivationStatus(row.id, INACTIVE);
-        }
-        if (row.activation_status === INACTIVE) {
-            setDepartmentActivationStatus(row.id, ACTIVE);
-        }
-    };
-
     const toggleCreateModal = () => {
         showModal ? resetStateCloseModal() : setModal(true);
     };
-    
+
     return (
         <>
             <Row className='align-items-center page-header'>
@@ -244,7 +242,6 @@ function Department() {
 
                                         setDeptId(rowData.id);
                                         setSelectedDeptName(rowData.name);
-                                        setSelectedActivationStatus(rowData.activation_status);
                                         toggleCreateModal();
 
 
