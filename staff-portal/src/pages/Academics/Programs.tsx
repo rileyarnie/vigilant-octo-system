@@ -1,6 +1,7 @@
 /* eslint-disable react/display-name */
 import React, {useState, useEffect} from 'react';
 import {forwardRef} from 'react';
+import { Alerts, ToastifyAlerts } from '../lib/Alert';
 import MaterialTable from 'material-table';
 import AddBox from '@material-ui/icons/AddBox';
 import ArrowDownward from '@material-ui/icons/ArrowDownward';
@@ -26,8 +27,9 @@ import {Row, Col, Card, Button, Modal, ProgressBar} from 'react-bootstrap';
 import Config from '../../config';
 import {Link} from 'react-router-dom';
 import {ValidationForm, SelectGroup, TextInput} from 'react-bootstrap4-form-validation';
-import { Alerts, ToastifyAlerts } from '../lib/Alert';
+
 const alerts: Alerts = new ToastifyAlerts();
+
 const tableIcons: Icons = {
     Add: forwardRef((props, ref) => < AddBox  {...props} ref={ref} />),
     Check: forwardRef((props, ref) => <Check {...props} ref={ref} />),
@@ -182,12 +184,11 @@ function Programs() {
             createProgram(program);
         };
         const createProgram = (programData) => {
-            console.log(programData);
             axios
                 .post(`${timetablingSrv}/programs`, programData)
                 .then(() => {
                     setProgress(100);
-                    alerts.showSuccess('Successfully created a Program');
+                    alerts.showSuccess('Course created succesfully');
                     fetchPrograms();
                     resetStateCloseModal();
                     setProgress(0);
@@ -271,7 +272,7 @@ function Programs() {
                                     onChange={(e) => setDescription(e.target.value)}/><br/>
                                 <label htmlFor='cou'><b>Prerequisite Documentation</b></label>
                                 <TextInput name='prerequisiteDocumentation' id='prerequisiteDocumentation' multiline
-                                    rows="3" value={prerequisiteDocumentation}
+                                    rows="1" value={prerequisiteDocumentation}
                                     onChange={(e) => setPrerequisiteDocumentation(e.target.value)}
                                     type='textarea'
                                     placeholder="Enter prerequisite documentation separate with ,"/><br/>

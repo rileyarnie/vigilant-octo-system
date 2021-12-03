@@ -15,7 +15,7 @@ export class ToastifyAlerts implements Alerts {
         theme: 'colored',
         progressClassName: 'error-progress-bar',
         autoClose: 5000,
-    }
+    };
     readonly successToast: ToastOptions = {
         position: toast.POSITION.TOP_RIGHT,
         className: 'toast.success',
@@ -23,7 +23,7 @@ export class ToastifyAlerts implements Alerts {
         theme: 'colored',
         progressClassName: 'error-progress-bar',
         autoClose: 5000,
-    }
+    };
     public showSuccess(msg: string) {
         toast(msg, this.successToast);
     }
