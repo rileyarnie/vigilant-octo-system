@@ -104,6 +104,7 @@ function TrainerList() {
                 alerts.showError(error.message);
             });
     }, []);
+
     const fetchTrainers = () => {
         axios
             .get(`${baseUrl}/trainers`)
@@ -185,6 +186,7 @@ function TrainerList() {
             <Modal
                 show={showModal}
                 onHide={toggleCreateModal}
+                onBackdropClick={toggleCreateModal}
                 size="lg"
                 backdrop="static"
                 aria-labelledby="contained-modal-title-vcenter"

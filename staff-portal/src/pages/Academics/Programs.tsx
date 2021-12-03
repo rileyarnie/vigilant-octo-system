@@ -130,7 +130,7 @@ function Programs() {
                 field: 'internal_action',
                 render: (row) => (
                     <Link to={'/assigncourses'} onClick={() => localStorage.setItem('programId', row.id)}>
-                        <button className="btn btn-danger">
+                        <button className="btn btn btn-link">
                                                 Assign courses
                         </button>
                     </Link>
@@ -141,7 +141,7 @@ function Programs() {
                 field: 'internal_action',
                 render: (row) => (
                     <Link to={'/programcourses'} onClick={() => localStorage.setItem('programId', row.id)}>
-                        <button className="btn btn-danger">
+                        <button className="btn btn btn-link">
                                                 View courses
                         </button>
                     </Link>

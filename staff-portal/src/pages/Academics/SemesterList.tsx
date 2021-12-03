@@ -307,12 +307,12 @@ function SemesterList() {
                                 }}/><br />
                         </div>
                         <div className='form-group'>
-                            <button className="btn btn-danger float-left" onClick={(e) => semesterId ? handleEdit(e) : handleCreate(e)}>
+                            <button className="btn btn-info float-right" onClick={(e) => semesterId ? handleEdit(e) : handleCreate(e)}>
                                 Submit
                             </button>
                         </div>
                     </ValidationForm>
-                    <button className="btn btn-info float-right" onClick={handleClose}>
+                    <button className="btn btn-danger float-left" onClick={handleClose}>
                         Close
                     </button>
                 </Modal.Body>

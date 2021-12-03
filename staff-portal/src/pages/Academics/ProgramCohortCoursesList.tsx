@@ -80,9 +80,9 @@ function ProgramCohortCoursesList() {
             title: 'Publish',
             field: 'internal_action',
             render: (row:programCohortCourse) => (
-                <Button variant="danger" onClick={() => togglePublishModal()}>
+                <button className="btn btn btn-link" onClick={() => togglePublishModal()}>
                                         Publish Semester
-                </Button>
+                </button>
             )
         },
         { title: 'Action', field: 'action' },

@@ -280,10 +280,10 @@ function Department() {
                                 required /><br />
                         </div>
                         <div className="form-group" style={{display: 'flex', justifyContent: 'space-between'}}>
-                            <button className="btn btn-primary" onClick={() => toggleCreateModal()}>
+                            <button className="btn btn-danger" onClick={() => toggleCreateModal()}>
                                 Cancel
                             </button>
-                            <button className="btn btn-danger" onClick={(e) => deptId ? handleEdit(e) : handleCreate(e)}>
+                            <button className="btn btn-info" onClick={(e) => deptId ? handleEdit(e) : handleCreate(e)}>
                                 Submit
                             </button>
                         </div>

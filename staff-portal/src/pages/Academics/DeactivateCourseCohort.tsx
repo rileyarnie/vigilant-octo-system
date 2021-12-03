@@ -21,6 +21,7 @@ export const DeactivateCourseCohort = (props:IProps) => {
     const [showModal,setShowModal] = useState(false);
     let activationStatus:boolean;
     let buttonVariant:string;
+    let className:string;
     let message:string;
     let action:string;
     let actionVerb:string;
@@ -28,12 +29,14 @@ export const DeactivateCourseCohort = (props:IProps) => {
     if(props.selectedRow.isActive){
         activationStatus=false;
         buttonVariant='danger';
+        className='btn btn btn-link';
         message = `You are about to deactivate ${props.selectedRow.courseName} for ${props.selectedRow.programName} in the semester ${props.selectedRow.semesterName}, this will mean that the course cohort will not be included in the timetable, are you sure you want to proceed? `;
         action= 'Deactivate';
         actionVerb='Deactivating';
     }
     else{
         buttonVariant='success';
+        className='btn btn btn-link';
         activationStatus=true;
         message=`You are about to activate ${props.selectedRow.courseName} for ${props.selectedRow.programName} in the semester ${props.selectedRow.semesterName}, this will mean that the course cohort will be reinstated in the timetable, are you sure you want to proceed?`;
         action='Activate';
@@ -60,7 +63,7 @@ export const DeactivateCourseCohort = (props:IProps) => {
     };
     return (
         <>
-            <Button variant= {buttonVariant} onClick={() => setShowModal(true)}>
+            <Button variant= {className} onClick={() => setShowModal(true)}>
                 {action}
             </Button>  
             <Modal
