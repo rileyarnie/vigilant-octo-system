@@ -22,7 +22,7 @@ const CreateUserModal = (props) => {
         params.append('AADAlias', email);
         axios
             .post(`${authnzSrv}/users`, params)
-            .then((res) => {
+            .then(() => {
                 setProgress(100);
                 alerts.showSuccess('successfully created user');
                 props.fetchUsers();

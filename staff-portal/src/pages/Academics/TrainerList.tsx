@@ -53,14 +53,14 @@ enum TrainerType {
 function TrainerList() {
     const columns = [
         { title: 'ID', field: 'id', hidden: false },
-        { title: 'Trainer name', field: 'name' },
+        { title: 'Trainer AADAlias', field: 'AADAlias' },
         { title: 'Trainer type', field: 'trainerType' },
         { title: 'Department ID', field: 'departmentId' }
     ];
     const [data, setData] = useState([]);
     const baseUrl = Config.baseUrl.timetablingSrv;
     const baseUrlAuth = Config.baseUrl.authnzSrv;
-    const [iserror] = useState(false);
+    const [isError] = useState(false);
     const [users, setUsers] = useState([]);
     const [departments, setDepartments] = useState([]);
     const [trainerType, setTrainerType] = useState('Please select a trainer');
@@ -104,7 +104,6 @@ function TrainerList() {
                 alerts.showError(error.message);
             });
     }, []);
-
     const fetchTrainers = () => {
         axios
             .get(`${baseUrl}/trainers`)
@@ -134,7 +133,7 @@ function TrainerList() {
         axios
             .post(`${baseUrl}/trainers`, trainerData)
             .then(() => {
-                alerts.showSuccess('Successfully created trainer');
+                alerts.showSuccess('Trainer created successfully');
                 fetchTrainers();
                 setModal(false);
             })
@@ -165,7 +164,7 @@ function TrainerList() {
                 <Col>
                     <Card>
                         <div>
-                            {iserror && (
+                            {isError && (
                                 <Alert severity="error">
                                     {errorMessages.map((msg, i) => {
                                         return <div key={i}>{msg}</div>;
@@ -186,8 +185,8 @@ function TrainerList() {
             <Modal
                 show={showModal}
                 onHide={toggleCreateModal}
-                onBackdropClick={toggleCreateModal}
                 size="lg"
+                backdrop="static"
                 aria-labelledby="contained-modal-title-vcenter"
                 centered
             >
@@ -198,28 +197,21 @@ function TrainerList() {
                     <ValidationForm>
                         <div className="form-group">
                             <label htmlFor="user">Select a user</label>
-                            <SelectGroup
-                                name="user"
-                                id="user"
-                                value={users}
-                                required
+                            <SelectGroup name="user" id="user" required
                                 errorMessage="Please select a user."
                                 onChange={(e) => {
                                     setSelectedUser(e.target.value);  
                                 }}
                             >
-                                <option value={selectedUser}>{selectedUser}</option>
+                                <option value="">-- select a user --</option>
                                 {users.map((user) => {
-                                    return <option key={user.id} value={user.id}>{user.name}</option>;
+                                    return <option key={user.id} value={user.id}>{user.AADAlias}</option>;
                                 })}
                             </SelectGroup>
                         </div>
                         <div className="form-group">
                             <label htmlFor="department">Select a department</label>
-                            <SelectGroup
-                                name="department"
-                                id="department"
-                                value={departmentName}
+                            <SelectGroup name="department" id="department" value={departmentName}
                                 required
                                 errorMessage="Please select a department."
                                 onChange={(e) => {
@@ -255,10 +247,14 @@ function TrainerList() {
                         </div>
 
                         <div className="form-group">
-                            <button className="btn btn-danger" onClick={(e) => handleSubmit(e)}>
+                            <button className="btn btn-info float-right" onClick={(e) => handleSubmit(e)}>
                                 Submit
                             </button>
                         </div>
+                        <button className="btn btn-danger float-left"
+                            onClick={()=>toggleCreateModal()}>
+                            Cancel
+                        </button>
                     </ValidationForm>
                 </Modal.Body>
             </Modal>
