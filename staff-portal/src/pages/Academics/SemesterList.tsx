@@ -73,7 +73,7 @@ function SemesterList() {
             activation_status: activationStatus,
         };
         axios
-            .put(`${timetablingSrv}/semesters/${row.id}`, semester)
+            .put(`${timetablingSrv}/semesters/${row.id}`, {'body': semester})
             .then(() => {
                 const msg = activationStatus? 'Successfully activated semester' : 'Successfully Deactivated semester';
                 alerts.showSuccess(msg);
@@ -130,8 +130,6 @@ function SemesterList() {
                 console.error(error);
                 alerts.showError(error.message);
             });
-        fetchProgramCohorts();
-        fetchPrograms();
     }, []);
     const updateSemester = (semesterId, updates) => {
         axios.put(`${timetablingSrv}/semesters/${semesterId}`, updates)
