@@ -263,14 +263,11 @@ function CampusList() {
                     <ValidationForm>
                         <div className='form-group'>
                             <label htmlFor="departmentName">Campus Name</label>
-                            <TextInput name='campusName' id='campusName' type='text' value={campusName} placeholder={campusId ? selectedCampusName :campusName}
-                                onChange={(e) => setCampusName(e.target.value)}
-                                required /><br />
+                            <TextInput name='campusName' id='campusName' type='text' value={campusId ? selectedCampusName : campusName} placeholder={campusId ? selectedCampusName :campusName}
+                                onChange={(e) => campusId ? setSelectedCampusName(e.target.value) : setCampusName(e.target.value)} required /><br />
                             <label htmlFor='Date'><b>Description</b></label><br />
-                            <TextInput name='description'  minLength="4" id='description' value={description} type="text" placeholder={campusId ?  selectedDescription :description} required multiline rows="5"
-                                onChange={(e) => {
-                                    setDescription(e.target.value);
-                                }}/><br />
+                            <TextInput name='description'  minLength="4" id='description' value={campusId ? selectedDescription : description} type="text" placeholder={campusId ?  selectedDescription :description} required multiline rows="5"
+                                onChange={(e) => campusId ? setSelectedDescription(e.target.value) : setDescription(e.target.value)}/><br />
                         </div>
                         <div className='form-group'>
                             <button className="btn btn-info float-right" onClick={(e) => campusId ? handleEdit(e) : handleAdd(e)}>
