@@ -53,10 +53,14 @@ const tableIcons: Icons = {
 const ProgramCohorts = ():JSX.Element => {
     interface programCohort{
         program_cohorts_id:number,
-        program_cohorts_startDate:Date,
+        program_cohorts_startDate:string,
         program_cohorts_anticipatedGraduationYear:number,
         program_cohorts_anticipatedGraduationMonth:number,
-        program_cohorts_isActive:boolean
+        program_cohorts_isActive:boolean,
+        program_cohorts_advertDescription:string;
+        pg_name:string;
+        program_cohorts_bannerImageUrl:string;
+        pg_id:number;
     }
 
     const [data,setData]=useState([]);
@@ -78,6 +82,7 @@ const ProgramCohorts = ():JSX.Element => {
     const [showModal,setModal]=useState(false);
     const [cohortId,setCohortId]=useState(null);
     const [errorMessages]=useState([]);
+    const [selectedProgramCohort,setSelectedProgramCohort] = useState<programCohort>();
 
     const timetablingSrv=Config.baseUrl.timetablingSrv;
     const year=graduationDate.split('').slice(0,4).join('');
@@ -150,8 +155,9 @@ const ProgramCohorts = ():JSX.Element => {
                     label="Actions"
                     onChange={(event)=>{
                         if(event.target.value === 'Edit'){
-                            setCohortId(row.id);
+                            setCohortId(row.program_cohorts_id);
                             toggleCreateModal();
+                            setSelectedProgramCohort(row);
                         }
                         
                     }}
@@ -295,6 +301,11 @@ const ProgramCohorts = ():JSX.Element => {
         return programs.filter(program => {
             return program.id === id;
         }).map(name => name.name)[0];
+    }; 
+
+    const getMonthYear = (month:number, year:number) => {
+        const date = new Date (year, month);
+        return  date.toISOString().slice(0,7);
     };
     return (
         <>
@@ -347,33 +358,33 @@ const ProgramCohorts = ():JSX.Element => {
                         <Col sm={8}>
                             <ValidationForm>
                                 <div className="form-group">
-                                    <label htmlFor="cohortName"><b>Select Program</b></label>
+                                    <label htmlFor="cohortName"><b>{cohortId? 'Select a new program for this cohort' : 'Select a program' }</b></label>
                                     <SelectGroup name="program" id="program" required
                                         errorMessage="Please select a Program."
                                         onChange={(e)=>{
                                             setSelectedProgramId(e.target.value);
                                             setProgramId(e.target.value);
                                         }}>
-                                        <option defaultValue={selectedProgramId} value="">-- Please select --</option>
+                                        <option defaultValue={cohortId?selectedProgramCohort.pg_id:selectedProgramId} value="">-- Select a program cohort --</option>
                                         {programs.map((program)=>{
                                             return <option key={program.name} value={program.id}>{program.name}</option>;
                                         })}
                                     </SelectGroup><br/>
                                     <label htmlFor='Date'><b>Start Date</b></label><br/>
                                     <TextInput name='startDate' id='startDate' type="date" required
-                                        defaultValue={selectedStartDate}
+                                        defaultValue={cohortId? selectedProgramCohort.program_cohorts_startDate.slice(0,10) : selectedStartDate}
                                         onChange={(e)=>{
                                             setStartDate(e.target.value);
                                         }}/><br/>
                                     <label htmlFor='Date'><b>Anticipated Graduation Date</b></label><br/>
                                     <TextInput name='graduationDate' id='graduationDate' type="month" required
-                                        defaultValue={selectedGraduationDate}
+                                        defaultValue={cohortId? getMonthYear(selectedProgramCohort.program_cohorts_anticipatedGraduationMonth,selectedProgramCohort.program_cohorts_anticipatedGraduationYear) : selectedGraduationDate }
                                         onChange={(e)=>{
                                             setGraduationDate(e.target.value);
                                         }}/><br/>
                                     <label htmlFor="cohortName"><b>Description</b></label>
                                     <TextInput name='description' minLength="4" id='description'
-                                        defaultValue={selectedDescription}
+                                        defaultValue={cohortId?selectedProgramCohort.program_cohorts_advertDescription : selectedDescription}
                                         type="text" placeholder={cohortId?setDescription:description}
                                         required multiline rows="3"
                                         onChange={(e)=>{
