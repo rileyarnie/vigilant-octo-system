@@ -91,8 +91,8 @@ function SemesterList() {
     const columns = [
         { title: 'ID', field: 'id'},
         { title: 'Semester name', field: 'name' },
-        { title: 'Start Date', field: 'startDate' },
-        { title: 'End Date', field: 'endDate' },
+        { title: 'Start Date',  render:(rowData)=>rowData.startDate.slice(0,10) },
+        { title: 'End Date',  render:(rowData)=>rowData.startDate.slice(0,10) },
         {
             title: 'Activation Status',
             field: 'internal_action',
