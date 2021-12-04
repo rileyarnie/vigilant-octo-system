@@ -171,7 +171,6 @@ function ProgramCohortCoursesList() {
         setLoadingBar('block');
         axios.get(`${timetablingSrv}/semesters`)
             .then(res => {
-                setData(res.data);
                 setLoadingBar('none');
                 console.log(res.data);
                 setSemesters(res.data);
