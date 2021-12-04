@@ -182,7 +182,8 @@ function ProgramCohortCoursesList() {
             });
     };
 
-    const publishSemesterAndFeeItems = async () => {
+    const publishSemesterAndFeeItems = async (e) => {
+        e.preventDefault();
         console.log('publish semester');
         await handleFeeItemsPost();
         toggleDialog();
@@ -350,7 +351,7 @@ function ProgramCohortCoursesList() {
                     </Modal.Body>
 
                     <Modal.Footer>
-                        <Button variant="secondary" onClick={() => publishSemesterAndFeeItems()}>Continue to publish</Button>
+                        <Button variant="secondary" onClick={(e) => publishSemesterAndFeeItems(e)}>Continue to publish</Button>
                         <Button variant="primary" onClick={() => toggleDialog()}>Continue editing</Button>
                     </Modal.Footer>
                 </Modal.Dialog>
@@ -406,6 +407,7 @@ function ProgramCohortCoursesList() {
                             <button
                                 className="btn btn-info float-left"
                                 onClick={(e) => {
+                                    e.preventDefault();
                                     toggleDialog();
 
                                 }}
