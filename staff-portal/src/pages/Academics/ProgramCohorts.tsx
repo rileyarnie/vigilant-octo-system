@@ -148,27 +148,20 @@ const ProgramCohorts = ():JSX.Element => {
             title: 'Actions',
             field: 'internal_action',
             render: (row) => (
-                
-                <Select
-                    labelId="demo-simple-select-autowidth-label"
-                    id="demo-simple-select-autowidth"
-                    autoWidth
-                    label="Actions"
-                    onChange={(event)=>{
-                        if(event.target.value === 'Edit'){
+                <Select>
+                    <button className="btn btn btn-link"
+                        onClick={() => {
                             setCohortId(row.program_cohorts_id);
                             toggleCreateModal();
                             setSelectedProgramCohort(row);
-                        }
-                        
-                    }}
-                >
-                    <MenuItem value="Edit">Edit</MenuItem>
+                        }}>
+                        <MenuItem value="Edit">Edit</MenuItem>
+                    </button>
                     <Link to='/cohortscourses'
                         onClick={() => {
                             localStorage.setItem('programId', row.pg_id);
                             localStorage.setItem('programName', row.pg_name);
-                            localStorage.setItem('program_cohort_code', row.program_cohorts_code);    
+                            localStorage.setItem('program_cohort_code', row.program_cohorts_code);
                             localStorage.setItem('anticipatedGraduation', `${row.program_cohorts_anticipatedGraduationMonth}/${row.program_cohorts_anticipatedGraduationYear}`);
                         }}>
                         <MenuItem value="View courses">View courses</MenuItem>
