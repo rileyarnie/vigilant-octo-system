@@ -16,7 +16,8 @@ interface IProps {
     programName:string,
     description:string,
     startDate:string,
-    graduationDate:string
+    graduationDate:string,
+    bannerImage: string
 }
 const CardPreview = (props:IProps):JSX.Element => {
     const classes = useStyles();
@@ -27,7 +28,7 @@ const CardPreview = (props:IProps):JSX.Element => {
                     component="img"
                     alt="banner image"
                     height="140"
-                    image="https://www.jquery-az.com/html/images/banana.jpg"
+                    image={props.bannerImage}
                     title="bannerurl"/>
                 <CardContent>
                     <Typography gutterBottom variant="h5" component="h6">

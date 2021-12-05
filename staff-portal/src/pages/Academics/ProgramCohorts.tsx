@@ -82,6 +82,7 @@ const ProgramCohorts = ():JSX.Element => {
     const [showModal,setModal]=useState(false);
     const [cohortId,setCohortId]=useState(null);
     const [errorMessages]=useState([]);
+    const [showUploadModal, setShowUploadModal] = useState(false);
     const [selectedProgramCohort,setSelectedProgramCohort] = useState<programCohort>();
 
     const timetablingSrv=Config.baseUrl.timetablingSrv;
@@ -217,8 +218,8 @@ const ProgramCohorts = ():JSX.Element => {
             .then((res)=>{
                 alerts.showSuccess('successfully uploaded');
                 setBanner(res.data);
-                console.log(res);
-                console.log(res.data);
+                toggleUploadModal();
+                console.log(banner);
             })
             .catch((error)=>{
                 console.error(error);
@@ -296,6 +297,9 @@ const ProgramCohorts = ():JSX.Element => {
 
     const toggleCreateModal=()=>{
         showModal?resetStateCloseModal():setModal(true);
+    };
+    const toggleUploadModal=()=>{
+        showModal?setShowUploadModal(false):setShowUploadModal(true);
     };
     const getProgramName = (id: number): string => {
         return programs.filter(program => {
@@ -390,19 +394,11 @@ const ProgramCohorts = ():JSX.Element => {
                                         onChange={(e)=>{
                                             setDescription(e.target.value);
                                         }}/><br/>
-                                    <label htmlFor="cohortName"><b>Banner Image</b></label>
-                                    <FileInput name="fileUploaded" id="image" encType="multipart/form-data"
-                                        onInput={(e)=>{
-                                            setImageUploaded(()=>{
-                                                return e.target.files[0];
-                                            });
-                                            handleUpload();
-                                        }} required fileType={['png','jpg','jpeg']} maxFileSize="3mb"
-                                        errorMessage={{
-                                            required:'Please upload an image',
-                                            fileType:'Only image is allowed',
-                                            maxFileSize:'Max file size is 3MB'
-                                        }}/>
+                                    <label htmlFor="cohortName"><b>Banner Image</b></label><br />
+                                    <button className="btn btn-primary" onClick={() => setShowUploadModal(true)}>
+                                        Add image
+                                    </button>
+                                    
                                 </div>
                                 <input name='banner' id='banner' type="hidden" required value={banner}/><br/>
                                 <div className='form-group'>
@@ -422,10 +418,46 @@ const ProgramCohorts = ():JSX.Element => {
                                 programName={programName}
                                 description={description}
                                 startDate={startDate}
-                                graduationDate={graduationDate}/>
+                                graduationDate={graduationDate}
+                                bannerImage={banner}
+                            />
                         </Col>
                     </Row>
                 </Modal.Body>
+            </Modal>
+            <Modal
+                backdrop="static"
+                show={showUploadModal}
+                onHide={toggleUploadModal}
+                size="sm"
+                aria-labelledby="contained-modal-title-vcenter"
+                centered
+            >
+                <Modal.Header closeButton>
+                    <Modal.Title>Add image</Modal.Title>
+                </Modal.Header>
+
+                <Modal.Body>
+                    <ValidationForm> 
+                        <FileInput name="fileUploaded" id="image" encType="multipart/form-data"
+                            onInput={(e)=>{
+                                setImageUploaded(()=>{
+                                    return e.target.files[0];
+                                });
+                            }} required fileType={['png','jpg','jpeg']} maxFileSize="3mb"
+                            errorMessage={{
+                                required:'Please upload an image',
+                                fileType:'Only image is allowed',
+                                maxFileSize:'Max file size is 3MB'
+                            }}/>
+                    </ValidationForm>   
+                </Modal.Body>
+
+                <Modal.Footer style={{ display: 'flex', justifyContent: 'space-between' }}>
+                    <Button variant="btn btn-info btn-rounded" onClick={toggleUploadModal}>Close</Button>
+                    <Button onClick={() => handleUpload()} variant="btn btn-danger btn-rounded">Upload</Button>
+                </Modal.Footer>
+        
             </Modal>
         </>
     );
