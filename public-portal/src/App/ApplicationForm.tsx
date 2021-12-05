@@ -9,7 +9,7 @@ import { Alerts, ToastifyAlerts } from '../lib/Alert'
 const alerts: Alerts = new ToastifyAlerts()
 
 interface IProps {
-    programCohortId:number
+    programCohortId?:number
 }
 export function ApplicationForm (props:IProps) {
     interface camp {
@@ -70,6 +70,7 @@ export function ApplicationForm (props:IProps) {
     const [documentsUrl, setDocumentsUrl] = useState('kcse.pdf')
     const [campuses, setCampuses] = useState([])
     const [applicationDetails, setApplicationDetails] = useState<applicationResponse>()
+    const [showUploadModal, setShowUploadModal] = useState(false)
 
     useEffect(() => {
       axios.get(`${timetablingSrv}/campuses`)
@@ -89,9 +90,9 @@ export function ApplicationForm (props:IProps) {
       }
       axios.post(`${timetablingSrv}/files`, form, config)
         .then((res) => {
+          toggleUploadModal()
           alerts.showSuccess('File uploaded successfully')
           setDocumentsUrl(res.data)
-          console.log(res.data)
         })
         .catch((error) => {
           console.log(error)
@@ -150,6 +151,9 @@ export function ApplicationForm (props:IProps) {
     }
     const handleClose = () => setShow(false)
     // const handleShow = () => setShow(true)
+    const toggleUploadModal = () => {
+      showUploadModal ? setShowUploadModal(false) : setShowUploadModal(true)
+    }
     return (
         <Row>
             <Col>
@@ -306,13 +310,7 @@ export function ApplicationForm (props:IProps) {
                                     </div>
                                     <div className="col-md-6">
                                         <label htmlFor='countryOfResidence'><b>Supporting Documents</b></label><br/>
-                                        <FileInput name="fileUploaded" id="image" encType="multipart/form-data"
-                                                   fileType={['pdf', 'doc']} maxFileSize="10mb"
-                                                   onInput={(e) => {
-                                                     setFileUploaded(() => { return e.target.files[0] })
-                                                     handleUpload()
-                                                   }}
-                                                   errorMessage={{ required: 'Please upload an image', fileType: 'Only image is allowed', maxFileSize: 'Max file size is 3MB' }}/>
+                                        <button className="btn btn-danger" onClick={toggleUploadModal}>Upload documents</button>
                                     </div>
                                 </div>
                                 <div className='form-group'>
@@ -322,6 +320,36 @@ export function ApplicationForm (props:IProps) {
                                     </Button>
                                 </div>
                             </ValidationForm>
+                            <Modal
+                               backdrop="static"
+                               show={showUploadModal}
+                               onHide={toggleUploadModal}
+                               size="sm"
+                               aria-labelledby="contained-modal-title-vcenter"
+                               centered
+                            >
+                            <Modal.Dialog>
+                                <Modal.Header closeButton>
+                                    <Modal.Title>Upload document</Modal.Title>
+                                </Modal.Header>
+
+                                <Modal.Body>
+                                <ValidationForm>
+                                <FileInput name="fileUploaded" id="image" encType="multipart/form-data"
+                                                   fileType={['pdf', 'doc']} maxFileSize="10mb"
+                                                   onInput={(e) => {
+                                                     setFileUploaded(() => { return e.target.files[0] })
+                                                   }}
+                                                   errorMessage={{ required: 'Please upload an image', fileType: 'Only image is allowed', maxFileSize: 'Max file size is 3MB' }}/>
+                                </ValidationForm>
+                                </Modal.Body>
+
+                                <Modal.Footer style={{ display: 'flex', justifyContent: 'space-between' }} >
+                                    <Button variant="primary" className="btn btn-primary rounded" onClick={toggleUploadModal}>Close</Button>
+                                    <Button variant="danger" className="btn btn-danger rounded" onClick={() => handleUpload()}>Upload</Button>
+                                </Modal.Footer>
+                                </Modal.Dialog>
+                            </Modal>
                             <Modal
                                 backdrop="static"
                                 show={show}
