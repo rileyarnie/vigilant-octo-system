@@ -10,6 +10,7 @@ interface IProps {
     onHide: () => void;
     selectedRowProps:ISelectedRowProps;
     show:boolean
+    toggleModal: ()=>void;
 }
 
 interface ISelectedRowProps{
@@ -47,6 +48,8 @@ export const AddActionsModal = (props:IProps) => {
     const handleChange = (selectedOptions) => {
         setSelectedOptions(selectedOptions);
     };
+
+  
 
     const handlePostRoles = async () => {
         const actionsArr = [];
@@ -86,8 +89,11 @@ export const AddActionsModal = (props:IProps) => {
                     onChange={handleChange}
                 />
             </Modal.Body>
-            <Modal.Footer>
-                <Button variant="danger" onClick={handlePostRoles}>
+            <Modal.Footer style={{ display: 'flex', justifyContent: 'space-between' }}>
+                <Button variant="danger" onClick={props.toggleModal}>
+                    Cancel
+                </Button>
+                <Button variant="primary" onClick={handlePostRoles}>
                     Save
                 </Button>
             </Modal.Footer>

@@ -249,7 +249,7 @@ function TrainerList() {
                         </div>
 
                         <div className="form-group">
-                            <button className="btn btn-info float-right" onClick={(e) => handleSubmit(e)}>
+                            <button className="btn btn-primary float-right" onClick={(e) => handleSubmit(e)}>
                                 Submit
                             </button>
                         </div>

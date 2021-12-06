@@ -395,11 +395,11 @@ const ProgramCohorts = ():JSX.Element => {
                                 </div>
                                 <input name='banner' id='banner' type="hidden" required value={banner}/><br/>
                                 <div className='form-group'>
-                                    <button className="btn btn-info btn-rounded float-right"
+                                    <button className="btn btn-primary float-right"
                                         onClick={(e)=>cohortId?handleEdit(e):handleCreate(e)}>
                                         Submit
                                     </button>
-                                    <button className="btn btn-danger btn-rounded float-left"
+                                    <button className="btn btn-danger float-left"
                                         onClick={()=>toggleCreateModal()}>
                                         Cancel
                                     </button>

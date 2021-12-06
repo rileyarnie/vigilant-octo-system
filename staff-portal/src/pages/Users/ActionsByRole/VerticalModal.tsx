@@ -18,8 +18,8 @@ export const  VerticalModal = (props) => {
             <Modal.Body>
                 <ActionsList selectedrowprops = {props}></ActionsList>
             </Modal.Body>
-            <Modal.Footer>
-                <Button variant="danger" onClick={props.onHide}>Close</Button>
+            <Modal.Footer style={{display: 'flex', justifyContent: 'flex-start'}}>
+                <Button variant="danger float-left" onClick={props.onHide}>Close</Button>
             </Modal.Footer>
         </Modal>
     );

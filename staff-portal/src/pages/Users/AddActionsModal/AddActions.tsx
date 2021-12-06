@@ -4,6 +4,9 @@ import { AddActionsModal } from './AddActionsModal';
 
 export const AddActions = (props) => {
     const [modalShow, setModalShow] = React.useState(false);
+    const toggleModal = () => {
+        modalShow ? setModalShow(false) : setModalShow(true);
+    };
     return (
         <>
             <Button variant="danger mr-2" onClick={() => setModalShow(true)}>
@@ -12,6 +15,7 @@ export const AddActions = (props) => {
 
             <AddActionsModal
                 show={modalShow}
+                toggleModal={toggleModal}
                 onHide={() => setModalShow(false)}
                 selectedRowProps= {props}
             /> 

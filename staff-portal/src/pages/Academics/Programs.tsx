@@ -298,7 +298,7 @@ function Programs() {
                                     onChange={(e) => setDuration(e.target.value)}/><br/><br/>
                             </div>
                             <div className='form-group'>
-                                <button className='btn btn-info float-right' onClick={(e) => handleCreate(e)}>Submit
+                                <button className='btn btn-primary float-right' onClick={(e) => handleCreate(e)}>Submit
                                 </button>
                             </div>
                         </ValidationForm>
