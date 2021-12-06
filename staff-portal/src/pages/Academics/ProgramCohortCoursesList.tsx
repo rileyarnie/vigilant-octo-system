@@ -60,22 +60,21 @@ const useStyles = makeStyles({
 function ProgramCohortCoursesList() {
     const classes = useStyles();
     interface programCohortCourse{
-        program_cohort_Id:number,
-        id: number;
+        pc_id:number, //program cohort id
+        s_id: number; // semester id
         published:boolean,
-        activation_status:boolean,
-        semester_id:number,
-        courseName:string, 
-        programName:string, 
-        semesterName: string,
+        c_name:string, // course name
+        c_id:number, // course id
+        cc_id:number //course cohort id
     }
+    const [selectedRow, setSelectedRow] = useState<programCohortCourse>();
     const columns = [
-        { title: 'Course cohort code', field: 'courseCohortCode', hidden: false },
-        { title: 'Course code', field: 'code' },
-        { title: 'Name', field: 'name' },
-        { title: 'Semester name', field: 'semName' },
-        { title: 'Start date', field: 'startDate' },
-        { title: 'End date', field: 'endDate' },
+        { title: 'Course cohort ID', field: 'cc_id', hidden: false },
+        { title: 'Course code', field: 'c_codePrefix' },
+        { title: 'Name', field: 'c_name' },
+        { title: 'Semester name', field: 's_name' },
+        { title: 'Start date', render:(rowData)=>rowData?.s_startDate?.slice(0,10) },
+        { title: 'End date',  render:(rowData)=>rowData?.s_endDate?.slice(0,10)  },
         {
             title: 'Publish',
             field: 'internal_action',
@@ -97,8 +96,8 @@ function ProgramCohortCoursesList() {
             title: 'Action',
             field: 'internal_action',
             render: (row:programCohortCourse) => (
-                <button className="btn btn btn-link" onClick={handleShow}>
-                    {row.semester_id ? <>Change Semester<AssignmentTurnedIn fontSize="inherit" style={{ fontSize: '20px', color: 'black' }} /></> : <>Assign Semester<AssignmentTurnedIn fontSize="inherit" style={{ fontSize: '20px', color: 'black' }} /></>}
+                <button className="btn btn btn-link" onClick={()=> {handleShow(); setSelectedRow(row);}}>
+                    {row.s_id ? <>Change Semester<AssignmentTurnedIn fontSize="inherit" style={{ fontSize: '20px', color: 'black' }} /></> : <>Assign Semester<AssignmentTurnedIn fontSize="inherit" style={{ fontSize: '20px', color: 'black' }} /></>}
                 </button>
             )
         }
@@ -112,7 +111,7 @@ function ProgramCohortCoursesList() {
     const [show, setShow] = useState(false);
     const [semester,setSemester]=useState([]);
     const [semesterId, setSemesterId] = useState('');
-    const [selectedSemesterId, setSelectedSemesterId] = useState('');
+    const [selectedSemesterId, setSelectedSemesterId] = useState(0);
     const [,setDisabled]=useState(false);
     const [progressBar, setProgress] = useState(0);
     const [loadingBar, setLoadingBar] = useState('block');
@@ -151,7 +150,6 @@ function ProgramCohortCoursesList() {
                 console.log(error);
                 alerts.showError(error.message);
             });
-        fetchSemesters();
     }, []);
 
     const fetchCoursesAssignedToProgram = (progId: number): void => {
@@ -190,20 +188,16 @@ function ProgramCohortCoursesList() {
     };
 
     const assignSemester = (e) => {
-        e.preventDefault();
-        const courseCohort = {
-            'program-cohort-semester': {
-                program_cohort_Id: progId,
-                published:true,
-                semester_id: semesterId
-            }
-        };
-        setCourseCohort(courseCohort);
-    };
-    const setCourseCohort = (semesterData) => {
-        console.log(semesterData);
+        e.preventDefault();  
         axios
-            .post(`${timetablingSrv}/program-cohort-semesters`, semesterData)
+            .post(`${timetablingSrv}/course-cohorts`, {
+                'course-cohort': {
+                    programCohortId: selectedRow.pc_id,
+                    published:true,
+                    semesterId: parseInt(semesterId),
+                    courseId: selectedRow.c_id
+                }
+            })
             .then((res) => {
                 alerts.showSuccess('Succesfully Assigned semester');
                 setProgress(100);
@@ -235,7 +229,7 @@ function ProgramCohortCoursesList() {
             }
         };
         axios
-            .patch(`${timetablingSrv}/course-cohorts/${row.id}`, courseSemester)
+            .patch(`${timetablingSrv}/course-cohorts/${row.cc_id}`, courseSemester)
             .then(()=>{
                 alerts.showSuccess('Successfully changed semester');
                 fetchCoursesAssignedToProgram(progId);
