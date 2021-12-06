@@ -173,6 +173,7 @@ const ProgramCohorts = ():JSX.Element => {
     useEffect(()=>{
         axios.get(`${timetablingSrv}/program-cohorts`,{params:{programId:setProgramId}})
             .then(res=>{
+                console.log(res.data);
                 setData(res.data);
             })
             .catch((error)=>{
@@ -259,6 +260,7 @@ const ProgramCohorts = ():JSX.Element => {
             advertDescription:description,
             bannerImageUrl:{banner}
         };
+        console.log(typeof cohort.programId);
         createCohort(cohort);
     };
 
@@ -304,6 +306,10 @@ const ProgramCohorts = ():JSX.Element => {
         const date = new Date (year, month);
         return  date.toISOString().slice(0,7);
     };
+
+    const getProgramCohortFields = (id:number) => {
+        return data.filter(dat => dat.program_cohorts_id === id)[0];
+    };
     return (
         <>
             <Row className='align-items-center page-header'>
@@ -348,7 +354,7 @@ const ProgramCohorts = ():JSX.Element => {
                 <ProgressBar animated now={progressBar} variant="info"/>
                 <Modal.Header closeButton>
                     <Modal.Title
-                        id="contained-modal-title-vcenter">{cohortId?'Edit Program Cohort':'Create a Program Cohort'}</Modal.Title>
+                        id="contained-modal-title-vcenter">{cohortId?`Edit: ${getProgramCohortFields(cohortId).pg_name} ${getProgramCohortFields(cohortId).program_cohorts_code}`:'Create a Program Cohort'}</Modal.Title>
                 </Modal.Header>
                 <Modal.Body>
                     <Row>
@@ -360,9 +366,9 @@ const ProgramCohorts = ():JSX.Element => {
                                         errorMessage="Please select a Program."
                                         onChange={(e)=>{
                                             setSelectedProgramId(e.target.value);
-                                            setProgramId(e.target.value);
+                                            setProgramId(parseInt(e.target.value));
                                         }}>
-                                        <option defaultValue={cohortId?selectedProgramCohort.pg_id:selectedProgramId} value="">-- Select a program cohort --</option>
+                                        <option defaultValue={cohortId?selectedProgramCohort.pg_id:selectedProgramId} value="">-- Select a program --</option>
                                         {programs.map((program)=>{
                                             return <option key={program.name} value={program.id}>{program.name}</option>;
                                         })}
@@ -388,7 +394,9 @@ const ProgramCohorts = ():JSX.Element => {
                                             setDescription(e.target.value);
                                         }}/><br/>
                                     <label htmlFor="cohortName"><b>Banner Image</b></label><br />
-                                    <button className="btn btn-primary" onClick={() => setShowUploadModal(true)}>
+                                    <button className="btn btn-primary" onClick={(e) => {
+                                        e.preventDefault();
+                                        setShowUploadModal(true);}}>
                                         Add image
                                     </button>
                                     
@@ -423,7 +431,6 @@ const ProgramCohorts = ():JSX.Element => {
                 show={showUploadModal}
                 onHide={toggleUploadModal}
                 size="sm"
-                aria-labelledby="contained-modal-title-vcenter"
                 centered
             >
                 <Modal.Header closeButton>
