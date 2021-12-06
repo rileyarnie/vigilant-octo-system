@@ -74,16 +74,7 @@ function ProgramCohortCoursesList() {
         { title: 'Name', field: 'c_name' },
         { title: 'Semester name', field: 's_name' },
         { title: 'Start date', render:(rowData)=>rowData?.s_startDate?.slice(0,10) },
-        { title: 'End date',  render:(rowData)=>rowData?.s_endDate?.slice(0,10)  },
-        {
-            title: 'Publish',
-            field: 'internal_action',
-            render: (row:programCohortCourse) => (
-                <button className="btn btn btn-link" onClick={() => togglePublishModal()}>
-                                        Publish Semester
-                </button>
-            )
-        },
+        { title: 'End date',  render:(rowData)=>rowData?.s_endDate?.slice(0,10)  },        
         { title: 'Action', field: 'action' },
         {
             title:'Activation Status',
