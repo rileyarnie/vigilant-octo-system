@@ -21,7 +21,7 @@ import axios from 'axios';
 import { LinearProgress, Switch } from '@material-ui/core';
 import Alert from '@material-ui/lab/Alert';
 import Breadcrumb from '../../App/components/Breadcrumb';
-import { Row, Col, Card, Button, Modal, ProgressBar } from 'react-bootstrap';
+import { Row, Col, Card, Button, Modal } from 'react-bootstrap';
 import Config  from '../../config';
 import { ValidationForm, TextInput } from 'react-bootstrap4-form-validation';
 import {Icons} from 'material-table';
@@ -51,8 +51,8 @@ function SemesterList() {
     interface Semester {
         id: number;
         name: string;
-        startDate: Date;
-        endDate: Date;
+        startDate: string;
+        endDate: string;
         activation_status: boolean;
     }
 
@@ -87,12 +87,11 @@ function SemesterList() {
                 setDisabled(false);
             });
     };
-
     const columns = [
         { title: 'ID', field: 'id'},
         { title: 'Semester name', field: 'name' },
-        { title: 'Start Date',  render:(rowData)=>rowData.startDate.slice(0,10) },
-        { title: 'End Date',  render:(rowData)=>rowData.startDate.slice(0,10) },
+        { title: 'Start Date',  render:(row)=>row.startDate.slice(0,10) },
+        { title: 'End Date',  render:(row)=>row.endDate.slice(0,10) },
         {
             title: 'Activation Status',
             field: 'internal_action',
@@ -107,7 +106,7 @@ function SemesterList() {
     ];
     const[,setDisabled] = useState(false);
     const [data, setData] = useState([]);
-    const [iserror] = useState(false);
+    const [isError] = useState(false);
     const [semesterName, setSemesterName] = useState('');
     const [startDate, setStartDate] = useState('');
     const [endDate, setEndDate] = useState('');
@@ -115,13 +114,12 @@ function SemesterList() {
     const [semesterId, setSemesterId] = useState(null);
     const [errorMessages] = useState([]);
     const [selectedSemesterName, setSelectedSemesterName] = useState('');
-    const [selectedStartDate] = useState('');
-    const [selectedEndDate] = useState('');
-    const [programs, setPrograms] = useState([]);
+    const [selectedStartDate, setSelectedStartDate] = useState('');
+    const [selectedEndDate, setSelectedEndDate] = useState('');
+    const [selectedSemester,setSelectedSemester] = useState<Semester>();
     const [linearDisplay, setLinearDisplay] = useState('none');
 
     useEffect(() => {
-        setLinearDisplay('block');
         axios.get(`${timetablingSrv}/semesters`)
             .then(res => {
                 console.log(res.data);
@@ -134,13 +132,12 @@ function SemesterList() {
             });
     }, []);
     const updateSemester = (semesterId, updates) => {
-        setLinearDisplay('block');
-        axios.put(`${timetablingSrv}/semesters/${semesterId}`, updates)
+        axios.put(`${timetablingSrv}/semesters/${semesterId}`,{'body': updates})
             .then(() => {
+                setLinearDisplay('none');
                 alerts.showSuccess('Successfully updated Semester');
                 fetchSemesters();
                 resetStateCloseModal();
-                setLinearDisplay('none');
             })
             .catch(error => {
                 console.error(error);
@@ -148,51 +145,22 @@ function SemesterList() {
             });
     };
     const fetchSemesters = () => {
-        setLinearDisplay('block');
         axios.get(`${timetablingSrv}/semesters`)
             .then(res => {
                 setData(res.data);
-                setLinearDisplay('none');
             })
             .catch((error) => {
                 console.error(error);
                 alerts.showError(error.message);
             });
     };
-    const fetchProgramCohorts = () => {
-        setLinearDisplay('block');
-        axios.get(`${timetablingSrv}/program-cohorts`)
-            .then(res=>{
-                console.log(res.data);
-                setLinearDisplay('none');
-                setData(res.data);
-            })
-            .catch((error)=>{
-                console.error(error);
-                alerts.showError(error.message);
-            });
-    };
-    const fetchPrograms = () => {
-        setLinearDisplay('block');
-        axios.get(`${timetablingSrv}/programs`)
-            .then(res=>{
-                console.log(programs);
-                setLinearDisplay('none');
-                setPrograms(res.data);
-            })
-            .catch((error)=>{
-                console.error(error);
-                alerts.showError(error.message);
-            });
-    };
     const handleCreate = (e) => {
         e.preventDefault();
-        const semester = { 
+        const semester = {
             name: semesterName,
             startDate: startDate,
             endDate: endDate,
         };
-
         createSemester(semester);
     };
     const handleEdit = (e) => {
@@ -206,7 +174,6 @@ function SemesterList() {
     };
     const createSemester = (semesterData) => {
         console.log(semesterData);
-        setLinearDisplay('block');
         axios
             .post(`${timetablingSrv}/semesters`, semesterData)
             .then(() => {
@@ -230,7 +197,9 @@ function SemesterList() {
         showModal ? resetStateCloseModal() : setModal(true);
     };
     const handleClose = () => setModal(false);
-
+    const getName = (semesterName?:string, semesterId?:number) => {return semesterId? semesterName : selectedSemesterName; };
+    const getEndDate = (date?:string, semesterId?:number) => {return semesterId? date?.slice(0,10) : selectedEndDate; };
+    const getStartDate = (date?:string, semesterId?:number) => {return semesterId? date?.slice(0,10) : selectedStartDate; };
     return (
         <>
             <Row className='align-items-center page-header'>
@@ -248,7 +217,7 @@ function SemesterList() {
                 <Col>
                     <Card>
                         <div>
-                            {iserror &&
+                            {isError &&
                             <Alert severity='error'>
                                 {errorMessages.map((msg, i) => {
                                     return <div key={i}>{msg}</div>;
@@ -269,6 +238,9 @@ function SemesterList() {
                                     onClick: (event, rowData) => {
                                         setSemesterId(rowData.id);
                                         setSelectedSemesterName(rowData.name);
+                                        setSelectedStartDate(rowData.startDate);
+                                        setSelectedEndDate(rowData.endDate);
+                                        setSelectedSemester(rowData);
                                         toggleCreateModal();
                                     }
 
@@ -296,16 +268,18 @@ function SemesterList() {
                         <div className='form-group'>
                             <label htmlFor='name'><b>Semester name</b></label>
                             <TextInput name='semesterName' id='semesterName' type='text' required
-                                placeholder={semesterId ? selectedSemesterName : semesterName} onChange={(e) => {
-                                    setSemesterName(e.target.value);
-                                }}/><br />
+                                defaultValue={getName(selectedSemester?.name, semesterId)}
+                                onChange={(e) => { setSemesterName(e.target.value);}}
+                            /><br />
                             <label htmlFor='Date'><b>Start Date</b></label><br />
                             <TextInput name='startDate'  id='startDate'  type="date" required
+                                defaultValue={getStartDate(selectedSemester?.startDate, semesterId)}
                                 onChange={(e) => {
                                     setStartDate(e.target.value);
                                 }}/><br />
                             <label htmlFor='Date'><b>End Date</b></label><br />
                             <TextInput name='endDate'  id='endDate' type="date" required
+                                defaultValue={getEndDate(selectedSemester?.endDate, semesterId)}
                                 onChange={(e) => {
                                     setEndDate(e.target.value);
                                 }}/><br />
