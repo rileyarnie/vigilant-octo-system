@@ -1,5 +1,6 @@
+/* eslint-disable camelcase */
 // eslint-disable-next-line no-use-before-define
-import React, { useContext, useState } from 'react'
+import React, { useContext, useState, useEffect } from 'react'
 import Config from '../../config'
 import { PublicClientApplication } from '@azure/msal-browser'
 import { getUserDetails } from './utils/GraphService'
@@ -7,14 +8,25 @@ import { useHistory } from 'react-router-dom'
 import { AuthContext } from '../context/AuthContext'
 import './Login.css'
 import axios from 'axios'
+import { Alerts, ToastifyAlerts } from '../../lib/Alert'
 
+const alerts: Alerts = new ToastifyAlerts()
 const Login = () => {
+  interface userInfoI {
+    users_isStaff:boolean;
+    users_isStudent:boolean;
+  }
   const [, setError] = useState(null)
   const { setAuthState } = useContext(AuthContext)
   const [, setUser] = useState({})
-  const ERR_USER_NOT_FOUND = 'ERR_USER_NOT_FOUND'
-  let userInfo:any = {}
+  const ERR_USER_NOT_FOUND = 'Error, User not found'
+  // let userInfo = {} as userInfoI
+  const [userInfo, setUserInfo] = useState<userInfoI>()
   const history = useHistory()
+
+  useEffect(() => {
+    loadPortal(userInfo)
+  }, [userInfo])
 
   // Initialize MSAL Object
   const publicClientApplication = new PublicClientApplication({
@@ -34,7 +46,6 @@ const Login = () => {
     try {
       await loginAAD()
       await fetchUserDetails()
-      loadPortal()
     } catch (err: any) {
       logout(err)
     }
@@ -100,30 +111,35 @@ const Login = () => {
     const config = {
       headers: { Authorization: `Bearer ${token}` }
     }
-    const baseUrl = Config.baseUrl.timetablingSrv
-    axios.get(`${baseUrl}/users/me`, config).then((res) => {
-      if (res.status === 200) {
+    const authnzSrv = Config.baseUrl.authnzSrv
+    axios.get(`${authnzSrv}/users/me`, config)
+      .then((res) => {
         localStorage.setItem('userInfo', JSON.stringify(res.data[0]))
-        userInfo = res.data[0]
-      }
-      throw new Error(`Error:${res.status}:${res.statusText}`)
-    })
+        setUserInfo(() => { return res.data[0] })
+      })
+      .catch((error) => {
+        alerts.showError(error.message)
+      })
   }
-
-  const loadPortal = () => {
-    if (userInfo.users_isStaff && userInfo.users_isStudent) {
-      history.push('/select')
-      return
+  const loadPortal = (userInfo?:userInfoI) => {
+    if (!userInfo) {
+      return alerts.showError('Please login')
     }
-    if (userInfo.users_isStudent) {
+    if (userInfo?.users_isStaff && userInfo?.users_isStudent) {
+      alerts.showSuccess('Successful login')
+      return history.push('/select')
+    }
+    if (userInfo?.users_isStudent) {
+      alerts.showSuccess('Successful login')
       window.location.href = Config.STUDENT_URL
       return
     }
-    if (userInfo.users_isStaff) {
+    if (userInfo?.users_isStaff) {
+      alerts.showSuccess('Successful login')
       window.location.href = Config.STAFF_URL
       return
     }
-    console.log(ERR_USER_NOT_FOUND)
+    return alerts.showError(ERR_USER_NOT_FOUND)
   }
 
   return (
