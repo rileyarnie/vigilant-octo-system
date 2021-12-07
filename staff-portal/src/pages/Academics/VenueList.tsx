@@ -27,6 +27,7 @@ import { Modal } from 'react-bootstrap';
 import CreateVenue from './CreateVenue';
 import EditVenue from './EditVenue';
 import { Alerts, ToastifyAlerts } from '../lib/Alert';
+import { LinearProgress } from '@mui/material';
 const alerts: Alerts = new ToastifyAlerts();
 const tableIcons: Icons = {
     Add: forwardRef((props, ref) => < AddBox  {...props} ref={ref} />),
@@ -65,24 +66,27 @@ function VenueList(props) {
     const [showModal, setModal] = useState(false);
     const [showEditModal, setEditModal] = useState(false);
     const [selectedVenue,setSelectedVenue] = useState({} as venue);
+    const [linearDisplay, setLinearDisplay] = useState('none');
 
     useEffect(() => {
         fetchVenues();
     }, []);
 
     const fetchVenues = () =>{
+        setLinearDisplay('block');
         axios
             .get(`${timetablingSrv}/venues`)
             .then((res) => {
                 console.log(res);
                 setData(res.data);
+                setLinearDisplay('none');
+                alerts.showSuccess('Succesfully fetched venues');
             })
             .catch((error) => {
                 console.error(error);
                 alerts.showError(error.message);
             });
     };
-    const [progress,setProgress] = useState(0);
     const toggleCreateModal = () => {
         showModal ? setModal(false) : setModal(true);
     };
@@ -101,6 +105,7 @@ function VenueList(props) {
                     </Button>
                 </Col>
             </Row>
+            <LinearProgress style={{display: linearDisplay}} /> 
             <Row>
                 <Col>
                     <Card>
@@ -133,22 +138,21 @@ function VenueList(props) {
                 </Col>
             </Row>
             <Modal {...props} size="lg" aria-labelledby="contained-modal-title-vcenter" centered show={showModal}  backdrop="static">
-                <ProgressBar striped variant="info" animated now={progress} />
                 <Modal.Header>
                     <Modal.Title id="contained-modal-title-vcenter">Create Venue</Modal.Title>
                 </Modal.Header>
                 <Modal.Body>
-                    <CreateVenue setModal={setModal} setProgress={setProgress} fetchVenues={fetchVenues}> </CreateVenue>
+                    <CreateVenue setModal={setModal} setLinearDisplay={setLinearDisplay} linearDisplay={linearDisplay} fetchVenues={fetchVenues}> </CreateVenue>
                 </Modal.Body>
 
             </Modal>
             <Modal {...props} size="lg" aria-labelledby="contained-modal-title-vcenter" centered show={showEditModal}>
-                <ProgressBar striped variant="info" animated now={progress} />    
+              
                 <Modal.Header>
                     <Modal.Title id="contained-modal-title-vcenter">Edit {selectedVenue.venue_name} </Modal.Title>
                 </Modal.Header>
                 <Modal.Body>
-                    <EditVenue {...selectedVenue } setData={setData} data={data} setEditModal={setEditModal} setProgress = {setProgress} fetchVenues={fetchVenues}> </EditVenue>
+                    <EditVenue {...selectedVenue } linearDisplay={linearDisplay} setLinearDisplay={setLinearDisplay} setData={setData} data={data} setEditModal={setEditModal} fetchVenues={fetchVenues}> </EditVenue>
                 </Modal.Body>
 
             </Modal>

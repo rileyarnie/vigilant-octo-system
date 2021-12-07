@@ -20,11 +20,12 @@ import ViewColumn from '@material-ui/icons/ViewColumn';
 import axios from 'axios';
 import Alert from '@material-ui/lab/Alert';
 import Breadcrumb from '../../App/components/Breadcrumb';
-import { Row, Col, Card, Button, Modal, ProgressBar } from 'react-bootstrap';
+import { Row, Col, Card, Button, Modal} from 'react-bootstrap';
 import Config from '../../config';
 import { Switch } from '@material-ui/core';
 import CourseCreation from './CreateCourse';
 import { Alerts, ToastifyAlerts } from '../lib/Alert';
+import LinearProgress from '@mui/material/LinearProgress';
 const alerts: Alerts = new ToastifyAlerts();
 const tableIcons: Icons = {
     Add: forwardRef((props, ref) => < AddBox  {...props} ref={ref} />),
@@ -63,9 +64,11 @@ function CoursesList(props) {
     }, []);
 
     const fetchCourses = () => {
+        setLinearDisplay('block');
         axios
             .get(`${timetablingSrv}/courses`)
             .then((res) => {
+                setLinearDisplay('none');
                 setData(res.data);
             })
             .catch((error) => {
@@ -77,8 +80,8 @@ function CoursesList(props) {
     const [showModal, setModal] = useState(false);
     const [iserror] = useState(false);
     const [errorMessages] = useState([]);
-    const [progress, setProgress] = useState(0);
     const[disabled,setDisabled] = useState(false);
+    const [linearDisplay, setLinearDisplay] = useState('none');
     //const [selectedCourse,setSelectedCourse] = useState({} as Course)
     let approvalStatus: boolean;
     let activationStatus: boolean;
@@ -114,11 +117,15 @@ function CoursesList(props) {
             activation_status: activationStatus,
             approval_status: approvalStatus
         };
+
+        setLinearDisplay('block');
         axios
             .put(`${timetablingSrv}/courses/${row.id}`, course)
             .then(() => {
                 const msg = activationStatus? 'Successfully activated course' : 'Successfully Deactivated course';
                 alerts.showSuccess(msg);
+
+                setLinearDisplay('none');
                 fetchCourses();
                 setDisabled(false);
                 
@@ -175,6 +182,7 @@ function CoursesList(props) {
                     </Button>
                 </Col>
             </Row>
+            <LinearProgress  style={{display: linearDisplay}} /> 
             <Row>
                 <Col>
                     <Card>
@@ -197,12 +205,11 @@ function CoursesList(props) {
                 </Col>
             </Row>
             <Modal {...props} size="lg" aria-labelledby="contained-modal-title-vcenter" centered show={showModal} backdrop="static">
-                <ProgressBar striped variant="info" animated now={progress} />
                 <Modal.Header>
                     <Modal.Title id="contained-modal-title-vcenter">Create Course</Modal.Title>
                 </Modal.Header>
                 <Modal.Body>
-                    <CourseCreation setModal={setModal} setProgress={setProgress} fetchCourses={fetchCourses}> </CourseCreation>
+                    <CourseCreation setModal={setModal} linearDisplay={linearDisplay} setLinearDisplay={setLinearDisplay} fetchCourses={fetchCourses}> </CourseCreation>
                 </Modal.Body>
             </Modal>
         </>

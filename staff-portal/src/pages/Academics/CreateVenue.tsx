@@ -11,7 +11,8 @@ import { customSelectTheme } from '../lib/SelectThemes';
 const alerts: Alerts = new ToastifyAlerts();
 interface Props extends React.HTMLAttributes<Element> {
     setModal:(boolean)=>void,
-    setProgress:(number)=>void,
+    setLinearDisplay:(string)=>void,
+    linearDisplay: string,
     fetchVenues:()=>void
   }
 class CreateVenue extends Component <Props> {
@@ -64,13 +65,13 @@ componentDidMount() {
             capacity: this.state.capacity,
             campusId: this.state.campusId,
         };
+        this.props.setLinearDisplay('block');
         axios.post(`${this.timetableSrv}/venues`,{'Venue':venue})
             .then(() => {
-                this.props.setProgress(100);
                 alerts.showSuccess('Venue Created Successfully');
                 this.props.fetchVenues();
-                this.props.setModal(false); 
-                this.props.setProgress(0);                
+                this.props.setModal(false);
+                this.props.setLinearDisplay('none');                
             })
             .catch((error) => {
                 //handle error using logging library

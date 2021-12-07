@@ -22,6 +22,7 @@ import SaveAlt from '@material-ui/icons/SaveAlt';
 import Search from '@material-ui/icons/Search';
 import ViewColumn from '@material-ui/icons/ViewColumn';
 import { Alerts, ToastifyAlerts } from '../lib/Alert';
+import LinearProgress from '@material-ui/core/LinearProgress';
 const alerts: Alerts = new ToastifyAlerts();
 
 const tableIcons: Icons = {
@@ -45,17 +46,19 @@ const tableIcons: Icons = {
 };
 export const ActionsList = (props) => {
     const [actions, setActions] = useState([]);
+    const [linearDisplay, setLinearDisplay] = useState('none');
     useEffect(() => {
         const authnzSrv = Config.baseUrl.authnzSrv;
+        setLinearDisplay('block');
         axios
             .get(`${authnzSrv}/actions/${props.selectedrowprops.selectedrowprops.id}`)
             .then((res) => {
                 setActions(res.data);
+                setLinearDisplay('none');
             })
             .catch((error) => {
                 console.log('error');
                 alerts.showError(error.message);
-
             });
     }, []);
 
@@ -65,6 +68,7 @@ export const ActionsList = (props) => {
     ];
     return (
         <div>
+            <LinearProgress style={{display: linearDisplay}} /> 
             <MaterialTable
                 title='Action List'
                 columns={columns}

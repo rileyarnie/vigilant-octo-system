@@ -7,32 +7,28 @@ import validator from 'validator';
 import axios from 'axios';
 import Config from '../../../config';
 import { Alerts, ToastifyAlerts } from '../../lib/Alert';
+
 const alerts: Alerts = new ToastifyAlerts();
 const CreateUserModal = (props) => {
     const [email, setEmail] = useState('');
     const handleChange = (event) => {
         setEmail(event.target.value);
     };
-    const [progress, setProgress] = useState(0);
     const handleSubmit = (e) => {
         e.preventDefault();
-        setProgress(10);
         const params = new URLSearchParams();
         const authnzSrv = Config.baseUrl.authnzSrv;
         params.append('AADAlias', email);
         axios
             .post(`${authnzSrv}/users`, params)
             .then(() => {
-                setProgress(100);
                 alerts.showSuccess('successfully created user');
                 props.fetchUsers();
                 props.onHide();
-                setProgress(0);
                 //clear input on success
                 setEmail('');
             })
             .catch((error) => {
-                setProgress(0);
                 //handle error using logging library
                 console.error(error);
                 alerts.showError(error.message);
@@ -45,7 +41,6 @@ const CreateUserModal = (props) => {
 
     return (
         <Modal {...props} size="md" aria-labelledby="contained-modal-title-vcenter" centered backdrop="static">
-            <ProgressBar striped variant="info" animated now={progress} />
             <Modal.Header closeButton>
                 <Modal.Title id="contained-modal-title-vcenter">Create User</Modal.Title>
             </Modal.Header>

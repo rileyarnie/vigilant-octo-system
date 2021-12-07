@@ -7,11 +7,13 @@ import Config from '../../config';
 import Select from 'react-select';
 import { Alerts, ToastifyAlerts } from '../lib/Alert';
 import { customSelectTheme } from '../lib/SelectThemes';
+import LinearProgress from '@mui/material/LinearProgress';
 const alerts: Alerts = new ToastifyAlerts();
 interface Props extends React.HTMLAttributes<Element> {
     setModal:any,
-    setProgress:any
+    setLinearDisplay:any
     fetchCourses:any
+    linearDisplay: any
 }
 const timetablingSrv = Config.baseUrl.timetablingSrv;
 class CourseCreation extends Component <Props> {
@@ -48,12 +50,11 @@ class CourseCreation extends Component <Props> {
             isTimetableable: this.state.isTimetablable,
             needsTechnicalAssistant: this.state.needsTechnicalAssistant
         };
-
+        this.props.setLinearDisplay('block');
         axios.post(`${timetablingSrv}/courses`, course)
             .then(res => {
                 //handle success
                 console.log(res);
-                this.props.setProgress(100);
                 this.props.setModal(false);
                 alerts.showSuccess('Course created succesfully');
                 this.setState({
@@ -64,7 +65,6 @@ class CourseCreation extends Component <Props> {
                     isTimetableable: '',
                     needsTechnicalAssistant: ''
                 });
-                this.props.setProgress(0);
                 this.props.fetchCourses();
             })
             .catch((error) => {
@@ -108,6 +108,7 @@ class CourseCreation extends Component <Props> {
             <>
                 <Row className="align-items-center page-header">
                 </Row>
+                <LinearProgress  style={{display: this.props.linearDisplay}} />
                 <Row>
                     <Col>
                         <Card>

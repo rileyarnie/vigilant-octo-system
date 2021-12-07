@@ -25,6 +25,8 @@ import { Row, Col, Card } from 'react-bootstrap';
 import DeleteIcon from '@material-ui/icons/Delete';
 import Config from '../../config';
 import { Alerts, ToastifyAlerts } from '../lib/Alert';
+import LoadingBar from 'react-top-loading-bar';
+import LinearProgress from '@material-ui/core/LinearProgress';
 const alerts: Alerts = new ToastifyAlerts();
 const tableIcons: Icons = {
     Add: forwardRef((props, ref) => < AddBox  {...props} ref={ref} />),
@@ -62,16 +64,19 @@ function ProgramCoursesList() {
     const [courseName, setCourseName] = useState('');
     const [courseId] = useState(null);
     const [iserror] = useState(false);
+    const [linearDisplay, setLinearDisplay] = useState('none');
     const [, setSelectedRows] = useState();
     const [errorMessages, setErrorMessages] = useState([]);
     const timetablingSrv = Config.baseUrl.timetablingSrv;
     const progId = JSON.parse(localStorage.getItem('programId'));
     console.log(progId);
     useEffect(() => {
+        setLinearDisplay('block');
         axios.get(`${timetablingSrv}/programs/${progId}/courses`)
             .then(res => {
                 console.log(res.data);
                 setData(res.data);
+                setLinearDisplay('none');
                 setProgramId(progId);
             })
             .catch((error) => {
@@ -80,8 +85,10 @@ function ProgramCoursesList() {
     }, []);
 
     const fetchCoursesAssignedToProgram = (progId: number) => {
+        setLinearDisplay('block');
         axios.get(`${timetablingSrv}/programs/${progId}/courses`)
             .then(res => {
+                setLinearDisplay('none');
                 setData(res.data);
             })
             .catch((error) => {
@@ -96,11 +103,11 @@ function ProgramCoursesList() {
         axios.put(`${timetablingSrv}/programs/${programId}/courses/${selectedCourseId}`)
             .then(res => {
                 alerts.showSuccess('Succesfully removed course');
+                
                 fetchCoursesAssignedToProgram(progId); 
             })
             .catch((error) => {
                 alerts.showError(error.message);
-
             });
     };
     return (
@@ -110,6 +117,8 @@ function ProgramCoursesList() {
                     <Breadcrumb />
                 </Col>
             </Row>
+            <LinearProgress style={{display: linearDisplay }} />
+
             <Row>
                 <Col>
                     <Card>

@@ -9,7 +9,6 @@ import { Alerts, ToastifyAlerts } from '../lib/Alert';
 const alerts: Alerts = new ToastifyAlerts();
 interface Props extends React.HTMLAttributes<Element> {
     setEditModal:(boolean) => void;
-    setProgress:(number) => void;
     selectedCourse:selectedCourse
     fetchCourses:() => void;
   }
@@ -53,9 +52,7 @@ class EditCourse extends Component <Props> {
                 console.log(res);
                 alerts.showSuccess('Course edited Successfully');
                 this.props.fetchCourses();
-                this.props.setProgress(100);
                 this.props.setEditModal(false);
-                this.props.setProgress(0);
             })
             .catch((error) => {
                 //handle error using logging library

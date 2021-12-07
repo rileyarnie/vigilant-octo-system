@@ -24,6 +24,8 @@ import { Row, Col, Card, Modal, Button } from 'react-bootstrap';
 import Config from '../../config';
 import { ValidationForm, SelectGroup } from 'react-bootstrap4-form-validation';
 import { Alerts, ToastifyAlerts } from '../lib/Alert';
+import LinearProgress from '@mui/material/LinearProgress';
+
 const alerts: Alerts = new ToastifyAlerts();
 const tableIcons: Icons = {
     Add: forwardRef((props, ref) => < AddBox  {...props} ref={ref} />),
@@ -70,10 +72,13 @@ function TrainerList() {
     const [departmentName, setDepartmentName] = useState('Please select a department');
     const [showModal, setModal] = useState(false);
     const [errorMessages] = useState([]);
+    const [linearDisplay, setLinearDisplay] = useState('none'); 
     useEffect(() => {
+        setLinearDisplay('block');
         axios
             .get(`${baseUrl}/trainers`)
             .then((res) => {
+                setLinearDisplay('none');
                 setData(res.data);
             })
             .catch((error) => {
@@ -106,9 +111,11 @@ function TrainerList() {
     }, []);
 
     const fetchTrainers = () => {
+        setLinearDisplay('block');
         axios
             .get(`${baseUrl}/trainers`)
             .then((res) => {
+                setLinearDisplay('none');
                 setData(res.data);
             })
             .catch((error) => {
@@ -131,12 +138,14 @@ function TrainerList() {
 
     const createTrainer = (trainerData) => {
         console.log(trainerData);
+        setLinearDisplay('block');
         axios
             .post(`${baseUrl}/trainers`, trainerData)
             .then(() => {
                 alerts.showSuccess('Trainer created successfully');
                 fetchTrainers();
                 setModal(false);
+                setLinearDisplay('none');
             })
             .catch((error) => {
                 //handle error using logging library
@@ -161,6 +170,8 @@ function TrainerList() {
                     </Button>
                 </Col>
             </Row>
+          
+            <LinearProgress style={{ display: linearDisplay }} />
             <Row>
                 <Col>
                     <Card>

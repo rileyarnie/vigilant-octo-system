@@ -18,7 +18,7 @@ import SaveAlt from '@material-ui/icons/SaveAlt';
 import Search from '@material-ui/icons/Search';
 import ViewColumn from '@material-ui/icons/ViewColumn';
 import axios from 'axios';
-import { Switch } from '@material-ui/core';
+import { LinearProgress, Switch } from '@material-ui/core';
 import Alert from '@material-ui/lab/Alert';
 import Breadcrumb from '../../App/components/Breadcrumb';
 import { Row, Col, Card, Button, Modal, ProgressBar } from 'react-bootstrap';
@@ -105,7 +105,6 @@ function SemesterList() {
             )
         }
     ];
-    const [progress, setProgress] = useState(0);
     const[,setDisabled] = useState(false);
     const [data, setData] = useState([]);
     const [iserror] = useState(false);
@@ -119,11 +118,14 @@ function SemesterList() {
     const [selectedStartDate] = useState('');
     const [selectedEndDate] = useState('');
     const [programs, setPrograms] = useState([]);
+    const [linearDisplay, setLinearDisplay] = useState('none');
 
     useEffect(() => {
+        setLinearDisplay('block');
         axios.get(`${timetablingSrv}/semesters`)
             .then(res => {
                 console.log(res.data);
+                setLinearDisplay('none');
                 setData(res.data);
             })
             .catch((error) => {
@@ -132,24 +134,25 @@ function SemesterList() {
             });
     }, []);
     const updateSemester = (semesterId, updates) => {
+        setLinearDisplay('block');
         axios.put(`${timetablingSrv}/semesters/${semesterId}`, updates)
             .then(() => {
-                setProgress(100);
                 alerts.showSuccess('Successfully updated Semester');
                 fetchSemesters();
                 resetStateCloseModal();
-                setProgress(0);
+                setLinearDisplay('none');
             })
             .catch(error => {
                 console.error(error);
-                setProgress(0);
                 alerts.showError(error.message);
             });
     };
     const fetchSemesters = () => {
+        setLinearDisplay('block');
         axios.get(`${timetablingSrv}/semesters`)
             .then(res => {
                 setData(res.data);
+                setLinearDisplay('none');
             })
             .catch((error) => {
                 console.error(error);
@@ -157,9 +160,11 @@ function SemesterList() {
             });
     };
     const fetchProgramCohorts = () => {
+        setLinearDisplay('block');
         axios.get(`${timetablingSrv}/program-cohorts`)
             .then(res=>{
                 console.log(res.data);
+                setLinearDisplay('none');
                 setData(res.data);
             })
             .catch((error)=>{
@@ -168,9 +173,11 @@ function SemesterList() {
             });
     };
     const fetchPrograms = () => {
+        setLinearDisplay('block');
         axios.get(`${timetablingSrv}/programs`)
             .then(res=>{
                 console.log(programs);
+                setLinearDisplay('none');
                 setPrograms(res.data);
             })
             .catch((error)=>{
@@ -199,17 +206,16 @@ function SemesterList() {
     };
     const createSemester = (semesterData) => {
         console.log(semesterData);
+        setLinearDisplay('block');
         axios
             .post(`${timetablingSrv}/semesters`, semesterData)
             .then(() => {
-                setProgress(100);
+                setLinearDisplay('none');
                 alerts.showSuccess('Successfully created semesters');
                 fetchSemesters();
                 resetStateCloseModal();
-                setProgress(0);
             })
             .catch((error) => {
-                setProgress(0);
                 alerts.showError(error.message);
             });
     };
@@ -237,6 +243,7 @@ function SemesterList() {
                     </Button>
                 </Col>
             </Row>
+            <LinearProgress style={{display: linearDisplay}} />
             <Row>
                 <Col>
                     <Card>
@@ -281,7 +288,6 @@ function SemesterList() {
                 aria-labelledby="contained-modal-title-vcenter"
                 centered
             >
-                <ProgressBar animated now={progress} variant="info" />
                 <Modal.Header closeButton>
                     <Modal.Title id="contained-modal-title-vcenter">{semesterId ? 'Edit Semester' : 'Create a Semester'}</Modal.Title>
                 </Modal.Header>

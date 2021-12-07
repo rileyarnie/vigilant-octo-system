@@ -18,13 +18,12 @@ import SaveAlt from '@material-ui/icons/SaveAlt';
 import Search from '@material-ui/icons/Search';
 import ViewColumn from '@material-ui/icons/ViewColumn';
 import axios from 'axios';
-import { Switch } from '@material-ui/core';
+import { LinearProgress, Switch } from '@material-ui/core';
 import Alert from '@material-ui/lab/Alert';
 import Breadcrumb from '../../App/components/Breadcrumb';
 import { Row, Col, Card, Button, Modal } from 'react-bootstrap';
 import Config  from '../../config';
 import { ValidationForm, TextInput } from 'react-bootstrap4-form-validation';
-import ProgressBar from 'react-bootstrap/ProgressBar';
 import { Alerts, ToastifyAlerts } from '../lib/Alert';
 
 const tableIcons: Icons = {
@@ -58,13 +57,13 @@ function CampusList() {
     const timetablingSrv = Config.baseUrl.timetablingSrv;
     const [data, setData] = useState([]);
     const [iserror] = useState(false);
-    const [progressBar, setProgress] = useState(0);
     const [campusName, setCampusName] = useState('');
     const [description, setDescription] = useState('');
     const [showModal, setModal] = useState(false);
     const [campusId, setCampusId] = useState(null);
     const [selectedCampusName, setSelectedCampusName] = useState('');
     const [selectedDescription, setSelectedDescription] = useState('');
+    const [linearDisplay, setLinearDisplay] = useState('none');
     const[,setDisabled] = useState(false);
     let activationStatus: boolean;
     const handleActivationStatusToggle = (event, row: Campus) => {
@@ -118,9 +117,11 @@ function CampusList() {
 
     const [errorMessages] = useState([]);
     useEffect(() => {
+        setLinearDisplay('block');
         axios.get(`${timetablingSrv}/campuses`)
             .then(res => {
                 setData(res.data);
+                setLinearDisplay('none');
             })
             .catch((error) => {
                 console.error(error);
@@ -129,24 +130,25 @@ function CampusList() {
     }, []);
 
     const updateCampus = (deptId, updates) => {
+        setLinearDisplay('block');
         axios.put(`${timetablingSrv}/campuses/${campusId}`, updates)
             .then(() => {
-                setProgress(100);
                 alerts.showSuccess('Successfully updated Campus');
                 fetchCampuses();
                 resetStateCloseModal();
-                setProgress(0);
+                setLinearDisplay('none');
             })
             .catch(error => {
                 console.error(error);
-                setProgress(0);
                 alerts.showError(error.message);
             });
     };
     const fetchCampuses = () => {
+        setLinearDisplay('block');
         axios.get(`${timetablingSrv}/campuses`)
             .then(res => {
                 setData(res.data);
+                setLinearDisplay('none');
             })
             .catch((error) => {
                 console.error(error);
@@ -172,17 +174,16 @@ function CampusList() {
     };
     const createCampus = (campusData) => {
         console.log(campusData);
+        setLinearDisplay('block');
         axios
             .post(`${timetablingSrv}/campuses`, campusData)
             .then(() => {
-                setProgress(100);
                 alerts.showSuccess('Successfully created Campus');
                 fetchCampuses();
+                setLinearDisplay('none');
                 resetStateCloseModal();
-                setProgress(0);
             })
             .catch((error) => {
-                setProgress(0);
                 alerts.showError(error.message);
             });
     };
@@ -209,6 +210,7 @@ function CampusList() {
                     </Button>
                 </Col>
             </Row>
+            <LinearProgress style={{display: linearDisplay}} />
             <Row>
                 <Col>
                     <Card>
@@ -255,7 +257,6 @@ function CampusList() {
                 aria-labelledby="contained-modal-title-vcenter"
                 centered
             >
-                <ProgressBar animated now={progressBar} variant="info" />
                 <Modal.Header closeButton>
                     <Modal.Title id="contained-modal-title-vcenter">{campusId ? 'Edit Campus' : 'Create a Campus'}</Modal.Title>
                 </Modal.Header>

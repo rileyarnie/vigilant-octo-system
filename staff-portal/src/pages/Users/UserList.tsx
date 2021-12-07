@@ -21,6 +21,7 @@ import Config from '../../config';
 import CreateUser from './CreateUserModal/CreateUser';
 import { Icons } from 'material-table';
 import { Alerts, ToastifyAlerts } from '../lib/Alert';
+import { LinearProgress } from '@mui/material';
 const alerts: Alerts = new ToastifyAlerts();
 
 const tableIcons:Icons = {
@@ -54,6 +55,7 @@ const UserList = (props:IProps):JSX.Element => {
 
     ];
     const [data, setData] = useState([]);
+    const [linearDisplay, setLinearDisplay] = useState('none');
     const baseUrl = Config.baseUrl.authnzSrv;
 
     useEffect(() => {
@@ -61,12 +63,14 @@ const UserList = (props:IProps):JSX.Element => {
     }, []);
 
     const fetchUsers = () => {
+        setLinearDisplay('block');
         axios.get(`${baseUrl}/users`)
             .then(res => {
                 setData(res.data);
+                setLinearDisplay('none');
             })
             .catch(error => {
-            //handle error using logging library
+                //handle error using logging library
                 console.log('Error',error.message);
                 alerts.showError(error.message);
             });
@@ -87,6 +91,7 @@ const UserList = (props:IProps):JSX.Element => {
                 </Col>
                 <Button variant="danger" onClick={() =>  handleRouteChange() }>Assign Role</Button>
             </Row>
+            <LinearProgress style={{display: linearDisplay}} />
             <Row>
                 <Col>
                     <Card>

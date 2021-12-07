@@ -24,9 +24,10 @@ import { Row, Col, Card, Button, Modal } from 'react-bootstrap';
 import Config  from '../../config';
 import { Icons } from 'material-table';
 import { ValidationForm, TextInput } from 'react-bootstrap4-form-validation';
-import ProgressBar from 'react-bootstrap/ProgressBar';
 import { Switch } from '@material-ui/core';
 import { Alerts, ToastifyAlerts } from '../lib/Alert';
+import LinearProgress from '@mui/material/LinearProgress';
+
 const alerts: Alerts = new ToastifyAlerts();
 const tableIcons: Icons = {
     Add: forwardRef((props, ref) => < AddBox  {...props} ref={ref} />),
@@ -72,7 +73,6 @@ function Department() {
     ];
     const [data, setData] = useState([]);
     const [iserror] = useState(false);
-    const [progressBar, setProgress] = useState(0);
     const [deptname, setDeptName] = useState('');
     const [showModal, setModal] = useState(false);
     const [deptId, setDeptId] = useState(null);
@@ -80,6 +80,7 @@ function Department() {
     const [isActive, setSelectedStatus] = useState(false);
     const [errorMessages] = useState([]);
     const[,setDisabled] = useState(false);
+    const [linearDisplay, setLinearDisplay] = useState('none');
     let activationStatus:boolean;
     const handleActivationStatusToggle=(event,row:department)=>{
         setDisabled(true);
@@ -114,8 +115,10 @@ function Department() {
     };
 
     useEffect(() => {
+        setLinearDisplay('block');
         axios.get(`${timetablingSrv}/departments`)
             .then(res => {
+                setLinearDisplay('none');
                 setData(res.data);
             })
             .catch((error) => {
@@ -126,30 +129,34 @@ function Department() {
     }, []);
 
     const updateDepartment = (deptId, updates) => {
+        setLinearDisplay('block');
         axios.put(`${timetablingSrv}/departments/${deptId}`, updates)
             .then(() => {
-                setProgress(100);
+                setLinearDisplay('none');
                 alerts.showSuccess('Successfully updated department');
                 fetchDepartments();
                 resetStateCloseModal();
-                setProgress(0);
             })
             .catch(error => {
-                console.error(error);
-                setProgress(0);
+                setLinearDisplay('block');
                 alerts.showError(error.message);
+                setLinearDisplay('none');
             });
     };
 
     const fetchDepartments = () => {
+        setLinearDisplay('block');
         axios.get(`${timetablingSrv}/departments`)
             .then(res => {
                 setData(res.data);
+                setLinearDisplay('none');
             })
             .catch((error) => {
                 //handle error using logging library
+                setLinearDisplay('block');
                 console.error(error);
                 alerts.showError(error.message);
+                setLinearDisplay('none');
             });
     };
 
@@ -177,18 +184,20 @@ function Department() {
 
     const createDepartment = (departmentData) => {
         console.log(departmentData);
+        setLinearDisplay('block');
         axios
             .post(`${timetablingSrv}/departments`, departmentData)
             .then(() => {
-                setProgress(100);
+                setLinearDisplay('block');
                 fetchDepartments();
                 alerts.showSuccess('Successfully created Department');
                 resetStateCloseModal();
-                setProgress(0);
+                setLinearDisplay('none');
             })
             .catch((error) => {
-                setProgress(0);
+                setLinearDisplay('block');
                 alerts.showError(error.message);
+                setLinearDisplay('none');
             });
     };
 
@@ -200,6 +209,7 @@ function Department() {
     const toggleCreateModal = () => {
         showModal ? resetStateCloseModal() : setModal(true);
     };
+
 
     return (
         <>
@@ -213,6 +223,8 @@ function Department() {
                     </Button>
                 </Col>
             </Row>
+
+            <LinearProgress style={{display: linearDisplay }} />
             <Row>
                 <Col>
                     <Card>
@@ -244,8 +256,6 @@ function Department() {
                                         setSelectedDeptName(rowData.name);
                                         setSelectedStatus(rowData.isActive);
                                         toggleCreateModal();
-
-
                                     }
 
                                 }
@@ -263,7 +273,6 @@ function Department() {
                 aria-labelledby="contained-modal-title-vcenter"
                 centered
             >
-                <ProgressBar animated now={progressBar} variant="info" />
                 <Modal.Header closeButton>
                     <Modal.Title id="contained-modal-title-vcenter">{deptId ? 'Edit department' : 'Create a department'}</Modal.Title>
                 </Modal.Header>

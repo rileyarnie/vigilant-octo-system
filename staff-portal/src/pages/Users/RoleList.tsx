@@ -27,6 +27,7 @@ import {Actions} from './ActionsByRole/Actions';
 import { AddActions } from './AddActionsModal/AddActions';
 import CreateRole from './Role/CreateRole';
 import { Alerts, ToastifyAlerts } from '../lib/Alert';
+import { LinearProgress } from '@mui/material';
 const alerts: Alerts = new ToastifyAlerts();
 const tableIcons: Icons = {
     Add: forwardRef((props, ref) => < AddBox  {...props} ref={ref} />),
@@ -63,6 +64,7 @@ function RoleList() {
     //for error handling
     const [iserror, setIserror] = useState(false);
     const [errorMessages, setErrorMessages] = useState([]);
+    const [linearDisplay, setLinearDisplay] = useState('none');
 
     useEffect(() => {
         fetchRoles();
@@ -70,9 +72,11 @@ function RoleList() {
 
     const fetchRoles = () => {
         const authnzSrv = Config.baseUrl.authnzSrv;
+        setLinearDisplay('block');
         axios.get(`${authnzSrv}/roles`)
             .then(res => {
                 setData(res.data);
+                setLinearDisplay('none');
             })
             .catch(error => {
                 console.log(error);
@@ -87,12 +91,14 @@ function RoleList() {
 
         if (errorList.length < 1) {
             const base_url = Config.baseUrl.authnzSrv;
+            setLinearDisplay('block');
             axios.put(`${base_url}/roles/{roleID}/` + newData.id, newData)
                 .then(() => {
                     const dataUpdate = [...data];
                     const index = oldData.tableData.id;
                     dataUpdate[index] = newData;
                     setData([...dataUpdate]);
+                    setLinearDisplay('none');
                     resolve();
                     setIserror(false);
                     setErrorMessages([]);
@@ -101,7 +107,6 @@ function RoleList() {
                     alerts.showError(error.message);
                     setIserror(true);
                     resolve();
-
                 });
         } else {
             setErrorMessages(errorList);
@@ -112,6 +117,7 @@ function RoleList() {
 
     };
     const handleRowAdd = (newData, resolve) => {
+        setLinearDisplay('block');
         //validation
         const errorList = [];
         if(newData.role_name === undefined){
@@ -129,6 +135,7 @@ function RoleList() {
                     alerts.showSuccess('Role created successfully');
                     setErrorMessages([]);
                     setIserror(false);
+                    setLinearDisplay('none');
                 })
                 .catch(error => {
                     alerts.showError(error.message);
@@ -143,6 +150,7 @@ function RoleList() {
     };
     const handleRowDelete = (oldData, resolve) => {
         const baseUrl = Config.baseUrl.authnzSrv;
+        setLinearDisplay('block');
         axios.delete(`${baseUrl}/roles/{roleID}` + oldData.id)
             .then(() => {
                 const dataDelete = [...data];
@@ -150,6 +158,7 @@ function RoleList() {
                 dataDelete.splice(index, 1);
                 setData([...dataDelete]);
                 resolve();
+                setLinearDisplay('none');
             })
             .catch((error) => {
                 //handle error using logging library
@@ -178,6 +187,7 @@ function RoleList() {
                         <CreateRole fetchRoles = {fetchRoles}/>
                     </Col>
                 </Row>
+                <LinearProgress style={{display: linearDisplay}} />
                 <Row>
                     <Col>
                         <Card>

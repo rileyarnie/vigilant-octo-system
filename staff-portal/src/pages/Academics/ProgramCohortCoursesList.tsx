@@ -25,7 +25,7 @@ import LinearProgress from '@material-ui/core/LinearProgress';
 import Alert from '@material-ui/lab/Alert';
 import Breadcrumb from '../../App/components/Breadcrumb';
 import {ValidationForm,SelectGroup,TextInput} from 'react-bootstrap4-form-validation';
-import { Row, Col, Card, Modal, ProgressBar, Button } from 'react-bootstrap';
+import { Row, Col, Card, Modal,  Button } from 'react-bootstrap';
 import DeleteIcon from '@material-ui/icons/Delete';
 import Config from '../../config';
 import { makeStyles } from '@material-ui/core';
@@ -104,8 +104,6 @@ function ProgramCohortCoursesList() {
     const [semesterId, setSemesterId] = useState('');
     const [selectedSemesterId, setSelectedSemesterId] = useState(0);
     const [,setDisabled]=useState(false);
-    const [progressBar, setProgress] = useState(0);
-    const [loadingBar, setLoadingBar] = useState('block');
     const [, setSelectedRows] = useState();
     const [errorMessages, setErrorMessages] = useState([]);
     const timetablingSrv = Config.baseUrl.timetablingSrv;
@@ -120,18 +118,19 @@ function ProgramCohortCoursesList() {
     const [narrative, setNarrative] = useState('');
     const [amount, setAmount] = useState(0);
     const [currency,setCurrency] = useState('KES');
+    const [linearDisplay, setLinearDisplay] = useState('none');
     let programCohortSemesterId:number;
     useEffect(() => {
+        setLinearDisplay('block');
         axios.get(`${timetablingSrv}/programs/${progId}/courses`)
             .then(res => {
                 setData(res.data);
+                setLinearDisplay('none');
                 setProgramId(progId);
-                setLoadingBar('none');
             })
             .catch((error) => {
                 console.log(error);
                 alerts.showError(error.message);
-
             });
         axios.get(`${timetablingSrv}/semesters`)
             .then(res => {
@@ -144,10 +143,10 @@ function ProgramCohortCoursesList() {
     }, []);
 
     const fetchCoursesAssignedToProgram = (progId: number): void => {
-        setLoadingBar('block');
+        setLinearDisplay('block');
         axios.get(`${timetablingSrv}/programs/${progId}courses`)
             .then(res => {
-                setLoadingBar('none');
+                setLinearDisplay('none');
                 setData(res.data);
             })
             .catch((error) => {
@@ -157,10 +156,10 @@ function ProgramCohortCoursesList() {
     };
 
     const fetchSemesters = () => {
-        setLoadingBar('block');
+        setLinearDisplay('block');
         axios.get(`${timetablingSrv}/semesters`)
             .then(res => {
-                setLoadingBar('none');
+                setLinearDisplay('none');
                 console.log(res.data);
                 setSemesters(res.data);
             })
@@ -179,7 +178,18 @@ function ProgramCohortCoursesList() {
     };
 
     const assignSemester = (e) => {
-        e.preventDefault();  
+        e.preventDefault();
+        const courseCohort = {
+            'program-cohort-semester': {
+                program_cohort_Id: progId,
+                published:true,
+                semester_id: semesterId
+            }
+        };
+        setCourseCohort(courseCohort);
+    };
+    const setCourseCohort = (semesterData) => {
+        setLinearDisplay('block');
         axios
             .post(`${timetablingSrv}/course-cohorts`, {
                 'course-cohort': {
@@ -191,19 +201,20 @@ function ProgramCohortCoursesList() {
             })
             .then((res) => {
                 alerts.showSuccess('Succesfully Assigned semester');
-                setProgress(100);
+                setLinearDisplay('none');
                 fetchCoursesAssignedToProgram(progId);
                 resetStateCloseModal();
             })
             .catch((error) => {
                 console.log(error);
-                setProgress(0);
                 alerts.showError(error.message);
             });
     };
     const unassignSelectedCourseFromProgram = (selectedCourseId: number): void => {
+        setLinearDisplay('block');
         axios.put(`${timetablingSrv}/programs/${programId}/courses/${selectedCourseId}`)
             .then(res => {
+                setLinearDisplay('none');
                 alerts.showSuccess('Succesfully removed course');
                 fetchCoursesAssignedToProgram(progId); 
             })
@@ -219,10 +230,12 @@ function ProgramCohortCoursesList() {
                 semester_id: semesterId
             }
         };
+        setLinearDisplay('block');
         axios
             .patch(`${timetablingSrv}/course-cohorts/${row.cc_id}`, courseSemester)
             .then(()=>{
                 alerts.showSuccess('Successfully changed semester');
+                setLinearDisplay('none');
                 fetchCoursesAssignedToProgram(progId);
                 resetStateCloseModal();
                 setDisabled(false);
@@ -282,13 +295,14 @@ function ProgramCohortCoursesList() {
         height: '30px'
     };
     return (
-        <>
-            <LinearProgress style={{display: loadingBar }} />
+        <> 
             <Row className="align-items-center page-header">
                 <Col>
                     <Breadcrumb />
                 </Col>
             </Row>
+
+            <LinearProgress style={{display: linearDisplay }} />
             <Row>
                 <Col>
                     <Card>
@@ -396,7 +410,7 @@ function ProgramCohortCoursesList() {
 
                                 }}
                             >
-                                                                Publish
+                            Publish
                             </button>
                         </div>
                     </ValidationForm>
@@ -412,7 +426,6 @@ function ProgramCohortCoursesList() {
                 size="lg"
                 aria-labelledby="contained-modal-title-vcenter"
                 centered>
-                <LinearProgress className={classes.root} variant="determinate" value={progressBar} />
                 <Modal.Header closeButton>
                     <Modal.Title id="contained-modal-title-vcenter">Assign semester </Modal.Title>
                 </Modal.Header>

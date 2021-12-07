@@ -27,6 +27,7 @@ import {Row, Col, Card, Button, Modal, ProgressBar} from 'react-bootstrap';
 import Config from '../../config';
 import {Link} from 'react-router-dom';
 import {ValidationForm, SelectGroup, TextInput} from 'react-bootstrap4-form-validation';
+import { LinearProgress } from '@mui/material';
 
 const alerts: Alerts = new ToastifyAlerts();
 
@@ -66,7 +67,6 @@ function Programs() {
 
         const [data, setData] = useState([]);
         const [iserror] = useState(false);
-        const [progressBar, setProgress] = useState(0);
 
         const [programName, setProgramName] = useState('');
         const [description, setDescription] = useState('');
@@ -74,7 +74,7 @@ function Programs() {
         const [requiresClearance, setRequiresClearance] = useState('');
         const [certificationType, setCertificationType] = useState('');
         const [duration, setDuration] = useState('');
- 
+        const [linearDisplay, setLinearDisplay] = useState('none');
         const [showModal, setModal] = useState(false);
         const [,setProgramId] = useState(null);
         const[,setDisabled] = useState(false);
@@ -94,19 +94,23 @@ function Programs() {
             const program = {
                 activation_status: activationStatus,
             };
+            setLinearDisplay('block');
             axios
                 .put(`${timetablingSrv}/programs/${row.id}`, program)
                 .then(() => {
                     const msg = activationStatus? 'Successfully activated program' : 'Successfully Deactivated program';
+                    setLinearDisplay('none');
                     alerts.showSuccess(msg);
                     fetchPrograms();
                     setDisabled(false);
 
                 })
                 .catch((error) => {
+                    setLinearDisplay('block');
                     console.error(error);
                     alerts.showError(error.message);
                     setDisabled(false);
+                    setLinearDisplay('none');
                 });
         };
 
@@ -150,9 +154,13 @@ function Programs() {
         ];
         const [errorMessages] = useState([]);
         useEffect(() => {
+            setLinearDisplay('block');
             axios.get(`${timetablingSrv}/programs`)
                 .then(res => {
+                    setLinearDisplay('none');
                     setData(res.data);
+                    alerts.showSuccess('Programs fetched succesfully');
+
                 })
                 .catch((error) => {
                     console.error(error);
@@ -161,8 +169,10 @@ function Programs() {
         }, []);
 
         const fetchPrograms = () => {
+            setLinearDisplay('block');
             axios.get(`${timetablingSrv}/programs`)
                 .then(res => {
+                    setLinearDisplay('none');
                     setData(res.data);
                 })
                 .catch((error) => {
@@ -184,17 +194,16 @@ function Programs() {
             createProgram(program);
         };
         const createProgram = (programData) => {
+            setLinearDisplay('block');
             axios
                 .post(`${timetablingSrv}/programs`, programData)
                 .then(() => {
-                    setProgress(100);
-                    alerts.showSuccess('Course created succesfully');
+                    setLinearDisplay('none');
+                    alerts.showSuccess('Program created succesfully');
                     fetchPrograms();
                     resetStateCloseModal();
-                    setProgress(0);
                 })
                 .catch((error) => {
-                    setProgress(0);
                     alerts.showError(error.message);
                 });
         };
@@ -224,7 +233,10 @@ function Programs() {
                         </Button>
                     </Col>
                 </Row>
+
+                <LinearProgress style={{display: linearDisplay}} />
                 <Row>
+
                     <Col>
                         <Card>
                             <div>
@@ -255,7 +267,6 @@ function Programs() {
                     aria-labelledby="contained-modal-title-vcenter"
                     centered
                 >
-                    <ProgressBar animated now={progressBar} variant="info"/>
                     <Modal.Header closeButton>
                         <Modal.Title id="contained-modal-title-vcenter">Create a Program</Modal.Title>
                     </Modal.Header>

@@ -18,13 +18,13 @@ const EditVenue = (props) => {
         const modifiedVenue = {
             name: venueName
         };
+        props.setLinearDisplay('block');
         axios.put(`${timetableSrv}/venues/${props.venue_id}`, {'Venue': modifiedVenue})
             .then(()=>{
-                props.setProgress(100);
                 alerts.showSuccess('successfully updated Venue details');
                 props.setEditModal(false);
                 props.fetchVenues();
-                props.setProgress(0);                  
+                props.setLinearDisplay('none');                
             })
             .catch((error)=>{
                 console.log(error);
