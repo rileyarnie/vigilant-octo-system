@@ -163,6 +163,7 @@ const ProgramCohorts = ():JSX.Element => {
                         onClick={() => {
                             localStorage.setItem('programId', row.pg_id);
                             localStorage.setItem('programName', row.pg_name);
+                            localStorage.setItem('programCohortId', row.program_cohorts_id);
                             localStorage.setItem('program_cohort_code', row.program_cohorts_code);
                             localStorage.setItem('anticipatedGraduation', `${row.program_cohorts_anticipatedGraduationMonth}/${row.program_cohorts_anticipatedGraduationYear}`);
                         }}>

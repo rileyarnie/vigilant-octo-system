@@ -57,21 +57,21 @@ const useStyles = makeStyles({
         width: '100%',
     },
 });
-function ProgramCohortCoursesList() {
+function CourseCohortsList() {
     const classes = useStyles();
-    interface programCohortCourse{
-        pc_id:number, //program cohort id
+    interface CourseCohort{
+        pcs_program_cohort_Id:number, //program cohort id
         s_id: number; // semester id
         published:boolean,
-        c_name:string, // course name
-        c_id:number, // course id
-        cc_id:number //course cohort id
+        cs_name:string, // course name
+        cs_id:number, // course id
+        course_cohorts_id:number //course cohort id
     }
-    const [selectedRow, setSelectedRow] = useState<programCohortCourse>();
+    const [selectedRow, setSelectedRow] = useState<CourseCohort>();
     const columns = [
-        { title: 'Course cohort ID', field: 'cc_id', hidden: false },
-        { title: 'Course code', field: 'c_codePrefix' },
-        { title: 'Name', field: 'c_name' },
+        { title: 'Course cohort ID', field: 'course_cohorts_id', hidden: false },
+        { title: 'Course code', field: 'cs_codePrefix' },
+        { title: 'Name', field: 'cs_name' },
         { title: 'Semester name', field: 's_name' },
         { title: 'Start date', render:(rowData)=>rowData?.s_startDate?.slice(0,10) },
         { title: 'End date',  render:(rowData)=>rowData?.s_endDate?.slice(0,10)  },        
@@ -86,7 +86,7 @@ function ProgramCohortCoursesList() {
         {
             title: 'Action',
             field: 'internal_action',
-            render: (row:programCohortCourse) => (
+            render: (row:CourseCohort) => (
                 <button className="btn btn btn-link" onClick={()=> {handleShow(); setSelectedRow(row);}}>
                     {row.s_id ? <>Change Semester<AssignmentTurnedIn fontSize="inherit" style={{ fontSize: '20px', color: 'black' }} /></> : <>Assign Semester<AssignmentTurnedIn fontSize="inherit" style={{ fontSize: '20px', color: 'black' }} /></>}
                 </button>
@@ -118,19 +118,17 @@ function ProgramCohortCoursesList() {
     const [narrative, setNarrative] = useState('');
     const [amount, setAmount] = useState(0);
     const [currency,setCurrency] = useState('KES');
+    const programCohortId = localStorage.getItem('programCohortId');
     const [linearDisplay, setLinearDisplay] = useState('none');
     let programCohortSemesterId:number;
     useEffect(() => {
         setLinearDisplay('block');
-        axios.get(`${timetablingSrv}/programs/${progId}/courses`)
+        
+        axios.get(`${timetablingSrv}/course-cohorts`, {params: { programCohortId }})
             .then(res => {
-                setData(res.data);
+                setData([res.data[0]]);
+                console.log(res.data[0]);
                 setLinearDisplay('none');
-                setProgramId(progId);
-            })
-            .catch((error) => {
-                console.log(error);
-                alerts.showError(error.message);
             });
         axios.get(`${timetablingSrv}/semesters`)
             .then(res => {
@@ -193,10 +191,10 @@ function ProgramCohortCoursesList() {
         axios
             .post(`${timetablingSrv}/course-cohorts`, {
                 'course-cohort': {
-                    programCohortId: selectedRow.pc_id,
+                    programCohortId: selectedRow.pcs_program_cohort_Id,
                     published:true,
                     semesterId: parseInt(semesterId),
-                    courseId: selectedRow.c_id
+                    courseId: selectedRow.cs_id
                 }
             })
             .then((res) => {
@@ -224,7 +222,7 @@ function ProgramCohortCoursesList() {
 
             });
     };
-    const handleSemesterUpdate=(e,row:programCohortCourse)=>{
+    const handleSemesterUpdate=(e,row:CourseCohort)=>{
         const courseSemester = {
             'program-cohort-semester': {
                 semester_id: semesterId
@@ -232,7 +230,7 @@ function ProgramCohortCoursesList() {
         };
         setLinearDisplay('block');
         axios
-            .patch(`${timetablingSrv}/course-cohorts/${row.cc_id}`, courseSemester)
+            .patch(`${timetablingSrv}/course-cohorts/${row.course_cohorts_id}`, courseSemester)
             .then(()=>{
                 alerts.showSuccess('Successfully changed semester');
                 setLinearDisplay('none');
@@ -457,4 +455,4 @@ function ProgramCohortCoursesList() {
     );
 }
 
-export default ProgramCohortCoursesList;
+export default CourseCohortsList;
