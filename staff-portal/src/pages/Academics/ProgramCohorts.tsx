@@ -216,11 +216,11 @@ const ProgramCohorts = ():JSX.Element => {
         setLinearDisplay('block');
         axios.post(`${timetablingSrv}/files`,form,config)
             .then((res)=>{
+                console.log(res.data);
                 alerts.showSuccess('successfully uploaded');
                 setBanner(res.data);
                 setLinearDisplay('none');
                 toggleUploadModal();
-                console.log(banner);
             })
             .catch((error)=>{
                 console.error(error);
@@ -250,7 +250,7 @@ const ProgramCohorts = ():JSX.Element => {
             anticipatedGraduationYear:year,
             anticipatedGraduationMonth:month,
             advertDescription:description===''?selectedDescription:description,
-            bannerImageUrl:{banner}
+            bannerImageUrl:banner
         };
 
         updateProgramCohort(cohortId,updates);
@@ -265,7 +265,7 @@ const ProgramCohorts = ():JSX.Element => {
             anticipatedGraduationYear:year,
             anticipatedGraduationMonth:month,
             advertDescription:description,
-            bannerImageUrl:{banner}
+            bannerImageUrl:banner
         };
         console.log(typeof cohort.programId);
         createCohort(cohort);

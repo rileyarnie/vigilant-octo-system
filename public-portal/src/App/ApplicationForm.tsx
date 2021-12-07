@@ -157,10 +157,10 @@ export function ApplicationForm (props:IProps) {
     return (
         <Row>
             <Col>
-                <h3>Application Form</h3>
+                <h3 className="text-center">Application Form</h3>
                 <Card>
                     <Card.Body>
-                        <p>Please fill in the following fields</p>
+                        <p className="text-center">Please fill in the following fields</p>
                         <Row>
                             <ValidationForm>
                                 <div className="form-group row">

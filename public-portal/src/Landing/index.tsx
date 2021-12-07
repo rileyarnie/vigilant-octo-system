@@ -2,12 +2,11 @@
 import React, { useState } from 'react'
 import 'bootstrap/dist/css/bootstrap.min.css'
 import { Navbar, Container, Nav } from 'react-bootstrap'
-import Institute from '../assets/images/system/miog.jpg'
 import '../App.css'
 import logoDark from '../assets/images/logo.png'
 import Login from '../App/components/Login'
 import { AuthContext } from '../App/context/AuthContext'
-import ApplicationForm from '../App/ApplicationForm'
+import PublishedProgramCohorts from '../App/PublishedProgramCohorts'
 
 const LandingPage = () => {
   const [isAuthenticated, setAuthState] = useState(false)
@@ -47,15 +46,10 @@ const LandingPage = () => {
             <div className="auth-wrapper">
                 <div className="auth-content container">
                     <div className="row">
-                        <div className="col-md-8">
-                            <h2 className="font-weight-bolder text-primary">Our Courses</h2>
-                            <h5 className="mb-4">Our Landing Page</h5>
-                            <ApplicationForm />
+                        <div className="col-md-12">
+                            <h2 className="font-weight-bolder text-primary">Our Courses</h2><br/>
+                            <PublishedProgramCohorts/>
                         </div>
-                        <div className="col-md-4">
-                            <img src={Institute} alt="" className="img-fluid mb-4" />
-                        </div>
-
                     </div>
                 </div>
 

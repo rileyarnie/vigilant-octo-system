@@ -9,8 +9,8 @@ const Config = {
   STAFF_URL: 'https://www.facebook.com/',
   baseUrl: {
     authnzSrv: 'http://localhost:1338/authnz-service/v0.0.1',
-    timetablingSrv: 'http://localhost:4250/timetabling-service/0.0.1',
-    simSrv: 'http://localhost:4250/sim-service/0.0.1'
+    simSrv: 'http://localhost:4500/sim-service/v0.0.1',
+    timetablingSrv: 'http://localhost:4250/timetabling-service/0.0.1'
   }
 
 }

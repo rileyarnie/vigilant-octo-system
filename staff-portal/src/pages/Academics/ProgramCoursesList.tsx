@@ -51,7 +51,7 @@ function ProgramCoursesList() {
 
     const columns = [
         { title: 'ID', field: 'id', hidden: false },
-        { title: 'Name', field: 'name' },
+        { title: 'Name', field: 'c_name' },
         { title: 'Description', field: 'description' },
         { title: 'Training Hours', field: 'trainingHours' },
         { title: 'Timetableable', field: 'isTimetablable' },

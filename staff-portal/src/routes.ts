@@ -20,7 +20,6 @@ import SemesterList from './pages/Academics/SemesterList';
 import ProgramCohorts from './pages/Academics/ProgramCohorts';
 import ProgramCohortCoursesList from './pages/Academics/ProgramCohortCoursesList';
 
-
 const routes = [
     { path: '/dashboard', exact: true, name: 'default', component: Default },
     { path: '/roles', exact: true, name: 'default', component: RoleList },
