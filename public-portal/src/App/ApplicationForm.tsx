@@ -39,6 +39,7 @@ export function ApplicationForm (props:IProps) {
         nextOfKinPhoneNumber: string,
         relation: string,
         documentUrl: string
+        programCohortId: number
 
     }
 
@@ -71,6 +72,7 @@ export function ApplicationForm (props:IProps) {
     const [campuses, setCampuses] = useState([])
     const [applicationDetails, setApplicationDetails] = useState<applicationResponse>()
     const [showUploadModal, setShowUploadModal] = useState(false)
+    const programCohortId = JSON.parse(localStorage.getItem('programId') as string)
 
     useEffect(() => {
       axios.get(`${timetablingSrv}/campuses`)
@@ -122,7 +124,7 @@ export function ApplicationForm (props:IProps) {
             campus: campus,
             sponsor: sponsor,
             countryOfResidence: countryOfResidence,
-            programCohortId: props.programCohortId
+            programCohortId: programCohortId
           },
           nextOfKin: {
             name: nextOfKinName,
