@@ -7,13 +7,14 @@ const alerts: Alerts = new ToastifyAlerts();
 interface ICourseCohort {
   id:number;
   isActive:boolean;
-  courseName:string;
-  programName:string;
-  semesterName:string;
+  cs_name:string;
+  s_name:string;
+  course_cohorts_id:number;
 }
 
 interface IProps {
-  selectedRow:ICourseCohort
+  selectedRow:ICourseCohort,
+  programName:string
 }
 export const DeactivateCourseCohort = (props:IProps) => {
    
@@ -28,24 +29,25 @@ export const DeactivateCourseCohort = (props:IProps) => {
     if(props.selectedRow.isActive){
         activationStatus=false;
         className='btn btn btn-link';
-        message = `You are about to deactivate ${props.selectedRow.courseName} for ${props.selectedRow.programName} in the semester ${props.selectedRow.semesterName}, this will mean that the course cohort will not be included in the timetable, are you sure you want to proceed? `;
+        message = `You are about to deactivate ${props.selectedRow.cs_name} for ${props.programName} in the semester ${props.selectedRow.s_name}, this will mean that the course cohort will not be included in the timetable, are you sure you want to proceed? `;
         action= 'Deactivate';
         actionVerb='Deactivating';
     }
     else{
         className='btn btn btn-link';
         activationStatus=true;
-        message=`You are about to activate ${props.selectedRow.courseName} for ${props.selectedRow.programName} in the semester ${props.selectedRow.semesterName}, this will mean that the course cohort will be reinstated in the timetable, are you sure you want to proceed?`;
+        message=`You are about to activate ${props.selectedRow.cs_name} for ${props.programName} in the semester ${props.selectedRow.s_name}, this will mean that the course cohort will be reinstated in the timetable, are you sure you want to proceed?`;
         action='Activate';
         actionVerb='Activating';
     }
 
     const handleToggleCourseCohortActivation = () => {
+
         const courseCohort = {
-            isActive : activationStatus
+            isActive: activationStatus
         };
         axios
-            .patch(`${timetablingSrv}/course-cohorts/${props.selectedRow.id}`, courseCohort)
+            .patch(`${timetablingSrv}/course-cohorts/${props.selectedRow.course_cohorts_id}`, courseCohort)
             .then(() => {
                 const msg = activationStatus? 'Successfully activated course cohort' : 'Successfully Deactivated course cohort';
                 alerts.showSuccess(msg);
@@ -60,9 +62,12 @@ export const DeactivateCourseCohort = (props:IProps) => {
     };
     return (
         <>
-            <Button variant= {className} onClick={() => setShowModal(true)}>
-                {action}
-            </Button>  
+            {
+                props.selectedRow.s_name ?  (<Button variant= {className} onClick={() => setShowModal(true)}>
+                    {action}
+                </Button> ) : null
+            }
+             
             <Modal
                 {...props}
                 size="lg"

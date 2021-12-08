@@ -80,7 +80,7 @@ function CourseCohortsList() {
             title:'Activation Status',
             field:'internal_action',
             render:(row)=>(
-                <DeactivateCourseCohort selectedRow={row}/>
+                <DeactivateCourseCohort programName={programName} selectedRow={row}/>
             )
         },
         {
