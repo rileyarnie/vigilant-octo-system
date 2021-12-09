@@ -21,7 +21,7 @@ import ViewColumn from '@material-ui/icons/ViewColumn';
 import axios from 'axios';
 import Alert from '@material-ui/lab/Alert';
 import Breadcrumb from '../../App/components/Breadcrumb';
-import { Row, Col, Card, Button,ProgressBar } from 'react-bootstrap';
+import { Row, Col, Card, Button } from 'react-bootstrap';
 import Config from '../../config';
 import { Modal } from 'react-bootstrap';
 import CreateVenue from './CreateVenue';
@@ -80,7 +80,6 @@ function VenueList(props) {
                 console.log(res);
                 setData(res.data);
                 setLinearDisplay('none');
-                alerts.showSuccess('Succesfully fetched venues');
             })
             .catch((error) => {
                 console.error(error);

@@ -28,7 +28,6 @@ import {MenuItem, Select, Switch} from '@material-ui/core';
 import {ValidationForm,SelectGroup,FileInput,TextInput} from 'react-bootstrap4-form-validation';
 import CardPreview from './CardPreview';
 import {Link} from 'react-router-dom';
-import LoadingBar from 'react-top-loading-bar';
 import { Alerts, ToastifyAlerts } from '../lib/Alert';
 import { LinearProgress } from '@mui/material';
 const alerts: Alerts = new ToastifyAlerts();
@@ -108,7 +107,7 @@ const ProgramCohorts = ():JSX.Element => {
         axios
             .put(`${timetablingSrv}/program-cohorts/${row.program_cohorts_id}`,cohortStatus)
             .then(()=>{
-                const msg = activationStatus? 'Successfully activated Program Cohorts' : 'Successfully Deactivated Program Cohort';
+                const msg = activationStatus? 'Successfully Deactivated Program Cohorts' : 'Successfully activated Program Cohort';
                 alerts.showSuccess(msg);
                 fetchProgramCohorts();
                 setDisabled(false);
@@ -447,10 +446,9 @@ const ProgramCohorts = ():JSX.Element => {
                 <Modal.Body>
                     <ValidationForm> 
                         <FileInput name="fileUploaded" id="image" encType="multipart/form-data"
-                            onInput={(e)=>{
-                                setImageUploaded(()=>{
-                                    return e.target.files[0];
-                                });
+                            onChange={(e)=>{ setImageUploaded(()=>{
+                                return e.target.files[0];
+                            });
                             }} required fileType={['png','jpg','jpeg']} maxFileSize="3mb"
                             errorMessage={{
                                 required:'Please upload an image',

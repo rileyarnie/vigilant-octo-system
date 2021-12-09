@@ -190,13 +190,16 @@ function SemesterList() {
     const resetStateCloseModal = () => {
         setSemesterId(null);
         setSemesterName('');
+        setSelectedSemesterName('');
         setModal(false);
     };
 
     const toggleCreateModal = () => {
         showModal ? resetStateCloseModal() : setModal(true);
     };
-    const handleClose = () => setModal(false);
+    const handleClose = () => {
+        showModal ? resetStateCloseModal() : setModal(false);
+    };
     const getName = (semesterName?:string, semesterId?:number) => {return semesterId? semesterName : selectedSemesterName; };
     const getEndDate = (date?:string, semesterId?:number) => {return semesterId? date?.slice(0,10) : selectedEndDate; };
     const getStartDate = (date?:string, semesterId?:number) => {return semesterId? date?.slice(0,10) : selectedStartDate; };

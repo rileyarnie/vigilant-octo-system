@@ -159,7 +159,6 @@ function Programs() {
                 .then(res => {
                     setLinearDisplay('none');
                     setData(res.data);
-                    alerts.showSuccess('Programs fetched succesfully');
 
                 })
                 .catch((error) => {

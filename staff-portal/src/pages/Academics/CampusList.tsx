@@ -187,7 +187,6 @@ function CampusList() {
                 alerts.showError(error.message);
             });
     };
-
     const resetStateCloseModal = () => {
         setCampusId(null);
         setCampusName('');
@@ -197,7 +196,9 @@ function CampusList() {
     const toggleCreateModal = () => {
         showModal ? resetStateCloseModal() : setModal(true);
     };
-    const handleClose = () => setModal(false);
+    const handleClose = () => {
+        showModal ? resetStateCloseModal() : setModal(false);
+    };
     return (
         <>
             <Row className='align-items-center page-header'>
@@ -233,17 +234,13 @@ function CampusList() {
                                 {
                                     icon: Edit,
                                     tooltip: 'Edit Row',
-
                                     onClick: (event, row) => {
                                         setCampusId(row.id);
                                         setSelectedCampusName(row.name);
                                         setSelectedDescription(row.description);
                                         toggleCreateModal();
-                                        toggleCreateModal();
                                     }
-
                                 }
-
                             ]}
                         />
                     </Card>

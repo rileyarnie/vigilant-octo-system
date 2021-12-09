@@ -200,7 +200,6 @@ function Department() {
                 setLinearDisplay('none');
             });
     };
-
     const resetStateCloseModal = () => {
         setDeptId(null);
         setDeptName('');
@@ -209,8 +208,6 @@ function Department() {
     const toggleCreateModal = () => {
         showModal ? resetStateCloseModal() : setModal(true);
     };
-
-
     return (
         <>
             <Row className='align-items-center page-header'>
@@ -245,21 +242,15 @@ function Department() {
                             actions={[
 
                                 {
-
                                     icon: Edit,
-
                                     tooltip: 'Edit Row',
-
                                     onClick: (event, rowData) => {
-
                                         setDeptId(rowData.id);
                                         setSelectedDeptName(rowData.name);
                                         setSelectedStatus(rowData.isActive);
                                         toggleCreateModal();
                                     }
-
                                 }
-
                             ]}
                         />
                     </Card>
