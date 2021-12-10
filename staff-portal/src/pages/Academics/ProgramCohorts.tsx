@@ -256,7 +256,6 @@ const ProgramCohorts = ():JSX.Element => {
         updateProgramCohort(cohortId,updates);
 
     };
-
     const handleCreate=(e): void =>{
         e.preventDefault();
         const cohort={
@@ -267,7 +266,7 @@ const ProgramCohorts = ():JSX.Element => {
             advertDescription:description,
             bannerImageUrl:banner
         };
-        console.log(typeof cohort.programId);
+        // console.log(typeof cohort.programId);
         createCohort(cohort);
     };
 

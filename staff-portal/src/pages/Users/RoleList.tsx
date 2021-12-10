@@ -54,7 +54,7 @@ function RoleList() {
         { title: 'id', field: 'id', editable: 'never' as const},   
         { title: 'RoleName', field: 'RoleName', editable: 'always' as const},
         { title: 'Activation Status', field: 'activation_status',editable: 'never' as const},
-        { title: 'Created On', field: 'created_on', editable: 'never' as const },
+        { title: 'Created On', render:(row)=>row.created_on.slice(0,10), editable: 'never' as const },
         
     ];
     const [data, setData] = useState([]);
@@ -62,8 +62,8 @@ function RoleList() {
     const [roleName,setRoleName] = useState('');
 
     //for error handling
-    const [iserror, setIserror] = useState(false);
-    const [errorMessages, setErrorMessages] = useState([]);
+    const [isError] = useState(false);
+    const [errorMessages] = useState([]);
     const [linearDisplay, setLinearDisplay] = useState('none');
 
     useEffect(() => {
@@ -83,81 +83,17 @@ function RoleList() {
                 alerts.showError(error.message);
             });
     };
-    const handleRowUpdate = (newData, oldData, resolve) => {
-        const errorList = [];
-        if (newData.role_name === '') {
-            errorList.push('Please enter Role name');
-        }
-
-        if (errorList.length < 1) {
-            const base_url = Config.baseUrl.authnzSrv;
-            setLinearDisplay('block');
-            axios.put(`${base_url}/roles/{roleID}/` + newData.id, newData)
-                .then(() => {
-                    const dataUpdate = [...data];
-                    const index = oldData.tableData.id;
-                    dataUpdate[index] = newData;
-                    setData([...dataUpdate]);
-                    setLinearDisplay('none');
-                    resolve();
-                    setIserror(false);
-                    setErrorMessages([]);
-                })
-                .catch(error => {
-                    alerts.showError(error.message);
-                    setIserror(true);
-                    resolve();
-                });
-        } else {
-            setErrorMessages(errorList);
-            setIserror(true);
-            resolve();
-
-        }
-
-    };
-    const handleRowAdd = (newData, resolve) => {
-        setLinearDisplay('block');
-        //validation
-        const errorList = [];
-        if(newData.role_name === undefined){
-            errorList.push('Please enter role name');
-        }
-
-        if(errorList.length < 1){ //no error
-            const baseUrl = Config.baseUrl.authnzSrv;
-            axios.put(`${baseUrl}/roles`, newData)
-                .then(() => {
-                    const dataToAdd = [...data];
-                    dataToAdd.push(newData);
-                    setData(dataToAdd);
-                    resolve();
-                    alerts.showSuccess('Role created successfully');
-                    setErrorMessages([]);
-                    setIserror(false);
-                    setLinearDisplay('none');
-                })
-                .catch(error => {
-                    alerts.showError(error.message);
-                });
-        }else{
-            setErrorMessages(errorList);
-            setIserror(true);
-            resolve();
-        }
-
-
-    };
     const handleRowDelete = (oldData, resolve) => {
         const baseUrl = Config.baseUrl.authnzSrv;
         setLinearDisplay('block');
-        axios.delete(`${baseUrl}/roles/{roleID}` + oldData.id)
+        axios.delete(`${baseUrl}/roles/{roleId}` + oldData.id)
             .then(() => {
                 const dataDelete = [...data];
                 const index = oldData.tableData.id;
                 dataDelete.splice(index, 1);
                 setData([...dataDelete]);
                 resolve();
+                fetchRoles();
                 setLinearDisplay('none');
             })
             .catch((error) => {
@@ -192,7 +128,7 @@ function RoleList() {
                     <Col>
                         <Card>
                             <div>
-                                {iserror &&
+                                {isError &&
                             <Alert severity='error'>
                                 {errorMessages.map((msg, i) => {
                                     return <div key={i}>{msg}</div>;
@@ -212,14 +148,6 @@ function RoleList() {
                                 onSelectionChange = {(rows)=> handleRowSelection(rows[0]?.RoleName,rows[0]?.id)}
                                 icons={tableIcons}
                                 editable={{
-                                    onRowUpdate: (newData, oldData) =>
-                                        new Promise((resolve) => {
-                                            handleRowUpdate(newData, oldData, resolve);
-                                        }),
-                                    onRowAdd: (newData) =>
-                                        new Promise((resolve) => {
-                                            handleRowAdd(newData, resolve);
-                                        }),
                                     onRowDelete: (oldData) =>
                                         new Promise((resolve) => {
                                             handleRowDelete(oldData, resolve);
