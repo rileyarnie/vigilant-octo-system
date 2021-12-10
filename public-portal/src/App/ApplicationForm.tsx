@@ -68,7 +68,7 @@ export function ApplicationForm (props:IProps) {
     const [campus, setCampus] = useState('')
     const [sponsor, setSponsor] = useState('')
     const [countryOfResidence, setCountryOfResidence] = useState('')
-    const [documentsUrl, setDocumentsUrl] = useState('kcse.pdf')
+    const [documentsUrl, setDocumentsUrl] = useState('')
     const [campuses, setCampuses] = useState([])
     const [applicationDetails, setApplicationDetails] = useState<applicationResponse>()
     const [showUploadModal, setShowUploadModal] = useState(false)
@@ -311,8 +311,10 @@ export function ApplicationForm (props:IProps) {
                                         />
                                     </div>
                                     <div className="col-md-6">
-                                        <label htmlFor='countryOfResidence'><b>Supporting Documents</b></label><br/>
-                                        <button className="btn btn-danger" onClick={toggleUploadModal}>Upload documents</button>
+                                        <label htmlFor='countryOfResidence'><b>Supporting Documents</b></label><br/><br/>
+                                        <button className="btn btn-danger" onClick={(e) => { e.preventDefault(); setShowUploadModal(true) }}>
+                                            Upload documents
+                                        </button>
                                     </div>
                                 </div>
                                 <div className='form-group'>
@@ -338,11 +340,11 @@ export function ApplicationForm (props:IProps) {
                                 <Modal.Body>
                                 <ValidationForm>
                                 <FileInput name="fileUploaded" id="image" encType="multipart/form-data"
-                                                   fileType={['pdf', 'doc']} maxFileSize="10mb"
+                                                   fileType={['pdf', 'doc', 'docx']} maxFileSize="10mb"
                                                    onInput={(e) => {
                                                      setFileUploaded(() => { return e.target.files[0] })
                                                    }}
-                                                   errorMessage={{ required: 'Please upload an image', fileType: 'Only image is allowed', maxFileSize: 'Max file size is 3MB' }}/>
+                                                   errorMessage={{ required: 'Please upload a document', fileType: 'Only document is allowed', maxFileSize: 'Max file size is 10MB' }}/>
                                 </ValidationForm>
                                 </Modal.Body>
 
