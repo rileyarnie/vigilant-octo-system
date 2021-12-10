@@ -126,8 +126,7 @@ function CourseCohortsList() {
         
         axios.get(`${timetablingSrv}/course-cohorts`, {params: { programCohortId }})
             .then(res => {
-                setData([res.data[0]]);
-                console.log(res.data[0]);
+                setData(res.data);
                 setLinearDisplay('none');
             });
         axios.get(`${timetablingSrv}/semesters`)
