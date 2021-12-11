@@ -117,6 +117,12 @@ const chartData: { items: MenuItemType[] } = {
                             type: 'item',
                             url: '/semesters'
                         },
+                        {
+                            id: 'applications',
+                            title: 'Applications',
+                            type: 'item',
+                            url: '/applications'
+                        },
                     ]
                 }
 
