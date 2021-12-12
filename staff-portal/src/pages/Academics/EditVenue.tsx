@@ -3,9 +3,9 @@ import React, { useState } from 'react';
 import axios from 'axios';
 import { Row, Col, Card } from 'react-bootstrap';
 import { ValidationForm, TextInput } from 'react-bootstrap4-form-validation';
-import validator from 'validator';
 import Config from '../../config';
 import { Alerts, ToastifyAlerts } from '../lib/Alert';
+import { regxAlphaNumericWithSpacesAndUnderscores } from '../lib/validation';
 const alerts: Alerts = new ToastifyAlerts();
 const EditVenue = (props) => {
     const [venueName,setVenueName] = useState('');
@@ -49,9 +49,9 @@ const EditVenue = (props) => {
                                                 id="name"
                                                 type="text"
                                                 placeholder="Hall 6"
-                                                validator={validator.isAlphanumeric}
-                                                errorMessage={{ validator: 'Please enter a valid name' }}
                                                 value={venueName}
+                                                validator={(value) => regxAlphaNumericWithSpacesAndUnderscores.test(value)}
+                                                errorMessage={{ validator: 'Please enter a valid name' }}
                                                 onChange = {venueChangeHandler}
                                             />
                                             &nbsp;&nbsp;&nbsp;
