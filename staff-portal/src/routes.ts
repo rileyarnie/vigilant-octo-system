@@ -20,6 +20,7 @@ import SemesterList from './pages/Academics/SemesterList';
 import ProgramCohorts from './pages/Academics/ProgramCohorts';
 import ProgramCohortCoursesList from './pages/Academics/ProgramCohortCoursesList';
 import ApplicationsList from './pages/Academics/ApplicationsList';
+import PublishedSemester from './pages/Academics/Application/PublishedSemester';
 
 const routes = [
     { path: '/dashboard', exact: true, name: 'default', component: Default },
@@ -49,6 +50,7 @@ const routes = [
     { path: '/cohorts', exact: true, name: 'default', component: ProgramCohorts },
     { path: '/cohortscourses', exact: true, name: 'default', component: ProgramCohortCoursesList },
     { path: '/applications', exact: true, name: 'default', component: ApplicationsList },
+    { path: '/publishedsemesters', exact: true, name: 'default', component: PublishedSemester },
 
 
 ];
