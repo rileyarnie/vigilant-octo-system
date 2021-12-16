@@ -25,6 +25,21 @@ const chartData: { items: MenuItemType[] } = {
             type: 'group',
             icon: 'feather icon-monitor',
             children: [
+                {
+                    id: 'departments',
+                    title: 'Departments',
+                    type: 'collapse',
+                    icon: 'feather icon-book',
+                    children: [
+                        {
+                            id: 'programs',
+                            title: 'Programs',
+                            type: 'item',
+                            url: '/programs'
+                        },
+                    ]
+
+                },
 
             ]
         }
