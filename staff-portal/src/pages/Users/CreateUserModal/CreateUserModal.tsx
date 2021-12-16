@@ -1,7 +1,7 @@
 /* eslint-disable react/prop-types */
 import React, { useState } from 'react';
 import { Modal } from 'react-bootstrap';
-import { Row, Col,ProgressBar } from 'react-bootstrap';
+import { Row, Col } from 'react-bootstrap';
 import { ValidationForm, TextInput } from 'react-bootstrap4-form-validation';
 import validator from 'validator';
 import axios from 'axios';
@@ -20,7 +20,7 @@ const CreateUserModal = (props) => {
         const authnzSrv = Config.baseUrl.authnzSrv;
         params.append('AADAlias', email);
         axios
-            .post(`${authnzSrv}/users`, params)
+            .post(`${authnzSrv}/users`, {AADAlias: email, isStaff: true})
             .then(() => {
                 alerts.showSuccess('successfully created user');
                 props.fetchUsers();
