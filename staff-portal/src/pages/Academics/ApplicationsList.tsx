@@ -59,6 +59,12 @@ function ApplicationsList() {
         { title: 'Program', field: 'applications_programCohortId' },
         { title: 'Admission Status', field: 'applications_isAdmitted' },
     ];
+    enum admissionStatus {
+        ADMITTED = 'ADMITTED',
+        REJECTED = 'REJECTED',
+        PENDING = 'PENDING',
+        FAILED = 'FAILED'
+    }
     const [data, setData] = useState([]);
     const [isError] = useState(false);
     const [errorMessages] = useState([]);
@@ -93,15 +99,7 @@ function ApplicationsList() {
     const [campuses, setCampuses] = useState([]);
     const [, setShowUploadModal] = useState(false);
     useEffect(() => {
-        axios.get(`${simsSrv}/program-cohort-applications`,{params:{isAdmitted:isAdmitted}})
-            .then(res => {
-                setLinearDisplay('none');
-                setData(res.data);
-            })
-            .catch((error) => {
-                console.error(error);
-                alerts.showError(error.message);
-            });
+        fetchProgramCohortApplications();
         axios.get(`${timetablingSrv}/campuses`)
             .then(res => {
                 setCampuses(res.data);
@@ -111,6 +109,18 @@ function ApplicationsList() {
                 alerts.showError(error.message);
             });
     }, [isAdmitted]);
+
+    const fetchProgramCohortApplications = () => {
+        axios.get(`${simsSrv}/program-cohort-applications`,{params:{isAdmitted:isAdmitted}})
+            .then(res => {
+                setLinearDisplay('none');
+                setData(res.data);
+            })
+            .catch((error) => {
+                console.error(error);
+                alerts.showError(error.message);
+            });
+    };
     const handleEdit = (e) => {
         e.preventDefault();
         const updates = {
@@ -150,6 +160,27 @@ function ApplicationsList() {
             .then(() => {
                 setLinearDisplay('none');
                 alerts.showSuccess('Successfully updated application details');
+                resetStateCloseModal();
+            })
+            .catch(error => {
+                console.error(error);
+                alerts.showError(error.message);
+            });
+    };
+    const handleAdmission = (e, admissionStatus:admissionStatus) => {
+        e.preventDefault();
+        const admissionsPayload = {
+            modifiedProgramCohortApplication : {
+                application: {
+                    isAdmitted: admissionStatus        
+                }        
+            }
+        };
+        axios.put(`${simsSrv}/program-cohort-applications/${applicationId}`, admissionsPayload)
+            .then(() => {
+                setLinearDisplay('none');
+                alerts.showSuccess('Successfully updated application details');
+                fetchProgramCohortApplications();
                 resetStateCloseModal();
             })
             .catch(error => {
@@ -272,8 +303,8 @@ function ApplicationsList() {
                                 </Link>
                                 :
                                 <>
-                                    <Button variant="info" onClick={handleClose}>Admit</Button>{' '}
-                                    <Button variant="danger" onClick={handleClose}>Reject</Button>
+                                    <Button variant="info" onClick={(e) => handleAdmission(e, admissionStatus.ADMITTED)}>Admit</Button>{' '}
+                                    <Button variant="danger" onClick={(e) => handleAdmission(e, admissionStatus.REJECTED)}>Reject</Button>
                                 </>
                         }
                     </Modal.Title>
