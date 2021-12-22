@@ -12,7 +12,6 @@ import DeleteOutline from '@material-ui/icons/DeleteOutline';
 import Edit from '@material-ui/icons/Edit';
 import { Redirect } from 'react-router-dom';
 import { Icons } from 'material-table';
-import { Route } from 'react-router-dom';
 import FilterList from '@material-ui/icons/FilterList';
 import FirstPage from '@material-ui/icons/FirstPage';
 import LastPage from '@material-ui/icons/LastPage';
@@ -50,7 +49,7 @@ const tableIcons: Icons = {
 const Programs = ():JSX.Element => {
     const [data,setData]=useState([]);
     const [isError]=useState(false);
-    const [studentId]=useState();
+    const [studentId]=useState(1);
     const [errorMessages]=useState([]);
     const timetablingSrv=Config.baseUrl.timetablingSrv;
     const columns=[
@@ -70,6 +69,7 @@ const Programs = ():JSX.Element => {
         axios.get(`${timetablingSrv}/program-cohorts`,{params:{studentId:studentId}})
             .then(res=>{
                 setData(res.data);
+                console.log(res.data);
                 handleRedirect();
             })
             .catch((error)=>{
@@ -78,9 +78,10 @@ const Programs = ():JSX.Element => {
             });
     },[studentId]);
     const handleRedirect=() => {
-        if (data.length === 1) {
-            return <Redirect to={'/semesters'} />;
+        if (Row.length === 1) {
+            return <Redirect from={'/programs'} to={'/semesters'} />;
         }
+        return <Redirect from={'/programs'} to={'/semesters'} />;
     };
     return (
         <>
@@ -102,14 +103,17 @@ const Programs = ():JSX.Element => {
                             }
                         </div>
                         <MaterialTable
-                            title='Program Cohorts'
+                            title='Programs'
                             icons={tableIcons}
                             columns={columns}
                             data={data}
-                            options={{actionsColumnIndex:-1}}
-                            onRowClick={(() =>
-                                <Route exact path="/semesters" />
-                            )}
+                            onRowClick={(event, row) => {
+                                window.location.href=('/semesters');
+                                localStorage.setItem('programName', row.pg_name);
+                                localStorage.setItem('programCode', row.program_cohorts_code);
+                                localStorage.setItem('programCohortId', row.program_cohorts_id);
+                                event.stopPropagation();
+                            }}
                         />
                     </Card>
                 </Col>
