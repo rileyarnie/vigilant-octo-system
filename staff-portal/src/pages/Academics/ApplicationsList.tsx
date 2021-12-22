@@ -109,7 +109,7 @@ function ApplicationsList() {
                 alerts.showError(error.message);
             });
     }, [isAdmitted]);
-
+    
     const fetchProgramCohortApplications = () => {
         axios.get(`${simsSrv}/program-cohort-applications`,{params:{isAdmitted:isAdmitted}})
             .then(res => {
@@ -156,10 +156,11 @@ function ApplicationsList() {
         updateApplication(updates);
     };
     const updateApplication = (updates) => {
-        axios.put(`${timetablingSrv}/program-cohort-applications/${applicationId}`,{modifiedProgramCohortApplication:updates })
+        axios.put(`${simsSrv}/program-cohort-applications/${applicationId}`,{modifiedProgramCohortApplication:updates })
             .then(() => {
                 setLinearDisplay('none');
                 alerts.showSuccess('Successfully updated application details');
+                fetchProgramCohortApplications();
                 resetStateCloseModal();
             })
             .catch(error => {
