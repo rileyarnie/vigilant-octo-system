@@ -58,6 +58,7 @@ function CoursesList(props) {
         needsTechnicalAssistant: boolean;
         activation_status: boolean;
         approval_status: boolean;
+        isElective:boolean;
     }
     useEffect(() => {
         fetchCourses();
@@ -80,34 +81,41 @@ function CoursesList(props) {
     const [showModal, setModal] = useState(false);
     const [iserror] = useState(false);
     const [errorMessages] = useState([]);
-    const[disabled,setDisabled] = useState(false);
     const [linearDisplay, setLinearDisplay] = useState('none');
     //const [selectedCourse,setSelectedCourse] = useState({} as Course)
     let approvalStatus: boolean;
     let activationStatus: boolean;
+    let isElective:boolean;
+    let msg:string;
     const handleActivationStatusToggle = (event, row: Course) => {
-        setDisabled(true);
         if (row.activation_status) {
+            msg = 'Successfuly Deactivated Course';
             activationStatus = false;
             approvalStatus=row.approval_status;
+            isElective = row.isElective; 
             handleToggleStatusSubmit(event, row);
         }
         if (!row.activation_status) {
+            msg = 'Successfuly Activated Course';
             activationStatus = true;
             approvalStatus=row.approval_status;
+            isElective = row.isElective; 
             handleToggleStatusSubmit(event, row);
         }
     };
-    const handleApprovalStatusToggle = (event, row: Course) => {
-        setDisabled(true);
+    const handleApprovalStatusToggle = (event, row: Course) => {      
         if (row.approval_status) {
+            msg = 'Successfuly Declined Course';
             approvalStatus = false;
-            activationStatus=row.activation_status;            
+            activationStatus=row.activation_status;  
+            isElective = row.isElective;          
             handleToggleStatusSubmit(event, row);
         }
         if (!row.approval_status) {
+            msg = 'Successfuly Approved Course';
             approvalStatus = true;
-            activationStatus=row.activation_status;            
+            activationStatus=row.activation_status;  
+            isElective = row.isElective;            
             handleToggleStatusSubmit(event, row);
         }
     };
@@ -115,26 +123,24 @@ function CoursesList(props) {
     const handleToggleStatusSubmit = (e, row: Course) => {       
         const course = {
             activation_status: activationStatus,
-            approval_status: approvalStatus
-        };
+            approval_status: approvalStatus,  
+            isElective: isElective          
+        }; 
+
 
         setLinearDisplay('block');
         axios
             .put(`${timetablingSrv}/courses/${row.id}`, course)
-            .then(() => {
-                const msg = activationStatus? 'Successfully activated course' : 'Successfully Deactivated course';
+            .then(() => {                
                 alerts.showSuccess(msg);
-
                 setLinearDisplay('none');
                 fetchCourses();
-                setDisabled(false);
                 
             })
             .catch((error) => {
                 //handle error using logging library
                 console.error(error);
                 alerts.showError(error.message);
-                setDisabled(false);
             });
     };
 
@@ -160,8 +166,7 @@ function CoursesList(props) {
                 <Switch
                     onChange={(event) => handleApprovalStatusToggle(event, row)}
                     inputProps={{ 'aria-label': 'controlled' }}
-                    defaultChecked={row.approval_status===true}
-                    disabled={disabled}
+                    defaultChecked={row.approval_status===true}                   
                 />
             )
         }
