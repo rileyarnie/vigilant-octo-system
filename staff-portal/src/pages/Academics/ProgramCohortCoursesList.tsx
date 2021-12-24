@@ -69,9 +69,9 @@ function CourseCohortsList() {
     }
     const [selectedRow, setSelectedRow] = useState<CourseCohort>();
     const columns = [
-        { title: 'Course cohort ID', field: 'course_cohorts_id', hidden: false },
-        { title: 'Course code', field: 'cs_codePrefix' },
-        { title: 'Name', field: 'cs_name' },
+        { title: 'Course cohort ID', field: 'cc_id', hidden: false },
+        { title: 'Course code', field: 'c_codePrefix' },
+        { title: 'Name', field: 'c_name' },
         { title: 'Semester name', field: 's_name' },
         { title: 'Start date', render:(rowData)=>rowData?.s_startDate?.slice(0,10) },
         { title: 'End date',  render:(rowData)=>rowData?.s_endDate?.slice(0,10)  },        
@@ -120,13 +120,16 @@ function CourseCohortsList() {
     const [currency,setCurrency] = useState('KES');
     const programCohortId = localStorage.getItem('programCohortId');
     const [linearDisplay, setLinearDisplay] = useState('none');
+    const [valObj, setValObj] = useState({});
     let programCohortSemesterId:number;
     useEffect(() => {
         setLinearDisplay('block');
+        console.log(programCohortId);
         
-        axios.get(`${timetablingSrv}/course-cohorts`, {params: { programCohortId }})
+        axios.get(`${timetablingSrv}/course-cohorts`, {params:{programCohortId: programCohortId }})
             .then(res => {
-                setData(res.data);
+                const ccData = res.data;
+                setData(ccData);
                 setLinearDisplay('none');
             });
         axios.get(`${timetablingSrv}/semesters`)
