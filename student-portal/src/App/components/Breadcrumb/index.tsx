@@ -45,7 +45,7 @@ class Breadcrumb extends Component<BreadcrumbState> {
           });
       }
   };
-  render() {
+  render(): JSX.Element {
       let main, item;
       let breadcrumb: React.ReactNode = '';
       let title = 'MIOG';

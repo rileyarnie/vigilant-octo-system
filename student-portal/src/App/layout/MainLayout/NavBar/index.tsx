@@ -16,7 +16,7 @@ interface INavBarProps extends React.HTMLAttributes<Element> {
 }
 
 class NavBar extends Component<INavBarProps> {
-    render() {
+    render(): JSX.Element {
         let headerClass = [
             'navbar',
             'pcoded-header',

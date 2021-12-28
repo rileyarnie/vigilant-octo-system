@@ -10,7 +10,7 @@ class Configuration extends Component<any, ConfigurationState> {
   state = {
       configOpen: false
   };
-  render() {
+  render(): JSX.Element {
       let configClass = ['menu-styler'];
       if (this.state.configOpen) {
           configClass = [...configClass, 'open'];

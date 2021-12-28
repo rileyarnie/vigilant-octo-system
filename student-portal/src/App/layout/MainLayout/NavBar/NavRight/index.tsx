@@ -6,7 +6,7 @@ class NavRight extends Component {
   state = {
       listOpen: false
   };
-  render() {
+  render(): JSX.Element {
       return (
           <>
               <ul className="navbar-nav ml-auto">

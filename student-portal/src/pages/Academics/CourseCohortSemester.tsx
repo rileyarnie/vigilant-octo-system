@@ -47,7 +47,7 @@ const tableIcons: Icons = {
     ThirdStateCheck: forwardRef((props, ref) => <Remove {...props} ref={ref} />),
     ViewColumn: forwardRef((props, ref) => <ViewColumn {...props} ref={ref} />)
 };
-function CourseCohortSemester() {
+const CourseCohortSemester = ():JSX.Element => {
     interface sem {
         s_id: number;
         s_name: string;
@@ -278,5 +278,5 @@ function CourseCohortSemester() {
             </Modal>
         </>
     );
-}
+};
 export default CourseCohortSemester;

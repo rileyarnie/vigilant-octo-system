@@ -2,7 +2,7 @@ import * as React from 'react';
 import { Row, Col, Card, } from 'react-bootstrap';
 import Breadcrumb from '../../App/components/Breadcrumb';
 class Default extends React.Component {
-    render() {
+    render(): JSX.Element {
         return (
             <>
                 <Row className="align-items-center page-header">

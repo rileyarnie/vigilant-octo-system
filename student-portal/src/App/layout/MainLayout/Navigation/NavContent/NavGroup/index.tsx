@@ -7,7 +7,7 @@ interface NavGroupProps {
   group: MenuItemType;
   layout: string;
 }
-const navGroup = (props: NavGroupProps) => {
+const navGroup = (props: NavGroupProps):JSX.Element => {
     let navItems: React.ReactNode = '';
     if (props.group.children) {
         const groups = props.group.children;

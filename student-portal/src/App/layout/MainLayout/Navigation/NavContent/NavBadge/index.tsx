@@ -4,7 +4,7 @@ interface NavBadgeProps {
   items: MenuItemType;
   layout?: string;
 }
-const NavBadge = (props: NavBadgeProps) => {
+const NavBadge = (props: NavBadgeProps):JSX.Element => {
     return props.items.badge ? (
         <span className={['label', 'pcoded-badge', props.items.badge.type].join(' ')}>{props.items.badge.title}</span>
     ) : null;

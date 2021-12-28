@@ -24,10 +24,10 @@ export class ToastifyAlerts implements Alerts {
         progressClassName: 'error-progress-bar',
         autoClose: 5000,
     };
-    public showSuccess(msg: string) {
+    public showSuccess(msg: string):void {
         toast(msg, this.successToast);
     }
-    public showError(msg: string) {
+    public showError(msg: string):void {
         toast(msg, this.errorToast);
     }
 }

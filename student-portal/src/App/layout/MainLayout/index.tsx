@@ -12,12 +12,12 @@ import routes from '../../../routes';
 import * as actionTypes from '../../../store/actions';
 import { initialState } from '../../../store/reducer';
 interface IMainLayoutProps extends React.HTMLAttributes<Element> {
-  defaultPath?: any;
-  fullWidthLayout?: any;
-  collapseMenu?: any;
-  windowWidth?: any;
+  defaultPath?: string;
+  fullWidthLayout?: string;
+  collapseMenu?: string;
+  windowWidth?: unknown;
   onComponentWillMount?: any;
-  layout?: any;
+  layout?: string;
 }
 class MainLayout extends Component<IMainLayoutProps> {
     componentDidMount() {

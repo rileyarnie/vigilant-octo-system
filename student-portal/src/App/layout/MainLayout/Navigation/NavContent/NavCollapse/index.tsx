@@ -33,7 +33,7 @@ class NavCollapse extends Component<INavCollapseProps> {
             this.props.onCollapseToggle(this.props.collapse.id, this.props.type);
         }
     }
-    render() {
+    render(): JSX.Element {
         const { isOpen, isTrigger } = this.props;
         let navItems: React.ReactNode = '';
         if (this.props.collapse.children) {
