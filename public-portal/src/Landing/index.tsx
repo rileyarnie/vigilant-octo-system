@@ -7,7 +7,6 @@ import logoDark from '../assets/images/logo.png'
 import Login from '../App/components/Login'
 import { AuthContext } from '../App/context/AuthContext'
 import PublishedProgramCohorts from '../App/PublishedProgramCohorts'
-
 const LandingPage = () => {
   const [isAuthenticated, setAuthState] = useState(false)
   // const user = JSON.parse(sessionStorage.getItem('User') as string)

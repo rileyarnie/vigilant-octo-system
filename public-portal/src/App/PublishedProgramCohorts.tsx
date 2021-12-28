@@ -51,10 +51,10 @@ const PublishedCourses = () => {
   }
   return (
         <div className="card list">
-            <Grid container spacing={1} direction="row" justify="flex-start" alignItems="flex-start">
+            <Grid container spacing={1} direction="row" justifyContent="flex-start" alignItems="flex-start">
                 {data.map((cohort:programCohort) => (
-                    <Grid item xs={12} sm={6} md={3} key={classes.root}>
-                    <Card key={classes.root} className={classes.root}>
+                    <Grid item xs={12} sm={6} md={3} key={cohort.program_cohorts_id}>
+                    <Card key={cohort.program_cohorts_id} className={classes.root}>
                         <CardActionArea>
                             <CardMedia
                                 component="img"
