@@ -45,7 +45,7 @@ const tableIcons: Icons = {
     ThirdStateCheck: forwardRef((props, ref) => <Remove {...props} ref={ref} />),
     ViewColumn: forwardRef((props, ref) => <ViewColumn {...props} ref={ref} />)
 };
-function PublishedSemester() {
+const PublishedSemester = ():JSX.Element => {
     const timetablingSrv = Config.baseUrl.timetablingSrv;
     const columns = [
         { title: 'ID', render:(row)=>row.id },
@@ -135,5 +135,5 @@ function PublishedSemester() {
             </Row>
         </>
     );
-}
+};
 export default PublishedSemester;

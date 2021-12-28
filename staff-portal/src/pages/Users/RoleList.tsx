@@ -48,8 +48,7 @@ const tableIcons: Icons = {
     ThirdStateCheck: forwardRef((props, ref) => <Remove {...props} ref={ref} />),
     ViewColumn: forwardRef((props, ref) => <ViewColumn {...props} ref={ref} />)
 };
-function RoleList() {
-
+const RoleList = ():JSX.Element => {
     const columns = [
         { title: 'id', field: 'id', editable: 'never' as const},   
         { title: 'RoleName', field: 'RoleName', editable: 'always' as const},
@@ -164,6 +163,6 @@ function RoleList() {
             </div>
         </>
     );
-}
+};
 
 export default RoleList;

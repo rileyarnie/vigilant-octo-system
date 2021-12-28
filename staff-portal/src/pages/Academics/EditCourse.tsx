@@ -72,7 +72,7 @@ class EditCourse extends Component <Props> {
      }
     
 
-     render() {
+     render(): JSX.Element {
          return (
              <>
                  <Row className="align-items-center page-header">

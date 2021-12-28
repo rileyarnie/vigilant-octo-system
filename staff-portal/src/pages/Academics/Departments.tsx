@@ -48,7 +48,7 @@ const tableIcons: Icons = {
     ThirdStateCheck: forwardRef((props, ref) => <Remove {...props} ref={ref} />),
     ViewColumn: forwardRef((props, ref) => <ViewColumn {...props} ref={ref} />)
 };
-function Department() {
+const Department = ():JSX.Element => {
     const timetablingSrv = Config.baseUrl.timetablingSrv;
     interface department {
         name: string;
@@ -294,5 +294,5 @@ function Department() {
 
         </>
     );
-}
+};
 export default Department;

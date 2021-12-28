@@ -23,7 +23,7 @@ import { Icons } from 'material-table';
 import {Switch} from '@material-ui/core';
 import Alert from '@material-ui/lab/Alert';
 import Breadcrumb from '../../App/components/Breadcrumb';
-import {Row, Col, Card, Button, Modal, ProgressBar} from 'react-bootstrap';
+import {Row, Col, Card, Button, Modal } from 'react-bootstrap';
 import Config from '../../config';
 import {Link} from 'react-router-dom';
 import {ValidationForm, SelectGroup, TextInput} from 'react-bootstrap4-form-validation';
@@ -50,7 +50,7 @@ const tableIcons: Icons = {
     ThirdStateCheck: forwardRef((props, ref) => <Remove {...props} ref={ref} />),
     ViewColumn: forwardRef((props, ref) => <ViewColumn {...props} ref={ref} />)
 };
-function Programs() {
+const Programs = ():JSX.Element => {
     const timetablingSrv = Config.baseUrl.timetablingSrv;
 
         interface Program {
@@ -319,5 +319,5 @@ function Programs() {
                 </Modal>
             </>
         );
-}
+};
 export default Programs;

@@ -46,7 +46,7 @@ const tableIcons: Icons = {
     ViewColumn: forwardRef((props, ref) => <ViewColumn {...props} ref={ref} />)
 };
 const alerts: Alerts = new ToastifyAlerts();
-function CampusList() {
+const CampusList = ():JSX.Element => {
     interface Campus {
         id: number;
         name: string;
@@ -280,5 +280,5 @@ function CampusList() {
             </Modal>
         </>
     );
-}
+};
 export default CampusList;

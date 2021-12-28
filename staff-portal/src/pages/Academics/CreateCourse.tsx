@@ -33,7 +33,6 @@ class CourseCreation extends Component <Props> {
     componentDidMount(){
         this.fetchCoursesAndInitSelect();
     }
-
     handleChange = (e) => {
         this.setState({
             [e.target.name]: e.target.value
@@ -103,7 +102,7 @@ class CourseCreation extends Component <Props> {
         });
     };
 
-    render() {
+    render(): JSX.Element {
         return (
             <>
                 <Row className="align-items-center page-header">

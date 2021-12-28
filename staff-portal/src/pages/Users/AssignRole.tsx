@@ -45,8 +45,7 @@ const tableIcons: Icons = {
     ThirdStateCheck: forwardRef((props, ref) => <Remove {...props} ref={ref} />),
     ViewColumn: forwardRef((props, ref) => <ViewColumn {...props} ref={ref} />)
 };
-function AssignRole() {
-
+const AssignRole = ():JSX.Element => {
     const columns = [
         {title: 'id', field: 'id'},
         {title: 'AAD ALIAS', field: 'AADAlias'},
@@ -122,6 +121,6 @@ function AssignRole() {
             </div>
         </>
     );
-}
+};
 
 export default AssignRole;

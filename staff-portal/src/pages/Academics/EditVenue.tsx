@@ -7,7 +7,7 @@ import Config from '../../config';
 import { Alerts, ToastifyAlerts } from '../lib/Alert';
 import { regxAlphaNumericWithSpacesAndUnderscores } from '../lib/validation';
 const alerts: Alerts = new ToastifyAlerts();
-const EditVenue = (props) => {
+const EditVenue = (props):JSX.Element => {
     const [venueName,setVenueName] = useState('');
     const timetableSrv = Config.baseUrl.timetablingSrv;
     const venueChangeHandler = (event) =>{

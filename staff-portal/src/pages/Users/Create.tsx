@@ -7,7 +7,7 @@ import Breadcrumb from '../../App/components/Breadcrumb';
 import Config from '../../config';
 import { Alerts, ToastifyAlerts } from '../lib/Alert';
 const alerts: Alerts = new ToastifyAlerts();
-const CreateUser = ()=> {
+const CreateUser = ():JSX.Element => {
     const [email,setEmail] = useState('');
     const handleChange = (event) => {
         setEmail(event.target.value);

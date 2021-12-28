@@ -23,7 +23,7 @@ interface INavItemProps extends React.HTMLAttributes<Element> {
   title?: any;
 }
 class NavItem extends Component<INavItemProps> {
-    render() {
+    render(): JSX.Element {
         let itemTitle = this.props.item.title;
         if (this.props.item.icon) {
             itemTitle = <span className="pcoded-mtext">{this.props.item.title}</span>;

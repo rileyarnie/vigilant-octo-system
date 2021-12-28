@@ -46,7 +46,7 @@ const tableIcons: Icons = {
     ThirdStateCheck: forwardRef((props, ref) => <Remove {...props} ref={ref} />),
     ViewColumn: forwardRef((props, ref) => <ViewColumn {...props} ref={ref} />)
 };
-function CoursesList(props) {
+const CoursesList = ():JSX.Element => {
     const timetablingSrv = Config.baseUrl.timetablingSrv;
     interface Course {
         name: string;
@@ -89,14 +89,14 @@ function CoursesList(props) {
     let msg:string;
     const handleActivationStatusToggle = (event, row: Course) => {
         if (row.activation_status) {
-            msg = 'Successfuly Deactivated Course';
+            msg = 'Successfully Deactivated Course';
             activationStatus = false;
             approvalStatus=row.approval_status;
             isElective = row.isElective; 
             handleToggleStatusSubmit(event, row);
         }
         if (!row.activation_status) {
-            msg = 'Successfuly Activated Course';
+            msg = 'Successfully Activated Course';
             activationStatus = true;
             approvalStatus=row.approval_status;
             isElective = row.isElective; 
@@ -105,14 +105,14 @@ function CoursesList(props) {
     };
     const handleApprovalStatusToggle = (event, row: Course) => {      
         if (row.approval_status) {
-            msg = 'Successfuly Declined Course';
+            msg = 'Successfully Declined Course';
             approvalStatus = false;
             activationStatus=row.activation_status;  
             isElective = row.isElective;          
             handleToggleStatusSubmit(event, row);
         }
         if (!row.approval_status) {
-            msg = 'Successfuly Approved Course';
+            msg = 'Successfully Approved Course';
             approvalStatus = true;
             activationStatus=row.activation_status;  
             isElective = row.isElective;            
@@ -209,7 +209,7 @@ function CoursesList(props) {
                     </Card>
                 </Col>
             </Row>
-            <Modal {...props} size="lg" aria-labelledby="contained-modal-title-vcenter" centered show={showModal} backdrop="static">
+            <Modal size="lg" aria-labelledby="contained-modal-title-vcenter" centered show={showModal} backdrop="static">
                 <Modal.Header>
                     <Modal.Title id="contained-modal-title-vcenter">Create Course</Modal.Title>
                 </Modal.Header>
@@ -219,5 +219,5 @@ function CoursesList(props) {
             </Modal>
         </>
     );
-}
+};
 export default CoursesList;

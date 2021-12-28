@@ -46,7 +46,7 @@ const tableIcons: Icons = {
     ThirdStateCheck: forwardRef((props, ref) => <Remove {...props} ref={ref} />),
     ViewColumn: forwardRef((props, ref) => <ViewColumn {...props} ref={ref} />)
 };
-function SemesterList() {
+const SemesterList = ():JSX.Element => {
     const timetablingSrv = Config.baseUrl.timetablingSrv;
     interface Semester {
         id: number;
@@ -300,5 +300,5 @@ function SemesterList() {
             </Modal>
         </>
     );
-}
+};
 export default SemesterList;

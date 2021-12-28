@@ -10,7 +10,7 @@ interface ILayoutProps extends React.HTMLAttributes<Element> {
   layoutType: string;
 }
 class Layout extends Component<ILayoutProps> {
-    render() {
+    render(): JSX.Element {
         const layoutOption = (
             <div>
                 <h6>Layouts</h6>

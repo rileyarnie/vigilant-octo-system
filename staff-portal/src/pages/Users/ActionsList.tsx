@@ -44,7 +44,7 @@ const tableIcons: Icons = {
     ThirdStateCheck: forwardRef((props, ref) => <Remove {...props} ref={ref} />),
     ViewColumn: forwardRef((props, ref) => <ViewColumn {...props} ref={ref} />)
 };
-export const ActionsList = (props) => {
+export const ActionsList = (props):JSX.Element => {
     const [actions, setActions] = useState([]);
     const [linearDisplay, setLinearDisplay] = useState('none');
     useEffect(() => {

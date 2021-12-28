@@ -16,8 +16,7 @@ interface IProps {
   selectedRow:ICourseCohort,
   programName:string
 }
-export const DeactivateCourseCohort = (props:IProps) => {
-   
+export const DeactivateCourseCohort = (props:IProps):JSX.Element => {
     const timetablingSrv = Config.baseUrl.timetablingSrv;
     const [showModal,setShowModal] = useState(false);
     let activationStatus:boolean;

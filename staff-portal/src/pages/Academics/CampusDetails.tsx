@@ -42,7 +42,7 @@ const tableIcons: Icons = {
     ViewColumn: forwardRef((props, ref) => <ViewColumn {...props} ref={ref} />)
 };
 const alerts: Alerts = new ToastifyAlerts();
-function CampusDetails() {
+const CampusDetails = ():JSX.Element => {
 
     const columns = [
         { title: 'ID', field: 'id', hidden: true },
@@ -97,5 +97,5 @@ function CampusDetails() {
             </Row>
         </>
     );
-}
+};
 export default CampusDetails;

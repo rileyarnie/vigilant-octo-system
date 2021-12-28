@@ -51,8 +51,7 @@ enum TrainerType {
     Trainer = 'TRAINER',
     Assistant = 'ASSISTANT'
 }
-// type TrainerTypeStrings = keyof typeof TrainerType;
-function TrainerList() {
+const TrainerList = ():JSX.Element => {
     const columns = [
         { title: 'ID', field: 'id', hidden: false },
         { title: 'Trainer AADAlias', field: 'AADAlias' },
@@ -273,5 +272,5 @@ function TrainerList() {
             </Modal>
         </>
     );
-}
+};
 export default TrainerList;

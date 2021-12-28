@@ -49,7 +49,7 @@ const tableIcons: Icons = {
     ThirdStateCheck: forwardRef((props, ref) => <Remove {...props} ref={ref} />),
     ViewColumn: forwardRef((props, ref) => <ViewColumn {...props} ref={ref} />)
 };
-function ApplicationsList() {
+const ApplicationsList = ():JSX.Element => {
     const simsSrv = Config.baseUrl.simsSrv;
     const timetablingSrv = Config.baseUrl.timetablingSrv;
     const columns = [
@@ -542,5 +542,5 @@ function ApplicationsList() {
 
         </>
     );
-}
+};
 export default ApplicationsList;

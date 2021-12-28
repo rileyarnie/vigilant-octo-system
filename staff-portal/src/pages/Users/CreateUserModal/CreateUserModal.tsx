@@ -9,7 +9,7 @@ import Config from '../../../config';
 import { Alerts, ToastifyAlerts } from '../../lib/Alert';
 
 const alerts: Alerts = new ToastifyAlerts();
-const CreateUserModal = (props) => {
+const CreateUserModal = (props):JSX.Element => {
     const [email, setEmail] = useState('');
     const handleChange = (event) => {
         setEmail(event.target.value);

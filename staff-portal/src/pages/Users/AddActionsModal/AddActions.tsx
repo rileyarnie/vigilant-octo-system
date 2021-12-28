@@ -1,8 +1,7 @@
 import React from 'react';
 import { Button } from 'react-bootstrap';
 import { AddActionsModal } from './AddActionsModal';
-
-export const AddActions = (props) => {
+export const AddActions = (props):JSX.Element => {
     const [modalShow, setModalShow] = React.useState(false);
     const toggleModal = () => {
         modalShow ? setModalShow(false) : setModalShow(true);

@@ -84,7 +84,7 @@ componentDidMount() {
         console.error(errorInputs);
     };
 
-    render() {
+    render(): JSX.Element {
         return (
             <>
                 <Row className="align-items-center page-header">

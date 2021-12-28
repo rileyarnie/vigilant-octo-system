@@ -51,7 +51,7 @@ class NavContent extends Component<INavContentProps, NavContentState> {
           this.setState({ scrollWidth: scrollWidth, prevDisable: false });
       }
   };
-  render() {
+  render(): JSX.Element {
       const navItems = this.props.navigation.map((item: any) => {
           switch (item.type) {
           case 'group':

@@ -49,7 +49,7 @@ class Navigation extends Component<INavigationProps> {
           document.querySelector('.pcoded-navbar').removeAttribute('style');
       }
   };
-  render() {
+  render(): JSX.Element {
       let navClass = ['pcoded-navbar'];
       navClass = [...navClass, this.props.layoutType];
       if (this.props.layout === 'horizontal') {

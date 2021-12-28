@@ -51,7 +51,7 @@ class CreateCampus extends Component {
     };
 
 
-    render() {
+    render(): JSX.Element {
         return (
             <>
                 <Row className="align-items-center page-header">

@@ -48,7 +48,7 @@ const tableIcons: Icons = {
     ThirdStateCheck: forwardRef((props, ref) => <Remove {...props} ref={ref} />),
     ViewColumn: forwardRef((props, ref) => <ViewColumn {...props} ref={ref} />)
 };
-function VenueList(props) {
+const VenueList = (props):JSX.Element => {
     const columns = [
         { title: 'ID', field: 'venue_id' },
         { title: 'Venue name', field: 'venue_name'},
@@ -157,5 +157,5 @@ function VenueList(props) {
             </Modal>
         </>
     );
-}
+};
 export default VenueList;

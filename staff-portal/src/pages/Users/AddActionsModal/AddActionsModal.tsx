@@ -22,7 +22,7 @@ interface IOptions {
     value:number;
     label:string;
 }
-export const AddActionsModal = (props:IProps) => {
+export const AddActionsModal = (props:IProps):JSX.Element => {
     const authnzSrv = Config.baseUrl.authnzSrv;
     const [actions, setActions] = useState([]);
     const [isMulti] = useState(true);

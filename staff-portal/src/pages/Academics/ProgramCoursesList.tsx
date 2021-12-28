@@ -47,7 +47,7 @@ const tableIcons: Icons = {
     ThirdStateCheck: forwardRef((props, ref) => <Remove {...props} ref={ref} />),
     ViewColumn: forwardRef((props, ref) => <ViewColumn {...props} ref={ref} />)
 };
-function ProgramCoursesList() {
+const ProgramCoursesList = ():JSX.Element => {
 
     const columns = [
         { title: 'ID', field: 'id', hidden: false },
@@ -149,6 +149,6 @@ function ProgramCoursesList() {
             </Row>
         </>
     );
-}
+};
 
 export default ProgramCoursesList;

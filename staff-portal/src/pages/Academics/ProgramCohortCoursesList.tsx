@@ -57,7 +57,7 @@ const useStyles = makeStyles({
         width: '100%',
     },
 });
-function CourseCohortsList() {
+const CourseCohortsList = ():JSX.Element => {
     const classes = useStyles();
     interface CourseCohort{
         pcs_program_cohort_Id:number, //program cohort id
@@ -455,6 +455,6 @@ function CourseCohortsList() {
             </Modal>
         </>
     );
-}
+};
 
 export default CourseCohortsList;

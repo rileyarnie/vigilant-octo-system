@@ -2,7 +2,7 @@
 import React from 'react';
 import { Modal, Button } from 'react-bootstrap';
 import {ActionsList} from '../ActionsList';
-export const  VerticalModal = (props) => {
+export const VerticalModal = (props):JSX.Element => {
     return (
         <Modal
             {...props}

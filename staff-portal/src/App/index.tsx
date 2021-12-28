@@ -11,7 +11,7 @@ const MainLayout = Loadable({
     loading: Loader
 });
 class App extends Component {
-    render() {
+    render(): JSX.Element {
         const menu = routes.map((route, index) => {
             return route.component ? (
                 <Route

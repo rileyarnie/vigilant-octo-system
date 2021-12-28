@@ -5,7 +5,7 @@ import CreateUserModal from './CreateUserModal';
 interface IProps  {
     fetchUsers : () => void
 }
-const CreateUser = (props:IProps) => {
+const CreateUser = (props:IProps):JSX.Element => {
     const [modalShow, setModalShow] = React.useState(false);
     return (
         <>

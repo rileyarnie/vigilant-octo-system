@@ -1,8 +1,7 @@
 import React from 'react';
 import { Button } from 'react-bootstrap';
 import { AssignRoleModal } from './AssignRoleModal';
-
-export const Assign = (props) => {
+export const Assign = (props):JSX.Element => {
     const [modalShow, setModalShow] = React.useState(false);
     return (
         <>

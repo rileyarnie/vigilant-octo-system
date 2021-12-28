@@ -10,9 +10,7 @@ const alerts: Alerts = new ToastifyAlerts();
 interface IProps {
     fetchRoles: () => void
 }
-
-const CreateRole = (props:IProps) => {
-
+const CreateRole = (props:IProps):JSX.Element => {
     const authnzSrv = Config.baseUrl.authnzSrv; 
     const [roleName,setRoleName] = useState('');
     const [showCreateModal,setShowCreateModal] = useState(false);
@@ -82,5 +80,4 @@ const CreateRole = (props:IProps) => {
         </>
     );
 };
-
 export default CreateRole;

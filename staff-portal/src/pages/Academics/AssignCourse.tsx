@@ -45,7 +45,7 @@ const tableIcons: Icons = {
     ViewColumn: forwardRef((props, ref) => <ViewColumn {...props} ref={ref} />)
 };
 const alerts: Alerts = new ToastifyAlerts();
-function AssignCourse() {
+const AssignCourse = ():JSX.Element => {
     const timetablingSrv = Config.baseUrl.timetablingSrv;
     const columns = [
         { title: 'ID', field: 'id', hidden: false },
@@ -165,6 +165,5 @@ function AssignCourse() {
             </Button>
         </>
     );
-}
-
+};
 export default AssignCourse;
