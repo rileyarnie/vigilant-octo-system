@@ -125,6 +125,7 @@ const ProgramCohorts = ():JSX.Element => {
         {title:'ID',field:'program_cohorts_id'},
         {title:'Code',field:'program_cohorts_code'},
         {title:'Program Name',field:'pg_name'},
+        {title:'Campus Name',field:'cmps_name'},
         {title:'Requires Clearance',field:'pg_requiresClearance'},
         {title:'Duration',field:'pg_duration'},
         {title:'Certification Type', field: 'pg_certificationType' },        
@@ -264,7 +265,7 @@ const ProgramCohorts = ():JSX.Element => {
             anticipatedGraduationYear:year,
             anticipatedGraduationMonth:month,
             advertDescription:description,
-            bannerImageUrl:banner
+            bannerImageUrl:banner,
         };
         // console.log(typeof cohort.programId);
         createCohort(cohort);
