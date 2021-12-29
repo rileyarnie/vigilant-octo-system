@@ -67,13 +67,16 @@ const ProgramCohorts = ():JSX.Element => {
     const [isError]=useState(false);
     const [,setDisabled]=useState(false);
     const [programId,setProgramId]=useState(0);
+    const [campusId,setCampusId]=useState(0);
     const [startDate,setStartDate]=useState('');
     const [banner,setBanner]=useState('');
     const [graduationDate,setGraduationDate]=useState('');
     const [description,setDescription]=useState('');
     const [imageUploaded,setImageUploaded]=useState('');
     const [programs,setPrograms]=useState([]);
+    const [campus,setCampus]=useState([]);
     const [programName,setProgramName]=useState('');
+    const [selectedCampusId,setSelectedCampusId]=useState(0);
     const [selectedProgramId,setSelectedProgramId]=useState(0);
     const [selectedGraduationDate]=useState();
     const [selectedStartDate]=useState();
@@ -192,6 +195,14 @@ const ProgramCohorts = ():JSX.Element => {
                 console.error(error);
                 alerts.showError(error.message);
             });
+        axios.get(`${timetablingSrv}/campuses`)
+            .then(res=>{
+                setCampus(res.data);
+            })
+            .catch((error)=>{
+                console.error(error);
+                alerts.showError(error.message);
+            });
     },[]);
     const fetchProgramCohorts=(): void =>{
         setLinearDisplay('block');
@@ -247,6 +258,7 @@ const ProgramCohorts = ():JSX.Element => {
         e.preventDefault();
         const updates={
             programId:programId===0?selectedProgramId:programId,
+            campusId:campusId===0?selectedCampusId:campusId,
             startDate:startDate===''?selectedStartDate:startDate,
             anticipatedGraduationYear:year,
             anticipatedGraduationMonth:month,
@@ -261,6 +273,7 @@ const ProgramCohorts = ():JSX.Element => {
         e.preventDefault();
         const cohort={
             programId:programId,
+            campusId:campusId,
             startDate:startDate,
             anticipatedGraduationYear:year,
             anticipatedGraduationMonth:month,
@@ -289,6 +302,7 @@ const ProgramCohorts = ():JSX.Element => {
     const resetStateCloseModal=(): void =>{
         setCohortId(null);
         setProgramId(0);
+        setCampusId(0);
         setStartDate('');
         setDescription('');
         setBanner('');
@@ -377,6 +391,18 @@ const ProgramCohorts = ():JSX.Element => {
                                         <option defaultValue={cohortId?selectedProgramCohort.pg_id:selectedProgramId} value="">-- Select a program --</option>
                                         {programs.map((program)=>{
                                             return <option key={program.name} value={program.id}>{program.name}</option>;
+                                        })}
+                                    </SelectGroup><br/>
+                                    <label htmlFor="cohortName"><b>{cohortId? 'Select a new campus for this cohort' : 'Select a campus' }</b></label>
+                                    <SelectGroup name="campus" id="campus" required
+                                        errorMessage="Please select a Program."
+                                        onChange={(e)=>{
+                                            setSelectedCampusId(e.target.value);
+                                            setCampusId(parseInt(e.target.value));
+                                        }}>
+                                        <option defaultValue={cohortId?selectedProgramCohort.pg_id:selectedCampusId} value="">-- Select a Campus --</option>
+                                        {campus.map((campus)=>{
+                                            return <option key={campus.name} value={campus.id}>{campus.name}</option>;
                                         })}
                                     </SelectGroup><br/>
                                     <label htmlFor='Date'><b>Start Date</b></label><br/>
