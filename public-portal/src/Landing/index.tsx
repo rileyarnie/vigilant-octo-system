@@ -28,8 +28,6 @@ const LandingPage = () => {
                                 }}
                             >
                                 <Nav.Link href="home">Home</Nav.Link>
-                                <Nav.Link href="courses">Courses</Nav.Link>
-                                <Nav.Link href="apply">Apply</Nav.Link>
                                 <Nav.Link>
                                     <Login></Login>
                                 </Nav.Link>
