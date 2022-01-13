@@ -69,12 +69,12 @@ const CourseCohortsList = ():JSX.Element => {
     }
     const [selectedRow, setSelectedRow] = useState<CourseCohort>();
     const columns = [
-        { title: 'Course cohort ID', field: 'cc_id', hidden: false },
-        { title: 'Course code', field: 'c_codePrefix' },
-        { title: 'Name', field: 'c_name' },
-        { title: 'Semester name', field: 's_name' },
-        { title: 'Start date', render:(rowData)=>rowData?.s_startDate?.slice(0,10) },
-        { title: 'End date',  render:(rowData)=>rowData?.s_endDate?.slice(0,10)  },        
+        { title: 'Course cohort ID', field: 'id', hidden: false },
+        { title: 'Course code', field: 'course.codePrefix' },
+        { title: 'Name', field: 'course.name' },
+        { title: 'Semester name', field: 'semester.name' },
+        { title: 'Start date', render:(rowData)=>rowData?.semester.startDate?.slice(0,10) },
+        { title: 'End date',  render:(rowData)=>rowData?.semester.endDate?.slice(0,10)  },        
         { title: 'Action', field: 'action' },
         {
             title:'Activation Status',
@@ -126,9 +126,12 @@ const CourseCohortsList = ():JSX.Element => {
         setLinearDisplay('block');
         console.log(programCohortId);
         
-        axios.get(`${timetablingSrv}/course-cohorts`, {params:{programCohortId: programCohortId }})
+
+        
+        axios.get(`${timetablingSrv}/course-cohorts`, {params:{programCohortId: programCohortId, loadExtras: 'course,programCohortSemester', semesterId: 12 }})
             .then(res => {
                 const ccData = res.data;
+                console.log(ccData);
                 setData(ccData);
                 setLinearDisplay('none');
             });

@@ -53,10 +53,10 @@ enum TrainerType {
 }
 const TrainerList = ():JSX.Element => {
     const columns = [
-        { title: 'ID', field: 'id', hidden: false },
-        { title: 'Trainer AADAlias', field: 'AADAlias' },
-        { title: 'Trainer type', field: 'trainerType' },
-        { title: 'Department ID', field: 'departmentId' }
+        { title: 'ID', field: 'tr_id', hidden: false },
+        { title: 'Trainer AADAlias', render:(rowData)=> getAADAlias(rowData.tr_userId) },
+        { title: 'Trainer type', field: 'tr_trainerType' },
+        { title: 'Department ID', field: 'tr_departmentId' }
     ];
     const [data, setData] = useState([]);
     const baseUrl = Config.baseUrl.timetablingSrv;
@@ -78,6 +78,7 @@ const TrainerList = ():JSX.Element => {
             .get(`${baseUrl}/trainers`)
             .then((res) => {
                 setLinearDisplay('none');
+                console.log(res.data);
                 setData(res.data);
             })
             .catch((error) => {
@@ -89,6 +90,7 @@ const TrainerList = ():JSX.Element => {
         axios
             .get(`${baseUrlAuth}/users`)
             .then((res) => {
+                console.log(res.data);
                 setUsers(res.data);
             })
             .catch((error) => {
@@ -153,6 +155,11 @@ const TrainerList = ():JSX.Element => {
             });
     };
 
+    const getAADAlias = (id:number) => {
+        return users
+            .filter(user => user.id === id)
+            .map(user => user.AADAlias)[0];
+    };
     const toggleCreateModal = () => {
         showModal ? setModal(false) : setModal(true);
     };
