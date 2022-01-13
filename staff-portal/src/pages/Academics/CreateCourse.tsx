@@ -25,6 +25,7 @@ class CourseCreation extends Component <Props> {
         description: '',
         trainingHours: 0,
         isTimetablable: '',
+        isElective: '',
         needsTechnicalAssistant: '',
         courses:[],
         selectedCourses:[]
@@ -62,7 +63,8 @@ class CourseCreation extends Component <Props> {
                     description: '',
                     trainingHours: '',
                     isTimetableable: '',
-                    needsTechnicalAssistant: ''
+                    needsTechnicalAssistant: '',
+                    isElective: '',
                 });
                 this.props.fetchCourses();
             })
@@ -140,6 +142,12 @@ class CourseCreation extends Component <Props> {
                                                 </SelectGroup> <br />
                                                 <label htmlFor='technicalAssistant'><b>Needs Technical Assistant?</b></label><br />
                                                 <SelectGroup name='technicalAssistant' id='technicalAssistant' required onChange={this.handleChange}>
+                                                    <option value="">--- Please select ---</option>
+                                                    <option value="true" >True</option>
+                                                    <option value="false" >False</option>
+                                                </SelectGroup><br />
+                                                <label htmlFor='isElective'><b>Is Elective?</b></label><br />
+                                                <SelectGroup name='isElective' id='isElective' required onChange={this.handleChange}>
                                                     <option value="">--- Please select ---</option>
                                                     <option value="true" >True</option>
                                                     <option value="false" >False</option>
