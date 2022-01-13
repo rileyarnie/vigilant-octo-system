@@ -75,10 +75,7 @@ const CourseCohortsList = ():JSX.Element => {
         course: course,
         semesterId: number,
         programCohortId: number,
-        published:boolean,
-        cs_name:string, // course name
-        cs_id:number, // course id
-        course_cohorts_id:number //course cohort id
+        published:boolean
     }
     const [selectedRow, setSelectedRow] = useState<CourseCohort>();
     const columns = [
@@ -137,7 +134,6 @@ const CourseCohortsList = ():JSX.Element => {
     useEffect(() => {
         setLinearDisplay('block');
         console.log(programCohortId);
-
         fetchCourseCohortsByProgramCohortId();
         axios.get(`${timetablingSrv}/semesters`)
             .then(res => {
