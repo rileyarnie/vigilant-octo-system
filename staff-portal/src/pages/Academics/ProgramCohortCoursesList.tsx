@@ -133,7 +133,7 @@ const CourseCohortsList = ():JSX.Element => {
     useEffect(() => {
         setLinearDisplay('block');
         console.log(programCohortId);
-        axios.get(`${timetablingSrv}/course-cohorts`, {params:{programCohortId: programCohortId, loadExtras: 'trainer', semesterId: 3 }})
+        axios.get(`${timetablingSrv}/course-cohorts`, {params:{programCohortId: programCohortId, loadExtras: 'trainer', semesterId: selectedSemesterId }})
             .then(res => {
                 const ccData = res.data;
                 setData(ccData);
