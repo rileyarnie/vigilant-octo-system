@@ -8,6 +8,10 @@ import { Alerts, ToastifyAlerts } from '../lib/Alert';
 import { regxAlphaNumericWithSpacesAndUnderscores } from '../lib/validation';
 const alerts: Alerts = new ToastifyAlerts();
 const EditVenue = (props):JSX.Element => {
+    interface venue {
+        venue_name: string;
+
+    }
     const [venueName,setVenueName] = useState('');
     const timetableSrv = Config.baseUrl.timetablingSrv;
     const venueChangeHandler = (event) =>{
@@ -49,7 +53,7 @@ const EditVenue = (props):JSX.Element => {
                                                 id="name"
                                                 type="text"
                                                 placeholder="Hall 6"
-                                                value={venueName}
+                                                defaultValue={props.venue_name}
                                                 validator={(value) => regxAlphaNumericWithSpacesAndUnderscores.test(value)}
                                                 errorMessage={{ validator: 'Please enter a valid name' }}
                                                 onChange = {venueChangeHandler}
