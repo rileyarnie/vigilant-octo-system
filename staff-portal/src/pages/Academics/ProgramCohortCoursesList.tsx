@@ -59,18 +59,26 @@ const useStyles = makeStyles({
 });
 const CourseCohortsList = ():JSX.Element => {
     const classes = useStyles();
+    interface semester{
+        id:number,
+        name: string,
+        startDate: string,
+        endDate: string,
+    }
+    interface course{
+        id:number,
+        name: string,
+    }
     interface CourseCohort{
-        programCohortId:number, //program cohort id
-        semesterId: number; // semester id
+        id: number,
+        semester: semester,
+        course: course,
+        semesterId: number,
+        programCohortId: number,
         published:boolean,
         cs_name:string, // course name
-        courseId:number, // course id
-        id:number //course cohort id
-        course:Course
-    }
-    interface Course {
-        id:number,
-        name:string
+        cs_id:number, // course id
+        course_cohorts_id:number //course cohort id
     }
     const [selectedRow, setSelectedRow] = useState<CourseCohort>();
     const columns = [
@@ -79,8 +87,7 @@ const CourseCohortsList = ():JSX.Element => {
         { title: 'Course Name', field: 'course.name' },
         { title: 'Semester id', field: 'semesterId' },
         { title: 'Start date', render:(rowData)=>rowData?.semester?.startDate?.slice(0,10) },
-        { title: 'End date',  render:(rowData)=>rowData?.semester?.endDate?.slice(0,10)  },        
-        { title: 'Action', field: 'action' },
+        { title: 'End date',  render:(rowData)=>rowData?.semester?.endDate?.slice(0,10)  },
         {
             title:'Activation Status',
             field:'internal_action',
@@ -437,10 +444,10 @@ const CourseCohortsList = ():JSX.Element => {
                                 })
                             }
                         </SelectGroup><br></br>
-                        
+
                         <Button className='btn btn-info float-right' onClick={(e) => handleAssignSemesterSubmit(e)}>Submit
                         </Button>
-                        
+
                         <Button className="btn btn-danger float-left" onClick={handleClose}>
                             Close
                         </Button>
