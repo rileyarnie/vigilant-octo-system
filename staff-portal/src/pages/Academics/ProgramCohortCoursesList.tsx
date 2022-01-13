@@ -85,7 +85,6 @@ const CourseCohortsList = ():JSX.Element => {
         { title: 'Semester name', field: 'semester.name' },
         { title: 'Start date', render:(rowData)=>rowData?.startDate?.slice(0,10) },
         { title: 'End date',  render:(rowData)=>rowData?.endDate?.slice(0,10)  },
-        { title: 'Action', field: 'action' },
         {
             title:'Activation Status',
             field:'internal_action',
@@ -136,7 +135,7 @@ const CourseCohortsList = ():JSX.Element => {
         setLinearDisplay('block');
         console.log(programCohortId);
         
-        axios.get(`${timetablingSrv}/course-cohorts`, {params:{programCohortId: programCohortId, loadExtras: 'trainer' }})
+        axios.get(`${timetablingSrv}/course-cohorts`, {params:{programCohortId: programCohortId, loadExtras: 'trainer', semesterId }})
             .then(res => {
                 const ccData = res.data;
                 setData(ccData);
