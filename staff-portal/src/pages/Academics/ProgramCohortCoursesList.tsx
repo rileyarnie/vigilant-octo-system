@@ -122,7 +122,7 @@ const CourseCohortsList = ():JSX.Element => {
     const programCohortCode = localStorage.getItem('program_cohort_code');
     const [showPublishModal, setShowPublish] = useState(false);
     const [showDialog, setDialog] = useState(false);
-    //const [selectedSemester, setSelectedemester] = useState(0);
+    const [selectedSemester, setSelectedemester] = useState(0);
     const [narrative, setNarrative] = useState('');
     const [amount, setAmount] = useState(0);
     const [currency,setCurrency] = useState('KES');
@@ -430,7 +430,7 @@ const CourseCohortsList = ():JSX.Element => {
                 aria-labelledby="contained-modal-title-vcenter"
                 centered>
                 <Modal.Header closeButton>
-                    <Modal.Title id="contained-modal-title-vcenter"> {selectedRow?.semesterId? 'Change semester' : 'Assign a semester' } </Modal.Title>
+                    <Modal.Title id="contained-modal-title-vcenter"> {selectedRow?.semester.id? 'Change semester' : 'Assign a semester' } </Modal.Title>
                 </Modal.Header>
                 <Modal.Body>
                     <ValidationForm>
