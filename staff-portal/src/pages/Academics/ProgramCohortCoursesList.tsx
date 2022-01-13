@@ -60,21 +60,26 @@ const useStyles = makeStyles({
 const CourseCohortsList = ():JSX.Element => {
     const classes = useStyles();
     interface CourseCohort{
-        pcs_program_cohort_Id:number, //program cohort id
-        s_id: number; // semester id
+        programCohortId:number, //program cohort id
+        semesterId: number; // semester id
         published:boolean,
         cs_name:string, // course name
-        cs_id:number, // course id
-        course_cohorts_id:number //course cohort id
+        courseId:number, // course id
+        id:number //course cohort id
+        course:Course
+    }
+    interface Course {
+        id:number,
+        name:string
     }
     const [selectedRow, setSelectedRow] = useState<CourseCohort>();
     const columns = [
-        { title: 'Course cohort ID', field: 'cc_id', hidden: false },
-        { title: 'Course code', field: 'c_codePrefix' },
-        { title: 'Name', field: 'c_name' },
-        { title: 'Semester name', field: 's_name' },
-        { title: 'Start date', render:(rowData)=>rowData?.s_startDate?.slice(0,10) },
-        { title: 'End date',  render:(rowData)=>rowData?.s_endDate?.slice(0,10)  },        
+        { title: 'Course cohort ID', field: 'id', hidden: false },
+        { title: 'Course code', field: 'course.codePrefix' },
+        { title: 'Course Name', field: 'course.name' },
+        { title: 'Semester id', field: 'semesterId' },
+        { title: 'Start date', render:(rowData)=>rowData?.semester?.startDate?.slice(0,10) },
+        { title: 'End date',  render:(rowData)=>rowData?.semester?.endDate?.slice(0,10)  },        
         { title: 'Action', field: 'action' },
         {
             title:'Activation Status',
@@ -88,7 +93,7 @@ const CourseCohortsList = ():JSX.Element => {
             field: 'internal_action',
             render: (row:CourseCohort) => (
                 <button className="btn btn btn-link" onClick={()=> {handleShow(); setSelectedRow(row);}}>
-                    {row.s_id ? <>Change Semester<AssignmentTurnedIn fontSize="inherit" style={{ fontSize: '20px', color: 'black' }} /></> : <>Assign Semester<AssignmentTurnedIn fontSize="inherit" style={{ fontSize: '20px', color: 'black' }} /></>}
+                    {row.semesterId ? <>Change Semester<AssignmentTurnedIn fontSize="inherit" style={{ fontSize: '20px', color: 'black' }} /></> : <>Assign Semester<AssignmentTurnedIn fontSize="inherit" style={{ fontSize: '20px', color: 'black' }} /></>}
                 </button>
             )
         }
@@ -101,7 +106,7 @@ const CourseCohortsList = ():JSX.Element => {
     const [iserror] = useState(false);
     const [show, setShow] = useState(false);
     const [semester,setSemester]=useState([]);
-    const [semesterId, setSemesterId] = useState('');
+    const [semesterId, setSemesterId] = useState(0);
     const [selectedSemesterId, setSelectedSemesterId] = useState(0);
     const [,setDisabled]=useState(false);
     const [, setSelectedRows] = useState();
@@ -114,7 +119,7 @@ const CourseCohortsList = ():JSX.Element => {
     const programCohortCode = localStorage.getItem('program_cohort_code');
     const [showPublishModal, setShowPublish] = useState(false);
     const [showDialog, setDialog] = useState(false);
-    const [selectedSemester, setSelectedemester] = useState('Please select semester');
+    //const [selectedSemester, setSelectedemester] = useState(0);
     const [narrative, setNarrative] = useState('');
     const [amount, setAmount] = useState(0);
     const [currency,setCurrency] = useState('KES');
@@ -126,12 +131,7 @@ const CourseCohortsList = ():JSX.Element => {
         setLinearDisplay('block');
         console.log(programCohortId);
         
-        axios.get(`${timetablingSrv}/course-cohorts`, {params:{programCohortId: programCohortId }})
-            .then(res => {
-                const ccData = res.data;
-                setData(ccData);
-                setLinearDisplay('none');
-            });
+        fetchCourseCohortsByProgramCohortId();
         axios.get(`${timetablingSrv}/semesters`)
             .then(res => {
                 setSemester(res.data);
@@ -141,7 +141,14 @@ const CourseCohortsList = ():JSX.Element => {
                 alerts.showError(error.message);
             });
     }, []);
-
+    function fetchCourseCohortsByProgramCohortId() {
+        axios.get(`${timetablingSrv}/course-cohorts`, {params:{programCohortId: programCohortId, loadExtras:'course' }})
+            .then(res => {
+                const ccData = res.data;
+                setData(ccData);
+                setLinearDisplay('none');
+            });
+    }
     const fetchCoursesAssignedToProgram = (progId: number): void => {
         setLinearDisplay('block');
         axios.get(`${timetablingSrv}/programs/${progId}courses`)
@@ -177,32 +184,18 @@ const CourseCohortsList = ():JSX.Element => {
         togglePublishModal();
     };
 
-    const assignSemester = (e) => {
-        e.preventDefault();
-        const courseCohort = {
-            'program-cohort-semester': {
-                program_cohort_Id: progId,
-                published:true,
-                semester_id: semesterId
-            }
-        };
-        setCourseCohort(courseCohort);
-    };
-    const setCourseCohort = (semesterData) => {
+
+    const handleAssignSemesterSubmit = (e) => {
         setLinearDisplay('block');
         axios
-            .post(`${timetablingSrv}/course-cohorts`, {
-                'course-cohort': {
-                    programCohortId: selectedRow.pcs_program_cohort_Id,
-                    published:true,
-                    semesterId: parseInt(semesterId),
-                    courseId: selectedRow.cs_id
-                }
+            .patch(`${timetablingSrv}/course-cohorts/${selectedRow.id}`, {
+                semesterId: selectedSemesterId,
+                programCohortId: selectedRow.programCohortId
             })
             .then((res) => {
-                alerts.showSuccess('Succesfully Assigned semester');
+                alerts.showSuccess('Succesfully updated course cohort');
                 setLinearDisplay('none');
-                fetchCoursesAssignedToProgram(progId);
+                fetchCourseCohortsByProgramCohortId();
                 resetStateCloseModal();
             })
             .catch((error) => {
@@ -232,7 +225,7 @@ const CourseCohortsList = ():JSX.Element => {
         };
         setLinearDisplay('block');
         axios
-            .patch(`${timetablingSrv}/course-cohorts/${row.course_cohorts_id}`, courseSemester)
+            .patch(`${timetablingSrv}/course-cohorts/${row.id}`, courseSemester)
             .then(()=>{
                 alerts.showSuccess('Successfully changed semester');
                 setLinearDisplay('none');
@@ -382,9 +375,9 @@ const CourseCohortsList = ():JSX.Element => {
                                 id="semester"
                                 required
                                 errorMessage="Please select semester"
-                                onChange={(e) => setSelectedemester(e.target.value)}
+                                onChange={(e) => setSelectedSemesterId(e.target.value)}
+                                defaultValue = {''}
                             >
-                                <option value={selectedSemester}>{selectedSemester}</option>
                                 {
                                     semesters.map(semester => (
                                         <option key={semester.id} value={semester.id}>{semester.name}</option>
@@ -427,7 +420,7 @@ const CourseCohortsList = ():JSX.Element => {
                 aria-labelledby="contained-modal-title-vcenter"
                 centered>
                 <Modal.Header closeButton>
-                    <Modal.Title id="contained-modal-title-vcenter">Assign semester </Modal.Title>
+                    <Modal.Title id="contained-modal-title-vcenter"> {selectedRow?.semesterId? 'Change semester' : 'Assign a semester' } </Modal.Title>
                 </Modal.Header>
                 <Modal.Body>
                     <ValidationForm>
@@ -435,6 +428,7 @@ const CourseCohortsList = ():JSX.Element => {
                             setSemesterId(e.target.value);
                             setSelectedSemesterId(e.target.value);
                         }} >
+                            <option value="">-- select a semester --</option>
                             {
                                 semester.map(sem => {
                                     return(
@@ -443,10 +437,10 @@ const CourseCohortsList = ():JSX.Element => {
                                 })
                             }
                         </SelectGroup><br></br>
-                        <div className='form-group'>
-                            <Button className='btn btn-info float-right' onClick={(e) => assignSemester(e)}>Submit
-                            </Button>
-                        </div>
+                        
+                        <Button className='btn btn-info float-right' onClick={(e) => handleAssignSemesterSubmit(e)}>Submit
+                        </Button>
+                        
                         <Button className="btn btn-danger float-left" onClick={handleClose}>
                             Close
                         </Button>
