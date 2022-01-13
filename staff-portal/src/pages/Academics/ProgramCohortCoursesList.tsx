@@ -59,22 +59,32 @@ const useStyles = makeStyles({
 });
 const CourseCohortsList = ():JSX.Element => {
     const classes = useStyles();
+    interface course{
+        id: number; // course id
+        name: string; // course name
+    }
+    interface semester{
+        id: number; // semester id
+        name: string; // semester name
+        startDate: string;
+        endDate: string;
+    }
     interface CourseCohort{
-        pcs_program_cohort_Id:number, //program cohort id
-        s_id: number; // semester id
+        semester: semester,
+        course: course,
+        programCohortId:number, //program cohort id
         published:boolean,
-        cs_name:string, // course name
-        cs_id:number, // course id
-        course_cohorts_id:number //course cohort id
+        id: number,
+        isActive: boolean,
     }
     const [selectedRow, setSelectedRow] = useState<CourseCohort>();
     const columns = [
-        { title: 'Course cohort ID', field: 'cc_id', hidden: false },
-        { title: 'Course code', field: 'c_codePrefix' },
-        { title: 'Name', field: 'c_name' },
-        { title: 'Semester name', field: 's_name' },
-        { title: 'Start date', render:(rowData)=>rowData?.s_startDate?.slice(0,10) },
-        { title: 'End date',  render:(rowData)=>rowData?.s_endDate?.slice(0,10)  },        
+        { title: 'Course cohort ID', field: 'id', hidden: false },
+        { title: 'Course code', field: 'course.codePrefix' },
+        { title: 'Name', field: 'course.name' },
+        { title: 'Semester name', field: 'semester.name' },
+        { title: 'Start date', render:(rowData)=>rowData?.startDate?.slice(0,10) },
+        { title: 'End date',  render:(rowData)=>rowData?.endDate?.slice(0,10)  },
         { title: 'Action', field: 'action' },
         {
             title:'Activation Status',
@@ -88,7 +98,7 @@ const CourseCohortsList = ():JSX.Element => {
             field: 'internal_action',
             render: (row:CourseCohort) => (
                 <button className="btn btn btn-link" onClick={()=> {handleShow(); setSelectedRow(row);}}>
-                    {row.s_id ? <>Change Semester<AssignmentTurnedIn fontSize="inherit" style={{ fontSize: '20px', color: 'black' }} /></> : <>Assign Semester<AssignmentTurnedIn fontSize="inherit" style={{ fontSize: '20px', color: 'black' }} /></>}
+                    {row.id ? <>Change Semester<AssignmentTurnedIn fontSize="inherit" style={{ fontSize: '20px', color: 'black' }} /></> : <>Assign Semester<AssignmentTurnedIn fontSize="inherit" style={{ fontSize: '20px', color: 'black' }} /></>}
                 </button>
             )
         }
@@ -126,7 +136,7 @@ const CourseCohortsList = ():JSX.Element => {
         setLinearDisplay('block');
         console.log(programCohortId);
         
-        axios.get(`${timetablingSrv}/course-cohorts`, {params:{programCohortId: programCohortId }})
+        axios.get(`${timetablingSrv}/course-cohorts`, {params:{programCohortId: programCohortId, loadExtras: 'trainer' }})
             .then(res => {
                 const ccData = res.data;
                 setData(ccData);
@@ -193,10 +203,10 @@ const CourseCohortsList = ():JSX.Element => {
         axios
             .post(`${timetablingSrv}/course-cohorts`, {
                 'course-cohort': {
-                    programCohortId: selectedRow.pcs_program_cohort_Id,
+                    programCohortId: selectedRow.programCohortId,
                     published:true,
                     semesterId: parseInt(semesterId),
-                    courseId: selectedRow.cs_id
+                    courseId: selectedRow.course.id
                 }
             })
             .then((res) => {
@@ -232,7 +242,7 @@ const CourseCohortsList = ():JSX.Element => {
         };
         setLinearDisplay('block');
         axios
-            .patch(`${timetablingSrv}/course-cohorts/${row.course_cohorts_id}`, courseSemester)
+            .patch(`${timetablingSrv}/course-cohorts/${row.course.id}`, courseSemester)
             .then(()=>{
                 alerts.showSuccess('Successfully changed semester');
                 setLinearDisplay('none');
