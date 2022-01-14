@@ -245,11 +245,11 @@ const CourseCohortsList = ():JSX.Element => {
     const handleFeeItemsPost = async () => {
         axios
             .post(financeSrv,{'createFeeItemRequest':{
-                    narrative:narrative,
-                    amount: amount,
-                    currency:currency,
-                    programCohortSemesterId: programCohortSemesterId
-                }
+                narrative:narrative,
+                amount: amount,
+                currency:currency,
+                programCohortSemesterId: programCohortSemesterId
+            }
             })
             .then(()=>{
                 alerts.showSuccess('Successfully posted fee items');
@@ -369,9 +369,9 @@ const CourseCohortsList = ():JSX.Element => {
                             <TextInput name='startDate'  id='startDate'  type="date" required /><br />
                             <label htmlFor='Date'><b>Number of slots</b></label><br />
                             <TextInput name='numSlots' id='numSlots' type="text" placeholder="number of slots" required
-                                       onChange={(e)=>{
-                                           console.log(e.target.value);
-                                       }}/><br/>
+                                onChange={(e)=>{
+                                    console.log(e.target.value);
+                                }}/><br/>
                             <label htmlFor='semester'><b>Semester</b></label><br />
                             <SelectGroup
                                 name="semester"
