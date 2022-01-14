@@ -171,6 +171,7 @@
     "@types/validator": "^12.0.1",
     "@typescript-eslint/eslint-plugin": "^5.4.0",
     "@typescript-eslint/parser": "^5.4.0",
+    "eslint-config-sims": "bitbucket:silms/eslint-config-sims",
     "eslint-plugin-react": "^7.27.1",
     "sass": "^1.32.8"
   }

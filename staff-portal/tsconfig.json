@@ -6,8 +6,7 @@
         "skipLibCheck": true,
         "esModuleInterop": true,
         "allowSyntheticDefaultImports": true,
-        "strict": false,
-        "strictNullChecks": false,
+        "strict": true,
         "forceConsistentCasingInFileNames": true,
         "noFallthroughCasesInSwitch": true,
         "module": "esnext",
@@ -16,8 +15,6 @@
         "isolatedModules": true,
         "noEmit": true,
         "jsx": "react-jsx",
-        "noImplicitAny": false,
-        "strictFunctionTypes": false,
         "experimentalDecorators": true
     },
 
