@@ -145,7 +145,7 @@ const CourseCohortsList = ():JSX.Element => {
             });
     }, []);
     function fetchCourseCohortsByProgramCohortId() {
-        axios.get(`${timetablingSrv}/course-cohorts`, {params:{programCohortId: programCohortId, loadExtras:'course' }})
+        axios.get(`${timetablingSrv}/course-cohorts`, {params:{programCohortId: programCohortId, loadExtras:'course,semester' }})
             .then(res => {
                 const ccData = res.data;
                 setData(ccData);
