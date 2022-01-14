@@ -75,10 +75,7 @@ const CourseCohortsList = ():JSX.Element => {
         course: course,
         semesterId: number,
         programCohortId: number,
-        published:boolean,
-        cs_name:string, // course name
-        cs_id:number, // course id
-        course_cohorts_id:number //course cohort id
+        published:boolean
     }
     const [selectedRow, setSelectedRow] = useState<CourseCohort>();
     const columns = [
@@ -137,7 +134,6 @@ const CourseCohortsList = ():JSX.Element => {
     useEffect(() => {
         setLinearDisplay('block');
         console.log(programCohortId);
-        
         fetchCourseCohortsByProgramCohortId();
         axios.get(`${timetablingSrv}/semesters`)
             .then(res => {
@@ -149,7 +145,7 @@ const CourseCohortsList = ():JSX.Element => {
             });
     }, []);
     function fetchCourseCohortsByProgramCohortId() {
-        axios.get(`${timetablingSrv}/course-cohorts`, {params:{programCohortId: programCohortId, loadExtras:'course' }})
+        axios.get(`${timetablingSrv}/course-cohorts`, {params:{programCohortId: programCohortId, loadExtras:'course,semester' }})
             .then(res => {
                 const ccData = res.data;
                 setData(ccData);
@@ -216,7 +212,7 @@ const CourseCohortsList = ():JSX.Element => {
             .then(res => {
                 setLinearDisplay('none');
                 alerts.showSuccess('Succesfully removed course');
-                fetchCoursesAssignedToProgram(progId); 
+                fetchCoursesAssignedToProgram(progId);
             })
             .catch((error) => {
                 console.log(error);
@@ -295,7 +291,7 @@ const CourseCohortsList = ():JSX.Element => {
         height: '30px'
     };
     return (
-        <> 
+        <>
             <Row className="align-items-center page-header">
                 <Col>
                     <Breadcrumb />
@@ -376,7 +372,7 @@ const CourseCohortsList = ():JSX.Element => {
                                 onChange={(e)=>{
                                     console.log(e.target.value);
                                 }}/><br/>
-                            <label htmlFor='semester'><b>Semester</b></label><br />    
+                            <label htmlFor='semester'><b>Semester</b></label><br />
                             <SelectGroup
                                 name="semester"
                                 id="semester"
@@ -398,7 +394,7 @@ const CourseCohortsList = ():JSX.Element => {
                             <label htmlFor='amount'><b>Amount</b></label><br />
                             <TextInput name='amount'  id='amount'  type="number" value = {amount} onChange = {handleAmountChange} required /><br />
 
-                            <label htmlFor='currency'><b>Currency</b></label><br />     
+                            <label htmlFor='currency'><b>Currency</b></label><br />
                             <SelectCurrency style = {selectStyle} name= 'currency' value={currency} onChange={onSelectedCurrency} />
                         </div>
                         <div className='form-group'>
@@ -410,12 +406,12 @@ const CourseCohortsList = ():JSX.Element => {
 
                                 }}
                             >
-                            Publish
+                                Publish
                             </button>
                         </div>
                     </ValidationForm>
                     <button className="btn btn-danger float-right" onClick={togglePublishModal}>
-                                                Close
+                        Close
                     </button>
                 </Modal.Body>
             </Modal>
