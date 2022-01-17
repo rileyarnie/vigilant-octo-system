@@ -16,17 +16,17 @@ export function ApplicationForm (props:IProps) {
         id: number,
         name: string,
     }
-    interface supportingDocuments {
+    interface SupportingDocuments {
         id:number
         documentUrl:string
     }
-    interface nextofKinDetails {
+    interface NextofKinDetails {
         id:number
         name:string
         nextOfKinPhoneNumber:string
         relation:string
     }
-    interface applicationResponse {
+    interface ApplicationResponse {
         firstName: string,
         id: number,
         lastName: string,
@@ -50,8 +50,8 @@ export function ApplicationForm (props:IProps) {
         relation: string,
         documentUrl: string
         programCohortId: number
-        supportingDocuments:supportingDocuments[],
-        nextofKinDetails:nextofKinDetails[]
+        supportingDocuments:SupportingDocuments[],
+        nextofKinDetails:NextofKinDetails[]
     }
 
     const simSrv = Config.baseUrl.simSrv
@@ -81,7 +81,7 @@ export function ApplicationForm (props:IProps) {
     const [countryOfResidence, setCountryOfResidence] = useState('')
     const [documentsUrl, setDocumentsUrl] = useState('')
     const [campuses, setCampuses] = useState([])
-    const [applicationDetails, setApplicationDetails] = useState<applicationResponse>()
+    const [applicationDetails, setApplicationDetails] = useState<ApplicationResponse>()
     const [showUploadModal, setShowUploadModal] = useState(false)
     const programCohortId = JSON.parse(localStorage.getItem('programId') as string)
 
