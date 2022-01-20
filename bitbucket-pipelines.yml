@@ -18,6 +18,7 @@ pipelines:
         - if [ -z "$DIFFED_FILES_TO_LINT" ]; then exit 0; fi
         - npm install
         - npx eslint $DIFFED_FILES_TO_LINT
+        - npm run-script build
 
     - step:
         name: Everything student-portal
@@ -30,6 +31,7 @@ pipelines:
         - if [ -z "$DIFFED_FILES_TO_LINT" ]; then exit 0; fi
         - npm install
         - npx eslint $DIFFED_FILES_TO_LINT
+        - npm run-script build        
 
     - step:
         name: Everything staff-portal
@@ -42,3 +44,5 @@ pipelines:
         - if [ -z "$DIFFED_FILES_TO_LINT" ]; then exit 0; fi
         - npm install
         - npx eslint $DIFFED_FILES_TO_LINT
+        - npm run-script build                
+        
