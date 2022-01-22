@@ -58,7 +58,6 @@ const Department = ():JSX.Element => {
     const columns = [
         { title: 'ID', field: 'id', hidden: true },
         { title: 'Department name', field: 'name' },
-        {title: 'Status', field: 'isActive' },
         {
             title: 'Activation Status',
             field: 'internal_action',
