@@ -117,8 +117,7 @@ const CourseCohortSemester = ():JSX.Element => {
     useEffect(() => {
         axios.get(`${timetablingSrv}/course-cohorts`,{params:{studentId:studentId, programCohortId:programCohortId, loadExtras:'course,semester'}})
             .then(res => {
-                const myData:any[] = res.data;
-                console.log(myData);
+                const myData = res.data;
                 const uniqueSemIds = myData.map((v:course) => v.semester.id)
                     .filter((value, index, self) => self.indexOf(value) === index);
                 const semesterData = uniqueSemIds.map(semId=> {
