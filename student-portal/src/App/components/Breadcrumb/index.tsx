@@ -15,7 +15,7 @@ class Breadcrumb extends Component<BreadcrumbState> {
       main: {} as MenuItemType,
       item: {} as MenuItemType
   };
-  componentDidMount() {
+  componentDidMount(): void {
       navigation.items.map((item: MenuItemType) => {
           if (item.type && item.type === 'group') {
               this.getCollapse(item);
