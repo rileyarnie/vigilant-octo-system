@@ -48,12 +48,12 @@ const tableIcons: Icons = {
     ViewColumn: forwardRef((props, ref) => <ViewColumn {...props} ref={ref} />)
 };
 const CourseCohortSemester = ():JSX.Element => {
-    interface semester {
+    interface Semester {
         id: number;
         name: string;
     }
-    interface course {
-        semester: semester;
+    interface Course {
+        semester: Semester;
         id: number;
         name: string;
         codePrefix: string;
@@ -74,7 +74,7 @@ const CourseCohortSemester = ():JSX.Element => {
         { title: 'ID', field: 'course.id' },
         { title: 'Course Code', field: 'course.codePrefix' },
         { title: 'Course Name', field:'course.name' },
-        { title: 'Registration status',  render:(row:course)=> (
+        { title: 'Registration status',  render:(row:Course)=> (
             <p>{row.isRegistered === RegistrationStatus.registered  ? 'Registered' :  'not registered'}</p>
         )
         },
@@ -97,7 +97,7 @@ const CourseCohortSemester = ():JSX.Element => {
         }
     ];
     const [data, setData] = useState([]);
-    const [childData, setChildData] = useState(new Map<number,course[]>());
+    const [childData, setChildData] = useState(new Map<number,Course[]>());
     const timetablingSrv = Config.baseUrl.timetablingSrv;
     const simsSrv = Config.baseUrl.simsSrv;
     const [isError] = useState(false);
@@ -118,16 +118,16 @@ const CourseCohortSemester = ():JSX.Element => {
         axios.get(`${timetablingSrv}/course-cohorts`,{params:{studentId:studentId, programCohortId:programCohortId, loadExtras:'course,semester'}})
             .then(res => {
                 const myData = res.data;
-                const uniqueSemIds = myData.map((v:course) => v.semester.id)
+                const uniqueSemIds = myData.map((v:Course) => v.semester.id)
                     .filter((value, index, self) => self.indexOf(value) === index);
                 const semesterData = uniqueSemIds.map(semId=> {
-                    const cc = myData.filter((v:course) => v.semester.id === semId )[0];
+                    const cc = myData.filter((v:Course) => v.semester.id === semId )[0];
                     return {id: cc.semester.id, name: cc.semester.name, startDate: cc.semester.startDate, endDate: cc.semester.endDate};
                 });
                 setData(semesterData);
-                const childData = new Map<number, course[]>();
+                const childData = new Map<number, Course[]>();
                 uniqueSemIds.forEach(semId => {
-                    const courses = myData.filter((v:course) => v.semester.id === semId);
+                    const courses = myData.filter((v:Course) => v.semester.id === semId);
                     childData.set(semId, courses);
                 });
                 setChildData(childData);
