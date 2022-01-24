@@ -48,14 +48,15 @@ const tableIcons: Icons = {
     ViewColumn: forwardRef((props, ref) => <ViewColumn {...props} ref={ref} />)
 };
 const CourseCohortSemester = ():JSX.Element => {
-    interface sem {
-        s_id: number;
-        s_name: string;
+    interface Semester {
+        id: number;
+        name: string;
     }
-    interface course {
-        c_id: number;
-        c_name: string;
-        c_codePrefix: string;
+    interface Course {
+        semester: Semester;
+        id: number;
+        name: string;
+        codePrefix: string;
         isRegistered:string;
 
     }
@@ -64,16 +65,16 @@ const CourseCohortSemester = ():JSX.Element => {
         deferred = 'deferred',
     }
     const columns = [
-        { title: 'ID', field: 's_id' },
-        { title: 'Semester name', field: 's_name' },
-        { title: 'Start Date', render:(row)=>row.s_startDate.slice(0,10) },
-        { title: 'End Date', render:(row)=>row.s_endDate.slice(0,10) },
+        { title: 'ID', field: 'id' },
+        { title: 'Semester name', field: 'name' },
+        { title: 'Start Date', render:(row)=>row.startDate.slice(0,10) },
+        { title: 'End Date', render:(row)=>row.endDate.slice(0,10) },
     ];
     const childColumns = [
-        { title: 'ID', field: 'c_id' },
-        { title: 'Course Code', field: 'c_codePrefix' },
-        { title: 'Course Name', field:'c_name' },
-        { title: 'Registration status',  render:(row:course)=> (
+        { title: 'ID', field: 'course.id' },
+        { title: 'Course Code', field: 'course.codePrefix' },
+        { title: 'Course Name', field:'course.name' },
+        { title: 'Registration status',  render:(row:Course)=> (
             <p>{row.isRegistered === RegistrationStatus.registered  ? 'Registered' :  'not registered'}</p>
         )
         },
@@ -96,7 +97,7 @@ const CourseCohortSemester = ():JSX.Element => {
         }
     ];
     const [data, setData] = useState([]);
-    const [childData, setChildData] = useState(new Map<number,course[]>());
+    const [childData, setChildData] = useState(new Map<number,Course[]>());
     const timetablingSrv = Config.baseUrl.timetablingSrv;
     const simsSrv = Config.baseUrl.simsSrv;
     const [isError] = useState(false);
@@ -114,20 +115,19 @@ const CourseCohortSemester = ():JSX.Element => {
 
 
     useEffect(() => {
-        axios.get(`${timetablingSrv}/course-cohorts`,{params:{studentId:studentId, programCohortId:programCohortId}})
+        axios.get(`${timetablingSrv}/course-cohorts`,{params:{studentId:studentId, programCohortId:programCohortId, loadExtras:'course,semester'}})
             .then(res => {
-                delete(res.data.isPublished);
-                const myData:any[] = Object.values(res.data);
-                const uniqueSemIds = myData.map((v:sem) => v.s_id)
+                const myData = res.data;
+                const uniqueSemIds = myData.map((v:Course) => v.semester.id)
                     .filter((value, index, self) => self.indexOf(value) === index);
                 const semesterData = uniqueSemIds.map(semId=> {
-                    const cc = myData.filter((v:sem) => v.s_id === semId )[0];
-                    return {s_id: cc.s_id, s_name: cc.s_name, s_startDate: cc.s_startDate, s_endDate: cc.s_endDate};
+                    const cc = myData.filter((v:Course) => v.semester.id === semId )[0];
+                    return {id: cc.semester.id, name: cc.semester.name, startDate: cc.semester.startDate, endDate: cc.semester.endDate};
                 });
                 setData(semesterData);
-                const childData = new Map<number, course[]>();
+                const childData = new Map<number, Course[]>();
                 uniqueSemIds.forEach(semId => {
-                    const courses = myData.filter((v:sem) => v.s_id === semId);
+                    const courses = myData.filter((v:Course) => v.semester.id === semId);
                     childData.set(semId, courses);
                 });
                 setChildData(childData);
@@ -230,7 +230,7 @@ const CourseCohortSemester = ():JSX.Element => {
                                                 title='Course Cohorts'
                                                 icons={tableIcons}
                                                 columns={childColumns}
-                                                data={childData.get(row.s_id)}
+                                                data={childData.get(row.id)}
                                             />
                                         );
                                     }
