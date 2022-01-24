@@ -17,6 +17,16 @@ export function ApplicationForm (props:IProps) {
         id: number,
         name: string,
     }
+    interface SupportingDocuments {
+        id:number
+        documentUrl:string
+    }
+    interface NextofKinDetails {
+        id:number
+        name:string
+        nextOfKinPhoneNumber:string
+        relation:string
+    }
     interface ApplicationResponse {
         firstName: string,
         id: number,
@@ -36,14 +46,13 @@ export function ApplicationForm (props:IProps) {
         campus: string,
         sponsor: string,
         countryOfResidence: string,
-        nkd_name: string,
-        nkd_nextOfKinPhoneNumber: string,
-        nkd_relation: string,
-        nkd_id: number,
-        sdocs_documentUrl: string,
-        sdocs_id: number,
-        sdocs_applicationId: number,
+        name: string,
+        nextOfKinPhoneNumber: string,
+        relation: string,
+        documentUrl: string
         programCohortId: number
+        supportingDocuments:SupportingDocuments[],
+        nextofKinDetails:NextofKinDetails[]
     }
 
     const simSrv = Config.baseUrl.simSrv
@@ -400,16 +409,22 @@ export function ApplicationForm (props:IProps) {
                                     <Row>
                                         <div className="col-md-6">
                                             <h6>Next of Kin Details</h6>
-                                            <ListGroup key={applicationDetails?.nkd_id}>
-                                                <ListGroup.Item>Name: {applicationDetails?.nkd_name}</ListGroup.Item>
-                                                <ListGroup.Item>Phone Number: {applicationDetails?.nkd_nextOfKinPhoneNumber}</ListGroup.Item>
-                                                <ListGroup.Item>Relation: {applicationDetails?.nkd_relation}</ListGroup.Item>
+                                            {
+                                            applicationDetails?.nextofKinDetails.map((details) => (
+                                            <ListGroup key={details.id}>
+                                                <ListGroup.Item>Name: {details.name}</ListGroup.Item>
+                                                <ListGroup.Item>Phone Number: {details.nextOfKinPhoneNumber}</ListGroup.Item>
+                                                <ListGroup.Item>Relation: {details.relation}</ListGroup.Item>
                                             </ListGroup>
+                                            ))}
                                         </div>
                                         <div className="col-md-6">
-                                            <ListGroup key={applicationDetails?.sdocs_id}>
-                                                <ListGroup.Item>Document Url: {applicationDetails?.sdocs_documentUrl}</ListGroup.Item>
+                                            {
+                                               applicationDetails?.supportingDocuments.map((doc) => (
+                                            <ListGroup key={doc.id}>
+                                                <ListGroup.Item>Document Url: {doc.documentUrl}</ListGroup.Item>
                                             </ListGroup>
+                                               ))}
                                         </div>
                                     </Row>
                                     <Button className="btn btn-danger btn-rounded float-right" onClick={handleClose}>
