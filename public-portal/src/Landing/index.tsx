@@ -27,7 +27,7 @@ const LandingPage = () => {
                                   setAuthState
                                 }}
                             >
-                                <Nav.Link href="home">Home</Nav.Link>
+                                <Nav.Link href="#">Home</Nav.Link>
                                 <Nav.Link>
                                     <Login></Login>
                                 </Nav.Link>
