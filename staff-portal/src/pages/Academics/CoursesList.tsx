@@ -147,7 +147,6 @@ const CoursesList = ():JSX.Element => {
     const columns = [
         { title: 'ID', field: 'id' },
         { title: 'Course name', field: 'name' },
-        { title: 'Status', field: 'activation_status' },
         {
             title: 'Toggle Activation Status',
             field: 'internal_action',
