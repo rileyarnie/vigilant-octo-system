@@ -18,24 +18,24 @@ export function ApplicationForm (props:IProps) {
         name: string,
     }
     interface ApplicationResponse {
-        applications_firstName: string,
-        applications_id: number,
-        applications_lastName: string,
-        applications_otherName: string,
-        applications_nationality: string,
-        applications_identification: string,
-        applications_gender: string,
-        applications_maritalStatus: string,
-        applications_religion: string,
-        applications_dateOfBirth: Date,
-        applications_placeofBirth: string,
-        applications_phoneNumber: string,
-        applications_emailAddress: string,
-        applications_physicalChallenges: string,
-        applications_courseStartDate: string,
-        applications_campus: string,
-        applications_sponsor: string,
-        applications_countryOfResidence: string,
+        firstName: string,
+        id: number,
+        lastName: string,
+        otherName: string,
+        nationality: string,
+        identification: string,
+        gender: string,
+        maritalStatus: string,
+        religion: string,
+        dateOfBirth: Date,
+        placeofBirth: string,
+        phoneNumber: string,
+        emailAddress: string,
+        physicalChallenges: string,
+        courseStartDate: string,
+        campus: string,
+        sponsor: string,
+        countryOfResidence: string,
         nkd_name: string,
         nkd_nextOfKinPhoneNumber: string,
         nkd_relation: string,
@@ -146,6 +146,7 @@ export function ApplicationForm (props:IProps) {
       axios
         .post(`${simSrv}/program-cohort-applications`, applicationData)
         .then((res) => {
+          console.log(res.data)
           setApplicationDetails(res.data)
           setShow(true)
         })
@@ -365,34 +366,34 @@ export function ApplicationForm (props:IProps) {
                                 aria-labelledby="contained-modal-title-vcenter"
                                 centered>
                                 <Modal.Header closeButton>
-                                    <Modal.Title id="contained-modal-title-vcenter">Thank you <i color="red">{applicationDetails?.applications_firstName} {applicationDetails?.applications_lastName}</i> for your application</Modal.Title>
+                                    <Modal.Title id="contained-modal-title-vcenter">Thank you <i color="red">{applicationDetails?.firstName} {applicationDetails?.lastName}</i> for your application</Modal.Title>
                                 </Modal.Header>
                                 <Modal.Body>
-                                    <h6>Application Id: {applicationDetails?.applications_id}</h6>
+                                    <h6>Application Id: {applicationDetails?.id}</h6>
                                     <Row>
                                         <div className="col-md-6">
                                             <ListGroup>
-                                                <ListGroup.Item>First Name: {applicationDetails?.applications_firstName}</ListGroup.Item>
-                                                <ListGroup.Item>Last Name: {applicationDetails?.applications_lastName}</ListGroup.Item>
-                                                <ListGroup.Item>Other Name: {applicationDetails?.applications_otherName}</ListGroup.Item>
-                                                <ListGroup.Item>Nationality: {applicationDetails?.applications_nationality}</ListGroup.Item>
-                                                <ListGroup.Item>Identification: {applicationDetails?.applications_identification}</ListGroup.Item>
-                                                <ListGroup.Item>Gender: {applicationDetails?.applications_gender}</ListGroup.Item>
-                                                <ListGroup.Item>Marital Status: {applicationDetails?.applications_maritalStatus}</ListGroup.Item>
-                                                <ListGroup.Item>Religion: {applicationDetails?.applications_religion}</ListGroup.Item>
-                                                <ListGroup.Item>Date Of Birth: {applicationDetails?.applications_dateOfBirth}</ListGroup.Item>
+                                                <ListGroup.Item>First Name: {applicationDetails?.firstName}</ListGroup.Item>
+                                                <ListGroup.Item>Last Name: {applicationDetails?.lastName}</ListGroup.Item>
+                                                <ListGroup.Item>Other Name: {applicationDetails?.otherName}</ListGroup.Item>
+                                                <ListGroup.Item>Nationality: {applicationDetails?.nationality}</ListGroup.Item>
+                                                <ListGroup.Item>Identification: {applicationDetails?.identification}</ListGroup.Item>
+                                                <ListGroup.Item>Gender: {applicationDetails?.gender}</ListGroup.Item>
+                                                <ListGroup.Item>Marital Status: {applicationDetails?.maritalStatus}</ListGroup.Item>
+                                                <ListGroup.Item>Religion: {applicationDetails?.religion}</ListGroup.Item>
+                                                <ListGroup.Item>Date Of Birth: {applicationDetails?.dateOfBirth}</ListGroup.Item>
                                             </ListGroup>
                                         </div>
                                         <div className="col-md-6">
                                             <ListGroup>
-                                                <ListGroup.Item>Place of Birth: {applicationDetails?.applications_placeofBirth}</ListGroup.Item>
-                                                <ListGroup.Item>Phone Number: {applicationDetails?.applications_phoneNumber}</ListGroup.Item>
-                                                <ListGroup.Item>Email Address: {applicationDetails?.applications_emailAddress}</ListGroup.Item>
-                                                <ListGroup.Item>Physical Challenges: {applicationDetails?.applications_physicalChallenges}</ListGroup.Item>
-                                                <ListGroup.Item>Course Start Date: {applicationDetails?.applications_courseStartDate}</ListGroup.Item>
-                                                <ListGroup.Item>Campus: {applicationDetails?.applications_campus}</ListGroup.Item>
-                                                <ListGroup.Item>Sponsor: {applicationDetails?.applications_sponsor}</ListGroup.Item>
-                                                <ListGroup.Item>Country Of Residence: {applicationDetails?.applications_countryOfResidence}</ListGroup.Item>
+                                                <ListGroup.Item>Place of Birth: {applicationDetails?.placeofBirth}</ListGroup.Item>
+                                                <ListGroup.Item>Phone Number: {applicationDetails?.phoneNumber}</ListGroup.Item>
+                                                <ListGroup.Item>Email Address: {applicationDetails?.emailAddress}</ListGroup.Item>
+                                                <ListGroup.Item>Physical Challenges: {applicationDetails?.physicalChallenges}</ListGroup.Item>
+                                                <ListGroup.Item>Course Start Date: {applicationDetails?.courseStartDate}</ListGroup.Item>
+                                                <ListGroup.Item>Campus: {applicationDetails?.campus}</ListGroup.Item>
+                                                <ListGroup.Item>Sponsor: {applicationDetails?.sponsor}</ListGroup.Item>
+                                                <ListGroup.Item>Country Of Residence: {applicationDetails?.countryOfResidence}</ListGroup.Item>
                                             </ListGroup>
                                         </div>
                                     </Row><br/>
