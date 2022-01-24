@@ -1,3 +1,4 @@
+/* eslint-disable camelcase */
 // eslint-disable-next-line no-use-before-define
 import React, { useEffect, useState } from 'react'
 import { Card, Row, Col, ListGroup, Modal, Button } from 'react-bootstrap'
@@ -16,42 +17,33 @@ export function ApplicationForm (props:IProps) {
         id: number,
         name: string,
     }
-    interface SupportingDocuments {
-        id:number
-        documentUrl:string
-    }
-    interface NextofKinDetails {
-        id:number
-        name:string
-        nextOfKinPhoneNumber:string
-        relation:string
-    }
     interface ApplicationResponse {
-        firstName: string,
-        id: number,
-        lastName: string,
-        otherName: string,
-        nationality: string,
-        identification: string,
-        gender: string,
-        maritalStatus: string,
-        religion: string,
-        dateOfBirth: Date,
-        placeofBirth: string,
-        phoneNumber: string,
-        emailAddress: string,
-        physicalChallenges: string,
-        courseStartDate: string,
-        campus: string,
-        sponsor: string,
-        countryOfResidence: string,
-        name: string,
-        nextOfKinPhoneNumber: string,
-        relation: string,
-        documentUrl: string
+        applications_firstName: string,
+        applications_id: number,
+        applications_lastName: string,
+        applications_otherName: string,
+        applications_nationality: string,
+        applications_identification: string,
+        applications_gender: string,
+        applications_maritalStatus: string,
+        applications_religion: string,
+        applications_dateOfBirth: Date,
+        applications_placeofBirth: string,
+        applications_phoneNumber: string,
+        applications_emailAddress: string,
+        applications_physicalChallenges: string,
+        applications_courseStartDate: string,
+        applications_campus: string,
+        applications_sponsor: string,
+        applications_countryOfResidence: string,
+        nkd_name: string,
+        nkd_nextOfKinPhoneNumber: string,
+        nkd_relation: string,
+        nkd_id: number,
+        sdocs_documentUrl: string,
+        sdocs_id: number,
+        sdocs_applicationId: number,
         programCohortId: number
-        supportingDocuments:SupportingDocuments[],
-        nextofKinDetails:NextofKinDetails[]
     }
 
     const simSrv = Config.baseUrl.simSrv
@@ -373,56 +365,50 @@ export function ApplicationForm (props:IProps) {
                                 aria-labelledby="contained-modal-title-vcenter"
                                 centered>
                                 <Modal.Header closeButton>
-                                    <Modal.Title id="contained-modal-title-vcenter">Thank you <i color="red">{applicationDetails?.firstName} {applicationDetails?.lastName}</i> for your application</Modal.Title>
+                                    <Modal.Title id="contained-modal-title-vcenter">Thank you <i color="red">{applicationDetails?.applications_firstName} {applicationDetails?.applications_lastName}</i> for your application</Modal.Title>
                                 </Modal.Header>
                                 <Modal.Body>
-                                    <h6>Application Id: {applicationDetails?.id}</h6>
+                                    <h6>Application Id: {applicationDetails?.applications_id}</h6>
                                     <Row>
                                         <div className="col-md-6">
                                             <ListGroup>
-                                                <ListGroup.Item>First Name: {applicationDetails?.firstName}</ListGroup.Item>
-                                                <ListGroup.Item>Last Name: {applicationDetails?.lastName}</ListGroup.Item>
-                                                <ListGroup.Item>Other Name: {applicationDetails?.otherName}</ListGroup.Item>
-                                                <ListGroup.Item>Nationality: {applicationDetails?.nationality}</ListGroup.Item>
-                                                <ListGroup.Item>Identification: {applicationDetails?.identification}</ListGroup.Item>
-                                                <ListGroup.Item>Gender: {applicationDetails?.gender}</ListGroup.Item>
-                                                <ListGroup.Item>Marital Status: {applicationDetails?.maritalStatus}</ListGroup.Item>
-                                                <ListGroup.Item>Religion: {applicationDetails?.religion}</ListGroup.Item>
-                                                <ListGroup.Item>Date Of Birth: {applicationDetails?.dateOfBirth}</ListGroup.Item>
+                                                <ListGroup.Item>First Name: {applicationDetails?.applications_firstName}</ListGroup.Item>
+                                                <ListGroup.Item>Last Name: {applicationDetails?.applications_lastName}</ListGroup.Item>
+                                                <ListGroup.Item>Other Name: {applicationDetails?.applications_otherName}</ListGroup.Item>
+                                                <ListGroup.Item>Nationality: {applicationDetails?.applications_nationality}</ListGroup.Item>
+                                                <ListGroup.Item>Identification: {applicationDetails?.applications_identification}</ListGroup.Item>
+                                                <ListGroup.Item>Gender: {applicationDetails?.applications_gender}</ListGroup.Item>
+                                                <ListGroup.Item>Marital Status: {applicationDetails?.applications_maritalStatus}</ListGroup.Item>
+                                                <ListGroup.Item>Religion: {applicationDetails?.applications_religion}</ListGroup.Item>
+                                                <ListGroup.Item>Date Of Birth: {applicationDetails?.applications_dateOfBirth}</ListGroup.Item>
                                             </ListGroup>
                                         </div>
                                         <div className="col-md-6">
                                             <ListGroup>
-                                                <ListGroup.Item>Place of Birth: {applicationDetails?.placeofBirth}</ListGroup.Item>
-                                                <ListGroup.Item>Phone Number: {applicationDetails?.phoneNumber}</ListGroup.Item>
-                                                <ListGroup.Item>Email Address: {applicationDetails?.emailAddress}</ListGroup.Item>
-                                                <ListGroup.Item>Physical Challenges: {applicationDetails?.physicalChallenges}</ListGroup.Item>
-                                                <ListGroup.Item>Course Start Date: {applicationDetails?.courseStartDate}</ListGroup.Item>
-                                                <ListGroup.Item>Campus: {applicationDetails?.campus}</ListGroup.Item>
-                                                <ListGroup.Item>Sponsor: {applicationDetails?.sponsor}</ListGroup.Item>
-                                                <ListGroup.Item>Country Of Residence: {applicationDetails?.countryOfResidence}</ListGroup.Item>
+                                                <ListGroup.Item>Place of Birth: {applicationDetails?.applications_placeofBirth}</ListGroup.Item>
+                                                <ListGroup.Item>Phone Number: {applicationDetails?.applications_phoneNumber}</ListGroup.Item>
+                                                <ListGroup.Item>Email Address: {applicationDetails?.applications_emailAddress}</ListGroup.Item>
+                                                <ListGroup.Item>Physical Challenges: {applicationDetails?.applications_physicalChallenges}</ListGroup.Item>
+                                                <ListGroup.Item>Course Start Date: {applicationDetails?.applications_courseStartDate}</ListGroup.Item>
+                                                <ListGroup.Item>Campus: {applicationDetails?.applications_campus}</ListGroup.Item>
+                                                <ListGroup.Item>Sponsor: {applicationDetails?.applications_sponsor}</ListGroup.Item>
+                                                <ListGroup.Item>Country Of Residence: {applicationDetails?.applications_countryOfResidence}</ListGroup.Item>
                                             </ListGroup>
                                         </div>
                                     </Row><br/>
                                     <Row>
                                         <div className="col-md-6">
                                             <h6>Next of Kin Details</h6>
-                                            {
-                                            applicationDetails?.nextofKinDetails.map((details) => (
-                                            <ListGroup key={details.id}>
-                                                <ListGroup.Item>Name: {details.name}</ListGroup.Item>
-                                                <ListGroup.Item>Phone Number: {details.nextOfKinPhoneNumber}</ListGroup.Item>
-                                                <ListGroup.Item>Relation: {details.relation}</ListGroup.Item>
+                                            <ListGroup key={applicationDetails?.nkd_id}>
+                                                <ListGroup.Item>Name: {applicationDetails?.nkd_name}</ListGroup.Item>
+                                                <ListGroup.Item>Phone Number: {applicationDetails?.nkd_nextOfKinPhoneNumber}</ListGroup.Item>
+                                                <ListGroup.Item>Relation: {applicationDetails?.nkd_relation}</ListGroup.Item>
                                             </ListGroup>
-                                            ))}
                                         </div>
                                         <div className="col-md-6">
-                                            {
-                                               applicationDetails?.supportingDocuments.map((doc) => (
-                                            <ListGroup key={doc.id}>
-                                                <ListGroup.Item>Document Url: {doc.documentUrl}</ListGroup.Item>
+                                            <ListGroup key={applicationDetails?.sdocs_id}>
+                                                <ListGroup.Item>Document Url: {applicationDetails?.sdocs_documentUrl}</ListGroup.Item>
                                             </ListGroup>
-                                               ))}
                                         </div>
                                     </Row>
                                     <Button className="btn btn-danger btn-rounded float-right" onClick={handleClose}>
