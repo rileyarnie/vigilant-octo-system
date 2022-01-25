@@ -1,3 +1,4 @@
+/* eslint-disable camelcase */
 // eslint-disable-next-line no-use-before-define
 import React, { useEffect, useState } from 'react'
 import { Card, Row, Col, ListGroup, Modal, Button } from 'react-bootstrap'
@@ -154,6 +155,7 @@ export function ApplicationForm (props:IProps) {
       axios
         .post(`${simSrv}/program-cohort-applications`, applicationData)
         .then((res) => {
+          console.log(res.data)
           setApplicationDetails(res.data)
           setShow(true)
         })
