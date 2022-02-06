@@ -1,9 +1,0 @@
-extends:
-  - eslint-config-sims
-  - plugin:react/recommended
-plugins:
-  - react
-  - '@typescript-eslint'
-settings:
-    react:
-      version: "detect"
