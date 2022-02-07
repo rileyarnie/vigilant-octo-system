@@ -123,6 +123,20 @@ const chartData: { items: MenuItemType[] } = {
                             type: 'item',
                             url: '/applications'
                         },
+                        {
+                            id: 'timetable',
+                            title: 'Timetable',
+                            type: 'collapse',
+                            icon: 'feather icon-calendar',
+                            children: [
+                                {
+                                    id: 'timetable',
+                                    title: 'Edit Timetable',
+                                    type: 'item',
+                                    url: '/timetable'
+                                }
+                            ]
+                        }
                     ]
                 }
 
