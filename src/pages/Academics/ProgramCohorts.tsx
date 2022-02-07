@@ -131,7 +131,7 @@ const ProgramCohorts = ():JSX.Element => {
         {title:'Campus Name',field:'cmps_name'},
         {title:'Requires Clearance',field:'pg_requiresClearance'},
         {title:'Duration',field:'pg_duration'},
-        {title:'Certification Type', field: 'pg_certificationType' },        
+        {title:'Certification Type', field: 'pg_certificationType' },
         {title:'Start Date', render:(rowData)=>rowData.program_cohorts_startDate.slice(0,10)},
 
         {
@@ -155,22 +155,32 @@ const ProgramCohorts = ():JSX.Element => {
             render: (row) => (
                 <Select>
                     <button className="btn btn btn-link"
-                        onClick={() => {
-                            setCohortId(row.program_cohorts_id);
-                            toggleCreateModal();
-                            setSelectedProgramCohort(row);
-                        }}>
+                            onClick={() => {
+                                setCohortId(row.program_cohorts_id);
+                                toggleCreateModal();
+                                setSelectedProgramCohort(row);
+                            }}>
                         <MenuItem value="Edit">Edit</MenuItem>
                     </button>
                     <Link to='/cohortscourses'
-                        onClick={() => {
-                            localStorage.setItem('programId', row.pg_id);
-                            localStorage.setItem('programName', row.pg_name);
-                            localStorage.setItem('programCohortId', row.program_cohorts_id);
-                            localStorage.setItem('program_cohort_code', row.program_cohorts_code);
-                            localStorage.setItem('anticipatedGraduation', `${row.program_cohorts_anticipatedGraduationMonth}/${row.program_cohorts_anticipatedGraduationYear}`);
-                        }}>
+                          onClick={() => {
+                              localStorage.setItem('programId', row.pg_id);
+                              localStorage.setItem('programName', row.pg_name);
+                              localStorage.setItem('programCohortId', row.program_cohorts_id);
+                              localStorage.setItem('program_cohort_code', row.program_cohorts_code);
+                              localStorage.setItem('anticipatedGraduation', `${row.program_cohorts_anticipatedGraduationMonth}/${row.program_cohorts_anticipatedGraduationYear}`);
+                          }}>
                         <MenuItem value="View courses">View courses</MenuItem>
+                    </Link>
+                    <Link to='/programCohortSemesters'
+                          onClick={() => {
+                              localStorage.setItem('programId', row.pg_id);
+                              localStorage.setItem('programName', row.pg_name);
+                              localStorage.setItem('programCohortId', row.program_cohorts_id);
+                              localStorage.setItem('program_cohort_code', row.program_cohorts_code);
+                              localStorage.setItem('anticipatedGraduation', `${row.program_cohorts_anticipatedGraduationMonth}/${row.program_cohorts_anticipatedGraduationYear}`);
+                          }}>
+                        <MenuItem value="View semesters">View semesters</MenuItem>
                     </Link>
                 </Select>
             )
@@ -320,7 +330,7 @@ const ProgramCohorts = ():JSX.Element => {
         return programs.filter(program => {
             return program.id === id;
         }).map(name => name.name)[0];
-    }; 
+    };
 
     const getMonthYear = (month:number, year:number) => {
         const date = new Date (year, month);
@@ -342,7 +352,7 @@ const ProgramCohorts = ():JSX.Element => {
                     </Button>
                 </Col>
             </Row>
-            <LinearProgress  style={{display: linearDisplay}} /> 
+            <LinearProgress  style={{display: linearDisplay}} />
             <Row>
                 <Col>
                     <Card>
@@ -356,7 +366,7 @@ const ProgramCohorts = ():JSX.Element => {
                             }
                         </div>
                         <MaterialTable
-                            title='Program Cohorts' 
+                            title='Program Cohorts'
                             icons={tableIcons}
                             columns={columns}
                             data={data}
@@ -383,11 +393,11 @@ const ProgramCohorts = ():JSX.Element => {
                                 <div className="form-group">
                                     <label htmlFor="cohortName"><b>{cohortId? 'Select a new program for this cohort' : 'Select a program' }</b></label>
                                     <SelectGroup name="program" id="program" required
-                                        errorMessage="Please select a Program."
-                                        onChange={(e)=>{
-                                            setSelectedProgramId(e.target.value);
-                                            setProgramId(parseInt(e.target.value));
-                                        }}>
+                                                 errorMessage="Please select a Program."
+                                                 onChange={(e)=>{
+                                                     setSelectedProgramId(e.target.value);
+                                                     setProgramId(parseInt(e.target.value));
+                                                 }}>
                                         <option defaultValue={cohortId?selectedProgramCohort.pg_id:selectedProgramId} value="">-- Select a program --</option>
                                         {programs.map((program)=>{
                                             return <option key={program.name} value={program.id}>{program.name}</option>;
@@ -395,11 +405,11 @@ const ProgramCohorts = ():JSX.Element => {
                                     </SelectGroup><br/>
                                     <label htmlFor="cohortName"><b>{cohortId? 'Select a new campus for this cohort' : 'Select a campus' }</b></label>
                                     <SelectGroup name="campus" id="campus" required
-                                        errorMessage="Please select a Program."
-                                        onChange={(e)=>{
-                                            setSelectedCampusId(e.target.value);
-                                            setCampusId(parseInt(e.target.value));
-                                        }}>
+                                                 errorMessage="Please select a Program."
+                                                 onChange={(e)=>{
+                                                     setSelectedCampusId(e.target.value);
+                                                     setCampusId(parseInt(e.target.value));
+                                                 }}>
                                         <option defaultValue={cohortId?selectedProgramCohort.pg_id:selectedCampusId} value="">-- Select a Campus --</option>
                                         {campus.map((campus)=>{
                                             return <option key={campus.name} value={campus.id}>{campus.name}</option>;
@@ -407,40 +417,40 @@ const ProgramCohorts = ():JSX.Element => {
                                     </SelectGroup><br/>
                                     <label htmlFor='Date'><b>Start Date</b></label><br/>
                                     <TextInput name='startDate' id='startDate' type="date" required
-                                        defaultValue={cohortId? selectedProgramCohort.program_cohorts_startDate.slice(0,10) : selectedStartDate}
-                                        onChange={(e)=>{
-                                            setStartDate(e.target.value);
-                                        }}/><br/>
+                                               defaultValue={cohortId? selectedProgramCohort.program_cohorts_startDate.slice(0,10) : selectedStartDate}
+                                               onChange={(e)=>{
+                                                   setStartDate(e.target.value);
+                                               }}/><br/>
                                     <label htmlFor='Date'><b>Anticipated Graduation Date</b></label><br/>
                                     <TextInput name='graduationDate' id='graduationDate' type="month" required
-                                        defaultValue={cohortId? getMonthYear(selectedProgramCohort.program_cohorts_anticipatedGraduationMonth,selectedProgramCohort.program_cohorts_anticipatedGraduationYear) : selectedGraduationDate }
-                                        onChange={(e)=>{
-                                            setGraduationDate(e.target.value);
-                                        }}/><br/>
+                                               defaultValue={cohortId? getMonthYear(selectedProgramCohort.program_cohorts_anticipatedGraduationMonth,selectedProgramCohort.program_cohorts_anticipatedGraduationYear) : selectedGraduationDate }
+                                               onChange={(e)=>{
+                                                   setGraduationDate(e.target.value);
+                                               }}/><br/>
                                     <label htmlFor="cohortName"><b>Description</b></label>
                                     <TextInput name='description' minLength="4" id='description'
-                                        defaultValue={cohortId?selectedProgramCohort.program_cohorts_advertDescription : selectedDescription}
-                                        type="text" placeholder={cohortId?setDescription:description}
-                                        required multiline rows="3"
-                                        onChange={(e)=>{
-                                            setDescription(e.target.value);
-                                        }}/><br/>
+                                               defaultValue={cohortId?selectedProgramCohort.program_cohorts_advertDescription : selectedDescription}
+                                               type="text" placeholder={cohortId?setDescription:description}
+                                               required multiline rows="3"
+                                               onChange={(e)=>{
+                                                   setDescription(e.target.value);
+                                               }}/><br/>
                                     <label htmlFor="cohortName"><b>Banner Image</b></label><br />
                                     <button className="btn btn-primary" onClick={(e) => {
                                         e.preventDefault();
                                         setShowUploadModal(true);}}>
                                         Add image
                                     </button>
-                                    
+
                                 </div>
                                 <input name='banner' id='banner' type="hidden" required value={banner}/><br/>
                                 <div className='form-group'>
                                     <button className="btn btn-primary float-right"
-                                        onClick={(e)=>cohortId?handleEdit(e):handleCreate(e)}>
+                                            onClick={(e)=>cohortId?handleEdit(e):handleCreate(e)}>
                                         Submit
                                     </button>
                                     <button className="btn btn-danger float-left"
-                                        onClick={()=>toggleCreateModal()}>
+                                            onClick={()=>toggleCreateModal()}>
                                         Cancel
                                     </button>
                                 </div>
@@ -470,25 +480,25 @@ const ProgramCohorts = ():JSX.Element => {
                 </Modal.Header>
 
                 <Modal.Body>
-                    <ValidationForm> 
+                    <ValidationForm>
                         <FileInput name="fileUploaded" id="image" encType="multipart/form-data"
-                            onChange={(e)=>{ setImageUploaded(()=>{
-                                return e.target.files[0];
-                            });
-                            }} required fileType={['png','jpg','jpeg']} maxFileSize="3mb"
-                            errorMessage={{
-                                required:'Please upload an image',
-                                fileType:'Only image is allowed',
-                                maxFileSize:'Max file size is 3MB'
-                            }}/>
-                    </ValidationForm>   
+                                   onChange={(e)=>{ setImageUploaded(()=>{
+                                       return e.target.files[0];
+                                   });
+                                   }} required fileType={['png','jpg','jpeg']} maxFileSize="3mb"
+                                   errorMessage={{
+                                       required:'Please upload an image',
+                                       fileType:'Only image is allowed',
+                                       maxFileSize:'Max file size is 3MB'
+                                   }}/>
+                    </ValidationForm>
                 </Modal.Body>
 
                 <Modal.Footer style={{ display: 'flex', justifyContent: 'space-between' }}>
                     <Button variant="btn btn-info btn-rounded" onClick={toggleUploadModal}>Close</Button>
                     <Button onClick={() => handleUpload()} variant="btn btn-danger btn-rounded">Upload</Button>
                 </Modal.Footer>
-        
+
             </Modal>
         </>
     );
