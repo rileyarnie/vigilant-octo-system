@@ -8,7 +8,6 @@ import CampusList from './pages/Academics/CampusList'
 import ProgramCoursesList from './pages/Academics/ProgramCoursesList'
 import AssignCourse from './pages/Academics/AssignCourse'
 import TrainerList from './pages/Academics/TrainerList'
-
 import VenueList from './pages/Academics/VenueList'
 import AssignRole from './pages/Users/AssignRole'
 import CreateVenue from './pages/Academics/CreateVenue'
@@ -22,6 +21,10 @@ import ProgramCohortCoursesList from './pages/Academics/ProgramCohortCoursesList
 import ApplicationsList from './pages/Academics/ApplicationsList'
 import PublishedSemester from './pages/Academics/Application/PublishedSemester'
 import Timetable from './pages/Timetabling/Timetable'
+import CourseCohorts from './pages/Academics/CourseCohorts'
+import CourseCohortsDetails from './pages/Academics/CourseCohortDetails'
+import ProgramCohortSemesters from './pages/Academics/ProgramCohortSemesters'
+import ProgramCohortSemesterDetails from './pages/Academics/ProgramCohortSemesterDetails'
 
 const routes = [
     { path: '/dashboard', exact: true, name: 'default', component: Default },
@@ -52,8 +55,10 @@ const routes = [
     { path: '/cohortscourses', exact: true, name: 'default', component: ProgramCohortCoursesList },
     { path: '/applications', exact: true, name: 'default', component: ApplicationsList },
     { path: '/publishedsemesters', exact: true, name: 'default', component: PublishedSemester },
-    { path: '/timetable', exact: true, name: 'default', component: Timetable }
-
-
+    { path: '/timetable', exact: true, name: 'default', component: Timetable },
+    { path: '/coursecohorts', exact: true, name: 'default', component: CourseCohorts },
+    { path: '/coursecohortdetails', exact: true, name: 'default', component: CourseCohortsDetails },
+    { path: '/programcohortsemester', exact: true, name: 'default', component: ProgramCohortSemesters },
+    { path: '/pcsdetails', exact: true, name: 'default', component: ProgramCohortSemesterDetails }
 ]
 export default routes

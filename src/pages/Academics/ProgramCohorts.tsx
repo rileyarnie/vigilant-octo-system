@@ -1,36 +1,36 @@
 /* eslint-disable react/display-name */
-import React,{useState,useEffect} from 'react';
-import {forwardRef} from 'react';
-import MaterialTable from 'material-table';
-import AddBox from '@material-ui/icons/AddBox';
-import ArrowDownward from '@material-ui/icons/ArrowDownward';
-import Check from '@material-ui/icons/Check';
-import ChevronLeft from '@material-ui/icons/ChevronLeft';
-import ChevronRight from '@material-ui/icons/ChevronRight';
-import Clear from '@material-ui/icons/Clear';
-import DeleteOutline from '@material-ui/icons/DeleteOutline';
-import Edit from '@material-ui/icons/Edit';
-import { Icons } from 'material-table';
-import FilterList from '@material-ui/icons/FilterList';
-import FirstPage from '@material-ui/icons/FirstPage';
-import LastPage from '@material-ui/icons/LastPage';
-import Remove from '@material-ui/icons/Remove';
-import SaveAlt from '@material-ui/icons/SaveAlt';
-import Search from '@material-ui/icons/Search';
-import ViewColumn from '@material-ui/icons/ViewColumn';
-import axios from 'axios';
-import Card from '@material-ui/core/Card';
-import Alert from '@material-ui/lab/Alert';
-import Breadcrumb from '../../App/components/Breadcrumb';
-import {Row,Col,Modal,Button} from 'react-bootstrap';
-import Config from '../../config';
-import {MenuItem, Select, Switch} from '@material-ui/core';
-import {ValidationForm,SelectGroup,FileInput,TextInput} from 'react-bootstrap4-form-validation';
-import CardPreview from './CardPreview';
-import {Link} from 'react-router-dom';
-import { Alerts, ToastifyAlerts } from '../lib/Alert';
-import { LinearProgress } from '@mui/material';
-const alerts: Alerts = new ToastifyAlerts();
+import React,{useState,useEffect} from 'react'
+import {forwardRef} from 'react'
+import MaterialTable from 'material-table'
+import AddBox from '@material-ui/icons/AddBox'
+import ArrowDownward from '@material-ui/icons/ArrowDownward'
+import Check from '@material-ui/icons/Check'
+import ChevronLeft from '@material-ui/icons/ChevronLeft'
+import ChevronRight from '@material-ui/icons/ChevronRight'
+import Clear from '@material-ui/icons/Clear'
+import DeleteOutline from '@material-ui/icons/DeleteOutline'
+import Edit from '@material-ui/icons/Edit'
+import { Icons } from 'material-table'
+import FilterList from '@material-ui/icons/FilterList'
+import FirstPage from '@material-ui/icons/FirstPage'
+import LastPage from '@material-ui/icons/LastPage'
+import Remove from '@material-ui/icons/Remove'
+import SaveAlt from '@material-ui/icons/SaveAlt'
+import Search from '@material-ui/icons/Search'
+import ViewColumn from '@material-ui/icons/ViewColumn'
+import axios from 'axios'
+import Card from '@material-ui/core/Card'
+import Alert from '@material-ui/lab/Alert'
+import Breadcrumb from '../../App/components/Breadcrumb'
+import {Row,Col,Modal,Button} from 'react-bootstrap'
+import Config from '../../config'
+import {MenuItem, Select, Switch} from '@material-ui/core'
+import {ValidationForm,SelectGroup,FileInput,TextInput} from 'react-bootstrap4-form-validation'
+import CardPreview from './CardPreview'
+import {Link} from 'react-router-dom'
+import { Alerts, ToastifyAlerts } from '../lib/Alert'
+import { LinearProgress } from '@mui/material'
+const alerts: Alerts = new ToastifyAlerts()
 const tableIcons: Icons = {
     Add: forwardRef((props, ref) => < AddBox  {...props} ref={ref} />),
     Check: forwardRef((props, ref) => <Check {...props} ref={ref} />),
@@ -49,7 +49,7 @@ const tableIcons: Icons = {
     SortArrow: forwardRef((props, ref) => <ArrowDownward {...props} ref={ref} />),
     ThirdStateCheck: forwardRef((props, ref) => <Remove {...props} ref={ref} />),
     ViewColumn: forwardRef((props, ref) => <ViewColumn {...props} ref={ref} />)
-};
+}
 const ProgramCohorts = ():JSX.Element => {
     interface programCohort{
         program_cohorts_id:number,
@@ -63,50 +63,50 @@ const ProgramCohorts = ():JSX.Element => {
         pg_id:number;
     }
 
-    const [data,setData]=useState([]);
-    const [isError]=useState(false);
-    const [,setDisabled]=useState(false);
-    const [programId,setProgramId]=useState(0);
-    const [campusId,setCampusId]=useState(0);
-    const [startDate,setStartDate]=useState('');
-    const [banner,setBanner]=useState('');
-    const [graduationDate,setGraduationDate]=useState('');
-    const [description,setDescription]=useState('');
-    const [imageUploaded,setImageUploaded]=useState('');
-    const [programs,setPrograms]=useState([]);
-    const [campus,setCampus]=useState([]);
-    const [programName,setProgramName]=useState('');
-    const [selectedCampusId,setSelectedCampusId]=useState(0);
-    const [selectedProgramId,setSelectedProgramId]=useState(0);
-    const [selectedGraduationDate]=useState();
-    const [selectedStartDate]=useState();
-    const [selectedDescription]=useState();
-    const [showModal,setModal]=useState(false);
-    const [cohortId,setCohortId]=useState(null);
-    const [errorMessages]=useState([]);
-    const [showUploadModal, setShowUploadModal] = useState(false);
-    const [selectedProgramCohort,setSelectedProgramCohort] = useState<programCohort>();
-    const [linearDisplay, setLinearDisplay] = useState('none');
-    const timetablingSrv=Config.baseUrl.timetablingSrv;
-    const year=graduationDate.split('').slice(0,4).join('');
-    const month=graduationDate.slice(5,7);
-    let activationStatus:boolean;
+    const [data,setData]=useState([])
+    const [isError]=useState(false)
+    const [,setDisabled]=useState(false)
+    const [programId,setProgramId]=useState(0)
+    const [campusId,setCampusId]=useState(0)
+    const [startDate,setStartDate]=useState('')
+    const [banner,setBanner]=useState('')
+    const [graduationDate,setGraduationDate]=useState('')
+    const [description,setDescription]=useState('')
+    const [imageUploaded,setImageUploaded]=useState('')
+    const [programs,setPrograms]=useState([])
+    const [campus,setCampus]=useState([])
+    const [programName,setProgramName]=useState('')
+    const [selectedCampusId,setSelectedCampusId]=useState(0)
+    const [selectedProgramId,setSelectedProgramId]=useState(0)
+    const [selectedGraduationDate]=useState()
+    const [selectedStartDate]=useState()
+    const [selectedDescription]=useState()
+    const [showModal,setModal]=useState(false)
+    const [cohortId,setCohortId]=useState(null)
+    const [errorMessages]=useState([])
+    const [showUploadModal, setShowUploadModal] = useState(false)
+    const [selectedProgramCohort,setSelectedProgramCohort] = useState<programCohort>()
+    const [linearDisplay, setLinearDisplay] = useState('none')
+    const timetablingSrv=Config.baseUrl.timetablingSrv
+    const year=graduationDate.split('').slice(0,4).join('')
+    const month=graduationDate.slice(5,7)
+    let activationStatus:boolean
     const handleActivationStatusToggle=(event,row:programCohort)=>{
-        setDisabled(true);
+        setDisabled(true)
         if(row.program_cohorts_isActive){
-            activationStatus=false;
-            handleToggleStatusSubmit(event,row);
+            activationStatus=false
+            handleToggleStatusSubmit(event,row)
         }
         if(!row.program_cohorts_isActive){
-            activationStatus=true;
-            handleToggleStatusSubmit(event,row);
+            activationStatus=true
+            handleToggleStatusSubmit(event,row)
         }
-    };
+    }
     const handleToggleStatusSubmit=(e,row:programCohort)=>{
         const cohortStatus={
-            isActive:activationStatus,
-        };
-        setLinearDisplay('block');
+            isActive:activationStatus
+        }
+        setLinearDisplay('block')
         axios
             .put(`${timetablingSrv}/program-cohorts/${row.program_cohorts_id}`,cohortStatus)
             .then(()=>{
@@ -118,11 +118,11 @@ const ProgramCohorts = ():JSX.Element => {
 
             })
             .catch((error)=>{
-                console.error(error);
-                alerts.showError(error.message);
-                setDisabled(false);
-            });
-    };
+                console.error(error)
+                alerts.showError(error.message)
+                setDisabled(false)
+            })
+    }
 
     const columns=[
         {title:'ID',field:'program_cohorts_id'},
@@ -131,7 +131,7 @@ const ProgramCohorts = ():JSX.Element => {
         {title:'Campus Name',field:'cmps_name'},
         {title:'Requires Clearance',field:'pg_requiresClearance'},
         {title:'Duration',field:'pg_duration'},
-        {title:'Certification Type', field: 'pg_certificationType' },        
+        {title:'Certification Type', field: 'pg_certificationType' },
         {title:'Start Date', render:(rowData)=>rowData.program_cohorts_startDate.slice(0,10)},
 
         {
@@ -141,121 +141,133 @@ const ProgramCohorts = ():JSX.Element => {
         {
             title:'Activation Status',
             field:'internal_action',
-            render:(row:programCohort)=>(
+            render:(row:programCohort)=>
                 <Switch
-                    onChange={(event)=>handleActivationStatusToggle(event,row)}
+                    onChange={(event)=>{
+                        handleActivationStatusToggle(event,row) 
+                    }}
                     inputProps={{'aria-label':'controlled'}}
-                    defaultChecked={row.program_cohorts_isActive===false}
+                    defaultChecked={!row.program_cohorts_isActive}
                 />
-            )
+            
         },
         {
             title: 'Actions',
             field: 'internal_action',
-            render: (row) => (
+            render: (row) => 
                 <Select>
                     <button className="btn btn btn-link"
                         onClick={() => {
-                            setCohortId(row.program_cohorts_id);
-                            toggleCreateModal();
-                            setSelectedProgramCohort(row);
+                            setCohortId(row.program_cohorts_id)
+                            toggleCreateModal()
+                            setSelectedProgramCohort(row)
                         }}>
                         <MenuItem value="Edit">Edit</MenuItem>
                     </button>
                     <Link to='/cohortscourses'
                         onClick={() => {
-                            localStorage.setItem('programId', row.pg_id);
-                            localStorage.setItem('programName', row.pg_name);
-                            localStorage.setItem('programCohortId', row.program_cohorts_id);
-                            localStorage.setItem('program_cohort_code', row.program_cohorts_code);
-                            localStorage.setItem('anticipatedGraduation', `${row.program_cohorts_anticipatedGraduationMonth}/${row.program_cohorts_anticipatedGraduationYear}`);
+                            localStorage.setItem('programId', row.pg_id)
+                            localStorage.setItem('programName', row.pg_name)
+                            localStorage.setItem('programCohortId', row.program_cohorts_id)
+                            localStorage.setItem('programCohortCode', row.program_cohorts_code)
+                            localStorage.setItem('anticipatedGraduation', `${row.program_cohorts_anticipatedGraduationMonth}/${row.program_cohorts_anticipatedGraduationYear}`)
                         }}>
                         <MenuItem value="View courses">View courses</MenuItem>
                     </Link>
+                    <Link to='/programcohortsemester'
+                        onClick={() => {
+                            localStorage.setItem('programId', row.pg_id)
+                            localStorage.setItem('programName', row.pg_name)
+                            localStorage.setItem('programCohortId', row.program_cohorts_id)
+                            localStorage.setItem('program_cohort_code', row.program_cohorts_code)
+                            localStorage.setItem('anticipatedGraduation', `${row.program_cohorts_anticipatedGraduationMonth}/${row.program_cohorts_anticipatedGraduationYear}`)
+                        }}>
+                        <MenuItem value="View semesters">View semesters</MenuItem>
+                    </Link>
                 </Select>
-            )
+            
         }
-    ];
+    ]
     useEffect(()=>{
-        setLinearDisplay('block');
+        setLinearDisplay('block')
         axios.get(`${timetablingSrv}/program-cohorts`,{params:{programId:setProgramId}})
             .then(res=>{
-                setLinearDisplay('none');
-                setData(res.data);
+                setLinearDisplay('none')
+                setData(res.data)
             })
             .catch((error)=>{
-                console.error(error);
-                alerts.showError(error.message);
-            });
+                console.error(error)
+                alerts.showError(error.message)
+            })
         axios.get(`${timetablingSrv}/programs`)
             .then(res=>{
-                setPrograms(res.data);
+                setPrograms(res.data)
             })
             .catch((error)=>{
-                console.error(error);
-                alerts.showError(error.message);
-            });
+                console.error(error)
+                alerts.showError(error.message)
+            })
         axios.get(`${timetablingSrv}/campuses`)
             .then(res=>{
-                setCampus(res.data);
+                setCampus(res.data)
             })
             .catch((error)=>{
-                console.error(error);
-                alerts.showError(error.message);
-            });
-    },[]);
+                console.error(error)
+                alerts.showError(error.message)
+            })
+    },[])
     const fetchProgramCohorts=(): void =>{
-        setLinearDisplay('block');
-        axios.get(`${timetablingSrv}/program-cohorts`,)
+        setLinearDisplay('block')
+        axios.get(`${timetablingSrv}/program-cohorts`)
             .then(res => {
                 res.data.forEach(program => {
-                    program.name = getProgramName(res.data[0].programId);
-                });
-                setLinearDisplay('none');
-                setData(res.data);
+                    program.name = getProgramName(res.data[0].programId)
+                })
+                setLinearDisplay('none')
+                setData(res.data)
             })
             .catch((error)=>{
-                console.error(error);
-                alerts.showError(error.message);
-            });
-    };
+                console.error(error)
+                alerts.showError(error.message)
+            })
+    }
     const handleUpload=(): void =>{
-        const form=new FormData();
-        form.append('fileUploaded',imageUploaded);
+        const form=new FormData()
+        form.append('fileUploaded',imageUploaded)
         const config={
             headers:{'content-type':'multipart/form-data'}
-        };
-        setLinearDisplay('block');
+        }
+        setLinearDisplay('block')
         axios.post(`${timetablingSrv}/files`,form,config)
             .then((res)=>{
-                console.log(res.data);
-                alerts.showSuccess('successfully uploaded');
-                setBanner(res.data);
-                setLinearDisplay('none');
-                toggleUploadModal();
+                console.log(res.data)
+                alerts.showSuccess('successfully uploaded')
+                setBanner(res.data)
+                setLinearDisplay('none')
+                toggleUploadModal()
             })
             .catch((error)=>{
-                console.error(error);
-                alerts.showError(error.message);
-            });
-    };
+                console.error(error)
+                alerts.showError(error.message)
+            })
+    }
 
     const updateProgramCohort=(cohortId,updates): void =>{
-        setLinearDisplay('block');
+        setLinearDisplay('block')
         axios.put(`${timetablingSrv}/program-cohorts/${cohortId}/`,updates)
             .then(()=>{
-                setLinearDisplay('none');
-                alerts.showSuccess('Successfully updated Cohort');
-                fetchProgramCohorts();
-                resetStateCloseModal();
+                setLinearDisplay('none')
+                alerts.showSuccess('Successfully updated Cohort')
+                fetchProgramCohorts()
+                resetStateCloseModal()
             })
             .catch(error=>{
-                console.error(error);
-                alerts.showError(error.message);
-            });
-    };
+                console.error(error)
+                alerts.showError(error.message)
+            })
+    }
     const handleEdit=(e): void =>{
-        e.preventDefault();
+        e.preventDefault()
         const updates={
             programId:programId===0?selectedProgramId:programId,
             campusId:campusId===0?selectedCampusId:campusId,
@@ -264,13 +276,13 @@ const ProgramCohorts = ():JSX.Element => {
             anticipatedGraduationMonth:month,
             advertDescription:description===''?selectedDescription:description,
             bannerImageUrl:banner
-        };
+        }
 
-        updateProgramCohort(cohortId,updates);
+        updateProgramCohort(cohortId,updates)
 
-    };
+    }
     const handleCreate=(e): void =>{
-        e.preventDefault();
+        e.preventDefault()
         const cohort={
             programId:programId,
             campusId:campusId,
@@ -278,58 +290,58 @@ const ProgramCohorts = ():JSX.Element => {
             anticipatedGraduationYear:year,
             anticipatedGraduationMonth:month,
             advertDescription:description,
-            bannerImageUrl:banner,
-        };
+            bannerImageUrl:banner
+        }
         // console.log(typeof cohort.programId);
-        createCohort(cohort);
-    };
+        createCohort(cohort)
+    }
 
     const createCohort=(cohortData): void =>{
-        console.log(cohortData);
-        setLinearDisplay('block');
+        console.log(cohortData)
+        setLinearDisplay('block')
         axios
             .post(`${timetablingSrv}/program-cohorts`,cohortData)
             .then(()=>{
-                setLinearDisplay('none');
-                alerts.showSuccess('Successfully created Program Cohort');
-                fetchProgramCohorts();
-                resetStateCloseModal();
+                setLinearDisplay('none')
+                alerts.showSuccess('Successfully created Program Cohort')
+                fetchProgramCohorts()
+                resetStateCloseModal()
             })
             .catch((error)=>{
-                alerts.showError(error.message);
-            });
-    };
+                alerts.showError(error.message)
+            })
+    }
     const resetStateCloseModal=(): void =>{
-        setCohortId(null);
-        setProgramId(0);
-        setCampusId(0);
-        setStartDate('');
-        setDescription('');
-        setBanner('');
-        setModal(false);
-        setProgramName('');
-    };
+        setCohortId(null)
+        setProgramId(0)
+        setCampusId(0)
+        setStartDate('')
+        setDescription('')
+        setBanner('')
+        setModal(false)
+        setProgramName('')
+    }
 
     const toggleCreateModal=()=>{
-        showModal?resetStateCloseModal():setModal(true);
-    };
+        showModal?resetStateCloseModal():setModal(true)
+    }
     const toggleUploadModal=()=>{
-        showModal?setShowUploadModal(false):setShowUploadModal(true);
-    };
+        showModal?setShowUploadModal(false):setShowUploadModal(true)
+    }
     const getProgramName = (id: number): string => {
         return programs.filter(program => {
-            return program.id === id;
-        }).map(name => name.name)[0];
-    }; 
+            return program.id === id
+        }).map(name => name.name)[0]
+    }
 
     const getMonthYear = (month:number, year:number) => {
-        const date = new Date (year, month);
-        return  date.toISOString().slice(0,7);
-    };
+        const date = new Date (year, month)
+        return  date.toISOString().slice(0,7)
+    }
 
     const getProgramCohortFields = (id:number) => {
-        return data.filter(dat => dat.program_cohorts_id === id)[0];
-    };
+        return data.filter(dat => dat.program_cohorts_id === id)[0]
+    }
     return (
         <>
             <Row className='align-items-center page-header'>
@@ -337,12 +349,14 @@ const ProgramCohorts = ():JSX.Element => {
                     <Breadcrumb/>
                 </Col>
                 <Col>
-                    <Button className="float-right" variant="danger" onClick={()=>toggleCreateModal()}>
+                    <Button className="float-right" variant="danger" onClick={()=>{
+                        toggleCreateModal() 
+                    }}>
                         Create Program Cohort
                     </Button>
                 </Col>
             </Row>
-            <LinearProgress  style={{display: linearDisplay}} /> 
+            <LinearProgress  style={{display: linearDisplay}} />
             <Row>
                 <Col>
                     <Card>
@@ -350,13 +364,13 @@ const ProgramCohorts = ():JSX.Element => {
                             {isError&&
                             <Alert severity='error'>
                                 {errorMessages.map((msg,i)=>{
-                                    return <div key={i}>{msg}</div>;
+                                    return <div key={i}>{msg}</div>
                                 })}
                             </Alert>
                             }
                         </div>
                         <MaterialTable
-                            title='Program Cohorts' 
+                            title='Program Cohorts'
                             icons={tableIcons}
                             columns={columns}
                             data={data}
@@ -385,37 +399,37 @@ const ProgramCohorts = ():JSX.Element => {
                                     <SelectGroup name="program" id="program" required
                                         errorMessage="Please select a Program."
                                         onChange={(e)=>{
-                                            setSelectedProgramId(e.target.value);
-                                            setProgramId(parseInt(e.target.value));
+                                            setSelectedProgramId(e.target.value)
+                                            setProgramId(parseInt(e.target.value))
                                         }}>
                                         <option defaultValue={cohortId?selectedProgramCohort.pg_id:selectedProgramId} value="">-- Select a program --</option>
                                         {programs.map((program)=>{
-                                            return <option key={program.name} value={program.id}>{program.name}</option>;
+                                            return <option key={program.name} value={program.id}>{program.name}</option>
                                         })}
                                     </SelectGroup><br/>
                                     <label htmlFor="cohortName"><b>{cohortId? 'Select a new campus for this cohort' : 'Select a campus' }</b></label>
                                     <SelectGroup name="campus" id="campus" required
                                         errorMessage="Please select a Program."
                                         onChange={(e)=>{
-                                            setSelectedCampusId(e.target.value);
-                                            setCampusId(parseInt(e.target.value));
+                                            setSelectedCampusId(e.target.value)
+                                            setCampusId(parseInt(e.target.value))
                                         }}>
                                         <option defaultValue={cohortId?selectedProgramCohort.pg_id:selectedCampusId} value="">-- Select a Campus --</option>
                                         {campus.map((campus)=>{
-                                            return <option key={campus.name} value={campus.id}>{campus.name}</option>;
+                                            return <option key={campus.name} value={campus.id}>{campus.name}</option>
                                         })}
                                     </SelectGroup><br/>
                                     <label htmlFor='Date'><b>Start Date</b></label><br/>
                                     <TextInput name='startDate' id='startDate' type="date" required
                                         defaultValue={cohortId? selectedProgramCohort.program_cohorts_startDate.slice(0,10) : selectedStartDate}
                                         onChange={(e)=>{
-                                            setStartDate(e.target.value);
+                                            setStartDate(e.target.value)
                                         }}/><br/>
                                     <label htmlFor='Date'><b>Anticipated Graduation Date</b></label><br/>
                                     <TextInput name='graduationDate' id='graduationDate' type="month" required
                                         defaultValue={cohortId? getMonthYear(selectedProgramCohort.program_cohorts_anticipatedGraduationMonth,selectedProgramCohort.program_cohorts_anticipatedGraduationYear) : selectedGraduationDate }
                                         onChange={(e)=>{
-                                            setGraduationDate(e.target.value);
+                                            setGraduationDate(e.target.value)
                                         }}/><br/>
                                     <label htmlFor="cohortName"><b>Description</b></label>
                                     <TextInput name='description' minLength="4" id='description'
@@ -423,24 +437,29 @@ const ProgramCohorts = ():JSX.Element => {
                                         type="text" placeholder={cohortId?setDescription:description}
                                         required multiline rows="3"
                                         onChange={(e)=>{
-                                            setDescription(e.target.value);
+                                            setDescription(e.target.value)
                                         }}/><br/>
                                     <label htmlFor="cohortName"><b>Banner Image</b></label><br />
                                     <button className="btn btn-primary" onClick={(e) => {
-                                        e.preventDefault();
-                                        setShowUploadModal(true);}}>
+                                        e.preventDefault()
+                                        setShowUploadModal(true)
+                                    }}>
                                         Add image
                                     </button>
-                                    
+
                                 </div>
                                 <input name='banner' id='banner' type="hidden" required value={banner}/><br/>
                                 <div className='form-group'>
                                     <button className="btn btn-primary float-right"
-                                        onClick={(e)=>cohortId?handleEdit(e):handleCreate(e)}>
+                                        onClick={(e)=>{
+                                            cohortId?handleEdit(e):handleCreate(e) 
+                                        }}>
                                         Submit
                                     </button>
                                     <button className="btn btn-danger float-left"
-                                        onClick={()=>toggleCreateModal()}>
+                                        onClick={()=>{
+                                            toggleCreateModal() 
+                                        }}>
                                         Cancel
                                     </button>
                                 </div>
@@ -470,28 +489,31 @@ const ProgramCohorts = ():JSX.Element => {
                 </Modal.Header>
 
                 <Modal.Body>
-                    <ValidationForm> 
+                    <ValidationForm>
                         <FileInput name="fileUploaded" id="image" encType="multipart/form-data"
-                            onChange={(e)=>{ setImageUploaded(()=>{
-                                return e.target.files[0];
-                            });
+                            onChange={(e)=>{
+                                setImageUploaded(()=>{
+                                    return e.target.files[0]
+                                })
                             }} required fileType={['png','jpg','jpeg']} maxFileSize="3mb"
                             errorMessage={{
                                 required:'Please upload an image',
                                 fileType:'Only image is allowed',
                                 maxFileSize:'Max file size is 3MB'
                             }}/>
-                    </ValidationForm>   
+                    </ValidationForm>
                 </Modal.Body>
 
                 <Modal.Footer style={{ display: 'flex', justifyContent: 'space-between' }}>
                     <Button variant="btn btn-info btn-rounded" onClick={toggleUploadModal}>Close</Button>
-                    <Button onClick={() => handleUpload()} variant="btn btn-danger btn-rounded">Upload</Button>
+                    <Button onClick={() => {
+                        handleUpload() 
+                    }} variant="btn btn-danger btn-rounded">Upload</Button>
                 </Modal.Footer>
-        
+
             </Modal>
         </>
-    );
-};
+    )
+}
 
-export default ProgramCohorts;
+export default ProgramCohorts
