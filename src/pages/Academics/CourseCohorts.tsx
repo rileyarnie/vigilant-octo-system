@@ -25,7 +25,7 @@ import Alert from '@material-ui/lab/Alert'
 import Breadcrumb from '../../App/components/Breadcrumb'
 import {Row,Col,Modal,Button} from 'react-bootstrap'
 import Config from '../../config'
-import {MenuItem, Select, Switch} from '@material-ui/core'
+import {MenuItem, Select, InputLabel} from '@material-ui/core'
 import {ValidationForm,SelectGroup,FileInput,TextInput} from 'react-bootstrap4-form-validation'
 import CardPreview from './CardPreview'
 import {Link} from 'react-router-dom'
@@ -58,13 +58,13 @@ const CourseCohorts = ():JSX.Element => {
     const [trainersData,setTrainers] = useState([])
     const [semesters,setSemesters] = useState([])
     const [isError]=useState(false)
-    const [,setDisabled]=useState(false)
+    const []=useState(false)
     const [programId,setProgramId]=useState(0)
     const [campusId,setCampusId]=useState(0)
     const [startDate,setStartDate]=useState('')
     const [banner,setBanner]=useState('')
     const [graduationDate,setGraduationDate]=useState('')
-    const [description,setDescription]=useState('')
+    const [description]=useState('')
     const [imageUploaded,setImageUploaded]=useState('')
     const [programs,setPrograms]=useState([])
     const [campus,setCampus]=useState([])
@@ -158,12 +158,12 @@ const CourseCohorts = ():JSX.Element => {
                                 Toolbar: props => 
                                     <div>
                                         <MTableToolbar {...props} />
-                                        <div style={{padding: '0px 24px'}}>
+                                        <div style={{display: 'flex', padding: '0px 0px'}}>
+                                            <InputLabel id="demo-simple-select-label">Trainer</InputLabel>
                                             <Select
                                                 labelId="demo-simple-select-label"
                                                 id="demo-simple-select"
-                                                label="Trainer"
-                                                style={{width:150}}
+                                                style={{width:150, textAlign: 'center'}}
                                             >
                                                 {
                                                     trainersData.map(tr => {
@@ -173,13 +173,12 @@ const CourseCohorts = ():JSX.Element => {
                                                     })
                                                 }
                                             </Select>
-
-                                            <label style={{marginLeft: 48}}>Semester: </label>
+                                            
+                                            <InputLabel id="demo-simple-select-label">Semester</InputLabel>
                                             <Select
                                                 labelId="demo-simple-select-label"
                                                 id="demo-simple-select"
-                                                label="Semester"
-                                                style={{width:150}}
+                                                style={{width:150, textAlign: 'center'}}
                                             >
                                                 {
                                                     semesters.map(sem => {
