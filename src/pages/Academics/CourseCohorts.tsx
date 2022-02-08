@@ -91,7 +91,7 @@ const CourseCohorts = ():JSX.Element => {
             field: 'internal_action',
             render: (row) => (
                 <Select>
-                    <Link to='/cohortscourses'>
+                    <Link to='/coursecohortdetails'>
                         <MenuItem value="View courses">View details</MenuItem>
                     </Link>
                 </Select>
