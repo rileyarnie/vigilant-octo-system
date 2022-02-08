@@ -50,6 +50,6 @@ const routes = [
     { path: '/cohorts', exact: true, name: 'default', component: ProgramCohorts },
     { path: '/cohortscourses', exact: true, name: 'default', component: ProgramCohortCoursesList },
     { path: '/applications', exact: true, name: 'default', component: ApplicationsList },
-    { path: '/publishedsemesters', exact: true, name: 'default', component: PublishedSemester }
+    { path: '/publishedsemesters', exact: true, name: 'default', component: PublishedSemester }gi
 ]
 export default routes
