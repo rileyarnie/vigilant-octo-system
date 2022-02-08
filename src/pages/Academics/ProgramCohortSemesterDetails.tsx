@@ -124,10 +124,7 @@ function ProgramCohortSemesterDetails () {
     const programCohortId = localStorage.getItem('')
     const programCohortSemesterId = localStorage.getItem('semesterId')
     const [courseCohortData, setCourseCohortData] = useState([])
-    const [feeItemsData, setFeeItemData] = useState([
-        {id:'201', narrative: 'Tutioon fee', currecy: 'KES', amount: '4000'},
-        {id:'211', narrative: 'Clearance fee', currecy: 'KES', amount: '9000'}
-    ])
+    const [feeItemsData, setFeeItemData] = useState([])
     const [linearDisplay, setLinearDisplay] = useState('none')
     const [isError] = useState(false)
     useEffect(() => {
