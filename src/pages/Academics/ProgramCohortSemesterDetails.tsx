@@ -29,12 +29,12 @@ import {Link} from 'react-router-dom'
 import {ValidationForm, SelectGroup, TextInput} from 'react-bootstrap4-form-validation'
 import { LinearProgress } from '@mui/material'
 import {CourseCohortService} from '../services/CourseCohortsService'
-import { makeStyles, Theme } from '@material-ui/core/styles';
-import AppBar from '@material-ui/core/AppBar';
-import Tabs from '@material-ui/core/Tabs';
-import Tab from '@material-ui/core/Tab';
-import Typography from '@material-ui/core/Typography';
-import Box from '@material-ui/core/Box';
+import { makeStyles, Theme } from '@material-ui/core/styles'
+import AppBar from '@material-ui/core/AppBar'
+import Tabs from '@material-ui/core/Tabs'
+import Tab from '@material-ui/core/Tab'
+import Typography from '@material-ui/core/Typography'
+import Box from '@material-ui/core/Box'
 import { FeesManagementService } from '../services/FeesManagementService'
 const alerts: Alerts = new ToastifyAlerts()
 const tableIcons: Icons = {
@@ -67,7 +67,7 @@ function ProgramCohortSemesterDetails () {
         height: '30px'
     }
     function TabPanel(props: TabPanelProps) {
-        const { children, value, index, ...other } = props;
+        const { children, value, index, ...other } = props
         return (
             <div
                 role="tabpanel"
@@ -76,27 +76,27 @@ function ProgramCohortSemesterDetails () {
                 aria-labelledby={`scrollable-auto-tab-${index}`}
                 {...other}
             >
-                {value === index && (
+                {value === index && 
                     <Box p={3}>
                         <Typography>{children}</Typography>
                     </Box>
-                )}
+                }
             </div>
-        );
+        )
     }
     function a11yProps(index: any) {
         return {
             id: `scrollable-auto-tab-${index}`,
-            'aria-controls': `scrollable-auto-tabpanel-${index}`,
-        };
+            'aria-controls': `scrollable-auto-tabpanel-${index}`
+        }
     }
     const useStyles = makeStyles((theme: Theme) => ({
         root: {
             flexGrow: 1,
             width: '100%',
-            backgroundColor: theme.palette.background.paper,
-        },
-    }));
+            backgroundColor: theme.palette.background.paper
+        }
+    }))
     const columns = [
         {title: 'ID', field: 'course.id', editable: 'never' as const},
         {title: 'Name', field: 'course.name'},
@@ -142,11 +142,22 @@ function ProgramCohortSemesterDetails () {
                 alerts.showError(error.message)
             })
     }
-    const classes = useStyles();
-    const [value, setValue] = React.useState(0);
+    const classes = useStyles()
+    const [value, setValue] = React.useState(0)
     const handleChange = (event: React.ChangeEvent<{}>, newValue: number) => {
-        setValue(newValue);
-    };
+        setValue(newValue)
+    }
+    function getFeesItems () {
+        FeesManagementService.getFeesItems()
+            .then((res)=>{
+                const feeData = res['data']
+                setFeeItemData(feeData)
+            })
+            .catch((error) => {
+                alerts.showError(error.message)
+                console.log(error)
+            })
+    }
     function handleFeeItemsPost () {
         const feeItem = {
             narrative:narrative,
@@ -233,7 +244,9 @@ function ProgramCohortSemesterDetails () {
                         <Col>
                             <Card>
                                 <Col>
-                                    <Button className="float-right" variant="danger" onClick={()=>{showCreateModal()}}>
+                                    <Button className="float-right" variant="danger" onClick={()=>{
+                                        showCreateModal()
+                                    }}>
                                         Create Course Cohort
                                     </Button>
                                 </Col>
@@ -259,7 +272,9 @@ function ProgramCohortSemesterDetails () {
                         <Col>
                             <Card>
                                 <Col>
-                                    <Button className="float-right" variant="danger" onClick={()=>{showCreateModal()}}>
+                                    <Button className="float-right" variant="danger" onClick={()=>{
+                                        showCreateModal()
+                                    }}>
                                         Create Fee Item
                                     </Button>
                                 </Col>
@@ -315,16 +330,22 @@ function ProgramCohortSemesterDetails () {
                         <div className='form-group'>
                             <label htmlFor='narrative'><b>Narrative</b></label><br/>
                             <TextInput name='narrative'  id='narrative'  type="text" value = {narrative}
-                                       onChange={(e)=>{  setNarrative(e.target.value)  }} required /><br/>
+                                onChange={(e)=>{
+                                    setNarrative(e.target.value)  
+                                }} required /><br/>
                             <label htmlFor='amount'><b>Amount</b></label><br/>
                             <TextInput name='amount'  id='amount'  type="number" value = {amount}
-                                       onChange={(e)=>{  setAmount(e.target.value)  }} required /><br/>
+                                onChange={(e)=>{
+                                    setAmount(e.target.value)  
+                                }} required /><br/>
                             <label htmlFor='currency'><b>Currency</b></label><br />
                             <SelectCurrency style = {selectStyle} name= 'currency' value={currency} onChange={onSelectedCurrency} />
                         </div>
                         <div className='form-group'>
                             <button className="btn btn-info float-left"
-                                onClick={(e) => { e.preventDefault()
+                                onClick={(e) => {
+                                    e.preventDefault()
+                                    //handleFeeItemsPost()
                                     setShowDialog(true)
                                 }}
                             >
@@ -338,7 +359,7 @@ function ProgramCohortSemesterDetails () {
             <Modal
                 show={showDialog}
                 onHide={toggleDialog}
-                size="lg"
+                size="sm"
                 backdrop="static"
                 centered>
                 <Modal.Header closeButton>
@@ -356,7 +377,8 @@ function ProgramCohortSemesterDetails () {
                     </ValidationForm>
                 </Modal.Body>
                 <Modal.Footer style={{ display: 'flex', justifyContent: 'space-between' }}>
-                    <Button variant="btn btn-info btn-rounded" onClick={(e) => { e.preventDefault()
+                    <Button variant="btn btn-info btn-rounded" onClick={(e) => {
+                        e.preventDefault()
                         setShowDialog(false)
                     }}>Continue editing</Button>
                     <Button onClick={handleFeeItemsPost} variant="btn btn-danger btn-rounded">Submit</Button>
