@@ -218,7 +218,7 @@ function ProgramCohortSemesterDetails () {
         ProgramCohortService.publishProgramCohortSemester(programCohortSemesterId,programCohortSemester)
             .then((res)=>{
                 console.log(res)
-                alerts.showSuccess('Successfully created a fee item')
+                alerts.showSuccess('Successfully published program cohort semester')
             })
             .catch((error) => {
                 alerts.showError(error.message)
@@ -284,7 +284,7 @@ function ProgramCohortSemesterDetails () {
                                     </Button>{' '}{' '}
                                     <Button className="float-center" variant="danger" onClick={()=>{
                                         showPublishSemesterModal()
-                                    }}> Publish </Button>
+                                    }}>Publish </Button>
                                 </Col>
                                 <div>
                                     {isError &&
@@ -422,7 +422,7 @@ function ProgramCohortSemesterDetails () {
             <Modal
                 show={showPublishModal}
                 onHide={showPublishSemesterModal}
-                size="sm"
+                size="lg"
                 backdrop="static"
                 aria-labelledby="contained-modal-title-vcenter"
                 centered>
@@ -467,7 +467,7 @@ function ProgramCohortSemesterDetails () {
             <Modal
                 show={showPublishDialog}
                 onHide={togglePublishModalDialog}
-                size="lg"
+                size="sm"
                 backdrop="static"
                 centered>
                 <Modal.Header closeButton>
@@ -486,11 +486,11 @@ function ProgramCohortSemesterDetails () {
                     </ValidationForm>
                 </Modal.Body>
                 <Modal.Footer style={{ display: 'flex', justifyContent: 'space-between' }}>
-                    <Button variant="btn btn-info btn-rounded" onClick={(e) => {
+                    <Button variant="btn btn-danger btn-rounded" onClick={(e) => {
                         e.preventDefault()
                         setShowPublishDialog(false)
                     }}>Continue editing</Button>
-                    <Button onClick={publishProgramCohort} variant="btn btn-danger btn-rounded">Continue to Publish</Button>
+                    <Button onClick={publishProgramCohort} variant="btn btn-info btn-rounded">Continue to Publish</Button>
                 </Modal.Footer>
             </Modal>
         </>
