@@ -20,13 +20,10 @@ import Search from '@material-ui/icons/Search'
 import ViewColumn from '@material-ui/icons/ViewColumn'
 import SelectCurrency from 'react-select-currency'
 import { Icons } from 'material-table'
-import {Switch} from '@material-ui/core'
 import Alert from '@material-ui/lab/Alert'
 import Breadcrumb from '../../App/components/Breadcrumb'
 import {Row, Col, Card, Button, Modal } from 'react-bootstrap'
-import Config from '../../config'
-import {Link} from 'react-router-dom'
-import {ValidationForm, SelectGroup, TextInput} from 'react-bootstrap4-form-validation'
+import {ValidationForm, TextInput} from 'react-bootstrap4-form-validation'
 import { LinearProgress } from '@mui/material'
 import {CourseCohortService} from '../services/CourseCohortsService'
 import { makeStyles, Theme } from '@material-ui/core/styles'
@@ -36,6 +33,7 @@ import Tab from '@material-ui/core/Tab'
 import Typography from '@material-ui/core/Typography'
 import Box from '@material-ui/core/Box'
 import { FeesManagementService } from '../services/FeesManagementService'
+import { ProgramCohortService } from '../services/ProgramCohortService'
 const alerts: Alerts = new ToastifyAlerts()
 const tableIcons: Icons = {
     Add: forwardRef((props, ref) => < AddBox  {...props} ref={ref} />),
@@ -110,25 +108,34 @@ function ProgramCohortSemesterDetails () {
     ]
     const [errorMessages] = useState([])
     const [narrative, setNarrative] = useState('')
-    const [amount, setAmount] = useState('')
+    const [amount, setAmount] = useState(0)
     const [currency,setCurrency] = useState('KES')
     const [feeItemId, setFeeItemId] = useState(null)
     const [showModal, setShowModal] = useState(false)
-    const [selectedNarrative, setSelectedNarrative] = useState('')
-    const [selectedAmount, setSelectedAmount] = useState('')
-    const [selectedCurrency, setSelectedCurrency] = useState('')
     const [showDialog, setShowDialog] = useState(false)
+    const [showPublishModal, setShowPublishModal] = useState(false)
+    const [showPublishDialog, setShowPublishDialog] = useState(false)
+    const [anticipatedStartDate, setAnticipatedStartDate] = useState('')
+    const [numOfSlots, setNumOfSlots] = useState('')
+    const [examCutOffDate, setExamCutOffDate] = useState('')
+    const [selectedNarrative, setSelectedNarrative] = useState('')
+    const [selectedAmount, setSelectedAmount] = useState(0)
+    const [selectedCurrency, setSelectedCurrency] = useState('')
     const programName = localStorage.getItem('programName')
+    const semStartDate = localStorage.getItem('semStartDate')
+    const semEndDate = localStorage.getItem('semEndDate')
     const semesterId = localStorage.getItem('semesterId')
     const anticipatedGraduation = localStorage.getItem('anticipatedGraduation')
     const programCohortId = localStorage.getItem('')
-    const programCohortSemesterId = localStorage.getItem('semesterId')
+    const programCohortSemesterId = localStorage.getItem('programCohortSemesterId')
+    const programCohortCode = localStorage.getItem('programCohortCode')
     const [courseCohortData, setCourseCohortData] = useState([])
     const [feeItemsData, setFeeItemData] = useState([])
     const [linearDisplay, setLinearDisplay] = useState('none')
     const [isError] = useState(false)
     useEffect(() => {
         fetchCourseCohortBySemesterId('course',semesterId,programCohortId)
+        getFeesItems()
     }, [])
     function fetchCourseCohortBySemesterId(loadExtras:string, semesterId:string, programCohortId:string) {
         CourseCohortService.fetchCourseCohortBySemesterId(loadExtras, semesterId, programCohortId)
@@ -158,14 +165,14 @@ function ProgramCohortSemesterDetails () {
                 console.log(error)
             })
     }
-    function handleFeeItemsPost () {
-        const feeItem = {
+    function handleFeeItemsCreation () {
+        const createFeeItemRequest = {
             narrative:narrative,
             amount: amount,
             currency:currency,
             programCohortSemesterId: programCohortSemesterId
         }
-        FeesManagementService.createFeesItems(feeItem)
+        FeesManagementService.createFeesItems(createFeeItemRequest)
             .then((res)=>{
                 console.log(res)
                 alerts.showSuccess('Successfully created a fee item')
@@ -193,25 +200,51 @@ function ProgramCohortSemesterDetails () {
         e.preventDefault()
         const updates = {
             narrative: narrative === '' ? selectedNarrative : narrative,
-            amount: amount === '' ? selectedAmount : amount,
+            amount: amount === 0 ? selectedAmount : amount,
             currency: currency === '' ? selectedCurrency : currency,
             programCohortSemesterId: programCohortSemesterId
         }
         updateFeeItem(feeItemId, updates)
 
     }
+    function publishProgramCohort () {
+        const programCohortSemester = {
+            anticipatedDate: anticipatedStartDate,
+            numOfSlots: numOfSlots,
+            examCutOffDate:examCutOffDate,
+            isPublished: true,
+
+        }
+        ProgramCohortService.publishProgramCohortSemester(programCohortSemesterId,programCohortSemester)
+            .then((res)=>{
+                console.log(res)
+                alerts.showSuccess('Successfully created a fee item')
+            })
+            .catch((error) => {
+                alerts.showError(error.message)
+                console.log(error)
+            })
+    }
     const resetStateCloseModal=(): void =>{
         setFeeItemId(null)
         setNarrative('')
-        setAmount('')
+        setAmount(0)
         setCurrency('')
         setShowModal(false)
     }
+    // create fee items
     const showCreateModal = () => {
         showModal?resetStateCloseModal():setShowModal(true)
     }
     const toggleDialog = () => {
         showModal ? setShowDialog(false) : setShowDialog(true)
+    }
+    //publish program cohort semester
+    const showPublishSemesterModal = () => {
+        showPublishModal?resetStateCloseModal():setShowPublishModal(true)
+    }
+    const togglePublishModalDialog = () => {
+        showPublishModal ? setShowPublishDialog(false) : setShowPublishDialog(true)
     }
     const onSelectedCurrency = currencyAbbrev => {
         setCurrency(currencyAbbrev)
@@ -248,7 +281,10 @@ function ProgramCohortSemesterDetails () {
                                         showCreateModal()
                                     }}>
                                         Create Course Cohort
-                                    </Button>
+                                    </Button>{' '}{' '}
+                                    <Button className="float-center" variant="danger" onClick={()=>{
+                                        showPublishSemesterModal()
+                                    }}> Publish </Button>
                                 </Col>
                                 <div>
                                     {isError &&
@@ -303,7 +339,6 @@ function ProgramCohortSemesterDetails () {
                                                 setSelectedAmount(rowData.amount)
                                                 setSelectedCurrency(rowData.currency)
                                                 showCreateModal()
-                                                // edit code
                                             }
                                         }
                                     ]}
@@ -316,7 +351,7 @@ function ProgramCohortSemesterDetails () {
             <Modal
                 show={showModal}
                 onHide={showCreateModal}
-                size="lg"
+                size="sm"
                 backdrop="static"
                 aria-labelledby="contained-modal-title-vcenter"
                 centered>
@@ -334,7 +369,7 @@ function ProgramCohortSemesterDetails () {
                                     setNarrative(e.target.value)  
                                 }} required /><br/>
                             <label htmlFor='amount'><b>Amount</b></label><br/>
-                            <TextInput name='amount'  id='amount'  type="number" value = {amount}
+                            <TextInput name='amount'  id='amount'  type="text" value = {amount}
                                 onChange={(e)=>{
                                     setAmount(e.target.value)  
                                 }} required /><br/>
@@ -345,11 +380,10 @@ function ProgramCohortSemesterDetails () {
                             <button className="btn btn-info float-left"
                                 onClick={(e) => {
                                     e.preventDefault()
-                                    //handleFeeItemsPost()
                                     setShowDialog(true)
                                 }}
                             >
-                                Publish
+                                Preview
                             </button>
                         </div>
                     </ValidationForm>
@@ -359,7 +393,7 @@ function ProgramCohortSemesterDetails () {
             <Modal
                 show={showDialog}
                 onHide={toggleDialog}
-                size="sm"
+                size="lg"
                 backdrop="static"
                 centered>
                 <Modal.Header closeButton>
@@ -381,7 +415,82 @@ function ProgramCohortSemesterDetails () {
                         e.preventDefault()
                         setShowDialog(false)
                     }}>Continue editing</Button>
-                    <Button onClick={handleFeeItemsPost} variant="btn btn-danger btn-rounded">Submit</Button>
+                    <Button onClick={(e)=>{ feeItemId? handleEdit(e) :  handleFeeItemsCreation()}} variant="btn btn-danger btn-rounded">Submit</Button>
+                </Modal.Footer>
+            </Modal>
+            {/*Publish course cohort semester*/}
+            <Modal
+                show={showPublishModal}
+                onHide={showPublishSemesterModal}
+                size="sm"
+                backdrop="static"
+                aria-labelledby="contained-modal-title-vcenter"
+                centered>
+                <Modal.Header>
+                    <Modal.Title id="contained-modal-title-vcenter">
+                        Publish {programName}
+                    </Modal.Title>
+                </Modal.Header>
+                <Modal.Body>
+                    <ValidationForm>
+                        <div className='form-group'>
+                            <label htmlFor='narrative'><b>Anticipated startDate</b></label><br/>
+                            <TextInput name='narrative'  id='narrative' type="date" min={semStartDate} max={semEndDate}   value = {anticipatedStartDate}
+                                onChange={(e)=>{
+                                    setAnticipatedStartDate(e.target.value)
+                                }} required /><br/>
+                            <label htmlFor='narrative'><b>Exam Cut off Date</b></label><br/>
+                            <TextInput name='examCutoff'  id='examCutoff'  type="date" min={semStartDate} max={semEndDate} value = {examCutOffDate}
+                                onChange={(e)=>{
+                                    setExamCutOffDate(e.target.value)
+                                }} required /><br/>
+                            <label htmlFor='amount'><b>Number of Slots</b></label><br/>
+                            <TextInput name='number of Slots'  id='number of Slots'  type="number" value = {numOfSlots}
+                                onChange={(e)=>{
+                                    setNumOfSlots(e.target.value)
+                                }} required /><br/>
+                        </div>
+                        <div className='form-group'>
+                            <button className="btn btn-info float-left"
+                                onClick={(e) => {
+                                    e.preventDefault()
+                                    setShowPublishDialog(true)
+                                }}
+                            >
+                                Publish
+                            </button>
+                        </div>
+                    </ValidationForm>
+                    <button className="btn btn-danger float-right" onClick={showPublishSemesterModal}> Close </button>
+                </Modal.Body>
+            </Modal>
+            <Modal
+                show={showPublishDialog}
+                onHide={togglePublishModalDialog}
+                size="lg"
+                backdrop="static"
+                centered>
+                <Modal.Header closeButton>
+                    <Modal.Title id="contained-modal-title-vcenter">
+                        confirm publish {programName} ?
+                    </Modal.Title>
+                </Modal.Header>
+                <Modal.Body>
+                    <ValidationForm>
+                        <p>”Publishing a semester for {programCohortCode} will disable you from adding semesters to this semester for the course, continue?”</p>
+                        <div className='form-group'>
+                            <label htmlFor='narrative'><b>Anticipated Start Date : </b>{anticipatedStartDate}</label><br/>
+                            <label htmlFor='amount'><b>Exam Cutoff Date : </b>{examCutOffDate}</label><br/>
+                            <label htmlFor='currency'><b>Number of Slots : </b>{numOfSlots}</label><br/>
+                        </div><br/>
+                    </ValidationForm>
+                </Modal.Body>
+                <Modal.Footer style={{ display: 'flex', justifyContent: 'space-between' }}>
+                    <Button variant="btn btn-info btn-rounded" onClick={(e) => {
+                        e.preventDefault()
+                        setShowPublishDialog(false)
+                    }}>Continue editing</Button>
+                    <Button onClick={publishProgramCohort} variant="btn btn-danger btn-rounded">Continue to Publish</Button>
                 </Modal.Footer>
             </Modal>
         </>
