@@ -60,6 +60,7 @@ function ProgramCohortSemesters () {
     const programName = localStorage.getItem('programName')
     const anticipatedGraduation = localStorage.getItem('anticipatedGraduation')
     const programCohortId = localStorage.getItem('programCohortId')
+    const programCohortCode = localStorage.getItem('programCohortCode')
     const [data, setData] = useState([])
     const [linearDisplay, setLinearDisplay] = useState('none')
     const [isError] = useState(false)
@@ -108,7 +109,10 @@ function ProgramCohortSemesters () {
                             onRowClick={(event, row) => {
                                 window.location.href='/pcsdetails'
                                 localStorage.setItem('programName', programName)
-                                localStorage.setItem('semesterId', row.semester.id)
+                                localStorage.setItem('programCohortCode', programCohortCode)
+                                localStorage.setItem('programCohortSemesterId', row.semester.id)
+                                localStorage.setItem('semStartDate', row.semester.startDate.slice(0,10))
+                                localStorage.setItem('semEndDate', row.semester.endDate.slice(0,10))
                                 localStorage.setItem('programCohortId', row.program_cohorts_id)
                                 event.stopPropagation()
                             }}
