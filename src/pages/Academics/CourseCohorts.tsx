@@ -113,6 +113,24 @@ const CourseCohorts = ():JSX.Element => {
             })
     }
 
+    const fetchcourseCohortsByTrainerId = (trainerId: number):void => {
+        axios.get(`${timetablingSrv}/course-cohorts`, {params:{trainerId: trainerId}})
+            .then(res => {
+                const ccData = res.data
+                setData(ccData)
+                setLinearDisplay('none')
+            })
+    }
+
+    const fetchcourseCohortsBySemesterId = (semesterId: number):void => {
+        axios.get(`${timetablingSrv}/course-cohorts`, {params:{semesterId: semesterId}})
+            .then(res => {
+                const ccData = res.data
+                setData(ccData)
+                setLinearDisplay('none')
+            })
+    }
+
     const fetchTrainers = ():void => {
         axios.get(`${timetablingSrv}/trainers`)
             .then(res => {
@@ -164,6 +182,9 @@ const CourseCohorts = ():JSX.Element => {
                                                 labelId="demo-simple-select-label"
                                                 id="demo-simple-select"
                                                 style={{width:150, textAlign: 'center'}}
+                                                onChange={(e) => {
+                                                    fetchcourseCohortsByTrainerId(e.target.value) 
+                                                }}
                                             >
                                                 {
                                                     trainersData.map(tr => {
@@ -179,6 +200,9 @@ const CourseCohorts = ():JSX.Element => {
                                                 labelId="demo-simple-select-label"
                                                 id="demo-simple-select"
                                                 style={{width:150, textAlign: 'center'}}
+                                                onChange={(e) => {
+                                                    fetchcourseCohortsBySemesterId(e.target.value) 
+                                                }}
                                             >
                                                 {
                                                     semesters.map(sem => {
