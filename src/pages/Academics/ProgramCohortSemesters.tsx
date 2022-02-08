@@ -67,7 +67,7 @@ function ProgramCohortSemesters () {
         fetchProgramCohortSemester('semester',programCohortId)
     }, [])
     function fetchProgramCohortSemester(loadExtras:string, programCohortId:string) {
-        CourseCohortService.fetchCourseCohorts(loadExtras, programCohortId)
+        CourseCohortService.fetchSemestersByProgramCohortId(loadExtras, programCohortId)
             .then(res => {
                 const ccData = res['data']
                 setData(ccData)
@@ -105,6 +105,13 @@ function ProgramCohortSemesters () {
                             columns={columns}
                             data={data}
                             icons={tableIcons}
+                            onRowClick={(event, row) => {
+                                window.location.href='/pcsdetails'
+                                localStorage.setItem('programName', programName)
+                                localStorage.setItem('semesterId', row.semester.id)
+                                localStorage.setItem('programCohortId', row.program_cohorts_id)
+                                event.stopPropagation()
+                            }}
                         />
                     </Card>
                 </Col>
