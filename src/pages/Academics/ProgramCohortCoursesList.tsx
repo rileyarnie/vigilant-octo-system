@@ -193,7 +193,8 @@ const CourseCohortsList = ():JSX.Element => {
         axios
             .patch(`${timetablingSrv}/course-cohorts/${selectedRow.id}`, {
                 semesterId: selectedSemesterId,
-                programCohortId: selectedRow.programCohortId
+                programCohortId: selectedRow.programCohortId,
+                isActive:true
             })
             .then((res) => {
                 alerts.showSuccess('Succesfully updated course cohort');
