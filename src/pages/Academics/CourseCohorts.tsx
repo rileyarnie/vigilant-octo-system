@@ -183,7 +183,7 @@ const CourseCohorts = ():JSX.Element => {
                                                 id="demo-simple-select"
                                                 style={{width:150, textAlign: 'center'}}
                                                 onChange={(e) => {
-                                                    fetchcourseCohortsByTrainerId(e.target.value) 
+                                                    fetchcourseCohortsByTrainerId(e.target.value as number) 
                                                 }}
                                             >
                                                 {
@@ -201,7 +201,7 @@ const CourseCohorts = ():JSX.Element => {
                                                 id="demo-simple-select"
                                                 style={{width:150, textAlign: 'center'}}
                                                 onChange={(e) => {
-                                                    fetchcourseCohortsBySemesterId(e.target.value) 
+                                                    fetchcourseCohortsBySemesterId(e.target.value as number) 
                                                 }}
                                             >
                                                 {
