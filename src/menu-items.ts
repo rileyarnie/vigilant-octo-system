@@ -63,7 +63,7 @@ const chartData: { items: MenuItemType[] } = {
                             id: 'venues',
                             title: 'Venues',
                             type: 'item',
-                            url: '/venues',
+                            url: '/venues'
                         }
                     ]
 
@@ -102,14 +102,27 @@ const chartData: { items: MenuItemType[] } = {
                                     title: 'Cohorts',
                                     type: 'item',
                                     url: '/cohorts'
-                                },
+                                }
                             ]
                         },
                         {
                             id: 'courses',
                             title: 'Courses',
-                            type: 'item',
-                            url: '/courses'
+                            type: 'collapse',
+                            children: [
+                                {
+                                    id: 'courses',
+                                    title: 'Courses',
+                                    type: 'item',
+                                    url: '/courses'
+                                },
+                                {
+                                    id: 'cohort',
+                                    title: 'Cohorts',
+                                    type: 'item',
+                                    url: '/coursecohorts'
+                                }
+                            ]
                         },
                         {
                             id: 'semesters',
@@ -122,13 +135,13 @@ const chartData: { items: MenuItemType[] } = {
                             title: 'Applications',
                             type: 'item',
                             url: '/applications'
-                        },
+                        }
                     ]
                 }
 
             ]
         }
     ]
-};
+}
 
-export default chartData;
+export default chartData

@@ -1,8 +1,6 @@
 /* eslint-disable react/display-name */
-import React, {useState, useEffect} from 'react'
-import {forwardRef} from 'react'
-import { Alerts, ToastifyAlerts } from '../lib/Alert'
-import MaterialTable from 'material-table'
+import React,{useState,useEffect,forwardRef} from 'react'
+import MaterialTable, { Icons } from 'material-table'
 import AddBox from '@material-ui/icons/AddBox'
 import ArrowDownward from '@material-ui/icons/ArrowDownward'
 import Check from '@material-ui/icons/Check'
@@ -19,16 +17,17 @@ import SaveAlt from '@material-ui/icons/SaveAlt'
 import Search from '@material-ui/icons/Search'
 import ViewColumn from '@material-ui/icons/ViewColumn'
 import axios from 'axios'
-import { Icons } from 'material-table'
-import {Switch} from '@material-ui/core'
+import Card from '@material-ui/core/Card'
 import Alert from '@material-ui/lab/Alert'
 import Breadcrumb from '../../App/components/Breadcrumb'
-import {Row, Col, Card, Button, Modal } from 'react-bootstrap'
+import {Row,Col,Modal,Button} from 'react-bootstrap'
 import Config from '../../config'
+import {MenuItem, Select, Switch} from '@material-ui/core'
+import {ValidationForm,SelectGroup,FileInput,TextInput} from 'react-bootstrap4-form-validation'
+import CardPreview from './CardPreview'
 import {Link} from 'react-router-dom'
-import {ValidationForm, SelectGroup, TextInput} from 'react-bootstrap4-form-validation'
+import { Alerts, ToastifyAlerts } from '../lib/Alert'
 import { LinearProgress } from '@mui/material'
-import {CourseCohortService} from '../services/CourseCohortsService'
 const alerts: Alerts = new ToastifyAlerts()
 const tableIcons: Icons = {
     Add: forwardRef((props, ref) => < AddBox  {...props} ref={ref} />),
@@ -49,73 +48,66 @@ const tableIcons: Icons = {
     ThirdStateCheck: forwardRef((props, ref) => <Remove {...props} ref={ref} />),
     ViewColumn: forwardRef((props, ref) => <ViewColumn {...props} ref={ref} />)
 }
-function ProgramCohortSemesters () {
-    const columns = [
-        {title: 'ID', field: 'semester.id', editable: 'never' as const},
-        {title: 'Name', field: 'semester.name'},
-        {title: 'Start Date', render:(rowData)=>rowData.semester.startDate.slice(0,10)},
-        {title: 'End Date', render:(rowData)=>rowData.semester.endDate.slice(0,10)}
-    ]
-    const [errorMessages] = useState([])
-    const programName = localStorage.getItem('programName')
-    const anticipatedGraduation = localStorage.getItem('anticipatedGraduation')
-    const programCohortId = localStorage.getItem('programCohortId')
-    const programCohortCode = localStorage.getItem('programCohortCode')
-    const [data, setData] = useState([])
+const CourseCohortsDetails = ():JSX.Element => {
+    const [data,setData]=useState([])
+    const [trainersData,setTrainers] = useState([])
+    const [semesters,setSemesters] = useState([])
+    const [isError]=useState(false)
+    const [,setDisabled]=useState(false)
+    const [errorMessages]=useState([])
     const [linearDisplay, setLinearDisplay] = useState('none')
-    const [isError] = useState(false)
-    useEffect(() => {
-        fetchProgramCohortSemester('semester',programCohortId)
-    }, [])
-    function fetchProgramCohortSemester(loadExtras:string, programCohortId:string) {
-        CourseCohortService.fetchSemestersByProgramCohortId(loadExtras, programCohortId)
+    const timetablingSrv=Config.baseUrl.timetablingSrv
+   
+    const columns=[
+        { title: 'Course Cohort ID', field: 'id', hidden: false },
+        { title: 'Student ID', field: 'student.id', hidden: false },
+        { title: 'Marks Type', field: 'courseCohortMarks.typeOfMarks' },
+        { title: 'Diploma Marks', field: 'courseCohortMarks.diplomaMarks' },
+        { title: 'Bachelor Marks', field: 'courseCohortMarks.bachelorMarks' },
+        { title: 'Masters Marks', field: 'courseCohortMarks.mastersMarks' },
+        { title: 'PHD Marks', field: 'courseCohortMarks.phdMarks' },
+        { title: 'CB Marks', field: 'courseCohortMarks.competencyBasedMarks' },
+        { title: 'Short Term Marks', field: 'courseCohortMarks.shortTermMarks' }
+    ]
+    useEffect(()=>{
+        setLinearDisplay('block')
+        fetchcourseCohorts()
+    },[])
+    const fetchcourseCohorts = ():void => {
+        axios.get(`${timetablingSrv}/course-cohorts`, {params:{loadExtras:'marks,student' }})
             .then(res => {
-                const ccData = res['data']
+                const ccData = res.data
                 setData(ccData)
                 setLinearDisplay('none')
             })
-            .catch((error)=>{
-                console.error(error)
-                alerts.showError(error.message)
-            })
     }
+
     return (
         <>
             <Row className='align-items-center page-header'>
                 <Col>
                     <Breadcrumb/>
                 </Col>
-
             </Row>
-            <LinearProgress style={{display: linearDisplay}} />
+            <LinearProgress  style={{display: linearDisplay}} /> 
             <Row>
-
                 <Col>
                     <Card>
                         <div>
-                            {isError &&
+                            {isError&&
                             <Alert severity='error'>
-                                {errorMessages.map((msg, i) => {
+                                {errorMessages.map((msg,i)=>{
                                     return <div key={i}>{msg}</div>
                                 })}
                             </Alert>
                             }
                         </div>
                         <MaterialTable
-                            title={`${programName} of ${anticipatedGraduation} semesters`}
+                            title='Course Cohort Student/Marks Details' 
+                            icons={tableIcons}
                             columns={columns}
                             data={data}
-                            icons={tableIcons}
-                            onRowClick={(event, row) => {
-                                window.location.href='/pcsdetails'
-                                localStorage.setItem('programName', programName)
-                                localStorage.setItem('programCohortCode', programCohortCode)
-                                localStorage.setItem('programCohortSemesterId', row.semester.id)
-                                localStorage.setItem('semStartDate', row.semester.startDate.slice(0,10))
-                                localStorage.setItem('semEndDate', row.semester.endDate.slice(0,10))
-                                localStorage.setItem('programCohortId', row.program_cohorts_id)
-                                event.stopPropagation()
-                            }}
+                            options={{actionsColumnIndex:-1}}
                         />
                     </Card>
                 </Col>
@@ -123,4 +115,5 @@ function ProgramCohortSemesters () {
         </>
     )
 }
-export default ProgramCohortSemesters
+
+export default CourseCohortsDetails
