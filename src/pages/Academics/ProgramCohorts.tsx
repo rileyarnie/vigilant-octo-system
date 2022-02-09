@@ -149,7 +149,6 @@ const ProgramCohorts = ():JSX.Element => {
                     inputProps={{'aria-label':'controlled'}}
                     defaultChecked={!row.program_cohorts_isActive}
                 />
-            
         },
         {
             title: 'Actions',
@@ -190,7 +189,7 @@ const ProgramCohorts = ():JSX.Element => {
     ]
     useEffect(()=>{
         setLinearDisplay('block')
-        axios.get(`${timetablingSrv}/program-cohorts`,{params:{programId:setProgramId}})
+        axios.get(`${timetablingSrv}/program-cohorts`,{params:{programId:programId}})
             .then(res=>{
                 setLinearDisplay('none')
                 setData(res.data)

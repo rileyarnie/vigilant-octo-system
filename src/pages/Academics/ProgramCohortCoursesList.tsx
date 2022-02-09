@@ -119,7 +119,7 @@ const CourseCohortsList = ():JSX.Element => {
     const financeSrv = Config.baseUrl.financeSrv;
     const programName = localStorage.getItem('programName');
     const anticipatedGraduation = localStorage.getItem('anticipatedGraduation');
-    const progId = JSON.parse(localStorage.getItem('programId'));
+    const progId = parseInt(localStorage.getItem('programId'));
     const programCohortCode = localStorage.getItem('program_cohort_code');
     const [showPublishModal, setShowPublish] = useState(false);
     const [showDialog, setDialog] = useState(false);
