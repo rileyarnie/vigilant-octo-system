@@ -177,6 +177,7 @@ const ProgramCohorts = ():JSX.Element => {
                         onClick={() => {
                             localStorage.setItem('programId', row.pg_id)
                             localStorage.setItem('programName', row.pg_name)
+                            localStorage.setItem('semesterId', row.semesterId)
                             localStorage.setItem('programCohortId', row.program_cohorts_id)
                             localStorage.setItem('program_cohort_code', row.program_cohorts_code)
                             localStorage.setItem('anticipatedGraduation', `${row.program_cohorts_anticipatedGraduationMonth}/${row.program_cohorts_anticipatedGraduationYear}`)
@@ -189,7 +190,7 @@ const ProgramCohorts = ():JSX.Element => {
     ]
     useEffect(()=>{
         setLinearDisplay('block')
-        axios.get(`${timetablingSrv}/program-cohorts`,{params:{programId:programId}})
+        axios.get(`${timetablingSrv}/program-cohorts`,{params: {loadExtras:'programs'}})
             .then(res=>{
                 setLinearDisplay('none')
                 setData(res.data)
@@ -217,7 +218,7 @@ const ProgramCohorts = ():JSX.Element => {
     },[])
     const fetchProgramCohorts=(): void =>{
         setLinearDisplay('block')
-        axios.get(`${timetablingSrv}/program-cohorts`)
+        axios.get(`${timetablingSrv}/program-cohorts`, {params:{loadExtras:'programs'}})
             .then(res => {
                 res.data.forEach(program => {
                     program.name = getProgramName(res.data[0].programId)
