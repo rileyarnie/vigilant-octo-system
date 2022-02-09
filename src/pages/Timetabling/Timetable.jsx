@@ -11,6 +11,7 @@ import { TrainerService } from '../../services/TrainerService'
 import { TimetableService } from '../../services/TimetableService'
 import { VenueService } from '../../services/VenueService'
 import moment from 'moment'
+import { Button } from 'react-bootstrap'
 const alerts = new ToastifyAlerts()
 const currentDate = new Date()
 const draggingGroupName = 'appointmentsGroup'
@@ -188,6 +189,7 @@ class Timetable extends React.Component {
         TimetableService.createTimetableUnit(timetableUnit)
             .then(() => {
                 alerts.showSuccess('TimetableUnit added successfully')
+               
             })
             .catch((error) => {
                 //handle error using logging library
@@ -320,7 +322,7 @@ class Timetable extends React.Component {
 
         }
         
-        alert('ff')
+
         TimetableService.updateTimetableUnit(updatedTimetablingUnit)
             .then(res => {
                 console.log(res)
@@ -347,10 +349,24 @@ class Timetable extends React.Component {
         }
     }
 
+    async publishTimetable(){
+        await SemesterService.publishTimetable(this.state.semesterId)
+        .then(res => {
+            console.log(res)
+            alerts.showSuccess('Timetable published successfully')
+        })
+        .catch((error) => {
+            console.error(error)
+            // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
+            alerts.showError(error.message)
+        })
+    }
     render() {
         return (
             <React.Fragment>
+                {this.state.semesterId? <Button  onClick={() =>  this.publishTimetable() } className="float-right" variant="danger" style={{transform: `translateX(${-40}px)`}} >Publish Timetable</Button>: '' }               
                 <ScrollView id="scroll">
+                {/* {this.state.semesterId? <Button className="float-right" variant="danger">Publish Timetable</Button> : ''} */}                
                     <Draggable
                         id="list"
                         data="dropArea"
@@ -427,7 +443,7 @@ class Timetable extends React.Component {
                         onRemove={this.onAppointmentRemove}
                         onAdd={this.onAppointmentAdd}
                     />
-                </Scheduler>
+                </Scheduler>                
             </React.Fragment>
         )
     }

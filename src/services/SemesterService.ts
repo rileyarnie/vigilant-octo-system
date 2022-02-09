@@ -7,4 +7,8 @@ export class SemesterService {
         return axios.get(`${timetablingSrv}/semesters`)
     }
 
+    static async publishTimetable(semesterId:number):Promise<void>{
+        return axios.put(`${Config.baseUrl.timetablingSrv}/semesters/${semesterId}`,{body:{isPublished:true}})
+    }
+
 }
