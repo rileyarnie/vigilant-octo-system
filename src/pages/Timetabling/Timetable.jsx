@@ -4,6 +4,7 @@ import Draggable from 'devextreme-react/draggable'
 import 'devextreme/dist/css/dx.light.css'
 import ScrollView from 'devextreme-react/scroll-view'
 import './timetable.css'
+import SelectBox from 'devextreme-react/select-box';
 import FormControl from '@mui/material/FormControl'
 import { MenuItem, Select } from '@material-ui/core'
 import CourseCohortService from '../../services/CourseCohortsService'
@@ -15,11 +16,6 @@ import { Button } from 'react-bootstrap'
 const alerts = new ToastifyAlerts()
 const currentDate = new Date()
 const draggingGroupName = 'appointmentsGroup'
-
-//import Trainer from '../pages/services/Trainer'
-//import TimetableUnit from '../pages/services/TimetableUnit'
-//import Semester from '../pages/services/Semester'
-//import CourseCohort from '../pages/services/CourseCohort'
 import { ToastifyAlerts } from '../lib/Alert'
 import { SemesterService } from '../../services/SemesterService'
 const venueData = VenueService.fetchVenues().then((res) => {
@@ -89,6 +85,12 @@ class Timetable extends React.Component {
                     }
                 })
                 this.setState({courseCohort:courseCohortData})
+                const semData = myData.semester;
+                const startDate = moment(semData?.startDate)
+                const endDate = moment(semData?.endDate)
+                this.setState({startDate: startDate.toISOString().slice(0,10)})
+                this.setState({endDate: endDate.toISOString().slice(0,10)})
+                const weeks = Math.floor(moment.duration(endDate.diff(startDate)).asWeeks())
                 const dataSource = myData.map((t) => 
                     t.timetablingUnit.map((tt) => {
                         return {
@@ -161,11 +163,9 @@ class Timetable extends React.Component {
     // }
     onAppointmentRemove(e) {
         const index = this.state.timetableData.indexOf(e.itemData)
-
         if (index >= 0) {
             this.state.timetableData.splice(index, 1)
             this.state.courseCohort.push(e.itemData)
-
             this.setState({
                 courseCohort: [...this.state.courseCohort],
                 timetableData: [...this.state.timetableData]
@@ -199,7 +199,6 @@ class Timetable extends React.Component {
         if (index >= 0) {
             this.state.courseCohort.splice(index, 1)
             this.state.timetableData.push(e.itemData)
-
             this.setState({
                 timetableUnits: [...this.state.courseCohort],
                 timetableData: [...this.state.timetableData]
@@ -216,11 +215,9 @@ class Timetable extends React.Component {
         // alert (JSON.stringify(t))
         let  venueId  = e.appointmentData
         let  trainerId = 0
-
         let timetablingUnitId = t.timetablingUnitId
         form.option('items', [
             {
-
                 label: {
                     text: 'Select Trainer'
                 },
@@ -319,10 +316,8 @@ class Timetable extends React.Component {
             endTime: this.state.endTime,
             numSessions: this.state.numSessions,
             trainerId: this.state.trainerId
-
         }
         
-
         TimetableService.updateTimetableUnit(updatedTimetablingUnit)
             .then(res => {
                 console.log(res)
@@ -334,21 +329,17 @@ class Timetable extends React.Component {
                 alerts.showError('Couldnt update Timetable')
             })
     }
-
     onListDragStart(e) {
         e.cancel = true
     }
-
     onItemDragStart(e) {
         e.itemData = e.fromData
     }
-
     onItemDragEnd(e) {
         if (e.toData) {
             e.cancel = true
         }
     }
-
     async publishTimetable(){
         await SemesterService.publishTimetable(this.state.semesterId)
         .then(res => {
@@ -364,43 +355,27 @@ class Timetable extends React.Component {
     render() {
         return (
             <React.Fragment>
-                {this.state.semesterId? <Button  onClick={() =>  this.publishTimetable() } className="float-right" variant="danger" style={{transform: `translateX(${-40}px)`}} >Publish Timetable</Button>: '' }               
+                {this.state.semesterId? <Button  onClick={() =>  this.publishTimetable() } className="float-right" variant="danger" style={{transform: `translateX(${-40}px)`}} >Publish Timetable</Button>: '' }
+                <div className="option">
+                          <span className="text-center"><b>Select a semester</b></span>
+                          <SelectBox
+                            items={this.state.semesters}
+                            displayExpr="name"
+                            valueExpr="id"
+                            width={240}
+                            //value={id}
+                            onValueChanged = {(e) => { this.setState({ semesterId: e.value})
+                                    this.fetchCourseCohorts('course, timetablingUnits, semesters',this.state.semesterId)
+                                    }}
+                          />
+                        </div>
                 <ScrollView id="scroll">
-                {/* {this.state.semesterId? <Button className="float-right" variant="danger">Publish Timetable</Button> : ''} */}                
+                {/* {this.state.semesterId? <Button className="float-right" variant="danger">Publish Timetable</Button> : ''} */}
                     <Draggable
                         id="list"
                         data="dropArea"
                         group={draggingGroupName}
                         onDragStart={this.onListDragStart}>
-                        <FormControl sx={{ m: 1, minWidth: 120 }}>
-                            <Select
-                                labelId="demo-simple-select-helper-label"
-                                id="demo-simple-select-helper"
-                                label="Semester"
-
-                                //onChange={handleChange}
-                            >
-                                {this.state.semesters.map((sem, index) =>
-                                    <li key={index}
-                                        onClick={(e) => {                                        
-                                            this.setState({semesterId: sem.id})
-                                            this.setState({startDate: sem.startDate.slice(0,10)})
-                                            this.setState({endDate: sem.endDate.slice(0,10)})
-                                            const startDate = moment(this.state.startDate)
-                                            const endDate = moment(this.state.endDate)
-                                            const weeks = Math.floor(moment.duration(endDate.diff(startDate)).asWeeks())
-                                            console.log(weeks)
-                                            console.log(startDate)
-                                            console.log(endDate)
-                                            this.setState({maxNumUnitRepetition: weeks})
-                                            //this.fetchTimetableData(this.state.semesterId)
-                                            this.fetchCourseCohorts('course, timetablingUnits, semesters',this.state.semesterId)
-                                        }}>
-                                        <MenuItem key={sem.id} value={sem.id}>{sem.name}</MenuItem><br/>
-                                    </li>
-                                )}
-                            </Select>
-                        </FormControl>
                         {this.state.courseCohort.map((courseCohort) =>
                             <Draggable
                                 key={courseCohort.id}
@@ -447,7 +422,5 @@ class Timetable extends React.Component {
             </React.Fragment>
         )
     }
-
 }
-
 export default Timetable
