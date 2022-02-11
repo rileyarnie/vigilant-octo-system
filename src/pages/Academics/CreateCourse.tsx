@@ -49,7 +49,8 @@ class CourseCreation extends Component <Props> {
             description: this.state.description,
             trainingHours: this.state.trainingHours,
             isTimetableable: this.state.isTimetablable,
-            needsTechnicalAssistant: this.state.needsTechnicalAssistant
+            needsTechnicalAssistant: this.state.needsTechnicalAssistant,
+            courseOutline: this.state.courseOutline
         }
         this.props.setLinearDisplay('block')
         axios.post(`${timetablingSrv}/courses`, course)
@@ -65,7 +66,8 @@ class CourseCreation extends Component <Props> {
                     trainingHours: '',
                     isTimetableable: '',
                     needsTechnicalAssistant: '',
-                    isElective: ''
+                    isElective: '',
+                    courseOutline: ''
                 })
                 this.props.fetchCourses()
             })
