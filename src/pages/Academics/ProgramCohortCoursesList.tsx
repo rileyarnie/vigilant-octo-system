@@ -82,9 +82,9 @@ const CourseCohortsList = ():JSX.Element => {
         { title: 'Course cohort ID', field: 'id', hidden: false },
         { title: 'Course code', field: 'course.codePrefix' },
         { title: 'Course Name', field: 'course.name' },
-        { title: 'Semester id', field: 'semesterId' },
-        { title: 'Start date', render:(rowData)=>rowData?.semester?.startDate?.slice(0,10) },
-        { title: 'End date',  render:(rowData)=>rowData?.semester?.endDate?.slice(0,10)  },
+        { title: 'Semester id', field: 'programCohortSemester.semesterId' },
+        { title: 'Start date', render:(rowData)=>rowData?.programCohortSemester.semester?.startDate?.slice(0,10) },
+        { title: 'End date',  render:(rowData)=>rowData?.programCohortSemester.semester?.endDate?.slice(0,10)  },
         {
             title:'Activation Status',
             field:'internal_action',
@@ -148,6 +148,7 @@ const CourseCohortsList = ():JSX.Element => {
         axios.get(`${timetablingSrv}/course-cohorts`, {params:{programCohortId: programCohortId, loadExtras:'course,semester' }})
             .then(res => {
                 const ccData = res.data;
+                console.log(ccData)
                 setData(ccData);
                 setLinearDisplay('none');
             });
@@ -340,7 +341,6 @@ const CourseCohortsList = ():JSX.Element => {
                     <Modal.Header closeButton>
                         <Modal.Title>Confirm publish</Modal.Title>
                     </Modal.Header>
-
                     <Modal.Body>
                         <p>Publishing a semester for {programCohortCode} will disable you from adding semesters to this semester for the course, continue?</p>
                     </Modal.Body>
@@ -373,7 +373,7 @@ const CourseCohortsList = ():JSX.Element => {
                                 onChange={(e)=>{
                                     console.log(e.target.value);
                                 }}/><br/>
-                            <label htmlFor='semester'><b>Semester</b></label><br />
+                            <label htmlFor='semester'><b>Semester</b></label><br/>
                             <SelectGroup
                                 name="semester"
                                 id="semester"

@@ -51,10 +51,10 @@ const tableIcons: Icons = {
 }
 function ProgramCohortSemesters () {
     const columns = [
-        {title: 'ID', field: 'semester.id', editable: 'never' as const},
-        {title: 'Name', field: 'semester.name'},
-        {title: 'Start Date', render:(rowData)=>rowData.semester.startDate.slice(0,10)},
-        {title: 'End Date', render:(rowData)=>rowData.semester.endDate.slice(0,10)}
+        {title: 'ID', field: 'programCohortSemester.semester.id', editable: 'never' as const},
+        {title: 'Name', field: 'programCohortSemester.semester.name'},
+        {title: 'Start Date', render:(rowData)=>rowData.programCohortSemester.semester?.startDate?.slice(0,10)},
+        {title: 'End Date', render:(rowData)=>rowData.programCohortSemester.semester?.endDate?.slice(0,10)}
     ]
     const [errorMessages] = useState([])
     const programName = localStorage.getItem('programName')
@@ -72,6 +72,7 @@ function ProgramCohortSemesters () {
             .then(res => {
                 const ccData = res['data']
                 setData(ccData)
+                console.log(ccData)
                 setLinearDisplay('none')
             })
             .catch((error)=>{
