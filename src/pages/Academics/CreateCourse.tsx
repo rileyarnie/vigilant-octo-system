@@ -1,21 +1,21 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import React, { Component } from 'react';
-import axios from 'axios';
-import { Row, Col, Card,} from 'react-bootstrap';
-import { ValidationForm, SelectGroup, TextInput } from 'react-bootstrap4-form-validation';
-import Config from '../../config';
-import Select from 'react-select';
-import { Alerts, ToastifyAlerts } from '../lib/Alert';
-import { customSelectTheme } from '../lib/SelectThemes';
-import LinearProgress from '@mui/material/LinearProgress';
-const alerts: Alerts = new ToastifyAlerts();
+import React, { Component } from 'react'
+import axios from 'axios'
+import { Row, Col, Card} from 'react-bootstrap'
+import { ValidationForm, SelectGroup, TextInput } from 'react-bootstrap4-form-validation'
+import Config from '../../config'
+import Select from 'react-select'
+import { Alerts, ToastifyAlerts } from '../lib/Alert'
+import { customSelectTheme } from '../lib/SelectThemes'
+import LinearProgress from '@mui/material/LinearProgress'
+const alerts: Alerts = new ToastifyAlerts()
 interface Props extends React.HTMLAttributes<Element> {
     setModal:any,
     setLinearDisplay:any
     fetchCourses:any
     linearDisplay: any
 }
-const timetablingSrv = Config.baseUrl.timetablingSrv;
+const timetablingSrv = Config.baseUrl.timetablingSrv
 class CourseCreation extends Component <Props> {
     options = [] as any;
     coursesArr=[];
@@ -28,35 +28,37 @@ class CourseCreation extends Component <Props> {
         isElective: '',
         needsTechnicalAssistant: '',
         courses:[],
-        selectedCourses:[]
+        selectedCourses:[],
+        courseOutline: ''
     };
 
     componentDidMount(){
-        this.fetchCoursesAndInitSelect();
+        this.fetchCoursesAndInitSelect()
     }
     handleChange = (e) => {
         this.setState({
             [e.target.name]: e.target.value
-        });
+        })
     };
 
     handleSubmit = (e) => {
-        e.preventDefault();
+        e.preventDefault()
         const course = {
             name: this.state.name,
             prerequisiteCourses: this.coursesArr,
             description: this.state.description,
             trainingHours: this.state.trainingHours,
             isTimetableable: this.state.isTimetablable,
-            needsTechnicalAssistant: this.state.needsTechnicalAssistant
-        };
-        this.props.setLinearDisplay('block');
+            needsTechnicalAssistant: this.state.needsTechnicalAssistant,
+            courseOutline: this.state.courseOutline
+        }
+        this.props.setLinearDisplay('block')
         axios.post(`${timetablingSrv}/courses`, course)
             .then(res => {
                 //handle success
-                console.log(res);
-                this.props.setModal(false);
-                alerts.showSuccess('Course created succesfully');
+                console.log(res)
+                this.props.setModal(false)
+                alerts.showSuccess('Course created succesfully')
                 this.setState({
                     name: '',
                     prerequisiteCourses: '',
@@ -65,18 +67,19 @@ class CourseCreation extends Component <Props> {
                     isTimetableable: '',
                     needsTechnicalAssistant: '',
                     isElective: '',
-                });
-                this.props.fetchCourses();
+                    courseOutline: ''
+                })
+                this.props.fetchCourses()
             })
             .catch((error) => {
                 //handle error using logging library
-                console.error(error);
-                alerts.showError(error.message);
-            });
+                console.error(error)
+                alerts.showError(error.message)
+            })
     };
 
     handleErrorSubmit = (e, _formData, errorInputs) => {
-        console.error(errorInputs);
+        console.error(errorInputs)
     };
     selectStyle = {
         width:'100%',
@@ -87,21 +90,21 @@ class CourseCreation extends Component <Props> {
             .get(`${timetablingSrv}/courses`)
             .then((res) => {
                 this.setState({
-                    courses: res.data});
+                    courses: res.data})
                 this.state.courses.map((course)=>{
-                    return this.options.push({value:course.id, label:course.name});
-                });
+                    return this.options.push({value:course.id, label:course.name})
+                })
 
             })
             .catch((error) => {
-                console.error(error);
-                alerts.showError(error.message);
-            });
+                console.error(error)
+                alerts.showError(error.message)
+            })
     };
     handleSelectChange = (selectedOptions) => {
         selectedOptions?.map((el)=>{
-            this.coursesArr.push(el.value);
-        });
+            this.coursesArr.push(el.value)
+        })
     };
 
     render(): JSX.Element {
@@ -134,6 +137,8 @@ class CourseCreation extends Component <Props> {
                                                 <TextInput name='description' multiline rows="3" required id='desc' type='text' value={this.state.description} placeholder="enter description" onChange={this.handleChange} /><br />
                                                 <label htmlFor='trainingHours'><b>Training Hours</b></label>
                                                 <TextInput name='trainingHours' id='hours' type='text' value={this.state.trainingHours} placeholder="number of hours" required onChange={this.handleChange} /><br />
+                                                <label htmlFor='courseOutline'><b>Course outline</b></label>
+                                                <TextInput name='courseOutline' multiline rows="4" required id='desc' type='text' value={this.state.courseOutline} placeholder="enter course outline" onChange={this.handleChange} /><br />
                                                 <label htmlFor='tiimetablelable'><b>Timetablable?</b></label><br />
                                                 <SelectGroup name='timetabelable' id='timetableable' required onChange={this.handleChange}>
                                                     <option value="">--- Please select ---</option>
@@ -165,8 +170,8 @@ class CourseCreation extends Component <Props> {
                     </Col>
                 </Row>
             </>
-        );
+        )
     }
 }
 
-export default CourseCreation;
+export default CourseCreation
