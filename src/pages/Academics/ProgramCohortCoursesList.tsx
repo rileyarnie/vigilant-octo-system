@@ -83,8 +83,8 @@ const CourseCohortsList = ():JSX.Element => {
         { title: 'Course code', field: 'course.codePrefix' },
         { title: 'Course Name', field: 'course.name' },
         { title: 'Semester id', field: 'programCohortSemester.semesterId' },
-        { title: 'Start date', render:(rowData)=>rowData?.programCohortSemester.semester?.startDate?.slice(0,10) },
-        { title: 'End date',  render:(rowData)=>rowData?.programCohortSemester.semester?.endDate?.slice(0,10)  },
+        { title: 'Start date', render:(rowData)=>rowData?.programCohortSemester?.semester?.startDate?.slice(0,10) },
+        { title: 'End date',  render:(rowData)=>rowData?.programCohortSemester?.semester?.endDate?.slice(0,10)  },
         {
             title:'Activation Status',
             field:'internal_action',
