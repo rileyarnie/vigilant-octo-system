@@ -83,38 +83,6 @@ class Timetable extends React.Component {
         CourseCohortService.fetchCourseCohorts(loadExtras, semesterId)
             .then((res) => {
                 const courseCohorts = res.data
-                // this.courseCohortData = courseCohorts
-                // // const courseCohortData = courseCohorts.map((cc) => {
-                // //     return {
-                // //         text: cc.course.name,
-                // //         id: cc.id,
-                // //         trainerId: cc.trainerId,
-                // //         trainingHours: cc.course.trainingHours
-                // //     }
-                // // })
-                // this.setState({courseCohort:courseCohortData})
-                // const semData = myData.semester;
-                // const startDate = moment(semData?.startDate)
-                // const endDate = moment(semData?.endDate)
-                // this.setState({startDate: startDate.toISOString().slice(0,10)})
-                // this.setState({endDate: endDate.toISOString().slice(0,10)})
-                // const weeks = Math.floor(moment.duration(endDate.diff(startDate)).asWeeks())
-                // const dataSource = myData.map((t) => 
-                //     .timetablingUnit.map((tt) => {
-                //         return {
-                //             text: t.course.name,
-                //             timetablingUnitId: tt.id,
-                //             courseCohortId: tt.courseCohortId,
-                //             dayOfWeek: tt.dayOfWeek,
-                //             numSessions: tt.numSessions,
-                //             venueId: 45,
-                //             trainerId: 46,
-                //             startDate: new Date(moment(new Date().toISOString().slice(0, 10)+' '+tt.startTime).toISOString()),
-                //             endDate: new Date(moment(new Date().toISOString().slice(0, 10)+' '+tt.endTime).toISOString())
-                //         }
-                //     })
-                    
-                // )
                 let datasourceTu = []
                 for(const courseCohort of courseCohorts){
                     courseCohort.timetablingUnit.map((tu) => {
@@ -140,30 +108,7 @@ class Timetable extends React.Component {
                 alerts.showError(error.message)
             })
     };
-    //     fetchTimetableData = (semesterId:number) => {
-    //             TimetableService.getTimetableUnit(semesterId)
-    //                 .then((res) => {
-    //                     const data = res['data']
-    //                     const dataS = data.map((t) => {
-    //                     return {
-    //                     text: 'Hello Kenya',
-    //                     timetablingUnitId: t.id,
-    //                     courseCohortId: t.courseCohortId,
-    //                     dayOfWeek: t.dayOfWeek,
-    //                     numSessions: t.numSessions,
-    //                     venueId: t.venueId,
-    //                     trainerId: t.trainerId,
-    //                     startDate: new Date(moment(new Date().toISOString().slice(0, 10)+' '+t.startTime).toISOString()),
-    //                     endDate: new Date(moment(new Date().toISOString().slice(0, 10)+' '+t.endTime).toISOString())
-    //                     }
-    //                    })
-    //                 this.setState({timetableData:dataS})
-    //                 })
-    //                 .catch((error) => {
-    //                     console.error(error)
-    //                     alerts.showError(error.message)
-    //                 })
-    //         };
+
     fetchSemesters = () => {
         SemesterService.fetchSemesters()
             .then((res) => {
@@ -183,10 +128,7 @@ class Timetable extends React.Component {
             })
         })
     }
-    // validSessionUpdate = (trainingHours:number, weeksInSemester:number, sessions:number) => {
-    //     const minimum = Math.min(trainingHours, weeksInSemester)
-    //     return sessions < minimum
-    // }
+
     onAppointmentRemove(e) {
         const index = this.state.timetableData.indexOf(e.itemData)
         if (index >= 0) {
@@ -210,10 +152,7 @@ class Timetable extends React.Component {
             numSessions: min || 1,
             durationInMinutes: 60
         }
-        // console.log(timetableData)
-        // console.log(timetableUnit)
-        // this.validSessionUpdate(timetableData.trainingHours,this.state.maxNumUnitRepetition,7 );
-        // this.sumNumSession();
+
         TimetableService.createTimetableUnit(timetableUnit)
             .then(() => {
                 alerts.showSuccess('TimetableUnit added successfully')
@@ -343,11 +282,9 @@ class Timetable extends React.Component {
         ])
 
     }
-    // eslint-disable-next-line @typescript-eslint/explicit-function-return-type
 
 
     handleEdit (e) {
-        //const timetablingUnitId = e.timetableData.timetablingUnitId
 
         const updatedTimetablingUnit = {
             timetablingUnitId: e.appointmentData.timetablingUnitId,
