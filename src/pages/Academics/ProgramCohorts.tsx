@@ -30,6 +30,7 @@ import CardPreview from './CardPreview'
 import {Link} from 'react-router-dom'
 import { Alerts, ToastifyAlerts } from '../lib/Alert'
 import { LinearProgress } from '@mui/material'
+import { ProgramCohortService } from '../services/ProgramCohortService'
 const alerts: Alerts = new ToastifyAlerts()
 const tableIcons: Icons = {
     Add: forwardRef((props, ref) => < AddBox  {...props} ref={ref} />),
@@ -83,8 +84,11 @@ const ProgramCohorts = ():JSX.Element => {
     const [selectedDescription]=useState()
     const [showModal,setModal]=useState(false)
     const [cohortId,setCohortId]=useState(null)
+    const [cohortName,setCohortName]=useState('')
+    const [programCohortId,setProgramCohortId]=useState(0)
     const [errorMessages]=useState([])
     const [showUploadModal, setShowUploadModal] = useState(false)
+    const [cancelModal, setCancelModal] = useState(false)
     const [selectedProgramCohort,setSelectedProgramCohort] = useState<programCohort>()
     const [linearDisplay, setLinearDisplay] = useState('none')
     const timetablingSrv=Config.baseUrl.timetablingSrv
@@ -162,6 +166,15 @@ const ProgramCohorts = ():JSX.Element => {
                             setSelectedProgramCohort(row)
                         }}>
                         <MenuItem value="Edit">Edit</MenuItem>
+                    </button>
+                    <button className="btn btn btn-link"
+                        onClick={() => {
+                            setCohortId(row.program_cohorts_id)
+                            setCohortName(row.pg_name)
+                            toggleCancelModal()
+                            setSelectedProgramCohort(row)
+                        }}>
+                        <MenuItem value="Edit">Cancel</MenuItem>
                     </button>
                     <Link to='/cohortscourses'
                         onClick={() => {
@@ -295,7 +308,20 @@ const ProgramCohorts = ():JSX.Element => {
         // console.log(typeof cohort.programId);
         createCohort(cohort)
     }
-
+    function handleCancellation () {
+        const cancelletionData = {
+                status: 'canceled'
+        };
+        ProgramCohortService.cancelProgramCohort(cohortId, cancelletionData)
+            .then((res)=>{
+                console.log(res)
+                alerts.showSuccess('Successfully cancelled a program cohort')
+            })
+            .catch((error) => {
+                alerts.showError(error.response.data)
+                console.log(error)
+            })
+    }
     const createCohort=(cohortData): void =>{
         console.log(cohortData)
         setLinearDisplay('block')
@@ -327,6 +353,9 @@ const ProgramCohorts = ():JSX.Element => {
     }
     const toggleUploadModal=()=>{
         showModal?setShowUploadModal(false):setShowUploadModal(true)
+    }
+    const toggleCancelModal=()=>{
+        cancelModal?setCancelModal(false):setCancelModal(true)
     }
     const getProgramName = (id: number): string => {
         return programs.filter(program => {
@@ -487,7 +516,6 @@ const ProgramCohorts = ():JSX.Element => {
                 <Modal.Header closeButton>
                     <Modal.Title>Add image</Modal.Title>
                 </Modal.Header>
-
                 <Modal.Body>
                     <ValidationForm>
                         <FileInput name="fileUploaded" id="image" encType="multipart/form-data"
@@ -503,14 +531,32 @@ const ProgramCohorts = ():JSX.Element => {
                             }}/>
                     </ValidationForm>
                 </Modal.Body>
-
                 <Modal.Footer style={{ display: 'flex', justifyContent: 'space-between' }}>
                     <Button variant="btn btn-info btn-rounded" onClick={toggleUploadModal}>Close</Button>
                     <Button onClick={() => {
                         handleUpload() 
                     }} variant="btn btn-danger btn-rounded">Upload</Button>
                 </Modal.Footer>
-
+            </Modal>
+            <Modal
+                backdrop="static"
+                show={cancelModal}
+                onHide={toggleCancelModal}
+                size="sm"
+                centered
+            >
+                <Modal.Header closeButton>
+                    <Modal.Title >Cancel program cohort</Modal.Title>
+                </Modal.Header>
+                <Modal.Body>
+                    <ValidationForm>
+                        <p className="text-centre">You are about to cancel  :  {cohortName} Click <b>confirm</b> to proceed</p>
+                    </ValidationForm>
+                </Modal.Body>
+                <Modal.Footer style={{ display: 'flex', justifyContent: 'space-between' }}>
+                    <Button variant="btn btn-danger btn-rounded" onClick={toggleCancelModal}>Close</Button>
+                    <Button variant="btn btn-info btn-rounded" onClick={() => { handleCancellation() }} >Confirm</Button>
+                </Modal.Footer>
             </Modal>
         </>
     )
