@@ -1,5 +1,3 @@
-/* eslint-disable @typescript-eslint/explicit-function-return-type */
-/* eslint-disable @typescript-eslint/no-unsafe-return */
 import React from 'react'
 import Scheduler, { AppointmentDragging } from 'devextreme-react/scheduler'
 import Draggable from 'devextreme-react/draggable'
@@ -35,14 +33,12 @@ const trainerData = TrainerService.fetchTrainers().then((res) => {
         console.error(error)
     })
 class Timetable extends React.Component {
-    //myData:CourseCohort[];
+
     courseCohortData = []
     constructor(props) {
         super(props)
         this.state = {
             courseCohort: [],
-            //timetableData: {},
-            //trainers,
             venues: [],
             startDate: '',
             endDate: '',
@@ -75,10 +71,9 @@ class Timetable extends React.Component {
     componentDidMount() {
         this.fetchCourseCohorts('course, timetablingUnits, semesters',this.state.semesterId)
         this.fetchSemesters()
-        //this.fetchTimetableData(this.state.semesterId)
         this.sumNumSession()
     }
-    // eslint-disable-next-line @typescript-eslint/explicit-member-accessibility
+
     fetchCourseCohorts = ( loadExtras, semesterId) => {
         CourseCohortService.fetchCourseCohorts(loadExtras, semesterId)
             .then((res) => {
