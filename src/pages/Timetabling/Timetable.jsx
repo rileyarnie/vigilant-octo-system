@@ -347,11 +347,10 @@ class Timetable extends React.Component {
 
 
     handleEdit (e) {
-        const timetablingUnitId = 1//this.getTimetablingUnitId(this.courseCohortData,e.timetableData.id)
-        console.log('psxr',this.courseCohortData)
+        //const timetablingUnitId = e.timetableData.timetablingUnitId
+
         const updatedTimetablingUnit = {
-            // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-            timetablingUnitId: timetablingUnitId,
+            timetablingUnitId: e.appointmentData.timetablingUnitId,
             venueId: this.state.venueId,
             recurrenceStartDate: this.state.recurrenceStartDate,
             recurrenceEndDate: this.state.recurrenceEndDate,
@@ -360,7 +359,7 @@ class Timetable extends React.Component {
             numSessions: this.state.numSessions,
             trainerId: this.state.trainerId
         }
-        
+        console.log(e);
         TimetableService.updateTimetableUnit(updatedTimetablingUnit)
             .then(() => {
                 alerts.showSuccess('Timetable updated successfully')
