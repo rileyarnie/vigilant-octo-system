@@ -1,3 +1,5 @@
+/* eslint-disable @typescript-eslint/explicit-function-return-type */
+/* eslint-disable @typescript-eslint/no-unsafe-return */
 import React from 'react'
 import Scheduler, { AppointmentDragging } from 'devextreme-react/scheduler'
 import Draggable from 'devextreme-react/draggable'
@@ -34,6 +36,7 @@ const trainerData = TrainerService.fetchTrainers().then((res) => {
     })
 class Timetable extends React.Component {
     //myData:CourseCohort[];
+    courseCohortData = []
     constructor(props) {
         super(props)
         this.state = {
@@ -65,6 +68,8 @@ class Timetable extends React.Component {
         this.onAppointmentAdd = this.onAppointmentAdd.bind(this)
         //this.onVenueChanged = this.onVenueChanged.bind(this);
         //this.handleEdit()
+        this.courseCohortData
+
     }
     // selectedTimetablingUnit = {}
     componentDidMount() {
@@ -73,41 +78,62 @@ class Timetable extends React.Component {
         //this.fetchTimetableData(this.state.semesterId)
         this.sumNumSession()
     }
+    // eslint-disable-next-line @typescript-eslint/explicit-member-accessibility
     fetchCourseCohorts = ( loadExtras, semesterId) => {
         CourseCohortService.fetchCourseCohorts(loadExtras, semesterId)
             .then((res) => {
-                const myData = res['data']
-                const courseCohortData = myData.map((cc) => {
-                    return {
-                        text: cc.course.name,
-                        id: cc.id,
-                        trainerId: cc.trainerId,
-                        trainingHours: cc.course.trainingHours
-                    }
-                })
-                this.setState({courseCohort:courseCohortData})
-                const semData = myData.semester;
-                const startDate = moment(semData?.startDate)
-                const endDate = moment(semData?.endDate)
-                this.setState({startDate: startDate.toISOString().slice(0,10)})
-                this.setState({endDate: endDate.toISOString().slice(0,10)})
-                const weeks = Math.floor(moment.duration(endDate.diff(startDate)).asWeeks())
-                const dataSource = myData.map((t) => 
-                    t.timetablingUnit.map((tt) => {
-                        return {
-                            text: t.course.name,
-                            timetablingUnitId: tt.id,
-                            courseCohortId: tt.courseCohortId,
-                            dayOfWeek: tt.dayOfWeek,
-                            numSessions: tt.numSessions,
-                            venueId: 45,
-                            trainerId: 46,
-                            startDate: new Date(moment(new Date().toISOString().slice(0, 10)+' '+tt.startTime).toISOString()),
-                            endDate: new Date(moment(new Date().toISOString().slice(0, 10)+' '+tt.endTime).toISOString())
-                        }
-                    })
-                )
-                this.setState({timetableData:dataSource})
+                const courseCohorts = res.data
+                // this.courseCohortData = courseCohorts
+                // // const courseCohortData = courseCohorts.map((cc) => {
+                // //     return {
+                // //         text: cc.course.name,
+                // //         id: cc.id,
+                // //         trainerId: cc.trainerId,
+                // //         trainingHours: cc.course.trainingHours
+                // //     }
+                // // })
+                // this.setState({courseCohort:courseCohortData})
+                // const semData = myData.semester;
+                // const startDate = moment(semData?.startDate)
+                // const endDate = moment(semData?.endDate)
+                // this.setState({startDate: startDate.toISOString().slice(0,10)})
+                // this.setState({endDate: endDate.toISOString().slice(0,10)})
+                // const weeks = Math.floor(moment.duration(endDate.diff(startDate)).asWeeks())
+                // const dataSource = myData.map((t) => 
+                //     .timetablingUnit.map((tt) => {
+                //         return {
+                //             text: t.course.name,
+                //             timetablingUnitId: tt.id,
+                //             courseCohortId: tt.courseCohortId,
+                //             dayOfWeek: tt.dayOfWeek,
+                //             numSessions: tt.numSessions,
+                //             venueId: 45,
+                //             trainerId: 46,
+                //             startDate: new Date(moment(new Date().toISOString().slice(0, 10)+' '+tt.startTime).toISOString()),
+                //             endDate: new Date(moment(new Date().toISOString().slice(0, 10)+' '+tt.endTime).toISOString())
+                //         }
+                //     })
+                    
+                // )
+                let datasourceTu = []
+                for(const courseCohort of courseCohorts){
+                    courseCohort.timetablingUnit.map((tu) => {
+                        datasourceTu.push({
+                            text: courseCohort.course.name,
+                            timetablingUnitId: tu.id,
+                            courseCohortId: tu.courseCohortId,
+                            dayOfWeek: new Date(tu.recurrenceStartDate).toLocaleString('en-us', {  weekday: 'short' }),
+                            numSessions: tu.numSessions,
+                            venueId: tu.venueId,
+                            trainerId: tu.trainerId,
+                            startDate: new Date(tu.recurrenceStartDate),
+                            endDate: new Date(tu.recurrenceEndDate)
+                        })
+                    } )
+                }
+
+
+                this.setState({timetableData:datasourceTu})
             })
             .catch((error) => {
                 console.error(error)
@@ -205,7 +231,6 @@ class Timetable extends React.Component {
                 timetableUnits: [...this.state.courseCohort],
                 timetableData: [...this.state.timetableData]
             })
-            console.log(this.state.timetableData)
         }
     }
     async onAppointmentFormOpening(e) {
@@ -316,25 +341,17 @@ class Timetable extends React.Component {
 
 
         ])
-        const timetableUnitData = {
-            timetablingUnitId: t.timetablingUnitId,
-            courseCohortId: t.courseCohortId,
-            venueId: this.state.venueId,
-            dayOfWeek: this.state.dayOfWeek,
-            startTime: this.state.startTime,
-            endTime: this.state.endTime,
-            numSessions: this.state.numSessions,
-            trainerId: this.state.trainerId
-        }
-        console.log(timetableUnitData)
+
     }
     // eslint-disable-next-line @typescript-eslint/explicit-function-return-type
 
 
     handleEdit (e) {
+        const timetablingUnitId = 1//this.getTimetablingUnitId(this.courseCohortData,e.timetableData.id)
+        console.log('psxr',this.courseCohortData)
         const updatedTimetablingUnit = {
             // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-            timetablingUnitId: this.state.openedCourseCohort.id,
+            timetablingUnitId: timetablingUnitId,
             venueId: this.state.venueId,
             recurrenceStartDate: this.state.recurrenceStartDate,
             recurrenceEndDate: this.state.recurrenceEndDate,
@@ -345,8 +362,7 @@ class Timetable extends React.Component {
         }
         
         TimetableService.updateTimetableUnit(updatedTimetablingUnit)
-            .then(res => {
-                console.log(res)
+            .then(() => {
                 alerts.showSuccess('Timetable updated successfully')
             })
             .catch((error) => {
@@ -369,7 +385,6 @@ class Timetable extends React.Component {
     async publishTimetable(){
         await SemesterService.publishTimetable(this.state.semesterId)
             .then(res => {
-                console.log(res)
                 alerts.showSuccess('Timetable published successfully')
             })
             .catch((error) => {
@@ -377,6 +392,15 @@ class Timetable extends React.Component {
                 // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
                 alerts.showError(error.message)
             })
+    }
+
+    getTimetablingUnitId(courseCohorts, courseCohortId){
+        const cc = courseCohorts.filter(courseCohort => courseCohort.id === courseCohortId )
+
+        return cc.timetablingUnit.id
+    }
+    alertTx(e){
+        alert(JSON.stringify(e.appointmentData))
     }
     render() {
         return (
@@ -411,7 +435,7 @@ class Timetable extends React.Component {
                                 data={courseCohort}
                                 onDragStart={this.onItemDragStart}
                                 onDragEnd={this.onItemDragEnd}>
-                                {courseCohort.text}<br/>{<>0/32</>}<br/>{<>Trainer: {courseCohort.trainerId}</>}<br/>
+                                {<>Course name: {courseCohort.text}</>}<br/>{<>Sessions: 0/32</>}<br/>{<>Trainer: {courseCohort.trainerId || 'No Set Trainer'}</>}<br/>
                             </Draggable>)}
                     </Draggable>
                 </ScrollView>
@@ -428,7 +452,7 @@ class Timetable extends React.Component {
                     endDayHour={24}
                     editing={true}
                     onAppointmentFormOpening={this.onAppointmentFormOpening}
-                    onAppointmentUpdated={(e) => this.handleEdit(e)}
+                    onAppointmentUpdated={e => {this.handleEdit(e)}}
                 >
                     {/*                     <Resource */}
                     {/*                         dataSource= {await venueData} */}
