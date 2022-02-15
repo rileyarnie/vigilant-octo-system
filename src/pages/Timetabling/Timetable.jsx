@@ -4,9 +4,7 @@ import Draggable from 'devextreme-react/draggable'
 import 'devextreme/dist/css/dx.light.css'
 import ScrollView from 'devextreme-react/scroll-view'
 import './timetable.css'
-import SelectBox from 'devextreme-react/select-box';
-import FormControl from '@mui/material/FormControl'
-import { MenuItem, Select } from '@material-ui/core'
+import SelectBox from 'devextreme-react/select-box'
 import CourseCohortService from '../../services/CourseCohortsService'
 import { TrainerService } from '../../services/TrainerService'
 import { TimetableService } from '../../services/TimetableService'
@@ -58,7 +56,9 @@ class Timetable extends React.Component {
             endTime: '',
             dayOfWeek: '',
             openedCourseCohort:{},
-            durationInMinutes:0
+            durationInMinutes:0,
+            recurrenceStartDate: new Date(),
+            recurrenceEndDate:new Date()
         }
         this.onAppointmentRemove = this.onAppointmentRemove.bind(this)
         this.onAppointmentFormOpening = this.onAppointmentFormOpening.bind(this)
@@ -108,7 +108,6 @@ class Timetable extends React.Component {
                     })
                 )
                 this.setState({timetableData:dataSource})
-                console.log(dataSource)
             })
             .catch((error) => {
                 console.error(error)
@@ -176,13 +175,14 @@ class Timetable extends React.Component {
     onAppointmentAdd(e) {
         const index = this.state.courseCohort.indexOf(e.fromData)
         const timetableData = e['itemData']
+        const min =  Math.min(timetableData.trainingHours, this.state.maxNumUnitRepetition)
         const timetableUnit = {
             courseCohortId: timetableData.id,
             recurrenceStartDate: timetableData.startDate,
             recurrenceEndDate: timetableData.endDate,
             startTime: timetableData.startDate.toTimeString().slice(0,8),            
-            numSessions: Math.min(timetableData.trainingHours, this.state.maxNumUnitRepetition),
-            durationInMinutes: (timetableData.durationInMinutes) * 60
+            numSessions: min || 1,
+            durationInMinutes: 60
         }
         // console.log(timetableData)
         // console.log(timetableUnit)
@@ -329,14 +329,17 @@ class Timetable extends React.Component {
         console.log(timetableUnitData)
     }
     // eslint-disable-next-line @typescript-eslint/explicit-function-return-type
-    handleEdit () {
+
+
+    handleEdit (e) {
         const updatedTimetablingUnit = {
             // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
             timetablingUnitId: this.state.openedCourseCohort.id,
             venueId: this.state.venueId,
-            dayOfWeek: this.state.dayOfWeek,
+            recurrenceStartDate: this.state.recurrenceStartDate,
+            recurrenceEndDate: this.state.recurrenceEndDate,
+            durationInMinutes: this.state.durationInMinutes,
             startTime: this.state.startTime,
-            endTime: this.state.endTime,
             numSessions: this.state.numSessions,
             trainerId: this.state.trainerId
         }
@@ -425,7 +428,7 @@ class Timetable extends React.Component {
                     endDayHour={24}
                     editing={true}
                     onAppointmentFormOpening={this.onAppointmentFormOpening}
-                    onAppointmentUpdated={this.handleEdit}
+                    onAppointmentUpdated={(e) => this.handleEdit(e)}
                 >
                     {/*                     <Resource */}
                     {/*                         dataSource= {await venueData} */}
