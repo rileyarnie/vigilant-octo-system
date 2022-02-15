@@ -210,11 +210,8 @@ function ProgramCohortSemesterDetails () {
     }
     function publishProgramCohort () {
         const programCohortSemester = {
-            anticipatedDate: anticipatedStartDate,
-            numOfSlots: numOfSlots,
             examCutOffDate:examCutOffDate,
-            isPublished: true
-
+            status: 'PUBLISHED'
         }
         ProgramCohortService.publishProgramCohortSemester(programCohortSemesterId,programCohortSemester)
             .then((res)=>{
