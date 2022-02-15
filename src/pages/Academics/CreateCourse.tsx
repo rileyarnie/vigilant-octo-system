@@ -59,7 +59,7 @@ class CourseCreation extends Component <Props> {
             trainingHours: this.state.trainingHours,
             isTimetableable: this.state.isTimetablable,
             needsTechnicalAssistant: this.state.needsTechnicalAssistant,
-            courseOutline: this.state.courseOutline
+            courseOutline: this.state.editorState
         }
         this.props.setLinearDisplay('block')
         axios.post(`${timetablingSrv}/courses`, course)
@@ -148,7 +148,6 @@ class CourseCreation extends Component <Props> {
                                                 <TextInput name='trainingHours' id='hours' type='text' value={this.state.trainingHours} placeholder="number of hours" required onChange={this.handleChange} /><br />
                                                 <label htmlFor='courseOutline'><b>Course outline</b></label>
                                                 <Editor
-                                                    toolbarOnFocus
                                                     // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
                                                     editorState={this.state.editorState}
                                                     wrapperClassName="wrapperClassName"
