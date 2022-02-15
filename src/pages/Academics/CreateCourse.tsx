@@ -8,6 +8,10 @@ import Select from 'react-select'
 import { Alerts, ToastifyAlerts } from '../lib/Alert'
 import { customSelectTheme } from '../lib/SelectThemes'
 import LinearProgress from '@mui/material/LinearProgress'
+import { Editor } from 'react-draft-wysiwyg'
+import 'react-draft-wysiwyg/dist/react-draft-wysiwyg.css'
+import { EditorState,convertToRaw } from 'draft-js'
+import draftToHtml from 'draftjs-to-html'
 const alerts: Alerts = new ToastifyAlerts()
 interface Props extends React.HTMLAttributes<Element> {
     setModal:any,
@@ -29,7 +33,8 @@ class CourseCreation extends Component <Props> {
         needsTechnicalAssistant: '',
         courses:[],
         selectedCourses:[],
-        courseOutline: ''
+        courseOutline: '',
+        editorState: EditorState.createEmpty()
     };
 
     componentDidMount(){
@@ -41,6 +46,11 @@ class CourseCreation extends Component <Props> {
         })
     };
 
+    onEditorStateChange = (editorState) => {
+        this.setState({
+            editorState
+        })
+    }
     handleSubmit = (e) => {
         e.preventDefault()
         const course = {
@@ -50,7 +60,7 @@ class CourseCreation extends Component <Props> {
             trainingHours: this.state.trainingHours,
             isTimetableable: this.state.isTimetablable,
             needsTechnicalAssistant: this.state.needsTechnicalAssistant,
-            courseOutline: this.state.courseOutline
+            courseOutline: draftToHtml(convertToRaw(this.state.editorState.getCurrentContent()))
         }
         this.props.setLinearDisplay('block')
         axios.post(`${timetablingSrv}/courses`, course)
@@ -138,7 +148,13 @@ class CourseCreation extends Component <Props> {
                                                 <label htmlFor='trainingHours'><b>Training Hours</b></label>
                                                 <TextInput name='trainingHours' id='hours' type='text' value={this.state.trainingHours} placeholder="number of hours" required onChange={this.handleChange} /><br />
                                                 <label htmlFor='courseOutline'><b>Course outline</b></label>
-                                                <TextInput name='courseOutline' multiline rows="4" required id='desc' type='text' value={this.state.courseOutline} placeholder="enter course outline" onChange={this.handleChange} /><br />
+                                                <Editor
+                                                    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+                                                    editorState={this.state.editorState}
+                                                    wrapperClassName="demo-wrapper"
+                                                    editorClassName="demo-editor"
+                                                    onEditorStateChange={this.onEditorStateChange}
+                                                />
                                                 <label htmlFor='tiimetablelable'><b>Timetablable?</b></label><br />
                                                 <SelectGroup name='timetabelable' id='timetableable' required onChange={this.handleChange}>
                                                     <option value="">--- Please select ---</option>
