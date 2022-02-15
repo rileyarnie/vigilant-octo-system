@@ -290,7 +290,7 @@ function ProgramCohortSemesterDetails () {
                                     <Button className="float-center" variant="danger" onClick={()=>{
                                         showPublishSemesterModal()
                                     }}>Publish </Button>
-                                    <Button className="float-center" variant="danger" onClick={()=>{
+                                    <Button className="float-center" style={{ marginLeft: '48px' }} variant="danger" onClick={()=>{
                                         showPublishSemesterModal()
                                     }}>Cancel </Button>
                                 </Col>
