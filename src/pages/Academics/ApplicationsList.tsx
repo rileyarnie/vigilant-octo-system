@@ -57,7 +57,7 @@ const ApplicationsList = ():JSX.Element => {
         { title:'Name', render:(rowData)=>rowData.applications_firstName+' '+rowData.applications_lastName },
         { title: 'Email', field: 'applications_emailAddress' },
         { title: 'Program', field: 'applications_programCohortId' },
-        { title: 'Admission Status', field: 'applications_isAdmitted' },
+        { title: 'Admission Status', field: 'applications_status' },
     ];
     enum admissionStatus {
         ADMITTED = 'ADMITTED',
@@ -111,7 +111,7 @@ const ApplicationsList = ():JSX.Element => {
     }, [isAdmitted]);
     
     const fetchProgramCohortApplications = () => {
-        axios.get(`${simsSrv}/program-cohort-applications`,{params:{isAdmitted:isAdmitted}})
+        axios.get(`${simsSrv}/program-cohort-applications`,{params:{status:isAdmitted}})
             .then(res => {
                 setLinearDisplay('none');
                 setData(res.data);
@@ -173,7 +173,7 @@ const ApplicationsList = ():JSX.Element => {
         const admissionsPayload = {
             modifiedProgramCohortApplication : {
                 application: {
-                    isAdmitted: admissionStatus        
+                    status: admissionStatus        
                 }        
             }
         };
@@ -250,7 +250,7 @@ const ApplicationsList = ():JSX.Element => {
                                 setSponsor(row.applications_sponsor);
                                 setCountryOfResidence(row.applications_countryOfResidence);
                                 setProgramCohortId(row.applications_programCohortId);
-                                setIsAdmitted(row.applications_isAdmitted);
+                                setIsAdmitted(row.applications_status);
                                 setNextOfKinName(row.nkd_name);
                                 setNextOfKinPhoneNumber(row.nkd_nextOfKinPhoneNumber);
                                 setNextOfKinRelation(row.nkd_relation);
@@ -275,7 +275,7 @@ const ApplicationsList = ():JSX.Element => {
                                                 value={isAdmitted}
                                                 onChange={(e)=>setIsAdmitted(e.target.value as string)}
                                             >
-                                                <MenuItem value={'APPROVED'}>Admitted</MenuItem>
+                                                <MenuItem value={'ADMITTED'}>Admitted</MenuItem>
                                                 <MenuItem value={'PENDING'}>Pending</MenuItem>
                                                 <MenuItem value={'REJECTED'}>Rejected</MenuItem>
                                             </Select>
