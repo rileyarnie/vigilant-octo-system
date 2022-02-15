@@ -57,7 +57,8 @@ class Timetable extends React.Component {
             startTime: '',
             endTime: '',
             dayOfWeek: '',
-            openedCourseCohort:{}
+            openedCourseCohort:{},
+            durationInMinutes:0
         }
         this.onAppointmentRemove = this.onAppointmentRemove.bind(this)
         this.onAppointmentFormOpening = this.onAppointmentFormOpening.bind(this)
@@ -177,10 +178,11 @@ class Timetable extends React.Component {
         const timetableData = e['itemData']
         const timetableUnit = {
             courseCohortId: timetableData.id,
-            dayOfWeek: timetableData.startDate.toLocaleDateString('en-us',{weekday:'short'}).toLowerCase(),
-            startTime: timetableData.startDate.toTimeString().slice(0,8),
-            endTime: timetableData.endDate.toTimeString().slice(0,8),
-            numSessions: Math.min(timetableData.trainingHours, this.state.maxNumUnitRepetition)
+            recurrenceStartDate: timetableData.startDate,
+            recurrenceEndDate: timetableData.endDate,
+            startTime: timetableData.startDate.toTimeString().slice(0,8),            
+            numSessions: Math.min(timetableData.trainingHours, this.state.maxNumUnitRepetition),
+            durationInMinutes: (timetableData.durationInMinutes) * 60
         }
         // console.log(timetableData)
         // console.log(timetableUnit)
@@ -291,7 +293,28 @@ class Timetable extends React.Component {
                         this.setState({numSessions: args.value})
                     }
                 }
+            },
+
+            {
+                label: {
+                    text: 'Duration in hours'
+                },
+                dataField: 'duration',
+                editorType: 'dxNumberBox',
+                editorOptions: {
+                    width: '100%',
+                    min: 0,
+                    max: max,
+                    format:'',
+                    showSpinButtons: true,
+                    type: 'number',
+                    onChange(args) {
+                        this.setState({durationInMinutes: args.value})
+                    }
+                }
             }
+
+
         ])
         const timetableUnitData = {
             timetablingUnitId: t.timetablingUnitId,
@@ -342,35 +365,35 @@ class Timetable extends React.Component {
     }
     async publishTimetable(){
         await SemesterService.publishTimetable(this.state.semesterId)
-        .then(res => {
-            console.log(res)
-            alerts.showSuccess('Timetable published successfully')
-        })
-        .catch((error) => {
-            console.error(error)
-            // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
-            alerts.showError(error.message)
-        })
+            .then(res => {
+                console.log(res)
+                alerts.showSuccess('Timetable published successfully')
+            })
+            .catch((error) => {
+                console.error(error)
+                // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
+                alerts.showError(error.message)
+            })
     }
     render() {
         return (
             <React.Fragment>
                 {this.state.semesterId? <Button  onClick={() =>  this.publishTimetable() } className="float-right" variant="danger" style={{transform: `translateX(${-40}px)`}} >Publish Timetable</Button>: '' }
                 <div className="option">
-                          <span className="text-center"><b>Select a semester</b></span>
-                          <SelectBox
-                            items={this.state.semesters}
-                            displayExpr="name"
-                            valueExpr="id"
-                            width={240}
-                            //value={id}
-                            onValueChanged = {(e) => { this.setState({ semesterId: e.value})
-                                    this.fetchCourseCohorts('course, timetablingUnits, semesters',this.state.semesterId)
-                                    }}
-                          />
-                        </div>
+                    <span className="text-center"><b>Select a semester</b></span>
+                    <SelectBox
+                        items={this.state.semesters}
+                        displayExpr="name"
+                        valueExpr="id"
+                        width={240}
+                        //value={id}
+                        onValueChanged = {(e) => { this.setState({ semesterId: e.value})
+                            this.fetchCourseCohorts('course, timetablingUnits, semesters',this.state.semesterId)
+                        }}
+                    />
+                </div>
                 <ScrollView id="scroll">
-                {/* {this.state.semesterId? <Button className="float-right" variant="danger">Publish Timetable</Button> : ''} */}
+                    {/* {this.state.semesterId? <Button className="float-right" variant="danger">Publish Timetable</Button> : ''} */}
                     <Draggable
                         id="list"
                         data="dropArea"
