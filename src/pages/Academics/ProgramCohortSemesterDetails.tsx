@@ -114,6 +114,7 @@ function ProgramCohortSemesterDetails () {
     const [showModal, setShowModal] = useState(false)
     const [showDialog, setShowDialog] = useState(false)
     const [showPublishModal, setShowPublishModal] = useState(false)
+    const [showCancelModal, setShowCancelModal] = useState(false)
     const [showPublishDialog, setShowPublishDialog] = useState(false)
     const [anticipatedStartDate, setAnticipatedStartDate] = useState('')
     const [numOfSlots, setNumOfSlots] = useState('')
@@ -212,7 +213,7 @@ function ProgramCohortSemesterDetails () {
             anticipatedDate: anticipatedStartDate,
             numOfSlots: numOfSlots,
             examCutOffDate:examCutOffDate,
-            isPublished: true,
+            isPublished: true
 
         }
         ProgramCohortService.publishProgramCohortSemester(programCohortSemesterId,programCohortSemester)
@@ -231,6 +232,7 @@ function ProgramCohortSemesterDetails () {
         setAmount(0)
         setCurrency('')
         setShowModal(false)
+        setShowCancelModal(false)
     }
     // create fee items
     const showCreateModal = () => {
@@ -241,7 +243,10 @@ function ProgramCohortSemesterDetails () {
     }
     //publish program cohort semester
     const showPublishSemesterModal = () => {
-        showPublishModal?resetStateCloseModal():setShowPublishModal(true)
+        showPublishModal?resetStateCloseModal():setShowCancelModal(true)
+    }
+    const showCancelSemesterModal = () => {
+        showCancelModal?resetStateCloseModal():setShowPublishModal(true)
     }
     const togglePublishModalDialog = () => {
         showPublishModal ? setShowPublishDialog(false) : setShowPublishDialog(true)
@@ -285,6 +290,9 @@ function ProgramCohortSemesterDetails () {
                                     <Button className="float-center" variant="danger" onClick={()=>{
                                         showPublishSemesterModal()
                                     }}>Publish </Button>
+                                    <Button className="float-center" style={{ marginLeft: '48px' }} variant="danger" onClick={()=>{
+                                        showPublishSemesterModal()
+                                    }}>Cancel </Button>
                                 </Col>
                                 <div>
                                     {isError &&
@@ -415,7 +423,9 @@ function ProgramCohortSemesterDetails () {
                         e.preventDefault()
                         setShowDialog(false)
                     }}>Continue editing</Button>
-                    <Button onClick={(e)=>{ feeItemId? handleEdit(e) :  handleFeeItemsCreation()}} variant="btn btn-danger btn-rounded">Submit</Button>
+                    <Button onClick={(e)=>{
+                        feeItemId? handleEdit(e) :  handleFeeItemsCreation()
+                    }} variant="btn btn-danger btn-rounded">Submit</Button>
                 </Modal.Footer>
             </Modal>
             {/*Publish course cohort semester*/}
@@ -464,6 +474,30 @@ function ProgramCohortSemesterDetails () {
                     <button className="btn btn-danger float-right" onClick={showPublishSemesterModal}> Close </button>
                 </Modal.Body>
             </Modal>
+            {/* cancel programCohortSemester modal */}
+            <Modal
+                show={showCancelModal}
+                onHide={showCancelSemesterModal}
+                size="lg"
+                backdrop="static"
+                centered>
+                <Modal.Header closeButton>
+                    <Modal.Title id="contained-modal-title-vcenter">
+                    Cancelling a program-cohort cancels all active course-cohorts and prevents addition of the cohort to a semester or timetabling of the same, 
+                    are you sure you want to proceed? 
+                    </Modal.Title>
+                </Modal.Header>
+                <Modal.Body>
+                </Modal.Body>
+                <Modal.Footer style={{ display: 'flex', justifyContent: 'space-between' }}>
+                    <Button variant="btn btn-info btn-rounded" onClick={(e) => {
+                        e.preventDefault()
+                        setShowCancelModal(false)
+                    }}>No</Button>
+                    <Button variant="btn btn-danger btn-rounded">Cancel</Button>
+                </Modal.Footer>
+            </Modal>
+
             <Modal
                 show={showPublishDialog}
                 onHide={togglePublishModalDialog}
