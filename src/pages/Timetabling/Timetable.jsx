@@ -9,7 +9,6 @@ import CourseCohortService from '../../services/CourseCohortsService'
 import { TrainerService } from '../../services/TrainerService'
 import { TimetableService } from '../../services/TimetableService'
 import { VenueService } from '../../services/VenueService'
-import moment from 'moment'
 import { Button } from 'react-bootstrap'
 const alerts = new ToastifyAlerts()
 const currentDate = new Date()
@@ -69,7 +68,7 @@ class Timetable extends React.Component {
     }
     // selectedTimetablingUnit = {}
     componentDidMount() {
-        this.fetchCourseCohorts('course, timetablingUnits, semesters',this.state.semesterId)
+        this.fetchCourseCohorts('course, timetablingUnits, semester',this.state.semesterId)
         this.fetchSemesters()
         this.sumNumSession()
     }
@@ -78,6 +77,7 @@ class Timetable extends React.Component {
         CourseCohortService.fetchCourseCohorts(loadExtras, semesterId)
             .then((res) => {
                 const courseCohorts = res.data
+                this.setState({courseCohort: res.data})
                 let datasourceTu = []
                 for(const courseCohort of courseCohorts){
                     courseCohort.timetablingUnit.map((tu) => {
@@ -337,6 +337,8 @@ class Timetable extends React.Component {
         return (
             <React.Fragment>
                 {this.state.semesterId? <Button  onClick={() =>  this.publishTimetable() } className="float-right" variant="danger" style={{transform: `translateX(${-40}px)`}} >Publish Timetable</Button>: '' }
+              
+           
                 <div className="option">
                     <span className="text-center"><b>Select a semester</b></span>
                     <SelectBox
@@ -346,12 +348,14 @@ class Timetable extends React.Component {
                         width={240}
                         //value={id}
                         onValueChanged = {(e) => { this.setState({ semesterId: e.value})
-                            this.fetchCourseCohorts('course, timetablingUnits, semesters',this.state.semesterId)
+                            this.fetchCourseCohorts('course, timetablingUnits, semester',this.state.semesterId)
                         }}
                     />
                 </div>
+        
                 <ScrollView id="scroll">
                     {/* {this.state.semesterId? <Button className="float-right" variant="danger">Publish Timetable</Button> : ''} */}
+               
                     <Draggable
                         id="list"
                         data="dropArea"
@@ -359,6 +363,7 @@ class Timetable extends React.Component {
                         onDragStart={this.onListDragStart}>
                         {this.state.courseCohort.map((courseCohort) =>
                             <Draggable
+                            style={{marginTop:'45%'}}
                                 key={courseCohort.id}
                                 className="item dx-card dx-theme-text-color dx-theme-background-color"
                                 clone={true}
@@ -366,7 +371,7 @@ class Timetable extends React.Component {
                                 data={courseCohort}
                                 onDragStart={this.onItemDragStart}
                                 onDragEnd={this.onItemDragEnd}>
-                                {<>Course name: {courseCohort.text}</>}<br/>{<>Sessions: 0/32</>}<br/>{<>Trainer: {courseCohort.trainerId || 'No Set Trainer'}</>}<br/>
+                                {<>Course name: {courseCohort.course.name}</>}<br/>{<>TrainingHours: {courseCohort.course.trainingHours}</>}<br/>{<>Trainer: {courseCohort.trainerId || 'No Set Trainer'}</>}<br/>
                             </Draggable>)}
                     </Draggable>
                 </ScrollView>
