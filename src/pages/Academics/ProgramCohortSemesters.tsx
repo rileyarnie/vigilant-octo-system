@@ -53,8 +53,8 @@ function ProgramCohortSemesters () {
     const columns = [
         {title: 'ID', field: 'programCohortSemester.semester.id', editable: 'never' as const},
         {title: 'Name', field: 'programCohortSemester.semester.name'},
-        {title: 'Start Date', render:(rowData)=>rowData.programCohortSemester.semester?.startDate?.slice(0,10)},
-        {title: 'End Date', render:(rowData)=>rowData.programCohortSemester.semester?.endDate?.slice(0,10)}
+        {title: 'Start Date', render:(rowData)=>rowData?.programCohortSemester?.semester?.startDate?.slice(0,10)},
+        {title: 'End Date', render:(rowData)=>rowData?.programCohortSemester?.semester?.endDate?.slice(0,10)}
     ]
     const [errorMessages] = useState([])
     const programName = localStorage.getItem('programName')
