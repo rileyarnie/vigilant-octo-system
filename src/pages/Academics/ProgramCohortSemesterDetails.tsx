@@ -282,11 +282,7 @@ function ProgramCohortSemesterDetails () {
                         <Col>
                             <Card>
                                 <Col>
-                                    <Button className="float-right" variant="danger" onClick={()=>{
-                                        showCreateModal()
-                                    }}>
-                                        Create Course Cohort
-                                    </Button>{' '}{' '}
+{' '}{' '}
                                     <Button className="float-center" variant="danger" onClick={()=>{
                                         showPublishSemesterModal()
                                     }}>Publish </Button>
