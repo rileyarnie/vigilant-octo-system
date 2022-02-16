@@ -48,7 +48,7 @@ const tableIcons: Icons = {
     ThirdStateCheck: forwardRef((props, ref) => <Remove {...props} ref={ref} />),
     ViewColumn: forwardRef((props, ref) => <ViewColumn {...props} ref={ref} />)
 }
-const CourseCohortsDetails = ():JSX.Element => {
+const CourseCohortsDetails = (props:any):JSX.Element => {
     const [data,setData]=useState([])
     const [trainersData,setTrainers] = useState([])
     const [semesters,setSemesters] = useState([])
@@ -60,7 +60,7 @@ const CourseCohortsDetails = ():JSX.Element => {
    
     const columns=[
         { title: 'Course Cohort ID', field: 'id', hidden: false },
-        { title: 'Student ID', field: 'student.id', hidden: false },
+        { title: 'Student ID', field: 'registration.student.id', hidden: false },
         { title: 'Marks Type', field: 'courseCohortMarks.typeOfMarks' },
         { title: 'Diploma Marks', field: 'courseCohortMarks.diplomaMarks' },
         { title: 'Bachelor Marks', field: 'courseCohortMarks.bachelorMarks' },
@@ -73,8 +73,11 @@ const CourseCohortsDetails = ():JSX.Element => {
         setLinearDisplay('block')
         fetchcourseCohorts()
     },[])
+
+    const courseCohortId = props.match.params.id
+    
     const fetchcourseCohorts = ():void => {
-        axios.get(`${timetablingSrv}/course-cohorts`, {params:{loadExtras:'marks,student' }})
+        axios.get(`${timetablingSrv}/course-cohorts`, {params:{loadExtras:'marks,student', id:courseCohortId }})
             .then(res => {
                 const ccData = res.data
                 setData(ccData)

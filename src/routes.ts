@@ -57,7 +57,7 @@ const routes = [
     { path: '/publishedsemesters', exact: true, name: 'default', component: PublishedSemester },
     { path: '/timetable', exact: true, name: 'default', component: Timetable },
     { path: '/coursecohorts', exact: true, name: 'default', component: CourseCohorts },
-    { path: '/coursecohortdetails', exact: true, name: 'default', component: CourseCohortsDetails },
+    { path: '/coursecohortdetails/:id', exact: true, name: 'default', component: CourseCohortsDetails },
     { path: '/programcohortsemester', exact: true, name: 'default', component: ProgramCohortSemesters },
     { path: '/pcsdetails', exact: true, name: 'default', component: ProgramCohortSemesterDetails }
 ]
