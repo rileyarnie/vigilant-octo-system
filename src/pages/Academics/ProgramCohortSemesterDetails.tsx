@@ -162,6 +162,10 @@ function ProgramCohortSemesterDetails () {
                 setFeeItemData(feeData)
             })
             .catch((error) => {
+            	if (error.message.includes('not found')){
+            	console.log(error)
+            	return error
+            	}
                 alerts.showError(error.message)
                 console.log(error)
             })
