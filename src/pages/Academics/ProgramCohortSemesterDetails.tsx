@@ -127,7 +127,7 @@ function ProgramCohortSemesterDetails () {
     const semEndDate = localStorage.getItem('semEndDate')
     const semesterId = localStorage.getItem('semesterId')
     const anticipatedGraduation = localStorage.getItem('anticipatedGraduation')
-    const programCohortId = localStorage.getItem('')
+    const programCohortId = localStorage.getItem('programCohortId')
     const programCohortSemesterId = localStorage.getItem('programCohortSemesterId')
     const programCohortCode = localStorage.getItem('programCohortCode')
     const [courseCohortData, setCourseCohortData] = useState([])
@@ -135,8 +135,8 @@ function ProgramCohortSemesterDetails () {
     const [linearDisplay, setLinearDisplay] = useState('none')
     const [isError] = useState(false)
     useEffect(() => {
-        fetchCourseCohortBySemesterId('course',programCohortSemesterId,programCohortId)
-        getFeesItems()
+        fetchCourseCohortBySemesterId('course',semesterId,programCohortId)
+        getFeesItems(programCohortSemesterId)
     }, [])
     function fetchCourseCohortBySemesterId(loadExtras:string, semesterId:string, programCohortId:string) {
         CourseCohortService.fetchCourseCohortBySemesterId(loadExtras, semesterId, programCohortId)
@@ -155,8 +155,8 @@ function ProgramCohortSemesterDetails () {
     const handleChange = (event: React.ChangeEvent<{}>, newValue: number) => {
         setValue(newValue)
     }
-    function getFeesItems () {
-        FeesManagementService.getFeesItems()
+    function getFeesItems (programCohortSemesterId:string) {
+        FeesManagementService.getFeesItems(programCohortSemesterId)
             .then((res)=>{
                 const feeData = res['data']
                 setFeeItemData(feeData)
@@ -251,9 +251,6 @@ function ProgramCohortSemesterDetails () {
     const togglePublishModalDialog = () => {
         showPublishModal ? setShowPublishDialog(false) : setShowPublishDialog(true)
     }
-    const onSelectedCurrency = currencyAbbrev => {
-        setCurrency(currencyAbbrev)
-    }
     return (
         <>
             <Row className='align-items-center page-header'>
@@ -282,7 +279,6 @@ function ProgramCohortSemesterDetails () {
                         <Col>
                             <Card>
                                 <Col>
-{' '}{' '}
                                     <Button className="float-center" variant="danger" onClick={()=>{
                                         showPublishSemesterModal()
                                     }}>Publish </Button>
@@ -355,7 +351,7 @@ function ProgramCohortSemesterDetails () {
             <Modal
                 show={showModal}
                 onHide={showCreateModal}
-                size="sm"
+                size="lg"
                 backdrop="static"
                 aria-labelledby="contained-modal-title-vcenter"
                 centered>
@@ -373,12 +369,14 @@ function ProgramCohortSemesterDetails () {
                                     setNarrative(e.target.value)  
                                 }} required /><br/>
                             <label htmlFor='amount'><b>Amount</b></label><br/>
-                            <TextInput name='amount'  id='amount'  type="text" value = {amount}
+                            <TextInput name='amount'  id='amount' required type="text" value = {amount}
                                 onChange={(e)=>{
-                                    setAmount(e.target.value)  
-                                }} required /><br/>
+                                    setAmount(e.target.value) }}/><br/>
                             <label htmlFor='currency'><b>Currency</b></label><br />
-                            <SelectCurrency style = {selectStyle} name= 'currency' value={currency} onChange={onSelectedCurrency} />
+                            <SelectCurrency style = {selectStyle} name= 'currency' value={currency}
+                                            onChange={(e)=>{
+                                                setCurrency(e.target.value)
+                                            }}/>
                         </div>
                         <div className='form-group'>
                             <button className="btn btn-info float-left"
@@ -397,22 +395,22 @@ function ProgramCohortSemesterDetails () {
             <Modal
                 show={showDialog}
                 onHide={toggleDialog}
-                size="lg"
+                size="sm"
                 backdrop="static"
                 centered>
                 <Modal.Header closeButton>
                     <Modal.Title id="contained-modal-title-vcenter">
-                        Do you want to create fee item for {programName} ?
+                        Do you want to {feeItemId ? 'Edit fee item' : 'Create a fee item'} for {programName}
                     </Modal.Title>
                 </Modal.Header>
                 <Modal.Body>
-                    <ValidationForm>
+                    <div>
                         <div className='form-group'>
                             <label htmlFor='narrative'><b>Narrative : </b>{narrative}</label><br/>
                             <label htmlFor='amount'><b>Amount : </b>{amount}</label><br/>
                             <label htmlFor='currency'><b>Currency : </b>{currency}</label><br />
                         </div><br/>
-                    </ValidationForm>
+                    </div>
                 </Modal.Body>
                 <Modal.Footer style={{ display: 'flex', justifyContent: 'space-between' }}>
                     <Button variant="btn btn-info btn-rounded" onClick={(e) => {

@@ -83,7 +83,8 @@ function ProgramCohortSemesters() {
                         name: cc.programCohortSemester.semester.name,
                         startDate: cc.programCohortSemester.semester.startDate,
                         endDate: cc.programCohortSemester.semester.endDate,
-                        programName: cc
+                        programCohortId:cc.programCohortId,
+                        programCohortSemesterId: cc.programCohortSemesterId,
 
                     };
                 });
@@ -125,12 +126,12 @@ function ProgramCohortSemesters() {
                                 window.location.href = '/pcsdetails'
                                 localStorage.setItem('programName', programName)
                                 localStorage.setItem('programCohortCode', programCohortCode)
-                                localStorage.setItem('programCohortSemesterId', row.id)
-                                console.log(row)
+                                localStorage.setItem('semesterId', row.id)
+                                localStorage.setItem('programCohortSemesterId', row.programCohortSemesterId)
                                 localStorage.setItem('semStartDate', row.startDate.slice(0, 10))
                                 localStorage.setItem('semEndDate', row.endDate.slice(0, 10))
-                                //localStorage.setItem('programCohortId', row.program_cohorts_id)
-                                // event.stopPropagation()
+                                localStorage.setItem('programCohortId', row.programCohortId)
+                                event.stopPropagation()
                             }}
                         />
                     </Card>

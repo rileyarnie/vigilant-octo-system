@@ -9,7 +9,7 @@ export class FeesManagementService {
     static  async updateFeesItems (update: object): Promise<FeeItem[]> {
         return axios.put(`${financeSrv}/fee-items`, update)
     }
-    static  async getFeesItems (programCohortSemesterId?: number): Promise<FeeItem[]> {
+    static  async getFeesItems (programCohortSemesterId: string): Promise<FeeItem[]> {
         return axios.get(`${financeSrv}/fee-items`,{params: { programCohortSemesterId: programCohortSemesterId}})
     }
 
