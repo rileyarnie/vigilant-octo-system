@@ -127,7 +127,7 @@ function ProgramCohortSemesterDetails () {
     const semEndDate = localStorage.getItem('semEndDate')
     const semesterId = localStorage.getItem('semesterId')
     const anticipatedGraduation = localStorage.getItem('anticipatedGraduation')
-    const programCohortId = localStorage.getItem('')
+    const programCohortId = localStorage.getItem('programCohortId')
     const programCohortSemesterId = localStorage.getItem('programCohortSemesterId')
     const programCohortCode = localStorage.getItem('programCohortCode')
     const [courseCohortData, setCourseCohortData] = useState([])
@@ -135,8 +135,8 @@ function ProgramCohortSemesterDetails () {
     const [linearDisplay, setLinearDisplay] = useState('none')
     const [isError] = useState(false)
     useEffect(() => {
-        fetchCourseCohortBySemesterId('course',programCohortSemesterId,programCohortId)
-        getFeesItems()
+        fetchCourseCohortBySemesterId('course',semesterId,programCohortId)
+        getFeesItems(programCohortSemesterId)
     }, [])
     function fetchCourseCohortBySemesterId(loadExtras:string, semesterId:string, programCohortId:string) {
         CourseCohortService.fetchCourseCohortBySemesterId(loadExtras, semesterId, programCohortId)
@@ -155,8 +155,8 @@ function ProgramCohortSemesterDetails () {
     const handleChange = (event: React.ChangeEvent<{}>, newValue: number) => {
         setValue(newValue)
     }
-    function getFeesItems () {
-        FeesManagementService.getFeesItems()
+    function getFeesItems (programCohortSemesterId:string) {
+        FeesManagementService.getFeesItems(programCohortSemesterId)
             .then((res)=>{
                 const feeData = res['data']
                 setFeeItemData(feeData)
@@ -355,7 +355,7 @@ function ProgramCohortSemesterDetails () {
             <Modal
                 show={showModal}
                 onHide={showCreateModal}
-                size="sm"
+                size="lg"
                 backdrop="static"
                 aria-labelledby="contained-modal-title-vcenter"
                 centered>
@@ -397,7 +397,7 @@ function ProgramCohortSemesterDetails () {
             <Modal
                 show={showDialog}
                 onHide={toggleDialog}
-                size="lg"
+                size="sm"
                 backdrop="static"
                 centered>
                 <Modal.Header closeButton>
@@ -406,13 +406,13 @@ function ProgramCohortSemesterDetails () {
                     </Modal.Title>
                 </Modal.Header>
                 <Modal.Body>
-                    <ValidationForm>
+                    <div>
                         <div className='form-group'>
                             <label htmlFor='narrative'><b>Narrative : </b>{narrative}</label><br/>
                             <label htmlFor='amount'><b>Amount : </b>{amount}</label><br/>
                             <label htmlFor='currency'><b>Currency : </b>{currency}</label><br />
                         </div><br/>
-                    </ValidationForm>
+                    </div>
                 </Modal.Body>
                 <Modal.Footer style={{ display: 'flex', justifyContent: 'space-between' }}>
                     <Button variant="btn btn-info btn-rounded" onClick={(e) => {
