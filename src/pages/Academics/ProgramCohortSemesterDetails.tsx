@@ -210,7 +210,6 @@ function ProgramCohortSemesterDetails () {
     }
     function publishProgramCohort () {
         const programCohortSemester = {
-            examCutOffDate:examCutOffDate,
             status: 'PUBLISHED'
         }
         ProgramCohortService.publishProgramCohortSemester(programCohortSemesterId,programCohortSemester)
@@ -240,10 +239,10 @@ function ProgramCohortSemesterDetails () {
     }
     //publish program cohort semester
     const showPublishSemesterModal = () => {
-        showPublishModal?resetStateCloseModal():setShowCancelModal(true)
+        showPublishModal?resetStateCloseModal():setShowPublishModal(true)
     }
     const showCancelSemesterModal = () => {
-        showCancelModal?resetStateCloseModal():setShowPublishModal(true)
+        showCancelModal?resetStateCloseModal():setShowCancelModal(true)
     }
     const togglePublishModalDialog = () => {
         showPublishModal ? setShowPublishDialog(false) : setShowPublishDialog(true)
@@ -288,7 +287,7 @@ function ProgramCohortSemesterDetails () {
                                         showPublishSemesterModal()
                                     }}>Publish </Button>
                                     <Button className="float-center" style={{ marginLeft: '48px' }} variant="danger" onClick={()=>{
-                                        showPublishSemesterModal()
+                                        showCancelSemesterModal()
                                     }}>Cancel </Button>
                                 </Col>
                                 <div>
@@ -468,7 +467,10 @@ function ProgramCohortSemesterDetails () {
                             </button>
                         </div>
                     </ValidationForm>
-                    <button className="btn btn-danger float-right" onClick={showPublishSemesterModal}> Close </button>
+                    <button className="btn btn-danger float-right" onClick={(e) => {
+                        e.preventDefault()
+                        setShowPublishModal(false)
+                        }}> Close </button>
                 </Modal.Body>
             </Modal>
             {/* cancel programCohortSemester modal */}
