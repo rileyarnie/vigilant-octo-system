@@ -98,8 +98,8 @@ function ProgramCohortSemesterDetails () {
     const columns = [
         {title: 'ID', field: 'course.id', editable: 'never' as const},
         {title: 'Name', field: 'course.name'},
-        {title: 'Start Date', render:(rowData)=>rowData.semester.startDate.slice(0,10)},
-        {title: 'End Date', render:(rowData)=>rowData.semester.endDate.slice(0,10)}
+        { title: 'Start Date', render: (rowData) => rowData.programCohortSemester.semester.startDate.slice(0, 10) },
+        { title: 'End Date', render: (rowData) => rowData.programCohortSemester.semester.endDate.slice(0, 10) }
     ]
     const feeItemColumns = [
         {title: 'ID', field: 'id', editable: 'never' as const},
@@ -135,7 +135,7 @@ function ProgramCohortSemesterDetails () {
     const [linearDisplay, setLinearDisplay] = useState('none')
     const [isError] = useState(false)
     useEffect(() => {
-        fetchCourseCohortBySemesterId('course',semesterId,programCohortId)
+        fetchCourseCohortBySemesterId('course',programCohortSemesterId,programCohortId)
         getFeesItems()
     }, [])
     function fetchCourseCohortBySemesterId(loadExtras:string, semesterId:string, programCohortId:string) {
