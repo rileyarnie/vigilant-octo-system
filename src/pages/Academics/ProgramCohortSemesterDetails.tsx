@@ -467,7 +467,10 @@ function ProgramCohortSemesterDetails () {
                             </button>
                         </div>
                     </ValidationForm>
-                    <button className="btn btn-danger float-right" onClick={showPublishSemesterModal}> Close </button>
+                    <button className="btn btn-danger float-right" onClick={(e) => {
+                        e.preventDefault()
+                        setShowPublishModal(false)
+                        }}> Close </button>
                 </Modal.Body>
             </Modal>
             {/* cancel programCohortSemester modal */}
