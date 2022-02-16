@@ -1,6 +1,6 @@
 /* eslint-disable react/display-name */
-import React, {useState, useEffect} from 'react'
-import {forwardRef} from 'react'
+import React, { useState, useEffect } from 'react'
+import { forwardRef } from 'react'
 import { Alerts, ToastifyAlerts } from '../lib/Alert'
 import MaterialTable from 'material-table'
 import AddBox from '@material-ui/icons/AddBox'
@@ -20,15 +20,16 @@ import Search from '@material-ui/icons/Search'
 import ViewColumn from '@material-ui/icons/ViewColumn'
 import axios from 'axios'
 import { Icons } from 'material-table'
-import {Switch} from '@material-ui/core'
+import { Switch } from '@material-ui/core'
 import Alert from '@material-ui/lab/Alert'
 import Breadcrumb from '../../App/components/Breadcrumb'
-import {Row, Col, Card, Button, Modal } from 'react-bootstrap'
+import { Row, Col, Card, Button, Modal } from 'react-bootstrap'
 import Config from '../../config'
-import {Link} from 'react-router-dom'
-import {ValidationForm, SelectGroup, TextInput} from 'react-bootstrap4-form-validation'
+import { Link } from 'react-router-dom'
+import { ValidationForm, SelectGroup, TextInput } from 'react-bootstrap4-form-validation'
 import { LinearProgress } from '@mui/material'
-import {CourseCohortService} from '../services/CourseCohortsService'
+import CourseCohort from '../services/CourseCohort'
+import { CourseCohortService } from '../services/CourseCohortsService'
 const alerts: Alerts = new ToastifyAlerts()
 const tableIcons: Icons = {
     Add: forwardRef((props, ref) => < AddBox  {...props} ref={ref} />),
@@ -49,12 +50,12 @@ const tableIcons: Icons = {
     ThirdStateCheck: forwardRef((props, ref) => <Remove {...props} ref={ref} />),
     ViewColumn: forwardRef((props, ref) => <ViewColumn {...props} ref={ref} />)
 }
-function ProgramCohortSemesters () {
+function ProgramCohortSemesters() {
     const columns = [
-        {title: 'ID', field: 'programCohortSemester.semester.id', editable: 'never' as const},
-        {title: 'Name', field: 'programCohortSemester.semester.name'},
-        {title: 'Start Date', render:(rowData)=>rowData?.programCohortSemester?.semester?.startDate?.slice(0,10)},
-        {title: 'End Date', render:(rowData)=>rowData?.programCohortSemester?.semester?.endDate?.slice(0,10)}
+        { title: 'ID', field: 'id', editable: 'never' as const },
+        { title: 'Name', field: 'name' },
+        { title: 'Start Date', render: (rowData) => rowData?.startDate?.slice(0, 10) },
+        { title: 'End Date', render: (rowData) => rowData?.endDate?.slice(0, 10) }
     ]
     const [errorMessages] = useState([])
     const programName = localStorage.getItem('programName')
@@ -65,17 +66,30 @@ function ProgramCohortSemesters () {
     const [linearDisplay, setLinearDisplay] = useState('none')
     const [isError] = useState(false)
     useEffect(() => {
-        fetchProgramCohortSemester('semester',programCohortId)
+        fetchProgramCohortSemester('semester', programCohortId)
     }, [])
-    function fetchProgramCohortSemester(loadExtras:string, programCohortId:string) {
+    function fetchProgramCohortSemester(loadExtras: string, programCohortId: string) {
         CourseCohortService.fetchSemestersByProgramCohortId(loadExtras, programCohortId)
             .then(res => {
                 const ccData = res['data']
-                setData(ccData)
-                console.log(ccData)
+                //setData(ccData)
                 setLinearDisplay('none')
+                const uniqueSemIds = ccData.map((v: CourseCohort) => v.programCohortSemester.semesterId)
+                    .filter((value, index, self) => self.indexOf(value) === index);
+                const semesterData = uniqueSemIds.map(semId => {
+                    const cc = ccData.filter((v: CourseCohort) => v.programCohortSemester.semesterId === semId)[0];
+                    return {
+                        id: cc.programCohortSemester.semester.id,
+                        name: cc.programCohortSemester.semester.name,
+                        startDate: cc.programCohortSemester.semester.startDate,
+                        endDate: cc.programCohortSemester.semester.endDate,
+                        programName: cc
+
+                    };
+                });
+                setData(semesterData);
             })
-            .catch((error)=>{
+            .catch((error) => {
                 console.error(error)
                 alerts.showError(error.message)
             })
@@ -84,22 +98,22 @@ function ProgramCohortSemesters () {
         <>
             <Row className='align-items-center page-header'>
                 <Col>
-                    <Breadcrumb/>
+                    <Breadcrumb />
                 </Col>
 
             </Row>
-            <LinearProgress style={{display: linearDisplay}} />
+            <LinearProgress style={{ display: linearDisplay }} />
             <Row>
 
                 <Col>
                     <Card>
                         <div>
                             {isError &&
-                            <Alert severity='error'>
-                                {errorMessages.map((msg, i) => {
-                                    return <div key={i}>{msg}</div>
-                                })}
-                            </Alert>
+                                <Alert severity='error'>
+                                    {errorMessages.map((msg, i) => {
+                                        return <div key={i}>{msg}</div>
+                                    })}
+                                </Alert>
                             }
                         </div>
                         <MaterialTable
@@ -108,14 +122,15 @@ function ProgramCohortSemesters () {
                             data={data}
                             icons={tableIcons}
                             onRowClick={(event, row) => {
-                                window.location.href='/pcsdetails'
+                                window.location.href = '/pcsdetails'
                                 localStorage.setItem('programName', programName)
                                 localStorage.setItem('programCohortCode', programCohortCode)
-                                localStorage.setItem('programCohortSemesterId', row.semester.id)
-                                localStorage.setItem('semStartDate', row.semester.startDate.slice(0,10))
-                                localStorage.setItem('semEndDate', row.semester.endDate.slice(0,10))
-                                localStorage.setItem('programCohortId', row.program_cohorts_id)
-                                event.stopPropagation()
+                                localStorage.setItem('programCohortSemesterId', row.id)
+                                console.log(row)
+                                localStorage.setItem('semStartDate', row.startDate.slice(0, 10))
+                                localStorage.setItem('semEndDate', row.endDate.slice(0, 10))
+                                //localStorage.setItem('programCohortId', row.program_cohorts_id)
+                                // event.stopPropagation()
                             }}
                         />
                     </Card>
