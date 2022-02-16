@@ -247,9 +247,6 @@ function ProgramCohortSemesterDetails () {
     const togglePublishModalDialog = () => {
         showPublishModal ? setShowPublishDialog(false) : setShowPublishDialog(true)
     }
-    const onSelectedCurrency = currencyAbbrev => {
-        setCurrency(currencyAbbrev)
-    }
     return (
         <>
             <Row className='align-items-center page-header'>
@@ -278,9 +275,7 @@ function ProgramCohortSemesterDetails () {
                         <Col>
                             <Card>
                                 <Col>
-                                    <Button className="float-right" variant="danger" onClick={()=>{
-                                        showCreateModal()
-                                    }}>
+                                    <Button className="float-right" variant="danger">
                                         Create Course Cohort
                                     </Button>{' '}{' '}
                                     <Button className="float-center" variant="danger" onClick={()=>{
@@ -373,12 +368,14 @@ function ProgramCohortSemesterDetails () {
                                     setNarrative(e.target.value)  
                                 }} required /><br/>
                             <label htmlFor='amount'><b>Amount</b></label><br/>
-                            <TextInput name='amount'  id='amount'  type="text" value = {amount}
+                            <TextInput name='amount'  id='amount' required type="text" value = {amount}
                                 onChange={(e)=>{
-                                    setAmount(e.target.value)  
-                                }} required /><br/>
+                                    setAmount(e.target.value) }}/><br/>
                             <label htmlFor='currency'><b>Currency</b></label><br />
-                            <SelectCurrency style = {selectStyle} name= 'currency' value={currency} onChange={onSelectedCurrency} />
+                            <SelectCurrency style = {selectStyle} name= 'currency' value={currency}
+                                            onChange={(e)=>{
+                                                setCurrency(e.target.value)
+                                            }}/>
                         </div>
                         <div className='form-group'>
                             <button className="btn btn-info float-left"
@@ -402,7 +399,7 @@ function ProgramCohortSemesterDetails () {
                 centered>
                 <Modal.Header closeButton>
                     <Modal.Title id="contained-modal-title-vcenter">
-                        Do you want to create fee item for {programName} ?
+                        Do you want to {feeItemId ? 'Edit fee item' : 'Create a fee item'} for {programName}
                     </Modal.Title>
                 </Modal.Header>
                 <Modal.Body>
