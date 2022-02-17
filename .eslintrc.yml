@@ -7,3 +7,4 @@ plugins:
 settings:
     react:
       version: "detect"
+rules: { semi: [2, 'never'] }
