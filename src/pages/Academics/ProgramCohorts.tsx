@@ -316,6 +316,7 @@ const ProgramCohorts = ():JSX.Element => {
             .then((res)=>{
                 console.log(res)
                 alerts.showSuccess('Successfully cancelled a program cohort')
+                toggleCancelModal()
             })
             .catch((error) => {
                 alerts.showError(error.response.data)
