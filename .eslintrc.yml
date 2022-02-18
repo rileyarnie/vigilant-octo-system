@@ -1,10 +1,1 @@
-extends:
-  - eslint-config-sims
-  - plugin:react/recommended
-plugins:
-  - react
-  - '@typescript-eslint'
-settings:
-    react:
-      version: "detect"
-rules: { semi: [2, 'always'] }
+SILMS-874-fix-warnings-popping-up-on-sta
