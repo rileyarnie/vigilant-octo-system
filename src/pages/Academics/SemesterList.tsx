@@ -22,13 +22,13 @@ import { LinearProgress, Switch } from '@material-ui/core';
 import Alert from '@material-ui/lab/Alert';
 import Breadcrumb from '../../App/components/Breadcrumb';
 import { Row, Col, Card, Button, Modal } from 'react-bootstrap';
-import Config  from '../../config';
+import Config from '../../config';
 import { ValidationForm, TextInput } from 'react-bootstrap4-form-validation';
-import {Icons} from 'material-table';
+import { Icons } from 'material-table';
 import { Alerts, ToastifyAlerts } from '../lib/Alert';
 const alerts: Alerts = new ToastifyAlerts();
 const tableIcons: Icons = {
-    Add: forwardRef((props, ref) => < AddBox  {...props} ref={ref} />),
+    Add: forwardRef((props, ref) => <AddBox {...props} ref={ref} />),
     Check: forwardRef((props, ref) => <Check {...props} ref={ref} />),
     Clear: forwardRef((props, ref) => <Clear {...props} ref={ref} />),
     Delete: forwardRef((props, ref) => <DeleteOutline {...props} ref={ref} />),
@@ -46,7 +46,7 @@ const tableIcons: Icons = {
     ThirdStateCheck: forwardRef((props, ref) => <Remove {...props} ref={ref} />),
     ViewColumn: forwardRef((props, ref) => <ViewColumn {...props} ref={ref} />)
 };
-const SemesterList = ():JSX.Element => {
+const SemesterList = (): JSX.Element => {
     const timetablingSrv = Config.baseUrl.timetablingSrv;
     interface Semester {
         id: number;
@@ -70,16 +70,15 @@ const SemesterList = ():JSX.Element => {
     };
     const handleToggleStatusSubmit = (e, row: Semester) => {
         const semester = {
-            activation_status: activationStatus,
+            activation_status: activationStatus
         };
         axios
-            .put(`${timetablingSrv}/semesters/${row.id}`, {'body': semester})
+            .put(`${timetablingSrv}/semesters/${row.id}`, { body: semester })
             .then(() => {
-                const msg = activationStatus? 'Successfully activated semester' : 'Successfully Deactivated semester';
+                const msg = activationStatus ? 'Successfully activated semester' : 'Successfully Deactivated semester';
                 alerts.showSuccess(msg);
                 fetchSemesters();
                 setDisabled(false);
-
             })
             .catch((error) => {
                 console.error(error);
@@ -88,23 +87,23 @@ const SemesterList = ():JSX.Element => {
             });
     };
     const columns = [
-        { title: 'ID', field: 'id'},
+        { title: 'ID', field: 'id' },
         { title: 'Semester name', field: 'name' },
-        { title: 'Start Date',  render:(row)=>row.startDate.slice(0,10) },
-        { title: 'End Date',  render:(row)=>row.endDate.slice(0,10) },
+        { title: 'Start Date', render: (row) => row.startDate.slice(0, 10) },
+        { title: 'End Date', render: (row) => row.endDate.slice(0, 10) },
         {
             title: 'Activation Status',
             field: 'internal_action',
-            render: (row:Semester) => (
+            render: (row: Semester) => (
                 <Switch
                     onChange={(event) => handleActivationStatusToggle(event, row)}
                     inputProps={{ 'aria-label': 'controlled' }}
-                    defaultChecked={row.activation_status===true}
+                    defaultChecked={row.activation_status === true}
                 />
             )
         }
     ];
-    const[,setDisabled] = useState(false);
+    const [, setDisabled] = useState(false);
     const [data, setData] = useState([]);
     const [isError] = useState(false);
     const [semesterName, setSemesterName] = useState('');
@@ -116,12 +115,13 @@ const SemesterList = ():JSX.Element => {
     const [selectedSemesterName, setSelectedSemesterName] = useState('');
     const [selectedStartDate, setSelectedStartDate] = useState('');
     const [selectedEndDate, setSelectedEndDate] = useState('');
-    const [selectedSemester,setSelectedSemester] = useState<Semester>();
+    const [selectedSemester, setSelectedSemester] = useState<Semester>();
     const [linearDisplay, setLinearDisplay] = useState('none');
 
     useEffect(() => {
-        axios.get(`${timetablingSrv}/semesters`)
-            .then(res => {
+        axios
+            .get(`${timetablingSrv}/semesters`)
+            .then((res) => {
                 console.log(res.data);
                 setLinearDisplay('none');
                 setData(res.data);
@@ -132,21 +132,23 @@ const SemesterList = ():JSX.Element => {
             });
     }, []);
     const updateSemester = (semesterId, updates) => {
-        axios.put(`${timetablingSrv}/semesters/${semesterId}`,{'body': updates})
+        axios
+            .put(`${timetablingSrv}/semesters/${semesterId}`, { body: updates })
             .then(() => {
                 setLinearDisplay('none');
                 alerts.showSuccess('Successfully updated Semester');
                 fetchSemesters();
                 resetStateCloseModal();
             })
-            .catch(error => {
+            .catch((error) => {
                 console.error(error);
                 alerts.showError(error.message);
             });
     };
     const fetchSemesters = () => {
-        axios.get(`${timetablingSrv}/semesters`)
-            .then(res => {
+        axios
+            .get(`${timetablingSrv}/semesters`)
+            .then((res) => {
                 setData(res.data);
             })
             .catch((error) => {
@@ -159,7 +161,7 @@ const SemesterList = ():JSX.Element => {
         const semester = {
             name: semesterName,
             startDate: startDate,
-            endDate: endDate,
+            endDate: endDate
         };
         createSemester(semester);
     };
@@ -167,8 +169,8 @@ const SemesterList = ():JSX.Element => {
         e.preventDefault();
         const updates = {
             name: semesterName === '' ? selectedSemesterName : semesterName,
-            startDate: startDate == '' ? selectedStartDate: startDate,
-            endDate: endDate == '' ? selectedEndDate: endDate,
+            startDate: startDate == '' ? selectedStartDate : startDate,
+            endDate: endDate == '' ? selectedEndDate : endDate
         };
         updateSemester(semesterId, updates);
     };
@@ -200,12 +202,18 @@ const SemesterList = ():JSX.Element => {
     const handleClose = () => {
         showModal ? resetStateCloseModal() : setModal(false);
     };
-    const getName = (semesterName?:string, semesterId?:number) => {return semesterId? semesterName : selectedSemesterName; };
-    const getEndDate = (date?:string, semesterId?:number) => {return semesterId? date?.slice(0,10) : selectedEndDate; };
-    const getStartDate = (date?:string, semesterId?:number) => {return semesterId? date?.slice(0,10) : selectedStartDate; };
+    const getName = (semesterName?: string, semesterId?: number) => {
+        return semesterId ? semesterName : selectedSemesterName;
+    };
+    const getEndDate = (date?: string, semesterId?: number) => {
+        return semesterId ? date?.slice(0, 10) : selectedEndDate;
+    };
+    const getStartDate = (date?: string, semesterId?: number) => {
+        return semesterId ? date?.slice(0, 10) : selectedStartDate;
+    };
     return (
         <>
-            <Row className='align-items-center page-header'>
+            <Row className="align-items-center page-header">
                 <Col>
                     <Breadcrumb />
                 </Col>
@@ -215,24 +223,24 @@ const SemesterList = ():JSX.Element => {
                     </Button>
                 </Col>
             </Row>
-            <LinearProgress style={{display: linearDisplay}} />
+            <LinearProgress style={{ display: linearDisplay }} />
             <Row>
                 <Col>
                     <Card>
                         <div>
-                            {isError &&
-                            <Alert severity='error'>
-                                {errorMessages.map((msg, i) => {
-                                    return <div key={i}>{msg}</div>;
-                                })}
-                            </Alert>
-                            }
+                            {isError && (
+                                <Alert severity="error">
+                                    {errorMessages.map((msg, i) => {
+                                        return <div key={i}>{msg}</div>;
+                                    })}
+                                </Alert>
+                            )}
                         </div>
                         <MaterialTable
-                            title='Semesters'
+                            title="Semesters"
                             columns={columns}
                             data={data}
-                            options={{actionsColumnIndex: -1}}
+                            options={{ actionsColumnIndex: -1 }}
                             icons={tableIcons}
                             actions={[
                                 {
@@ -246,9 +254,7 @@ const SemesterList = ():JSX.Element => {
                                         setSelectedSemester(rowData);
                                         toggleCreateModal();
                                     }
-
                                 }
-
                             ]}
                         />
                     </Card>
@@ -268,27 +274,54 @@ const SemesterList = ():JSX.Element => {
                 </Modal.Header>
                 <Modal.Body>
                     <ValidationForm>
-                        <div className='form-group'>
-                            <label htmlFor='name'><b>Semester name</b></label>
-                            <TextInput name='semesterName' id='semesterName' type='text' required
+                        <div className="form-group">
+                            <label htmlFor="name">
+                                <b>Semester name</b>
+                            </label>
+                            <TextInput
+                                name="semesterName"
+                                id="semesterName"
+                                type="text"
+                                required
                                 defaultValue={getName(selectedSemester?.name, semesterId)}
-                                onChange={(e) => { setSemesterName(e.target.value);}}
-                            /><br />
-                            <label htmlFor='Date'><b>Start Date</b></label><br />
-                            <TextInput name='startDate'  id='startDate'  type="date" required
+                                onChange={(e) => {
+                                    setSemesterName(e.target.value);
+                                }}
+                            />
+                            <br />
+                            <label htmlFor="Date">
+                                <b>Start Date</b>
+                            </label>
+                            <br />
+                            <TextInput
+                                name="startDate"
+                                id="startDate"
+                                type="date"
+                                required
                                 defaultValue={getStartDate(selectedSemester?.startDate, semesterId)}
                                 onChange={(e) => {
                                     setStartDate(e.target.value);
-                                }}/><br />
-                            <label htmlFor='Date'><b>End Date</b></label><br />
-                            <TextInput name='endDate'  id='endDate' type="date" required
+                                }}
+                            />
+                            <br />
+                            <label htmlFor="Date">
+                                <b>End Date</b>
+                            </label>
+                            <br />
+                            <TextInput
+                                name="endDate"
+                                id="endDate"
+                                type="date"
+                                required
                                 defaultValue={getEndDate(selectedSemester?.endDate, semesterId)}
                                 onChange={(e) => {
                                     setEndDate(e.target.value);
-                                }}/><br />
+                                }}
+                            />
+                            <br />
                         </div>
-                        <div className='form-group'>
-                            <button className="btn btn-info float-right" onClick={(e) => semesterId ? handleEdit(e) : handleCreate(e)}>
+                        <div className="form-group">
+                            <button className="btn btn-info float-right" onClick={(e) => (semesterId ? handleEdit(e) : handleCreate(e))}>
                                 Submit
                             </button>
                         </div>

@@ -28,7 +28,7 @@ import LinearProgress from '@mui/material/LinearProgress';
 
 const alerts: Alerts = new ToastifyAlerts();
 const tableIcons: Icons = {
-    Add: forwardRef((props, ref) => < AddBox  {...props} ref={ref} />),
+    Add: forwardRef((props, ref) => <AddBox {...props} ref={ref} />),
     Check: forwardRef((props, ref) => <Check {...props} ref={ref} />),
     Clear: forwardRef((props, ref) => <Clear {...props} ref={ref} />),
     Delete: forwardRef((props, ref) => <DeleteOutline {...props} ref={ref} />),
@@ -51,10 +51,10 @@ enum TrainerType {
     Trainer = 'TRAINER',
     Assistant = 'ASSISTANT'
 }
-const TrainerList = ():JSX.Element => {
+const TrainerList = (): JSX.Element => {
     const columns = [
         { title: 'ID', field: 'tr_id', hidden: false },
-        { title: 'Trainer AADAlias', render:(rowData)=> getAADAlias(rowData.tr_userId) },
+        { title: 'Trainer AADAlias', render: (rowData) => getAADAlias(rowData.tr_userId) },
         { title: 'Trainer type', field: 'tr_trainerType' },
         { title: 'Department ID', field: 'tr_departmentId' }
     ];
@@ -71,7 +71,7 @@ const TrainerList = ():JSX.Element => {
     const [departmentName, setDepartmentName] = useState('Please select a department');
     const [showModal, setModal] = useState(false);
     const [errorMessages] = useState([]);
-    const [linearDisplay, setLinearDisplay] = useState('none'); 
+    const [linearDisplay, setLinearDisplay] = useState('none');
     useEffect(() => {
         setLinearDisplay('block');
         axios
@@ -95,7 +95,7 @@ const TrainerList = ():JSX.Element => {
             })
             .catch((error) => {
                 //handle error using logging library
-                console.log('Error: '+error);
+                console.log('Error: ' + error);
                 alerts.showError(error.message);
             });
 
@@ -155,10 +155,8 @@ const TrainerList = ():JSX.Element => {
             });
     };
 
-    const getAADAlias = (id:number) => {
-        return users
-            .filter(user => user.id === id)
-            .map(user => user.AADAlias)[0];
+    const getAADAlias = (id: number) => {
+        return users.filter((user) => user.id === id).map((user) => user.AADAlias)[0];
     };
     const toggleCreateModal = () => {
         showModal ? setModal(false) : setModal(true);
@@ -176,7 +174,7 @@ const TrainerList = ():JSX.Element => {
                     </Button>
                 </Col>
             </Row>
-          
+
             <LinearProgress style={{ display: linearDisplay }} />
             <Row>
                 <Col>
@@ -190,13 +188,7 @@ const TrainerList = ():JSX.Element => {
                                 </Alert>
                             )}
                         </div>
-                        <MaterialTable
-                            title="Trainers"
-                            columns={columns}
-                            data={data}
-                            icons={tableIcons}
-                            editable={{}}
-                        />
+                        <MaterialTable title="Trainers" columns={columns} data={data} icons={tableIcons} editable={{}} />
                     </Card>
                 </Col>
             </Row>
@@ -216,21 +208,31 @@ const TrainerList = ():JSX.Element => {
                     <ValidationForm>
                         <div className="form-group">
                             <label htmlFor="user">Select a user</label>
-                            <SelectGroup name="user" id="user" required
+                            <SelectGroup
+                                name="user"
+                                id="user"
+                                required
                                 errorMessage="Please select a user."
                                 onChange={(e) => {
-                                    setSelectedUser(e.target.value);  
+                                    setSelectedUser(e.target.value);
                                 }}
                             >
                                 <option value="">-- select a user --</option>
                                 {users.map((user) => {
-                                    return <option key={user.id} value={user.id}>{user.AADAlias}</option>;
+                                    return (
+                                        <option key={user.id} value={user.id}>
+                                            {user.AADAlias}
+                                        </option>
+                                    );
                                 })}
                             </SelectGroup>
                         </div>
                         <div className="form-group">
                             <label htmlFor="department">Select a department</label>
-                            <SelectGroup name="department" id="department" value={departmentName}
+                            <SelectGroup
+                                name="department"
+                                id="department"
+                                value={departmentName}
                                 required
                                 errorMessage="Please select a department."
                                 onChange={(e) => {
@@ -240,7 +242,11 @@ const TrainerList = ():JSX.Element => {
                             >
                                 <option value="">-{departmentName}</option>
                                 {departments.map((dept) => {
-                                    return <option key={dept.id} value={dept.id}>{dept.name}</option>;
+                                    return (
+                                        <option key={dept.id} value={dept.id}>
+                                            {dept.name}
+                                        </option>
+                                    );
                                 })}
                             </SelectGroup>
                         </div>
@@ -270,8 +276,7 @@ const TrainerList = ():JSX.Element => {
                                 Submit
                             </button>
                         </div>
-                        <button className="btn btn-danger float-left"
-                            onClick={()=>toggleCreateModal()}>
+                        <button className="btn btn-danger float-left" onClick={() => toggleCreateModal()}>
                             Cancel
                         </button>
                     </ValidationForm>

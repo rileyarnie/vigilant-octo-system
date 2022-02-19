@@ -5,7 +5,7 @@ const Config = {
     collapseMenu: false,
     layoutType: 'menu-dark',
     headerBackColor: '',
-    fullWidthLayout: true, 
+    fullWidthLayout: true,
     navFixedLayout: true,
     headerFixedLayout: true,
     baseUrl: {
@@ -14,5 +14,5 @@ const Config = {
         financeSrv: 'http://localhost:4255/finance-service/0.0.1',
         simsSrv: 'http://localhost:4500/sim-service/v0.0.1'
     }
-}
-export default Config
+};
+export default Config;

@@ -11,7 +11,7 @@ declare module 'react-bootstrap4-form-validation';
 declare module 'recharts'; // written in typescript
 declare module 'react-stickies';
 declare module 'peity-react';
-declare module 'react-animated-modal'
+declare module 'react-animated-modal';
 
 declare module '*.png';
 declare module '*.jpg';

@@ -1,7 +1,7 @@
 import React from 'react';
 import { Button } from 'react-bootstrap';
 import { AssignRoleModal } from './AssignRoleModal';
-export const Assign = (props):JSX.Element => {
+export const Assign = (props): JSX.Element => {
     const [modalShow, setModalShow] = React.useState(false);
     return (
         <>
@@ -9,12 +9,7 @@ export const Assign = (props):JSX.Element => {
                 Assign Role
             </Button>
 
-            <AssignRoleModal
-                show={modalShow}
-                onHide={() => setModalShow(false)}
-                selectedrowprops= {props}
-            />
+            <AssignRoleModal show={modalShow} onHide={() => setModalShow(false)} selectedrowprops={props} />
         </>
     );
 };
-

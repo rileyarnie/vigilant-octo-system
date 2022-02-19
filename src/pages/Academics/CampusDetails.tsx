@@ -23,7 +23,7 @@ import Breadcrumb from '../../App/components/Breadcrumb';
 import { Row, Col, Card } from 'react-bootstrap';
 import { Alerts, ToastifyAlerts } from '../lib/Alert';
 const tableIcons: Icons = {
-    Add: forwardRef((props, ref) => < AddBox  {...props} ref={ref} />),
+    Add: forwardRef((props, ref) => <AddBox {...props} ref={ref} />),
     Check: forwardRef((props, ref) => <Check {...props} ref={ref} />),
     Clear: forwardRef((props, ref) => <Clear {...props} ref={ref} />),
     Delete: forwardRef((props, ref) => <DeleteOutline {...props} ref={ref} />),
@@ -42,19 +42,19 @@ const tableIcons: Icons = {
     ViewColumn: forwardRef((props, ref) => <ViewColumn {...props} ref={ref} />)
 };
 const alerts: Alerts = new ToastifyAlerts();
-const CampusDetails = ():JSX.Element => {
-
+const CampusDetails = (): JSX.Element => {
     const columns = [
         { title: 'ID', field: 'id', hidden: true },
         { title: 'Campus name', field: 'name' },
-        { title: 'Details', field: 'details' },
+        { title: 'Details', field: 'details' }
     ];
     const [data, setData] = useState([]);
     const [iserror] = useState(false);
     const [errorMessages] = useState([]);
     useEffect(() => {
-        axios.get('/campuses')
-            .then(res => {
+        axios
+            .get('/campuses')
+            .then((res) => {
                 setData(res.data);
             })
             .catch((error) => {
@@ -64,10 +64,9 @@ const CampusDetails = ():JSX.Element => {
             });
     }, []);
 
-
     return (
         <>
-            <Row className='align-items-center page-header'>
+            <Row className="align-items-center page-header">
                 <Col>
                     <Breadcrumb />
                 </Col>
@@ -76,22 +75,15 @@ const CampusDetails = ():JSX.Element => {
                 <Col>
                     <Card>
                         <div>
-                            {iserror &&
-                            <Alert severity='error'>
-                                {errorMessages.map((msg, i) => {
-                                    return <div key={i}>{msg}</div>;
-                                })}
-                            </Alert>
-                            }
+                            {iserror && (
+                                <Alert severity="error">
+                                    {errorMessages.map((msg, i) => {
+                                        return <div key={i}>{msg}</div>;
+                                    })}
+                                </Alert>
+                            )}
                         </div>
-                        <MaterialTable
-                            title='Campuses'
-                            columns={columns}
-                            data={data}
-                            icons={tableIcons}
-                            editable={{
-                            }}
-                        />
+                        <MaterialTable title="Campuses" columns={columns} data={data} icons={tableIcons} editable={{}} />
                     </Card>
                 </Col>
             </Row>

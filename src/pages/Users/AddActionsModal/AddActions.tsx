@@ -1,7 +1,7 @@
 import React from 'react';
 import { Button } from 'react-bootstrap';
 import { AddActionsModal } from './AddActionsModal';
-export const AddActions = (props):JSX.Element => {
+export const AddActions = (props): JSX.Element => {
     const [modalShow, setModalShow] = React.useState(false);
     const toggleModal = () => {
         modalShow ? setModalShow(false) : setModalShow(true);
@@ -9,17 +9,10 @@ export const AddActions = (props):JSX.Element => {
     return (
         <>
             <Button variant="danger mr-2" onClick={() => setModalShow(true)}>
-              Add Actions
+                Add Actions
             </Button>
 
-            <AddActionsModal
-                show={modalShow}
-                toggleModal={toggleModal}
-                onHide={() => setModalShow(false)}
-                selectedRowProps= {props}
-            /> 
+            <AddActionsModal show={modalShow} toggleModal={toggleModal} onHide={() => setModalShow(false)} selectedRowProps={props} />
         </>
     );
 };
-
- 

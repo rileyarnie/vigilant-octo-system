@@ -4,22 +4,22 @@ import NavCollapse from './../NavCollapse';
 import NavItem from './../NavItem';
 import { MenuItemType } from '../../../../../../menu-items';
 interface NavGroupProps {
-  group: MenuItemType;
-  layout: string;
+    group: MenuItemType;
+    layout: string;
 }
-const navGroup = (props: NavGroupProps):JSX.Element => {
+const navGroup = (props: NavGroupProps): JSX.Element => {
     let navItems: React.ReactNode = '';
     if (props.group.children) {
         const groups = props.group.children;
-        navItems = Object.keys(groups).map(key => {
+        navItems = Object.keys(groups).map((key) => {
             const item = groups[parseInt(key)];
             switch (item.type) {
-            case 'collapse':
-                return <NavCollapse key={item.id} collapse={item} type="main" />;
-            case 'item':
-                return <NavItem layout={props.layout} key={item.id} item={item} />;
-            default:
-                return false;
+                case 'collapse':
+                    return <NavCollapse key={item.id} collapse={item} type="main" />;
+                case 'item':
+                    return <NavItem layout={props.layout} key={item.id} item={item} />;
+                default:
+                    return false;
             }
         });
     }

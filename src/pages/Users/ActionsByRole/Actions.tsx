@@ -1,7 +1,7 @@
 import React from 'react';
 import { Button } from 'react-bootstrap';
 import { VerticalModal } from './VerticalModal';
-export const Actions = (props):JSX.Element => {
+export const Actions = (props): JSX.Element => {
     const [modalShow, setModalShow] = React.useState(false);
     return (
         <>
@@ -9,14 +9,9 @@ export const Actions = (props):JSX.Element => {
                 Role Actions
             </Button>
 
-            <VerticalModal
-                show={modalShow}
-                onHide={() => setModalShow(false)}
-                selectedrowprops= {props}
-            />
+            <VerticalModal show={modalShow} onHide={() => setModalShow(false)} selectedrowprops={props} />
         </>
     );
 };
 
 export default Actions;
- 
