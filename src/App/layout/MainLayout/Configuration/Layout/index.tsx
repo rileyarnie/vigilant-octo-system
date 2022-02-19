@@ -5,9 +5,9 @@ import * as actionTypes from '../../../../../store/actions';
 import { initialState } from '../../../../../store/reducer';
 import SYS from '../../../../../store/constant';
 interface ILayoutProps extends React.HTMLAttributes<Element> {
-  onReset?: any;
-  onChangeLayoutType?: any;
-  layoutType: string;
+    onReset?: any;
+    onChangeLayoutType?: any;
+    layoutType: string;
 }
 class Layout extends Component<ILayoutProps> {
     render(): JSX.Element {
@@ -43,7 +43,7 @@ class Layout extends Component<ILayoutProps> {
                     className="btn btn-block btn-danger"
                     data-value="reset"
                 >
-          Reset
+                    Reset
                 </a>
             </div>
         );
@@ -57,10 +57,8 @@ const mapStateToProps = (state: typeof initialState) => {
 };
 const mapDispatchToProps = (dispatch: any) => {
     return {
-        onChangeLayoutType: (layoutType: string) =>
-            dispatch({ type: actionTypes.LAYOUT_TYPE, layoutType: layoutType }),
-        onReset: (layoutType: string) =>
-            dispatch({ type: actionTypes.RESET, layoutType: layoutType })
+        onChangeLayoutType: (layoutType: string) => dispatch({ type: actionTypes.LAYOUT_TYPE, layoutType: layoutType }),
+        onReset: (layoutType: string) => dispatch({ type: actionTypes.RESET, layoutType: layoutType })
     };
 };
 export default connect(mapStateToProps, mapDispatchToProps)(Layout);

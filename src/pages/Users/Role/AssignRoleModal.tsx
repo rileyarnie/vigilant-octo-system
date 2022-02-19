@@ -1,21 +1,21 @@
-import React, {useEffect, useState} from 'react';
-import {Modal, Button} from 'react-bootstrap';
+import React, { useEffect, useState } from 'react';
+import { Modal, Button } from 'react-bootstrap';
 import Select from 'react-select';
 import Config from '../../../config';
 import axios from 'axios';
 import { Alerts, ToastifyAlerts } from '../../lib/Alert';
-import {customSelectTheme} from '../../lib/SelectThemes';
+import { customSelectTheme } from '../../lib/SelectThemes';
 const alerts: Alerts = new ToastifyAlerts();
-interface ISelectedRow{
-    AADAlias:string;
-    id:number;    
+interface ISelectedRow {
+    AADAlias: string;
+    id: number;
 }
-interface IProps{
+interface IProps {
     onHide: () => void;
     show: boolean;
-    selectedrowprops:ISelectedRow
+    selectedrowprops: ISelectedRow;
 }
-export const AssignRoleModal = (props:IProps):JSX.Element => {
+export const AssignRoleModal = (props: IProps): JSX.Element => {
     const authnzSrv = Config.baseUrl.authnzSrv;
     const [roles, setRoles] = useState([]);
     const [isMulti] = useState(true);
@@ -34,10 +34,8 @@ export const AssignRoleModal = (props:IProps):JSX.Element => {
             });
     }, []);
 
-
-
     roles.map((role) => {
-        return options.push({value: role.id, label: role.RoleName});
+        return options.push({ value: role.id, label: role.RoleName });
     });
 
     const handleChange = (selectedOptions) => {
@@ -51,7 +49,7 @@ export const AssignRoleModal = (props:IProps):JSX.Element => {
             return roleIds.push(option.value);
         });
         const params = new URLSearchParams();
-        roleIds.forEach((roleId)=>{
+        roleIds.forEach((roleId) => {
             params.append('roleIds', roleId.toString());
         });
         axios

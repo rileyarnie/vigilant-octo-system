@@ -21,7 +21,7 @@ import axios from 'axios';
 import Alert from '@material-ui/lab/Alert';
 import Breadcrumb from '../../App/components/Breadcrumb';
 import { Row, Col, Card, Button, Modal } from 'react-bootstrap';
-import Config  from '../../config';
+import Config from '../../config';
 import { Icons } from 'material-table';
 import { ValidationForm, TextInput } from 'react-bootstrap4-form-validation';
 import { Switch } from '@material-ui/core';
@@ -30,7 +30,7 @@ import LinearProgress from '@mui/material/LinearProgress';
 
 const alerts: Alerts = new ToastifyAlerts();
 const tableIcons: Icons = {
-    Add: forwardRef((props, ref) => < AddBox  {...props} ref={ref} />),
+    Add: forwardRef((props, ref) => <AddBox {...props} ref={ref} />),
     Check: forwardRef((props, ref) => <Check {...props} ref={ref} />),
     Clear: forwardRef((props, ref) => <Clear {...props} ref={ref} />),
     Delete: forwardRef((props, ref) => <DeleteOutline {...props} ref={ref} />),
@@ -48,7 +48,7 @@ const tableIcons: Icons = {
     ThirdStateCheck: forwardRef((props, ref) => <Remove {...props} ref={ref} />),
     ViewColumn: forwardRef((props, ref) => <ViewColumn {...props} ref={ref} />)
 };
-const Department = ():JSX.Element => {
+const Department = (): JSX.Element => {
     const timetablingSrv = Config.baseUrl.timetablingSrv;
     interface department {
         name: string;
@@ -65,10 +65,10 @@ const Department = ():JSX.Element => {
                 <Switch
                     onChange={(event) => handleActivationStatusToggle(event, row)}
                     inputProps={{ 'aria-label': 'controlled' }}
-                    defaultChecked={row.isActive===true}
+                    defaultChecked={row.isActive === true}
                 />
             )
-        },
+        }
     ];
     const [data, setData] = useState([]);
     const [iserror] = useState(false);
@@ -78,35 +78,34 @@ const Department = ():JSX.Element => {
     const [selectedDeptName, setSelectedDeptName] = useState('');
     const [isActive, setSelectedStatus] = useState(false);
     const [errorMessages] = useState([]);
-    const[,setDisabled] = useState(false);
+    const [, setDisabled] = useState(false);
     const [linearDisplay, setLinearDisplay] = useState('none');
-    let activationStatus:boolean;
-    const handleActivationStatusToggle=(event,row:department)=>{
+    let activationStatus: boolean;
+    const handleActivationStatusToggle = (event, row: department) => {
         setDisabled(true);
-        if(row.isActive){
-            activationStatus=false;
-            handleToggleStatusSubmit(event,row);
+        if (row.isActive) {
+            activationStatus = false;
+            handleToggleStatusSubmit(event, row);
         }
-        if(!row.isActive){
-            activationStatus=true;
-            handleToggleStatusSubmit(event,row);
+        if (!row.isActive) {
+            activationStatus = true;
+            handleToggleStatusSubmit(event, row);
         }
     };
-    const handleToggleStatusSubmit=(e,row:department)=>{
-        const departmentStatus={
-            name:row.name,
-            isActive:activationStatus,
+    const handleToggleStatusSubmit = (e, row: department) => {
+        const departmentStatus = {
+            name: row.name,
+            isActive: activationStatus
         };
         axios
-            .put(`${timetablingSrv}/departments/${row.id}`,departmentStatus)
-            .then(()=>{
-                const msg = activationStatus? 'Department activated successfully' : 'Department deactivated successfully';
+            .put(`${timetablingSrv}/departments/${row.id}`, departmentStatus)
+            .then(() => {
+                const msg = activationStatus ? 'Department activated successfully' : 'Department deactivated successfully';
                 alerts.showSuccess(msg);
                 fetchDepartments();
                 setDisabled(false);
-
             })
-            .catch((error)=>{
+            .catch((error) => {
                 console.error(error);
                 alerts.showError(error.message);
                 setDisabled(false);
@@ -115,8 +114,9 @@ const Department = ():JSX.Element => {
 
     useEffect(() => {
         setLinearDisplay('block');
-        axios.get(`${timetablingSrv}/departments`)
-            .then(res => {
+        axios
+            .get(`${timetablingSrv}/departments`)
+            .then((res) => {
                 setLinearDisplay('none');
                 setData(res.data);
             })
@@ -129,14 +129,15 @@ const Department = ():JSX.Element => {
 
     const updateDepartment = (deptId, updates) => {
         setLinearDisplay('block');
-        axios.put(`${timetablingSrv}/departments/${deptId}`, updates)
+        axios
+            .put(`${timetablingSrv}/departments/${deptId}`, updates)
             .then(() => {
                 setLinearDisplay('none');
                 alerts.showSuccess('Successfully updated department');
                 fetchDepartments();
                 resetStateCloseModal();
             })
-            .catch(error => {
+            .catch((error) => {
                 setLinearDisplay('block');
                 alerts.showError(error.message);
                 setLinearDisplay('none');
@@ -145,8 +146,9 @@ const Department = ():JSX.Element => {
 
     const fetchDepartments = () => {
         setLinearDisplay('block');
-        axios.get(`${timetablingSrv}/departments`)
-            .then(res => {
+        axios
+            .get(`${timetablingSrv}/departments`)
+            .then((res) => {
                 setData(res.data);
                 setLinearDisplay('none');
             })
@@ -178,7 +180,6 @@ const Department = ():JSX.Element => {
         };
 
         updateDepartment(deptId, updates);
-
     };
 
     const createDepartment = (departmentData) => {
@@ -209,7 +210,7 @@ const Department = ():JSX.Element => {
     };
     return (
         <>
-            <Row className='align-items-center page-header'>
+            <Row className="align-items-center page-header">
                 <Col>
                     <Breadcrumb />
                 </Col>
@@ -220,26 +221,25 @@ const Department = ():JSX.Element => {
                 </Col>
             </Row>
 
-            <LinearProgress style={{display: linearDisplay }} />
+            <LinearProgress style={{ display: linearDisplay }} />
             <Row>
                 <Col>
                     <Card>
                         <div>
-                            {iserror &&
-                            <Alert severity='error'>
-                                {errorMessages.map((msg, i) => {
-                                    return <div key={i}>{msg}</div>;
-                                })}
-                            </Alert>
-                            }
+                            {iserror && (
+                                <Alert severity="error">
+                                    {errorMessages.map((msg, i) => {
+                                        return <div key={i}>{msg}</div>;
+                                    })}
+                                </Alert>
+                            )}
                         </div>
                         <MaterialTable
-                            title='Departments'
+                            title="Departments"
                             columns={columns}
                             data={data}
                             icons={tableIcons}
                             actions={[
-
                                 {
                                     icon: Edit,
                                     tooltip: 'Edit Row',
@@ -271,26 +271,27 @@ const Department = ():JSX.Element => {
                         <div className="form-group">
                             <label htmlFor="departmentName">Department name</label>
                             <TextInput
-                                name='departmentName'
-                                id='departmentName'
-                                type='text'
+                                name="departmentName"
+                                id="departmentName"
+                                type="text"
                                 value={deptId ? selectedDeptName : deptname}
-                                placeholder={deptId ? selectedDeptName :'Enter department name'}
-                                onChange={(e) => deptId ? setSelectedDeptName(e.target.value) : setDeptName(e.target.value)}
-                                required /><br />
+                                placeholder={deptId ? selectedDeptName : 'Enter department name'}
+                                onChange={(e) => (deptId ? setSelectedDeptName(e.target.value) : setDeptName(e.target.value))}
+                                required
+                            />
+                            <br />
                         </div>
-                        <div className="form-group" style={{display: 'flex', justifyContent: 'space-between'}}>
+                        <div className="form-group" style={{ display: 'flex', justifyContent: 'space-between' }}>
                             <button className="btn btn-danger" onClick={() => toggleCreateModal()}>
                                 Cancel
                             </button>
-                            <button className="btn btn-primary" onClick={(e) => deptId ? handleEdit(e) : handleCreate(e)}>
+                            <button className="btn btn-primary" onClick={(e) => (deptId ? handleEdit(e) : handleCreate(e))}>
                                 Submit
                             </button>
                         </div>
                     </ValidationForm>
                 </Modal.Body>
             </Modal>
-
         </>
     );
 };

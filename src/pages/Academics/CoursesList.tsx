@@ -1,5 +1,5 @@
 /* eslint-disable react/display-name */
-import React, { useState, useEffect} from 'react';
+import React, { useState, useEffect } from 'react';
 import { forwardRef } from 'react';
 import MaterialTable, { Icons } from 'material-table';
 import AddBox from '@material-ui/icons/AddBox';
@@ -20,7 +20,7 @@ import ViewColumn from '@material-ui/icons/ViewColumn';
 import axios from 'axios';
 import Alert from '@material-ui/lab/Alert';
 import Breadcrumb from '../../App/components/Breadcrumb';
-import { Row, Col, Card, Button, Modal} from 'react-bootstrap';
+import { Row, Col, Card, Button, Modal } from 'react-bootstrap';
 import Config from '../../config';
 import { Switch } from '@material-ui/core';
 import CourseCreation from './CreateCourse';
@@ -28,7 +28,7 @@ import { Alerts, ToastifyAlerts } from '../lib/Alert';
 import LinearProgress from '@mui/material/LinearProgress';
 const alerts: Alerts = new ToastifyAlerts();
 const tableIcons: Icons = {
-    Add: forwardRef((props, ref) => < AddBox  {...props} ref={ref} />),
+    Add: forwardRef((props, ref) => <AddBox {...props} ref={ref} />),
     Check: forwardRef((props, ref) => <Check {...props} ref={ref} />),
     Clear: forwardRef((props, ref) => <Clear {...props} ref={ref} />),
     Delete: forwardRef((props, ref) => <DeleteOutline {...props} ref={ref} />),
@@ -46,7 +46,7 @@ const tableIcons: Icons = {
     ThirdStateCheck: forwardRef((props, ref) => <Remove {...props} ref={ref} />),
     ViewColumn: forwardRef((props, ref) => <ViewColumn {...props} ref={ref} />)
 };
-const CoursesList = ():JSX.Element => {
+const CoursesList = (): JSX.Element => {
     const timetablingSrv = Config.baseUrl.timetablingSrv;
     interface Course {
         name: string;
@@ -58,7 +58,7 @@ const CoursesList = ():JSX.Element => {
         needsTechnicalAssistant: boolean;
         activation_status: boolean;
         approval_status: boolean;
-        isElective:boolean;
+        isElective: boolean;
     }
     useEffect(() => {
         fetchCourses();
@@ -85,57 +85,55 @@ const CoursesList = ():JSX.Element => {
     //const [selectedCourse,setSelectedCourse] = useState({} as Course)
     let approvalStatus: boolean;
     let activationStatus: boolean;
-    let isElective:boolean;
-    let msg:string;
+    let isElective: boolean;
+    let msg: string;
     const handleActivationStatusToggle = (event, row: Course) => {
         if (row.activation_status) {
             msg = 'Successfully Deactivated Course';
             activationStatus = false;
-            approvalStatus=row.approval_status;
-            isElective = row.isElective; 
+            approvalStatus = row.approval_status;
+            isElective = row.isElective;
             handleToggleStatusSubmit(event, row);
         }
         if (!row.activation_status) {
             msg = 'Successfully Activated Course';
             activationStatus = true;
-            approvalStatus=row.approval_status;
-            isElective = row.isElective; 
+            approvalStatus = row.approval_status;
+            isElective = row.isElective;
             handleToggleStatusSubmit(event, row);
         }
     };
-    const handleApprovalStatusToggle = (event, row: Course) => {      
+    const handleApprovalStatusToggle = (event, row: Course) => {
         if (row.approval_status) {
             msg = 'Successfully Declined Course';
             approvalStatus = false;
-            activationStatus=row.activation_status;  
-            isElective = row.isElective;          
+            activationStatus = row.activation_status;
+            isElective = row.isElective;
             handleToggleStatusSubmit(event, row);
         }
         if (!row.approval_status) {
             msg = 'Successfully Approved Course';
             approvalStatus = true;
-            activationStatus=row.activation_status;  
-            isElective = row.isElective;            
+            activationStatus = row.activation_status;
+            isElective = row.isElective;
             handleToggleStatusSubmit(event, row);
         }
     };
 
-    const handleToggleStatusSubmit = (e, row: Course) => {       
+    const handleToggleStatusSubmit = (e, row: Course) => {
         const course = {
             activation_status: activationStatus,
-            approval_status: approvalStatus,  
-            isElective: isElective          
-        }; 
-
+            approval_status: approvalStatus,
+            isElective: isElective
+        };
 
         setLinearDisplay('block');
         axios
             .put(`${timetablingSrv}/courses/${row.id}`, course)
-            .then(() => {                
+            .then(() => {
                 alerts.showSuccess(msg);
                 setLinearDisplay('none');
                 fetchCourses();
-                
             })
             .catch((error) => {
                 //handle error using logging library
@@ -154,7 +152,7 @@ const CoursesList = ():JSX.Element => {
                 <Switch
                     onChange={(event) => handleActivationStatusToggle(event, row)}
                     inputProps={{ 'aria-label': 'controlled' }}
-                    defaultChecked={row.activation_status===true}
+                    defaultChecked={row.activation_status === true}
                 />
             )
         },
@@ -165,7 +163,7 @@ const CoursesList = ():JSX.Element => {
                 <Switch
                     onChange={(event) => handleApprovalStatusToggle(event, row)}
                     inputProps={{ 'aria-label': 'controlled' }}
-                    defaultChecked={row.approval_status===true}                   
+                    defaultChecked={row.approval_status === true}
                 />
             )
         }
@@ -186,7 +184,7 @@ const CoursesList = ():JSX.Element => {
                     </Button>
                 </Col>
             </Row>
-            <LinearProgress  style={{display: linearDisplay}} /> 
+            <LinearProgress style={{ display: linearDisplay }} />
             <Row>
                 <Col>
                     <Card>
@@ -199,12 +197,7 @@ const CoursesList = ():JSX.Element => {
                                 </Alert>
                             )}
                         </div>
-                        <MaterialTable
-                            title="Courses"
-                            columns={columns}
-                            data={data}
-                            icons={tableIcons}
-                        />
+                        <MaterialTable title="Courses" columns={columns} data={data} icons={tableIcons} />
                     </Card>
                 </Col>
             </Row>
@@ -213,7 +206,14 @@ const CoursesList = ():JSX.Element => {
                     <Modal.Title id="contained-modal-title-vcenter">Create Course</Modal.Title>
                 </Modal.Header>
                 <Modal.Body>
-                    <CourseCreation setModal={setModal} linearDisplay={linearDisplay} setLinearDisplay={setLinearDisplay} fetchCourses={fetchCourses}> </CourseCreation>
+                    <CourseCreation
+                        setModal={setModal}
+                        linearDisplay={linearDisplay}
+                        setLinearDisplay={setLinearDisplay}
+                        fetchCourses={fetchCourses}
+                    >
+                        {' '}
+                    </CourseCreation>
                 </Modal.Body>
             </Modal>
         </>

@@ -7,14 +7,13 @@ import Config from '../../config';
 import { Alerts, ToastifyAlerts } from '../lib/Alert';
 import { regxAlphaNumericWithSpacesAndUnderscores } from '../lib/validation';
 const alerts: Alerts = new ToastifyAlerts();
-const EditVenue = (props):JSX.Element => {
+const EditVenue = (props): JSX.Element => {
     interface venue {
         venue_name: string;
-
     }
-    const [venueName,setVenueName] = useState('');
+    const [venueName, setVenueName] = useState('');
     const timetableSrv = Config.baseUrl.timetablingSrv;
-    const venueChangeHandler = (event) =>{
+    const venueChangeHandler = (event) => {
         setVenueName(event.target.value);
     };
     const handleSubmit = (event) => {
@@ -23,14 +22,15 @@ const EditVenue = (props):JSX.Element => {
             name: venueName
         };
         props.setLinearDisplay('block');
-        axios.put(`${timetableSrv}/venues/${props.venue_id}`, {'Venue': modifiedVenue})
-            .then(()=>{
+        axios
+            .put(`${timetableSrv}/venues/${props.venue_id}`, { Venue: modifiedVenue })
+            .then(() => {
                 alerts.showSuccess('successfully updated Venue details');
                 props.setEditModal(false);
                 props.fetchVenues();
-                props.setLinearDisplay('none');                
+                props.setLinearDisplay('none');
             })
-            .catch((error)=>{
+            .catch((error) => {
                 console.log(error);
                 alerts.showError(error.message);
             });
@@ -56,7 +56,7 @@ const EditVenue = (props):JSX.Element => {
                                                 defaultValue={props.venue_name}
                                                 validator={(value) => regxAlphaNumericWithSpacesAndUnderscores.test(value)}
                                                 errorMessage={{ validator: 'Please enter a valid name' }}
-                                                onChange = {venueChangeHandler}
+                                                onChange={venueChangeHandler}
                                             />
                                             &nbsp;&nbsp;&nbsp;
                                         </div>
@@ -64,7 +64,9 @@ const EditVenue = (props):JSX.Element => {
                                             <button className="btn btn-danger float-right">Submit</button>
                                         </div>
                                     </ValidationForm>
-                                    <button className="btn btn-info float-left" onClick={()=>props.setEditModal(false)}>Cancel</button>
+                                    <button className="btn btn-info float-left" onClick={() => props.setEditModal(false)}>
+                                        Cancel
+                                    </button>
                                 </Col>
                             </Row>
                         </Card.Body>

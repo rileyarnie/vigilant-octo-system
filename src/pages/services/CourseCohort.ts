@@ -1,9 +1,9 @@
 /* eslint-disable no-useless-constructor */
-import Course from './Course'
-import ProgramCohortSemester from './ProgramCohortSemester'
-import Semester from './Semester'
+import Course from './Course';
+import ProgramCohortSemester from './ProgramCohortSemester';
+import Semester from './Semester';
 export default class CourseCohort {
-  constructor (
+    constructor(
         public isPublished: string,
         public id: number,
         public trainerId: number,
@@ -13,6 +13,5 @@ export default class CourseCohort {
         public programCohortId: number,
         public programCohortSemester: ProgramCohortSemester,
         public totalNumSessions: number
-
-  ) {}
+    ) {}
 }

@@ -14,7 +14,6 @@ export const FULL_WIDTH_LAYOUT = 'FULL_WIDTH_LAYOUT';
 export const NAV_CONTENT_LEAVE = 'NAV_CONTENT_LEAVE';
 export const NAV_COLLAPSE_LEAVE = 'NAV_COLLAPSE_LEAVE';
 
-
 export type ACTIONTYPE =
     | { type: typeof COLLAPSE_MENU }
     | { type: typeof COLLAPSE_TOGGLE; menu: { id: string; type: string } }
