@@ -43,7 +43,11 @@ const tableIcons: Icons = {
     ViewColumn: forwardRef((props, ref) => <ViewColumn {...props} ref={ref} />)
 };
 
-const ProgramCohortGraduationList = () => {
+interface Props {
+    toggleGraduationList: () => void;
+}
+
+const ProgramCohortGraduationList: React.FunctionComponent<Props> = ({ toggleGraduationList }) => {
     const [linearDisplay, setLinearDisplay] = useState('none');
     const [errorMessages] = useState([]);
     const [isError] = useState(false);
@@ -60,6 +64,17 @@ const ProgramCohortGraduationList = () => {
             <Row className="align-items-center page-header">
                 <Col>
                     <Breadcrumb />
+                </Col>
+                <Col>
+                    <Button
+                        className="float-right"
+                        variant="primary"
+                        onClick={() => {
+                            toggleGraduationList();
+                        }}
+                    >
+                        Show All Students
+                    </Button>
                 </Col>
             </Row>
             <LinearProgress style={{ display: linearDisplay }} />

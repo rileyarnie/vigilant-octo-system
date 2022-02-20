@@ -93,46 +93,51 @@ const CourseCohortsDetails = (props: any): JSX.Element => {
 
     return (
         <>
-            <Row className="align-items-center page-header">
-                <Col>
-                    <Breadcrumb />
-                </Col>
-                <Col>
-                    <Button
-                        className="float-right"
-                        variant="primary"
-                        onClick={() => {
-                            toggleGraduationList();
-                        }}
-                    >
-                        Show Graduating Students
-                    </Button>
-                </Col>
-            </Row>
-            <LinearProgress style={{ display: linearDisplay }} />
-            <Row>
-                <Col>
-                    <Card>
-                        <div>
-                            {isError && (
-                                <Alert severity="error">
-                                    {errorMessages.map((msg, i) => {
-                                        return <div key={i}>{msg}</div>;
-                                    })}
-                                </Alert>
-                            )}
-                        </div>
-                        <MaterialTable
-                            title="Course Cohort Student/Marks Details"
-                            icons={tableIcons}
-                            columns={columns}
-                            data={data}
-                            options={{ actionsColumnIndex: -1 }}
-                        />
-                    </Card>
-                </Col>
-            </Row>
-            {showGraduating && <ProgramCohortGraduationList />}
+            {!showGraduating ? (
+                <>
+                    <Row className="align-items-center page-header">
+                        <Col>
+                            <Breadcrumb />
+                        </Col>
+                        <Col>
+                            <Button
+                                className="float-right"
+                                variant="primary"
+                                onClick={() => {
+                                    toggleGraduationList();
+                                }}
+                            >
+                                Show Graduating Students
+                            </Button>
+                        </Col>
+                    </Row>
+                    <LinearProgress style={{ display: linearDisplay }} />
+                    <Row>
+                        <Col>
+                            <Card>
+                                <div>
+                                    {isError && (
+                                        <Alert severity="error">
+                                            {errorMessages.map((msg, i) => {
+                                                return <div key={i}>{msg}</div>;
+                                            })}
+                                        </Alert>
+                                    )}
+                                </div>
+                                <MaterialTable
+                                    title="Course Cohort Student/Marks Details"
+                                    icons={tableIcons}
+                                    columns={columns}
+                                    data={data}
+                                    options={{ actionsColumnIndex: -1 }}
+                                />
+                            </Card>
+                        </Col>
+                    </Row>
+                </>
+            ) : (
+                <ProgramCohortGraduationList toggleGraduationList={toggleGraduationList} />
+            )}
         </>
     );
 };
