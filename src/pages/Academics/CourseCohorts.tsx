@@ -56,7 +56,6 @@ const CourseCohorts = (): JSX.Element => {
     const [trainersData, setTrainers] = useState([]);
     const [semesters, setSemesters] = useState([]);
     const [isError] = useState(false);
-    const [] = useState(false);
     const [programId, setProgramId] = useState(0);
     const [campusId, setCampusId] = useState(0);
     const [startDate, setStartDate] = useState('');
@@ -178,7 +177,11 @@ const CourseCohorts = (): JSX.Element => {
                                                 }}
                                             >
                                                 {trainersData.map((tr) => {
-                                                    return <MenuItem value={tr.tr_id}>{tr.tr_id}</MenuItem>;
+                                                    return (
+                                                        <MenuItem key={tr.tr_id} value={tr.tr_id}>
+                                                            {tr.tr_id}
+                                                        </MenuItem>
+                                                    );
                                                 })}
                                             </Select>
 
@@ -192,7 +195,11 @@ const CourseCohorts = (): JSX.Element => {
                                                 }}
                                             >
                                                 {semesters.map((sem) => {
-                                                    return <MenuItem value={sem.id}>{sem.name}</MenuItem>;
+                                                    return (
+                                                        <MenuItem key={sem.id} value={sem.id}>
+                                                            {sem.name}
+                                                        </MenuItem>
+                                                    );
                                                 })}
                                             </Select>
                                         </div>
