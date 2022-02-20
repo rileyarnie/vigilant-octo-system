@@ -41,12 +41,12 @@ class NavCollapse extends Component<INavCollapseProps> {
             navItems = Object.keys(collapses).map((key) => {
                 const item = collapses[parseInt(key)];
                 switch (item.type) {
-                    case 'collapse':
-                        return <LoopNavCollapse key={item.id} collapse={item} type="sub" />;
-                    case 'item':
-                        return <NavItem layout={this.props.layout} key={item.id} item={item} />;
-                    default:
-                        return false;
+                case 'collapse':
+                    return <LoopNavCollapse key={item.id} collapse={item} type="sub" />;
+                case 'item':
+                    return <NavItem layout={this.props.layout} key={item.id} item={item} />;
+                default:
+                    return false;
                 }
             });
         }

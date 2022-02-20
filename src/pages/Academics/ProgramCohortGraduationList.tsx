@@ -1,5 +1,10 @@
 /* eslint-disable react/display-name */
 import React, { useState, useEffect, forwardRef } from 'react';
+import { Row, Col, Modal, Button } from 'react-bootstrap';
+import Breadcrumb from '../../App/components/Breadcrumb';
+import { LinearProgress } from '@mui/material';
+import Card from '@material-ui/core/Card';
+import Alert from '@material-ui/lab/Alert';
 import MaterialTable, { Icons } from 'material-table';
 import AddBox from '@material-ui/icons/AddBox';
 import ArrowDownward from '@material-ui/icons/ArrowDownward';
@@ -17,19 +22,7 @@ import SaveAlt from '@material-ui/icons/SaveAlt';
 import Search from '@material-ui/icons/Search';
 import ViewColumn from '@material-ui/icons/ViewColumn';
 import axios from 'axios';
-import Card from '@material-ui/core/Card';
-import Alert from '@material-ui/lab/Alert';
-import Breadcrumb from '../../App/components/Breadcrumb';
-import { Row, Col, Modal, Button } from 'react-bootstrap';
-import Config from '../../config';
-import { MenuItem, Select, Switch } from '@material-ui/core';
-import { ValidationForm, SelectGroup, FileInput, TextInput } from 'react-bootstrap4-form-validation';
-import CardPreview from './CardPreview';
-import { Link } from 'react-router-dom';
-import { Alerts, ToastifyAlerts } from '../lib/Alert';
-import { LinearProgress } from '@mui/material';
-import ProgramCohortGraduationList from './ProgramCohortGraduationList';
-const alerts: Alerts = new ToastifyAlerts();
+
 const tableIcons: Icons = {
     Add: forwardRef((props, ref) => <AddBox {...props} ref={ref} />),
     Check: forwardRef((props, ref) => <Check {...props} ref={ref} />),
@@ -49,64 +42,24 @@ const tableIcons: Icons = {
     ThirdStateCheck: forwardRef((props, ref) => <Remove {...props} ref={ref} />),
     ViewColumn: forwardRef((props, ref) => <ViewColumn {...props} ref={ref} />)
 };
-const CourseCohortsDetails = (props: any): JSX.Element => {
-    const [data, setData] = useState([]);
-    const [trainersData, setTrainers] = useState([]);
-    const [semesters, setSemesters] = useState([]);
-    const [isError] = useState(false);
-    const [, setDisabled] = useState(false);
-    const [errorMessages] = useState([]);
+
+const ProgramCohortGraduationList = () => {
     const [linearDisplay, setLinearDisplay] = useState('none');
-    const [showGraduating, setShowGraduating] = useState(false);
-    const timetablingSrv = Config.baseUrl.timetablingSrv;
+    const [errorMessages] = useState([]);
+    const [isError] = useState(false);
 
     const columns = [
-        { title: 'Course Cohort ID', field: 'id', hidden: false },
-        { title: 'Student ID', field: 'registration.student.id', hidden: false },
-        { title: 'Marks Type', field: 'courseCohortMarks.typeOfMarks' },
-        { title: 'Diploma Marks', field: 'courseCohortMarks.diplomaMarks' },
-        { title: 'Bachelor Marks', field: 'courseCohortMarks.bachelorMarks' },
-        { title: 'Masters Marks', field: 'courseCohortMarks.mastersMarks' },
-        { title: 'PHD Marks', field: 'courseCohortMarks.phdMarks' },
-        { title: 'CB Marks', field: 'courseCohortMarks.competencyBasedMarks' },
-        { title: 'Short Term Marks', field: 'courseCohortMarks.shortTermMarks' }
+        { title: 'Student Name', field: 'studentName' },
+        { title: 'Grades', field: 'grades' }
     ];
 
-    useEffect(() => {
-        setLinearDisplay('block');
-        fetchcourseCohorts();
-    }, []);
-
-    const courseCohortId = props.match.params.id;
-
-    const fetchcourseCohorts = (): void => {
-        axios.get(`${timetablingSrv}/course-cohorts`, { params: { loadExtras: 'marks,student', id: courseCohortId } }).then((res) => {
-            const ccData = res.data;
-            setData(ccData);
-            setLinearDisplay('none');
-        });
-    };
-
-    const toggleGraduationList = () => {
-        setShowGraduating((prevState) => !prevState);
-    };
+    const data = [{ studentName: 'John Doe', grades: 'These grades' }];
 
     return (
         <>
             <Row className="align-items-center page-header">
                 <Col>
                     <Breadcrumb />
-                </Col>
-                <Col>
-                    <Button
-                        className="float-right"
-                        variant="primary"
-                        onClick={() => {
-                            toggleGraduationList();
-                        }}
-                    >
-                        Show Graduating Students
-                    </Button>
                 </Col>
             </Row>
             <LinearProgress style={{ display: linearDisplay }} />
@@ -123,7 +76,7 @@ const CourseCohortsDetails = (props: any): JSX.Element => {
                             )}
                         </div>
                         <MaterialTable
-                            title="Course Cohort Student/Marks Details"
+                            title="List of Graduating Students"
                             icons={tableIcons}
                             columns={columns}
                             data={data}
@@ -132,9 +85,8 @@ const CourseCohortsDetails = (props: any): JSX.Element => {
                     </Card>
                 </Col>
             </Row>
-            {showGraduating && <ProgramCohortGraduationList />}
         </>
     );
 };
 
-export default CourseCohortsDetails;
+export default ProgramCohortGraduationList;
