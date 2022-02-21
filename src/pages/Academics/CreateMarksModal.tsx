@@ -121,7 +121,7 @@ const CreateMarksModal = (props:Props) => {
 
     return (
         <>    
-            <Button variant="danger" onClick={() => setModalShow(true)}>
+            <Button variant="danger" className = "float-right" onClick={() => setModalShow(true)}>
                 Create Marks
             </Button>
             <Modal show={modalShow}>

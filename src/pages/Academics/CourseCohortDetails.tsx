@@ -29,8 +29,6 @@ import { MenuItem, Select, Switch } from '@material-ui/core';
 import { ValidationForm, SelectGroup, FileInput, TextInput } from 'react-bootstrap4-form-validation';
 import CardPreview from './CardPreview';
 import { Link } from 'react-router-dom';
-import { Alerts, ToastifyAlerts } from '../lib/Alert';
-import { LinearProgress } from '@mui/material';
 const alerts: Alerts = new ToastifyAlerts();
 const tableIcons: Icons = {
     Add: forwardRef((props, ref) => <AddBox {...props} ref={ref} />),
