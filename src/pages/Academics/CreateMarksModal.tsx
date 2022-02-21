@@ -19,7 +19,7 @@ const CreateMarksModal = (props:Props) => {
     const [courseCohortId,setCourseCohortId] = useState(0);
     const [courseCohortRegistrationId,setCourseCohortRegistrationId] = useState(0);
     const [typeOfMarks,setTypeOfMarks] = useState('');
-    const [marks,setMarks] = useState('');
+    const [marks,setMarks] = useState(0);
     const [programCohortSemesterId,setProgramCohortSemesterId] = useState(1);
     const [ccRegistrations,setCCRegistrations] = useState([]);
     const [modalShow,setModalShow] = useState(false)
@@ -89,12 +89,6 @@ const CreateMarksModal = (props:Props) => {
 
     const handleSubmit = (e) => {
         e.preventDefault();
-        const marksObj = {
-            courseCohortRegistrationId: courseCohortRegistrationId,
-            typeOfMarks: typeOfMarks,
-            marks: marks,
-            programCohortSemesterId:programCohortSemesterId
-        };
         props.setLinearDisplay('block');
         axios
             .post(`${simSrv}/course-cohort-registration-marks`, { 
@@ -107,11 +101,12 @@ const CreateMarksModal = (props:Props) => {
                 alerts.showSuccess('Marks Created Successfully');
                 props.fetchcourseCohortsRegistrations();
                 props.setLinearDisplay('none');
+                setModalShow(false)
             })
             .catch((error) => {
                 //handle error using logging library
                 console.error(error);
-                alerts.showError(error.message);
+                alerts.showError(error.response.data);
             });
     };
 
