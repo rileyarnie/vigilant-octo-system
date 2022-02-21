@@ -25,10 +25,12 @@ import Config from '../../config';
 import { Alerts, ToastifyAlerts } from '../lib/Alert';
 import { LinearProgress } from '@mui/material';
 import CreateMarksModal from './CreateMarksModal';
-import { MenuItem, Select, Switch } from '@material-ui/core';
+import { MenuItem, Switch } from '@material-ui/core';
 import { ValidationForm, SelectGroup, FileInput, TextInput } from 'react-bootstrap4-form-validation';
 import CardPreview from './CardPreview';
 import { Link } from 'react-router-dom';
+import Select from 'react-select';
+import CertificationType from './enums/CertificationType';
 const alerts: Alerts = new ToastifyAlerts();
 const tableIcons: Icons = {
     Add: forwardRef((props, ref) => <AddBox {...props} ref={ref} />),
@@ -59,11 +61,61 @@ const CourseCohortsDetails = (props: any): JSX.Element => {
     const [linearDisplay, setLinearDisplay] = useState('none');
     const simSrv = Config.baseUrl.simsSrv;
 
+
+
+
+    const shortTermMarks = [
+        {value:'complete', label:'complete'},
+        {value:'incomplete', label:'incomplete'}
+    ];
+
+    const competencyBasedMarks = [
+        {value:'pass', label:'pass'},
+        {value:'fail', label:'fail'}
+    ];
+    
+    function handleMarksChange (e){
+        console.log(e.target.value)
+    }
+    function renderSwitch(rowData){
+        switch(rowData.certificationType) {
+        case CertificationType.shortTerm:                                                                         
+            return (
+                <Select
+                    options={shortTermMarks}
+                    isMulti={false}
+                    placeholder="Select short term marks"
+                    noOptionsMessage={() => 'No available short term marks options'}
+                    onChange={handleMarksChange}
+                    defaultValue={rowData.marks}
+                />
+            )
+
+        case CertificationType.competencyBased:            
+            return (
+                <Select
+                    options={competencyBasedMarks}
+                    isMulti={false}
+                    noOptionsMessage={() => 'No available competency based marks options'}
+                    onChange={handleMarksChange}
+                    defaultValue={rowData.marks}
+                />
+            )  
+        default:
+            return (
+                <input
+                    type="text"
+                    defaultValue={rowData.marks}
+                    onEmptied= {() => alert('t')}
+                    />
+            )    
+        }
+    }
     const columns = [
         { title: 'Course Cohort ID', render: () =>props.match.params.id, hidden: false, editable: 'never' as const },
         {title: 'Certification Type', field: 'certificationType', hidden: true },
         {title: 'Id', field: 'id', hidden: true },
-        { title: 'Marks', field: 'marks'},
+        { title: 'Marks', field: 'marks',   editComponent: tableData => (renderSwitch(tableData.rowData))},
         { title: 'Grade', field: 'grade', editable: 'never' as const }
     ];
     useEffect(() => {
@@ -81,15 +133,16 @@ const CourseCohortsDetails = (props: any): JSX.Element => {
         });
     };
 
-    const updateMarks = (id:number,marks:string) => {
-        axios.put(`${simSrv}/course-cohort-marks/${id}`, { params: { loadExtras: 'marks', courseCohortIds: courseCohortId } }).then((res) => {
+    const updateMarks = async (id:number,marks:string) => {
+        axios.put(`${simSrv}/course-cohort-marks/${id}`, { marks:marks }).then((res) => {
             setLinearDisplay('none');
-            fetchcourseCohortsRegistrations()
+            fetchcourseCohortsRegistrations();
+            alerts.showSuccess('Successfuly updated marks')
         })
             .catch((error) => {
-                alerts.showError(error)
-            })
-    }
+                alerts.showError(error);
+            });
+    };
     return (
         <>
             <Row className="align-items-center page-header">
@@ -122,16 +175,8 @@ const CourseCohortsDetails = (props: any): JSX.Element => {
                             options={{ actionsColumnIndex: 0 }}                            
 
                             editable={{
-                                onRowUpdate: (newData, oldData) =>
-                                    new Promise((resolve, reject) => {
-                                        setTimeout(() => {
-                                            const dataUpdate = [...data];
-                                            const index = oldData.tableData.id;
-                                            dataUpdate[index] = newData;
-                                            setData([...dataUpdate]);
-                                            alert(JSON.stringify(newData))
-                                        }, 1000);
-                                    }),
+                                onRowUpdate: (newData) => updateMarks(courseCohortId,newData.marks)
+
                             }}
                         />
                     </Card>
