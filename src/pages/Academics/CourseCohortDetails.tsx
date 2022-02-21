@@ -59,9 +59,10 @@ const CourseCohortsDetails = (props: any): JSX.Element => {
     const [, setDisabled] = useState(false);
     const [errorMessages] = useState([]);
     const [linearDisplay, setLinearDisplay] = useState('none');
+    const [marks,setMarks] = useState('');
     const simSrv = Config.baseUrl.simsSrv;
-
-
+    let enterredMarks;
+    let selectedMarks
 
 
     const shortTermMarks = [
@@ -74,9 +75,7 @@ const CourseCohortsDetails = (props: any): JSX.Element => {
         {value:'fail', label:'fail'}
     ];
     
-    function handleMarksChange (e){
-        console.log(e.target.value)
-    }
+
     function renderSwitch(rowData){
         switch(rowData.certificationType) {
         case CertificationType.shortTerm:                                                                         
@@ -86,10 +85,10 @@ const CourseCohortsDetails = (props: any): JSX.Element => {
                     isMulti={false}
                     placeholder="Select short term marks"
                     noOptionsMessage={() => 'No available short term marks options'}
-                    onChange={handleMarksChange}
+                    onChange={(e) => handleSelect(e)}
                     defaultValue={rowData.marks}
                 />
-            )
+            );
 
         case CertificationType.competencyBased:            
             return (
@@ -97,18 +96,18 @@ const CourseCohortsDetails = (props: any): JSX.Element => {
                     options={competencyBasedMarks}
                     isMulti={false}
                     noOptionsMessage={() => 'No available competency based marks options'}
-                    onChange={handleMarksChange}
+                    onChange={(e) => handleSelect(e)}
                     defaultValue={rowData.marks}
                 />
-            )  
+            );  
         default:
             return (
                 <input
                     type="text"
                     defaultValue={rowData.marks}
-                    onEmptied= {() => alert('t')}
-                    />
-            )    
+                    onChange = {e => handleMarksChange(e)}
+                />
+            );    
         }
     }
     const columns = [
@@ -134,14 +133,22 @@ const CourseCohortsDetails = (props: any): JSX.Element => {
     };
 
     const updateMarks = async (id:number,marks:string) => {
-        axios.put(`${simSrv}/course-cohort-marks/${id}`, { marks:marks }).then((res) => {
+        axios.put(`${simSrv}/course-cohort-registration-marks/${id}`, { marks:marks }).then((res) => {
             setLinearDisplay('none');
             fetchcourseCohortsRegistrations();
-            alerts.showSuccess('Successfuly updated marks')
+            alerts.showSuccess('Successfuly updated marks');
         })
             .catch((error) => {
-                alerts.showError(error);
+                alerts.showError(error.response.data);
             });
+    };
+
+    const handleMarksChange = (e) => {
+        enterredMarks=parseInt(e.target.value);
+    };
+
+    const handleSelect= (e) => {
+        selectedMarks=e.target.value;
     };
     return (
         <>
@@ -175,7 +182,7 @@ const CourseCohortsDetails = (props: any): JSX.Element => {
                             options={{ actionsColumnIndex: 0 }}                            
 
                             editable={{
-                                onRowUpdate: (newData) => updateMarks(courseCohortId,newData.marks)
+                                onRowUpdate: (newData) => updateMarks(newData.id,enterredMarks || selectedMarks)
 
                             }}
                         />
