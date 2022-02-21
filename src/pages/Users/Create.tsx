@@ -1,25 +1,26 @@
 import React, { useState } from 'react';
 import axios from 'axios';
-import { Row, Col, Card,} from 'react-bootstrap';
+import { Row, Col, Card } from 'react-bootstrap';
 import { ValidationForm, TextInput } from 'react-bootstrap4-form-validation';
 import validator from 'validator';
 import Breadcrumb from '../../App/components/Breadcrumb';
 import Config from '../../config';
 import { Alerts, ToastifyAlerts } from '../lib/Alert';
 const alerts: Alerts = new ToastifyAlerts();
-const CreateUser = ():JSX.Element => {
-    const [email,setEmail] = useState('');
+const CreateUser = (): JSX.Element => {
+    const [email, setEmail] = useState('');
     const handleChange = (event) => {
         setEmail(event.target.value);
     };
 
-    const handleSubmit = (e,) => {
+    const handleSubmit = (e) => {
         e.preventDefault();
         const params = new URLSearchParams();
         const authnzSrv = Config.baseUrl.authnzSrv;
         params.append('AADAlias', email);
-        axios.post(`${authnzSrv}/users`, params)
-            .then(res => {
+        axios
+            .post(`${authnzSrv}/users`, params)
+            .then((res) => {
                 console.log(res);
                 alerts.showSuccess('User created successfully');
                 setEmail('');
@@ -29,7 +30,6 @@ const CreateUser = ():JSX.Element => {
                 console.error(error);
                 alerts.showError(error.message);
             });
-
     };
 
     const handleErrorSubmit = (e, _formData, errorInputs) => {
@@ -49,12 +49,23 @@ const CreateUser = ():JSX.Element => {
                             <Row>
                                 <Col md={6}>
                                     <ValidationForm onSubmit={handleSubmit} onErrorSubmit={handleErrorSubmit}>
-                                        <div className='form-group'>
-                                            <label htmlFor='email'><b>Enter AAD Alias</b></label>
-                                            <TextInput name='email' id='email' type='email' placeholder="user@miog.co.ke"  validator={validator.isEmail} errorMessage={{ validator: 'Please enter a valid email' }} value={email} onChange={handleChange} />
+                                        <div className="form-group">
+                                            <label htmlFor="email">
+                                                <b>Enter AAD Alias</b>
+                                            </label>
+                                            <TextInput
+                                                name="email"
+                                                id="email"
+                                                type="email"
+                                                placeholder="user@miog.co.ke"
+                                                validator={validator.isEmail}
+                                                errorMessage={{ validator: 'Please enter a valid email' }}
+                                                value={email}
+                                                onChange={handleChange}
+                                            />
                                         </div>
-                                        <div className='form-group'>
-                                            <button className='btn btn-danger'>Submit</button>
+                                        <div className="form-group">
+                                            <button className="btn btn-danger">Submit</button>
                                         </div>
                                     </ValidationForm>
                                 </Col>

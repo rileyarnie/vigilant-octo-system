@@ -1,30 +1,30 @@
-import Default from './pages/Dashboard/Default'
-import RoleList from './pages/Users/RoleList'
-import CreateUser from './pages/Users/Create'
-import Departments from './pages/Academics/Departments'
-import CampusDetails from './pages/Academics/CampusDetails'
-import CreateCampus from './pages/Academics/CreateCampus'
-import CampusList from './pages/Academics/CampusList'
-import ProgramCoursesList from './pages/Academics/ProgramCoursesList'
-import AssignCourse from './pages/Academics/AssignCourse'
-import TrainerList from './pages/Academics/TrainerList'
-import VenueList from './pages/Academics/VenueList'
-import AssignRole from './pages/Users/AssignRole'
-import CreateVenue from './pages/Academics/CreateVenue'
-import Programs from './pages/Academics/Programs'
-import CoursesList from './pages/Academics/CoursesList'
-import UserList from './pages/Users/UserList'
-import CreateCourse from './pages/Academics/CreateCourse'
-import SemesterList from './pages/Academics/SemesterList'
-import ProgramCohorts from './pages/Academics/ProgramCohorts'
-import ProgramCohortCoursesList from './pages/Academics/ProgramCohortCoursesList'
-import ApplicationsList from './pages/Academics/ApplicationsList'
-import PublishedSemester from './pages/Academics/Application/PublishedSemester'
-import Timetable from './pages/Timetabling/Timetable'
-import CourseCohorts from './pages/Academics/CourseCohorts'
-import CourseCohortsDetails from './pages/Academics/CourseCohortDetails'
-import ProgramCohortSemesters from './pages/Academics/ProgramCohortSemesters'
-import ProgramCohortSemesterDetails from './pages/Academics/ProgramCohortSemesterDetails'
+import Default from './pages/Dashboard/Default';
+import RoleList from './pages/Users/RoleList';
+import CreateUser from './pages/Users/Create';
+import Departments from './pages/Academics/Departments';
+import CampusDetails from './pages/Academics/CampusDetails';
+import CreateCampus from './pages/Academics/CreateCampus';
+import CampusList from './pages/Academics/CampusList';
+import ProgramCoursesList from './pages/Academics/ProgramCoursesList';
+import AssignCourse from './pages/Academics/AssignCourse';
+import TrainerList from './pages/Academics/TrainerList';
+import VenueList from './pages/Academics/VenueList';
+import AssignRole from './pages/Users/AssignRole';
+import CreateVenue from './pages/Academics/CreateVenue';
+import Programs from './pages/Academics/Programs';
+import CoursesList from './pages/Academics/CoursesList';
+import UserList from './pages/Users/UserList';
+import CreateCourse from './pages/Academics/CreateCourse';
+import SemesterList from './pages/Academics/SemesterList';
+import ProgramCohorts from './pages/Academics/ProgramCohorts';
+import ProgramCohortCoursesList from './pages/Academics/ProgramCohortCoursesList';
+import ApplicationsList from './pages/Academics/ApplicationsList';
+import PublishedSemester from './pages/Academics/Application/PublishedSemester';
+import Timetable from './pages/Timetabling/Timetable';
+import CourseCohorts from './pages/Academics/CourseCohorts';
+import CourseCohortsDetails from './pages/Academics/CourseCohortDetails';
+import ProgramCohortSemesters from './pages/Academics/ProgramCohortSemesters';
+import ProgramCohortSemesterDetails from './pages/Academics/ProgramCohortSemesterDetails';
 
 const routes = [
     { path: '/dashboard', exact: true, name: 'default', component: Default },
@@ -60,5 +60,5 @@ const routes = [
     { path: '/coursecohortdetails/:id', exact: true, name: 'default', component: CourseCohortsDetails },
     { path: '/programcohortsemester', exact: true, name: 'default', component: ProgramCohortSemesters },
     { path: '/pcsdetails', exact: true, name: 'default', component: ProgramCohortSemesterDetails }
-]
-export default routes
+];
+export default routes;

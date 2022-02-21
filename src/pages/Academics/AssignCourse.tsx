@@ -1,6 +1,6 @@
 /* eslint-disable react/react-in-jsx-scope */
 /* eslint-disable react/display-name */
-import { useState, useEffect,forwardRef } from 'react';
+import { useState, useEffect, forwardRef } from 'react';
 import MaterialTable, { Icons } from 'material-table';
 import AddBox from '@material-ui/icons/AddBox';
 import ArrowDownward from '@material-ui/icons/ArrowDownward';
@@ -26,7 +26,7 @@ import Config from '../../config';
 import { Alerts, ToastifyAlerts } from '../lib/Alert';
 
 const tableIcons: Icons = {
-    Add: forwardRef((props, ref) => <AddBox  {...props} ref={ref} />),
+    Add: forwardRef((props, ref) => <AddBox {...props} ref={ref} />),
     Check: forwardRef((props, ref) => <Check {...props} ref={ref} />),
     Clear: forwardRef((props, ref) => <Clear {...props} ref={ref} />),
     Delete: forwardRef((props, ref) => <DeleteOutline {...props} ref={ref} />),
@@ -45,7 +45,7 @@ const tableIcons: Icons = {
     ViewColumn: forwardRef((props, ref) => <ViewColumn {...props} ref={ref} />)
 };
 const alerts: Alerts = new ToastifyAlerts();
-const AssignCourse = ():JSX.Element => {
+const AssignCourse = (): JSX.Element => {
     const timetablingSrv = Config.baseUrl.timetablingSrv;
     const columns = [
         { title: 'ID', field: 'id', hidden: false },
@@ -55,7 +55,7 @@ const AssignCourse = ():JSX.Element => {
         { title: 'Timetableable', field: 'timetableable' },
         { title: 'Technical Assistant', field: 'needsTechnicalAssistant' },
         { title: 'Prerequisite Courses', field: 'prerequisiteCourses' },
-        { title: 'Approved', field: 'isApproved' },
+        { title: 'Approved', field: 'isApproved' }
     ];
     const [data, setData] = useState([]);
     const [programId, setProgramId] = useState();
@@ -66,8 +66,9 @@ const AssignCourse = ():JSX.Element => {
     const [errorMessages] = useState([]);
     const progId = JSON.parse(localStorage.getItem('programId'));
     useEffect(() => {
-        axios.get(`${timetablingSrv}/courses`)
-            .then(res => {
+        axios
+            .get(`${timetablingSrv}/courses`)
+            .then((res) => {
                 setData(res.data);
                 setProgramId(progId);
             })
@@ -76,16 +77,16 @@ const AssignCourse = ():JSX.Element => {
                 console.error(error);
                 alerts.showError(error.message);
             });
-
     }, []);
 
     const fetchCourses = () => {
-        axios.get(`${timetablingSrv}/courses`)
-            .then(res => {
+        axios
+            .get(`${timetablingSrv}/courses`)
+            .then((res) => {
                 setData(res.data);
             })
             .catch((error) => {
-            //handle error using logging library
+                //handle error using logging library
                 console.error(error);
                 alerts.showError(error.message);
             });
@@ -93,19 +94,20 @@ const AssignCourse = ():JSX.Element => {
 
     const handleRowSelection = (courseName: string, courseId: number, rows) => {
         console.log(rows);
-        const courseIds = rows.map(row => row.id); 
+        const courseIds = rows.map((row) => row.id);
         const uniq = [...new Set(courseIds)];
         setSelectedRows(uniq);
-        
+
         setCourseName(courseName);
         setCourseId(courseId);
     };
 
     const assignSelectedCoursesToProgram = (selectedCourses: Array<number>) => {
-        console.log('this is the array being given here: '+selectedCourses[0]);
+        console.log('this is the array being given here: ' + selectedCourses[0]);
 
-        axios.put(`${timetablingSrv}/programs/${programId}/courses`, {courses: selectedCourses})
-            .then(res => {
+        axios
+            .put(`${timetablingSrv}/programs/${programId}/courses`, { courses: selectedCourses })
+            .then((res) => {
                 alerts.showSuccess('Course assignment successful');
                 fetchCourses();
                 return res;
@@ -114,11 +116,10 @@ const AssignCourse = ():JSX.Element => {
                 alerts.showError(error.message);
             });
     };
-     
 
     return (
         <>
-            <Row className='align-items-center page-header'>
+            <Row className="align-items-center page-header">
                 <Col>
                     <Breadcrumb />
                 </Col>
@@ -127,16 +128,16 @@ const AssignCourse = ():JSX.Element => {
                 <Col>
                     <Card>
                         <div>
-                            {iserror &&
-                            <Alert severity='error'>
-                                {errorMessages.map((msg, i) => {
-                                    return <div key={i}>{msg}</div>;
-                                })}
-                            </Alert>
-                            }
+                            {iserror && (
+                                <Alert severity="error">
+                                    {errorMessages.map((msg, i) => {
+                                        return <div key={i}>{msg}</div>;
+                                    })}
+                                </Alert>
+                            )}
                         </div>
                         <MaterialTable
-                            title='Assign Courses List'
+                            title="Assign Courses List"
                             columns={columns}
                             data={data}
                             options={{
@@ -144,24 +145,22 @@ const AssignCourse = ():JSX.Element => {
                                 showSelectAllCheckbox: false,
                                 showTextRowsSelected: false
                             }}
-                            onSelectionChange = {(rows)=> handleRowSelection(rows[0]?.name,rows[0]?.id, rows)}
+                            onSelectionChange={(rows) => handleRowSelection(rows[0]?.name, rows[0]?.id, rows)}
                             icons={tableIcons}
                         />
-
                     </Card>
                 </Col>
             </Row>
 
             <Button
-                style={{display: !courseId ? 'none' : 'block'  }} 
-                variant="contained" 
+                style={{ display: !courseId ? 'none' : 'block' }}
+                variant="contained"
                 color="secondary"
                 onClick={() => {
-               
                     assignSelectedCoursesToProgram(selectedRows);
                 }}
             >
-            Assign courses
+                Assign courses
             </Button>
         </>
     );

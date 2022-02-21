@@ -10,17 +10,17 @@ import NavBadge from './../NavBadge';
 import * as actionTypes from '../../../../../../store/actions';
 import { initialState } from '../../../../../../store/reducer';
 interface INavItemProps extends React.HTMLAttributes<Element> {
-  layout?: any;
-  windowWidth?: any;
-  classes?: any;
-  item?: any;
-  onItemClick?: any;
-  onItemLeave?: any;
-  external?: any;
-  url?: any;
-  target?: any;
-  icon?: any;
-  title?: any;
+    layout?: any;
+    windowWidth?: any;
+    classes?: any;
+    item?: any;
+    onItemClick?: any;
+    onItemLeave?: any;
+    external?: any;
+    url?: any;
+    target?: any;
+    icon?: any;
+    title?: any;
 }
 class NavItem extends Component<INavItemProps> {
     render(): JSX.Element {
@@ -43,12 +43,7 @@ class NavItem extends Component<INavItemProps> {
             );
         } else {
             subContent = (
-                <NavLink
-                    to={this.props.item.url}
-                    className="nav-link"
-                    exact={true}
-                    target={itemTarget}
-                >
+                <NavLink to={this.props.item.url} className="nav-link" exact={true} target={itemTarget}>
                     <NavIcon items={this.props.item} />
                     {itemTitle}
                     <NavBadge layout={this.props.layout} items={this.props.item} />
@@ -61,10 +56,7 @@ class NavItem extends Component<INavItemProps> {
         } else {
             if (this.props.windowWidth < 992) {
                 mainContent = (
-                    <li
-                        className={this.props.item.classes}
-                        onClick={this.props.onItemClick}
-                    >
+                    <li className={this.props.item.classes} onClick={this.props.onItemClick}>
                         {subContent}
                     </li>
                 );
@@ -87,6 +79,4 @@ const mapDispatchToProps = (dispatch: any) => {
         onItemLeave: () => dispatch({ type: actionTypes.NAV_CONTENT_LEAVE })
     };
 };
-export default withRouter(
-    connect(mapStateToProps, mapDispatchToProps)(windowSize(NavItem as any))
-) as any;
+export default withRouter(connect(mapStateToProps, mapDispatchToProps)(windowSize(NavItem as any))) as any;

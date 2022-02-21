@@ -25,9 +25,15 @@ import Config from '../../config';
 import { Alerts, ToastifyAlerts } from '../lib/Alert';
 import { LinearProgress } from '@mui/material';
 import CreateMarksModal from './CreateMarksModal';
+import { MenuItem, Select, Switch } from '@material-ui/core';
+import { ValidationForm, SelectGroup, FileInput, TextInput } from 'react-bootstrap4-form-validation';
+import CardPreview from './CardPreview';
+import { Link } from 'react-router-dom';
+import { Alerts, ToastifyAlerts } from '../lib/Alert';
+import { LinearProgress } from '@mui/material';
 const alerts: Alerts = new ToastifyAlerts();
 const tableIcons: Icons = {
-    Add: forwardRef((props, ref) => < AddBox  {...props} ref={ref} />),
+    Add: forwardRef((props, ref) => <AddBox {...props} ref={ref} />),
     Check: forwardRef((props, ref) => <Check {...props} ref={ref} />),
     Clear: forwardRef((props, ref) => <Clear {...props} ref={ref} />),
     Delete: forwardRef((props, ref) => <DeleteOutline {...props} ref={ref} />),
@@ -88,30 +94,30 @@ const CourseCohortsDetails = (props: any): JSX.Element => {
     }
     return (
         <>
-            <Row className='align-items-center page-header'>
+            <Row className="align-items-center page-header">
                 <Col>
-                    <Breadcrumb/>
+                    <Breadcrumb />
                 </Col>
 
                 <Col>                
                     <CreateMarksModal fetchcourseCohortsRegistrations = {fetchcourseCohortsRegistrations} setLinearDisplay={setLinearDisplay} courseCohortId={courseCohortId} ></CreateMarksModal>
                 </Col>
             </Row>
-            <LinearProgress  style={{display: linearDisplay}} /> 
+            <LinearProgress style={{ display: linearDisplay }} />
             <Row>
                 <Col>
                     <Card>
                         <div>
-                            {isError&&
-                            <Alert severity='error'>
-                                {errorMessages.map((msg,i)=>{
-                                    return <div key={i}>{msg}</div>
-                                })}
-                            </Alert>
-                            }
+                            {isError && (
+                                <Alert severity="error">
+                                    {errorMessages.map((msg, i) => {
+                                        return <div key={i}>{msg}</div>;
+                                    })}
+                                </Alert>
+                            )}
                         </div>
                         <MaterialTable
-                            title='Course Cohort Student/Marks Details' 
+                            title="Course Cohort Student/Marks Details"
                             icons={tableIcons}
                             columns={columns}
                             data={data}
@@ -134,7 +140,7 @@ const CourseCohortsDetails = (props: any): JSX.Element => {
                 </Col>
             </Row>
         </>
-    )
-}
+    );
+};
 
-export default CourseCohortsDetails
+export default CourseCohortsDetails;

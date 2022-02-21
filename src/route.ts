@@ -4,6 +4,5 @@ interface RouteObject {
     name?: string;
     component: null;
 }
-const route: RouteObject[] = [
-];
+const route: RouteObject[] = [];
 export default route;

@@ -2,7 +2,7 @@
 import * as React from 'react';
 import { withRouter } from 'react-router';
 interface IScrollToTopProps extends React.HTMLAttributes<Element> {
-  location?: any;
+    location?: any;
 }
 class ScrollToTop extends React.Component<IScrollToTopProps> {
     componentDidUpdate(prevProps: any) {

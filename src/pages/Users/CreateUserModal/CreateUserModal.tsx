@@ -9,7 +9,7 @@ import Config from '../../../config';
 import { Alerts, ToastifyAlerts } from '../../lib/Alert';
 
 const alerts: Alerts = new ToastifyAlerts();
-const CreateUserModal = (props):JSX.Element => {
+const CreateUserModal = (props): JSX.Element => {
     const [email, setEmail] = useState('');
     const handleChange = (event) => {
         setEmail(event.target.value);
@@ -20,7 +20,7 @@ const CreateUserModal = (props):JSX.Element => {
         const authnzSrv = Config.baseUrl.authnzSrv;
         params.append('AADAlias', email);
         axios
-            .post(`${authnzSrv}/users`, {AADAlias: email, isStaff: true})
+            .post(`${authnzSrv}/users`, { AADAlias: email, isStaff: true })
             .then(() => {
                 alerts.showSuccess('successfully created user');
                 props.fetchUsers();
@@ -68,15 +68,16 @@ const CreateUserModal = (props):JSX.Element => {
                                                 value={email}
                                                 onChange={handleChange}
                                             />
-                                                &nbsp;&nbsp;&nbsp;
+                                            &nbsp;&nbsp;&nbsp;
                                         </div>
- 
+
                                         <div className="form-group">
                                             <button className="btn btn-info float-right">Submit</button>
-                                                    
                                         </div>
                                     </ValidationForm>
-                                    <button className="btn btn-danger float-left" onClick={()=>props.onHide()}>Cancel</button>
+                                    <button className="btn btn-danger float-left" onClick={() => props.onHide()}>
+                                        Cancel
+                                    </button>
                                 </Col>
                             </Row>
                         </Col>
