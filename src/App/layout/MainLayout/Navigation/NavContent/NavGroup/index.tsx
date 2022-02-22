@@ -14,12 +14,12 @@ const navGroup = (props: NavGroupProps): JSX.Element => {
         navItems = Object.keys(groups).map((key) => {
             const item = groups[parseInt(key)];
             switch (item.type) {
-                case 'collapse':
-                    return <NavCollapse key={item.id} collapse={item} type="main" />;
-                case 'item':
-                    return <NavItem layout={props.layout} key={item.id} item={item} />;
-                default:
-                    return false;
+            case 'collapse':
+                return <NavCollapse key={item.id} collapse={item} type="main" />;
+            case 'item':
+                return <NavItem layout={props.layout} key={item.id} item={item} />;
+            default:
+                return false;
             }
         });
     }
