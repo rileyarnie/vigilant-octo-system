@@ -1,5 +1,5 @@
 import React from 'react'
-import Scheduler, { AppointmentDragging } from 'devextreme-react/scheduler'
+import Scheduler, { AppointmentDragging, Resource } from 'devextreme-react/scheduler'
 import Draggable from 'devextreme-react/draggable'
 import 'devextreme/dist/css/dx.light.css'
 import ScrollView from 'devextreme-react/scroll-view'
@@ -56,11 +56,22 @@ class Timetable extends React.Component {
             openedCourseCohort:{},
             durationInMinutes:0,
             recurrenceStartDate: new Date(),
-            recurrenceEndDate:new Date()
+            recurrenceEndDate:new Date(),
+            color: '',
+            status: '',
+            errorMessage:'',
+            colorData:[],
+            colorId:0,
+            timeTabledUnitErrors:[],
+            timetableDataWithErrors:[],
+            itemsWithColor:[
+           ],
+
         }
         this.onAppointmentRemove = this.onAppointmentRemove.bind(this)
         this.onAppointmentFormOpening = this.onAppointmentFormOpening.bind(this)
         this.onAppointmentAdd = this.onAppointmentAdd.bind(this)
+        this.timeTabledUnitsWithErrors = this.timeTabledUnitsWithErrors.bind(this)
         //this.onVenueChanged = this.onVenueChanged.bind(this);
         //this.handleEdit()
         this.courseCohortData
@@ -71,8 +82,21 @@ class Timetable extends React.Component {
         this.fetchCourseCohorts('course, timetablingUnits, semester',this.state.semesterId)
         this.fetchSemesters()
         this.sumNumSession()
+        this.fetchTimetableUnitErrors(this.state.semesterId)
     }
+    componentDidUpdate(prevProps,prevState) {
+      if (prevState.timeTabledUnitErrors !== this.state.timeTabledUnitErrors||prevState.timetableData !== this.state.timetableData) {
+        this.timeTabledUnitsWithErrors(this.state.timetableData, this.state.timeTabledUnitErrors);
+      }
 
+    }
+    fetchTimetableUnitErrors = (semesterId) => {
+        TimetableService.getTimetableUnitErrors(semesterId)
+        .then((res) => {
+        const errors = res.data
+        this.setState({timeTabledUnitErrors:errors})
+        })
+    }
     fetchCourseCohorts = ( loadExtras, semesterId) => {
         CourseCohortService.fetchCourseCohorts(loadExtras, semesterId)
             .then((res) => {
@@ -90,7 +114,8 @@ class Timetable extends React.Component {
                             venueId: tu.venueId,
                             trainerId: tu.trainerId,
                             startDate: new Date(tu.recurrenceStartDate),
-                            endDate: new Date(tu.recurrenceEndDate)
+                            endDate: new Date(tu.recurrenceEndDate),
+                            colorId: 0
                         })
                     } )
                 }
@@ -103,6 +128,30 @@ class Timetable extends React.Component {
                 alerts.showError(error.message)
             })
     };
+
+
+timeTabledUnitsWithErrors (timeTabledUnits,timeTabledUnitErrors) {
+const items = timeTabledUnits.map(unit=>({
+...timeTabledUnitErrors.find((error)=>(error.timetablingUnitId===unit.timetablingUnitId)&&error),...unit
+}))
+
+ const itemsWithColor=[ {id:1, color:"#ff9747" }]
+
+// const itemsWithColor=items.map(item=>item.errors.length>0?({...item,item.color:"#ff0000"}):({{...item,item.color:"#000ff0"}})}
+
+ for(let i=0;i<items.length;i++){
+ if(items[i].errors?.length>0){
+ itemsWithColor.push({...items[i], priorityId:itemsWithColor[0]})
+ }
+ else{
+  itemsWithColor.push({text:"this text",id:items[i].id,color:"#ff9747"})
+
+ }
+ }
+ return this.setState({timetableDataWithErrors:items,itemsWithColor:itemsWithColor})
+
+}
+
 
     fetchSemesters = () => {
         SemesterService.fetchSemesters()
@@ -125,13 +174,13 @@ class Timetable extends React.Component {
     }
 
     onAppointmentRemove(e) {
-        const index = this.state.timetableData.indexOf(e.itemData)
+        const index = this.state.timetableDataWithErrors.indexOf(e.itemData)
         if (index >= 0) {
-            this.state.timetableData.splice(index, 1)
+            this.state.timetableDataWithErrors.splice(index, 1)
             this.state.courseCohort.push(e.itemData)
             this.setState({
                 courseCohort: [...this.state.courseCohort],
-                timetableData: [...this.state.timetableData]
+                timetableDataWithErrors: [...this.state.timetableDataWithErrors]
             })
         }
     }
@@ -143,27 +192,41 @@ class Timetable extends React.Component {
             courseCohortId: timetableData.id,
             recurrenceStartDate: timetableData.startDate,
             recurrenceEndDate: timetableData.endDate,
-            startTime: timetableData.startDate.toTimeString().slice(0,8),            
+            startTime: timetableData.startDate.toTimeString().slice(0,8),
             numSessions: min || 1,
-            durationInMinutes: 60
+            durationInMinutes: 60,
+            colorId: this.state.colorId,
         }
-
         TimetableService.createTimetableUnit(timetableUnit)
             .then(() => {
                 alerts.showSuccess('TimetableUnit added successfully')
-               
             })
             .catch((error) => {
-                //handle error using logging library
                 console.error(error)
-                alerts.showError(error.response.data)
+                this.setState({status: error.response.status, errorMessage: error.response.data, color: '#ff9747'})
+                const colorData = [{
+                id: 1,
+                text: this.state.errorMessage,
+                color: this.state.color
+                }]
+                console.log(colorData)
+                this.setState({colorData:colorData})
+
+                if (error.response.status >= 400) {
+                        colorId = 1
+                    } else {
+                        colorId = 0
+                    }
+                 this.setState({colorId:colorId})
+               //alerts.showError(color)
+
             })
         if (index >= 0) {
             this.state.courseCohort.splice(index, 1)
-            this.state.timetableData.push(e.itemData)
+            this.state.timetableDataWithErrors.push(e.itemData)
             this.setState({
                 timetableUnits: [...this.state.courseCohort],
-                timetableData: [...this.state.timetableData]
+                timetableDataWithErrors: [...this.state.timetableDataWithErrors]
             })
         }
     }
@@ -171,9 +234,7 @@ class Timetable extends React.Component {
         const max = Math.max(20,40)
         const { form } = e
         const t = e['appointmentData']
-        // this.selectedTimetablingUnit = e['appointmentData']
         this.state.openedCourseCohort = t
-        // alert (JSON.stringify(t))
         let  venueId  = e.appointmentData
         let  trainerId = 0
         let timetablingUnitId = t.timetablingUnitId
@@ -337,8 +398,6 @@ class Timetable extends React.Component {
         return (
             <React.Fragment>
                 {this.state.semesterId? <Button  onClick={() =>  this.publishTimetable() } className="float-right" variant="danger" style={{transform: `translateX(${-40}px)`}} >Publish Timetable</Button>: '' }
-              
-           
                 <div className="option">
                     <span className="text-center"><b>Select a semester</b></span>
                     <SelectBox
@@ -349,13 +408,15 @@ class Timetable extends React.Component {
                         //value={id}
                         onValueChanged = {(e) => { this.setState({ semesterId: e.value})
                             this.fetchCourseCohorts('course, timetablingUnits, semester',this.state.semesterId)
+                            this.fetchTimetableUnitErrors(this.state.semesterId)
+                            this.timeTabledUnitsWithErrors(this.state.timetableData,this.state.timeTabledUnitErrors)
                         }}
                     />
                 </div>
-        
+
                 <ScrollView id="scroll">
                     {/* {this.state.semesterId? <Button className="float-right" variant="danger">Publish Timetable</Button> : ''} */}
-               
+
                     <Draggable
                         id="list"
                         data="dropArea"
@@ -378,7 +439,7 @@ class Timetable extends React.Component {
                 <Scheduler
                     timeZone="Africa/Nairobi"
                     id="scheduler"
-                    dataSource={this.state.timetableData}
+                    dataSource={this.state.timetableDataWithErrors}
                     views={['day', 'week', 'workWeek']}
                     defaultCurrentView="week"
                     firstDayOfWeek={1}
@@ -390,6 +451,13 @@ class Timetable extends React.Component {
                     onAppointmentFormOpening={this.onAppointmentFormOpening}
                     onAppointmentUpdated={e => {this.handleEdit(e)}}
                 >
+                <Resource
+                        fieldExpr='colorId'
+                        dataSource={this.state.itemsWithColor}
+                        label='text'
+
+                        useColorAsDefault={ true }
+                      />
                     {/*                     <Resource */}
                     {/*                         dataSource= {await venueData} */}
                     {/*                         fieldExpr="trainerId" */}
