@@ -53,7 +53,7 @@ const CreateMarksModal = (props:Props) => {
     };
     useEffect(() => {
         fetchcourseCohortRegistrations();
-    });
+    },[]);
     function renderSwitch(){
         switch(props.certificationType) {
         case CertificationType.shortTerm:                                                                         

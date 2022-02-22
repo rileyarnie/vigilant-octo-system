@@ -60,7 +60,7 @@ const CourseCohortsDetails = (props: any): JSX.Element => {
     const [isError] = useState(false);
     const [, setDisabled] = useState(false);
     const [errorMessages] = useState([]);
-    const [linearDisplay, setLinearDisplay] = useState('none');
+    const [linearDisplay, setLinearDisplay] = useState('block');
     const [marks,setMarks] = useState('');
     const [certificationType,setCertificationType] = useState('');
     const simSrv = Config.baseUrl.simsSrv;
@@ -121,7 +121,6 @@ const CourseCohortsDetails = (props: any): JSX.Element => {
         { title: 'Grade', field: 'grade', editable: 'never' as const }
     ];
     useEffect(() => {
-        setLinearDisplay('block');
         fetchcourseCohortsRegistrations();
         fetchProgramByCourseCohortId();
     }, []);
