@@ -22,12 +22,17 @@ import Alert from '@material-ui/lab/Alert';
 import Breadcrumb from '../../App/components/Breadcrumb';
 import { Row, Col, Modal, Button } from 'react-bootstrap';
 import Config from '../../config';
-import { MenuItem, Select, Switch } from '@material-ui/core';
+import { Alerts, ToastifyAlerts } from '../lib/Alert';
+import { LinearProgress } from '@mui/material';
+import CreateMarksModal from './CreateMarksModal';
+import { MenuItem, Switch } from '@material-ui/core';
 import { ValidationForm, SelectGroup, FileInput, TextInput } from 'react-bootstrap4-form-validation';
 import CardPreview from './CardPreview';
 import { Link } from 'react-router-dom';
-import { Alerts, ToastifyAlerts } from '../lib/Alert';
-import { LinearProgress } from '@mui/material';
+import Select from 'react-select';
+import CertificationType from './enums/CertificationType';
+import { ProgramsService } from '../services/ProgramService';
+import Program from '../services/Program';
 const alerts: Alerts = new ToastifyAlerts();
 const tableIcons: Icons = {
     Add: forwardRef((props, ref) => <AddBox {...props} ref={ref} />),
@@ -56,39 +61,131 @@ const CourseCohortsDetails = (props: any): JSX.Element => {
     const [, setDisabled] = useState(false);
     const [errorMessages] = useState([]);
     const [linearDisplay, setLinearDisplay] = useState('none');
-    const timetablingSrv = Config.baseUrl.timetablingSrv;
+    const [marks,setMarks] = useState('');
+    const [certificationType,setCertificationType] = useState('');
+    const simSrv = Config.baseUrl.simsSrv;
+    let enterredMarks;
+    let selectedMarks;
+    let programs;
 
+    const shortTermMarks = [
+        {value:'complete', label:'complete'},
+        {value:'incomplete', label:'incomplete'}
+    ];
+
+    const competencyBasedMarks = [
+        {value:'pass', label:'pass'},
+        {value:'fail', label:'fail'}
+    ];
+    
+
+    function renderSwitch(rowData){
+        switch(rowData.certificationType) {
+        case CertificationType.shortTerm:                                                                         
+            return (
+                <Select
+                    options={shortTermMarks}
+                    isMulti={false}
+                    placeholder="Select short term marks"
+                    noOptionsMessage={() => 'No available short term marks options'}
+                    onChange={(e) => handleSelect(e)}
+                    defaultValue={rowData.certificationType}
+                />
+            );
+
+        case CertificationType.competencyBased:            
+            return (
+                <Select
+                    options={competencyBasedMarks}
+                    isMulti={false}
+                    noOptionsMessage={() => 'No available competency based marks options'}
+                    onChange={(e) => handleSelect(e)}
+                    defaultValue={rowData.certificationType}
+                />
+            );  
+        default:
+            return (
+                <input
+                    type="text"
+                    defaultValue={rowData.marks}
+                    onChange = {e => handleMarksChange(e)}
+                />
+            );    
+        }
+    }
     const columns = [
-        { title: 'Course Cohort ID', field: 'id', hidden: false },
-        { title: 'Student ID', field: 'registration.student.id', hidden: false },
-        { title: 'Marks Type', field: 'courseCohortMarks.typeOfMarks' },
-        { title: 'Diploma Marks', field: 'courseCohortMarks.diplomaMarks' },
-        { title: 'Bachelor Marks', field: 'courseCohortMarks.bachelorMarks' },
-        { title: 'Masters Marks', field: 'courseCohortMarks.mastersMarks' },
-        { title: 'PHD Marks', field: 'courseCohortMarks.phdMarks' },
-        { title: 'CB Marks', field: 'courseCohortMarks.competencyBasedMarks' },
-        { title: 'Short Term Marks', field: 'courseCohortMarks.shortTermMarks' }
+        { title: 'Course Cohort ID', render: () =>props.match.params.id, hidden: false, editable: 'never' as const },
+        {title: 'Certification Type', field: 'certificationType', hidden: true },
+        {title: 'Id', field: 'id', hidden: true },
+        { title: 'Marks', field: 'marks',   editComponent: tableData => (renderSwitch(tableData.rowData))},
+        { title: 'Grade', field: 'grade', editable: 'never' as const }
     ];
     useEffect(() => {
         setLinearDisplay('block');
-        fetchcourseCohorts();
+        fetchcourseCohortsRegistrations();
+        fetchProgramByCourseCohortId();
     }, []);
 
     const courseCohortId = props.match.params.id;
+   
+    
+    const fetchProgramByCourseCohortId = () => {
 
-    const fetchcourseCohorts = (): void => {
-        axios.get(`${timetablingSrv}/course-cohorts`, { params: { loadExtras: 'marks,student', id: courseCohortId } }).then((res) => {
+        axios.get(`${Config.baseUrl.timetablingSrv}/programs`,{
+            params:{
+                courseCohortId:courseCohortId,
+                loadExtras: 'program'
+            }
+        })
+            .then((res:any) => {
+                const program = res.data[0];
+                setCertificationType(program.certificationType);
+                
+            })
+            .catch((error) => {
+                alerts.showError(error.response.data);
+            });
+    };
+
+    const fetchcourseCohortsRegistrations = (): void => {
+        axios.get(`${simSrv}/course-cohort-registrations`, { params: { loadExtras: 'marks', courseCohortIds: courseCohortId } }).then((res) => {
             const ccData = res.data;
             setData(ccData);
             setLinearDisplay('none');
         });
     };
 
+
+
+    const updateMarks = async (id:number,marks:string) => {
+        axios.put(`${simSrv}/course-cohort-registration-marks/${id}`, { marks:marks }).then((res) => {
+            setLinearDisplay('none');
+            fetchcourseCohortsRegistrations();
+            alerts.showSuccess('Successfuly updated marks');
+        })
+            .catch((error) => {
+                alerts.showError(error.response.data);
+            });
+    };
+
+    const handleMarksChange = (e) => {
+        enterredMarks=parseInt(e.target.value);
+    };
+
+    const handleSelect= (e) => {
+        selectedMarks=e.target.value;
+    };
+    console.log('Non hooks',programs);
+    
     return (
         <>
             <Row className="align-items-center page-header">
                 <Col>
                     <Breadcrumb />
+                </Col>
+
+                <Col>               
+                    <CreateMarksModal fetchcourseCohortsRegistrations = {fetchcourseCohortsRegistrations} setLinearDisplay={setLinearDisplay} courseCohortId={courseCohortId} certificationType={certificationType} ></CreateMarksModal>
                 </Col>
             </Row>
             <LinearProgress style={{ display: linearDisplay }} />
@@ -109,7 +206,12 @@ const CourseCohortsDetails = (props: any): JSX.Element => {
                             icons={tableIcons}
                             columns={columns}
                             data={data}
-                            options={{ actionsColumnIndex: -1 }}
+                            options={{ actionsColumnIndex: 0 }}                            
+
+                            editable={{
+                                onRowUpdate: (newData) => updateMarks(newData.id,enterredMarks || selectedMarks)
+
+                            }}
                         />
                     </Card>
                 </Col>
