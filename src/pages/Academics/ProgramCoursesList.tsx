@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 /* eslint-disable @typescript-eslint/no-explicit-any */
 /* eslint-disable react/display-name */
-import React, { useState, useEffect,forwardRef } from 'react';
+import React, { useState, useEffect, forwardRef } from 'react';
 import MaterialTable, { Icons } from 'material-table';
 import AddBox from '@material-ui/icons/AddBox';
 import ArrowDownward from '@material-ui/icons/ArrowDownward';
@@ -29,7 +29,7 @@ import LoadingBar from 'react-top-loading-bar';
 import LinearProgress from '@material-ui/core/LinearProgress';
 const alerts: Alerts = new ToastifyAlerts();
 const tableIcons: Icons = {
-    Add: forwardRef((props, ref) => < AddBox  {...props} ref={ref} />),
+    Add: forwardRef((props, ref) => <AddBox {...props} ref={ref} />),
     Check: forwardRef((props, ref) => <Check {...props} ref={ref} />),
     Clear: forwardRef((props, ref) => <Clear {...props} ref={ref} />),
     Delete: forwardRef((props, ref) => <DeleteOutline {...props} ref={ref} />),
@@ -47,8 +47,7 @@ const tableIcons: Icons = {
     ThirdStateCheck: forwardRef((props, ref) => <Remove {...props} ref={ref} />),
     ViewColumn: forwardRef((props, ref) => <ViewColumn {...props} ref={ref} />)
 };
-const ProgramCoursesList = ():JSX.Element => {
-
+const ProgramCoursesList = (): JSX.Element => {
     const columns = [
         { title: 'ID', field: 'id', hidden: false },
         { title: 'Name', field: 'name' },
@@ -57,7 +56,7 @@ const ProgramCoursesList = ():JSX.Element => {
         { title: 'Timetableable', field: 'isTimetablable' },
         { title: 'Technical Assistant', field: 'needsTechnicalAssistant' },
         { title: 'Prerequisite Courses', field: 'prerequisiteCourses' },
-        { title: 'Approved', field: 'isApproved' },
+        { title: 'Approved', field: 'isApproved' }
     ];
     const [data, setData] = useState([]);
     const [programId, setProgramId] = useState();
@@ -72,8 +71,9 @@ const ProgramCoursesList = ():JSX.Element => {
     console.log(progId);
     useEffect(() => {
         setLinearDisplay('block');
-        axios.get(`${timetablingSrv}/programs/${progId}/courses`)
-            .then(res => {
+        axios
+            .get(`${timetablingSrv}/programs/${progId}/courses`)
+            .then((res) => {
                 console.log(res.data);
                 setData(res.data);
                 setLinearDisplay('none');
@@ -86,8 +86,9 @@ const ProgramCoursesList = ():JSX.Element => {
 
     const fetchCoursesAssignedToProgram = (progId: number) => {
         setLinearDisplay('block');
-        axios.get(`${timetablingSrv}/programs/${progId}/courses`)
-            .then(res => {
+        axios
+            .get(`${timetablingSrv}/programs/${progId}/courses`)
+            .then((res) => {
                 setLinearDisplay('none');
                 setData(res.data);
             })
@@ -98,13 +99,13 @@ const ProgramCoursesList = ():JSX.Element => {
             });
     };
 
-
     const unassignSelectedCoursesFromTrainer = (selectedCourseId: number) => {
-        axios.put(`${timetablingSrv}/programs/${programId}/courses/${selectedCourseId}`)
-            .then(res => {
+        axios
+            .put(`${timetablingSrv}/programs/${programId}/courses/${selectedCourseId}`)
+            .then((res) => {
                 alerts.showSuccess('Succesfully removed course');
-                
-                fetchCoursesAssignedToProgram(progId); 
+
+                fetchCoursesAssignedToProgram(progId);
             })
             .catch((error) => {
                 alerts.showError(error.message);
@@ -117,7 +118,7 @@ const ProgramCoursesList = ():JSX.Element => {
                     <Breadcrumb />
                 </Col>
             </Row>
-            <LinearProgress style={{display: linearDisplay }} />
+            <LinearProgress style={{ display: linearDisplay }} />
 
             <Row>
                 <Col>
@@ -132,14 +133,16 @@ const ProgramCoursesList = ():JSX.Element => {
                             )}
                         </div>
                         <MaterialTable
-                            title='Program Courses List'
+                            title="Program Courses List"
                             columns={columns}
                             data={data}
                             actions={[
-                                rowData => ({
+                                (rowData) => ({
                                     icon: DeleteIcon,
                                     tooltip: 'Delete Course',
-                                    onClick: () => {unassignSelectedCoursesFromTrainer(rowData.id);},
+                                    onClick: () => {
+                                        unassignSelectedCoursesFromTrainer(rowData.id);
+                                    }
                                 })
                             ]}
                             icons={tableIcons}

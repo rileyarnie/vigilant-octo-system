@@ -5,7 +5,7 @@ export interface Alerts {
     showError(msg: string);
 }
 export class ToastifyAlerts implements Alerts {
-    constructor(){
+    constructor() {
         toast.configure();
     }
     readonly errorToast: ToastOptions = {
@@ -14,7 +14,7 @@ export class ToastifyAlerts implements Alerts {
         type: 'error',
         theme: 'colored',
         progressClassName: 'error-progress-bar',
-        autoClose: 5000,
+        autoClose: 5000
     };
     readonly successToast: ToastOptions = {
         position: toast.POSITION.TOP_RIGHT,
@@ -22,12 +22,12 @@ export class ToastifyAlerts implements Alerts {
         type: 'success',
         theme: 'colored',
         progressClassName: 'error-progress-bar',
-        autoClose: 5000,
+        autoClose: 5000
     };
-    public showSuccess(msg: string):void {
+    public showSuccess(msg: string): void {
         toast(msg, this.successToast);
     }
-    public showError(msg: string):void {
+    public showError(msg: string): void {
         toast(msg, this.errorToast);
     }
 }

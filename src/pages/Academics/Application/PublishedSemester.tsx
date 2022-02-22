@@ -18,16 +18,16 @@ import SaveAlt from '@material-ui/icons/SaveAlt';
 import Search from '@material-ui/icons/Search';
 import ViewColumn from '@material-ui/icons/ViewColumn';
 import axios from 'axios';
-import { LinearProgress} from '@material-ui/core';
+import { LinearProgress } from '@material-ui/core';
 import Alert from '@material-ui/lab/Alert';
 import Breadcrumb from '../../../App/components/Breadcrumb';
-import { Row, Col, Card, Button} from 'react-bootstrap';
-import Config  from '../../../config';
-import {Icons} from 'material-table';
+import { Row, Col, Card, Button } from 'react-bootstrap';
+import Config from '../../../config';
+import { Icons } from 'material-table';
 import { Alerts, ToastifyAlerts } from '../../lib/Alert';
 const alerts: Alerts = new ToastifyAlerts();
 const tableIcons: Icons = {
-    Add: forwardRef((props, ref) => < AddBox  {...props} ref={ref} />),
+    Add: forwardRef((props, ref) => <AddBox {...props} ref={ref} />),
     Check: forwardRef((props, ref) => <Check {...props} ref={ref} />),
     Clear: forwardRef((props, ref) => <Clear {...props} ref={ref} />),
     Delete: forwardRef((props, ref) => <DeleteOutline {...props} ref={ref} />),
@@ -45,19 +45,17 @@ const tableIcons: Icons = {
     ThirdStateCheck: forwardRef((props, ref) => <Remove {...props} ref={ref} />),
     ViewColumn: forwardRef((props, ref) => <ViewColumn {...props} ref={ref} />)
 };
-const PublishedSemester = ():JSX.Element => {
+const PublishedSemester = (): JSX.Element => {
     const timetablingSrv = Config.baseUrl.timetablingSrv;
     const columns = [
-        { title: 'ID', render:(row)=>row.id },
+        { title: 'ID', render: (row) => row.id },
         { title: 'Semester name', field: 'name' },
-        { title: 'Start Date',  render:(row)=>row.startDate.slice(0,10) },
-        { title: 'End Date',  render:(row)=>row.endDate.slice(0,10) },
+        { title: 'Start Date', render: (row) => row.startDate.slice(0, 10) },
+        { title: 'End Date', render: (row) => row.endDate.slice(0, 10) },
         {
             title: 'Action',
             field: 'internal_action',
-            render: () => (
-                <Button variant="link" >Register</Button>
-            )
+            render: () => <Button variant="link">Register</Button>
         }
     ];
     const [data, setData] = useState([]);
@@ -67,8 +65,9 @@ const PublishedSemester = ():JSX.Element => {
     const [courses, setCourses] = useState([]);
     const [linearDisplay, setLinearDisplay] = useState('none');
     useEffect(() => {
-        axios.get(`${timetablingSrv}/semesters`)
-            .then(res => {
+        axios
+            .get(`${timetablingSrv}/semesters`)
+            .then((res) => {
                 setLinearDisplay('none');
                 setData(res.data);
             })
@@ -76,8 +75,9 @@ const PublishedSemester = ():JSX.Element => {
                 console.error(error);
                 alerts.showError(error.message);
             });
-        axios.get(`${timetablingSrv}/course-cohorts`,{params:{semesterId:semesterId}})
-            .then(res => {
+        axios
+            .get(`${timetablingSrv}/course-cohorts`, { params: { semesterId: semesterId } })
+            .then((res) => {
                 setCourses(res.data);
                 console.log(res.data);
             })
@@ -88,46 +88,45 @@ const PublishedSemester = ():JSX.Element => {
     }, []);
     return (
         <>
-            <Row className='align-items-center page-header'>
+            <Row className="align-items-center page-header">
                 <Col>
                     <Breadcrumb />
                 </Col>
             </Row>
-            <LinearProgress style={{display: linearDisplay}} />
+            <LinearProgress style={{ display: linearDisplay }} />
             <Row>
                 <Col>
                     <Card>
                         <div>
-                            {isError &&
-                            <Alert severity='error'>
-                                {errorMessages.map((msg, i) => {
-                                    return <div key={i}>{msg}</div>;
-                                })}
-                            </Alert>
-                            }
+                            {isError && (
+                                <Alert severity="error">
+                                    {errorMessages.map((msg, i) => {
+                                        return <div key={i}>{msg}</div>;
+                                    })}
+                                </Alert>
+                            )}
                         </div>
                         <MaterialTable
-                            title='Semesters'
+                            title="Semesters"
                             columns={columns}
                             data={data}
-                            options={{actionsColumnIndex: -1}}
+                            options={{ actionsColumnIndex: -1 }}
                             icons={tableIcons}
-                            onRowClick={((event, row) => {
+                            onRowClick={(event, row) => {
                                 setSemesterId(row.id);
-                            }
-                            )}
+                            }}
                             detailPanel={[
                                 {
                                     render: () => (
                                         <ol className="list-group">
-                                            {
-                                                Object.keys(courses).map(key => (
-                                                    <li className="list-group-item" key={courses[key].cs_name}>{courses[key].cs_name}</li>
-                                                ))
-                                            }
+                                            {Object.keys(courses).map((key) => (
+                                                <li className="list-group-item" key={courses[key].cs_name}>
+                                                    {courses[key].cs_name}
+                                                </li>
+                                            ))}
                                         </ol>
                                     )
-                                },
+                                }
                             ]}
                         />
                     </Card>

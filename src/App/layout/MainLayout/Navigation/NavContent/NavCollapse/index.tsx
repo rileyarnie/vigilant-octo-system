@@ -12,23 +12,23 @@ import { MenuItemType } from '../../../../../../menu-items';
 import SYS from '../../../../../../store/constant';
 
 interface INavCollapseProps extends React.HTMLAttributes<Element> {
-  isOpen?: any;
-  isTrigger?: any;
-  layout?: any;
-  type?: string;
-  id?: any;
-  collapse?: MenuItemType;
-  onCollapseToggle?: any;
-  onNavCollapseLeave?: any;
-  icon?: any;
-  title?: any;
+    isOpen?: any;
+    isTrigger?: any;
+    layout?: any;
+    type?: string;
+    id?: any;
+    collapse?: MenuItemType;
+    onCollapseToggle?: any;
+    onNavCollapseLeave?: any;
+    icon?: any;
+    title?: any;
 }
 class NavCollapse extends Component<INavCollapseProps> {
     componentDidMount() {
         const currentIndex = document.location.pathname
             .toString()
             .split('/')
-            .findIndex(id => id === this.props.collapse.id);
+            .findIndex((id) => id === this.props.collapse.id);
         if (currentIndex > -1) {
             this.props.onCollapseToggle(this.props.collapse.id, this.props.type);
         }
@@ -41,22 +41,18 @@ class NavCollapse extends Component<INavCollapseProps> {
             navItems = Object.keys(collapses).map((key) => {
                 const item = collapses[parseInt(key)];
                 switch (item.type) {
-                case 'collapse':
-                    return <LoopNavCollapse key={item.id} collapse={item} type="sub" />;
-                case 'item':
-                    return (
-                        <NavItem layout={this.props.layout} key={item.id} item={item} />
-                    );
-                default:
-                    return false;
+                    case 'collapse':
+                        return <LoopNavCollapse key={item.id} collapse={item} type="sub" />;
+                    case 'item':
+                        return <NavItem layout={this.props.layout} key={item.id} item={item} />;
+                    default:
+                        return false;
                 }
             });
         }
         let itemTitle: React.ReactNode = this.props.collapse.title;
         if (this.props.collapse.icon) {
-            itemTitle = (
-                <span className="pcoded-mtext">{this.props.collapse.title}</span>
-            );
+            itemTitle = <span className="pcoded-mtext">{this.props.collapse.title}</span>;
         }
         let navLinkClass = ['nav-link'];
         let navItemClass = ['nav-item', 'pcoded-hasmenu'];
@@ -67,16 +63,14 @@ class NavCollapse extends Component<INavCollapseProps> {
                 navLinkClass = [...navLinkClass, 'active'];
             }
         }
-        const triggerIndex = isTrigger.findIndex(
-            (id: string) => id === this.props.collapse.id
-        );
+        const triggerIndex = isTrigger.findIndex((id: string) => id === this.props.collapse.id);
         if (triggerIndex > -1) {
             navItemClass = [...navItemClass, 'pcoded-trigger'];
         }
         const currentIndex = document.location.pathname
             .toString()
             .split('/')
-            .findIndex(id => id === this.props.collapse.id);
+            .findIndex((id) => id === this.props.collapse.id);
         if (currentIndex > -1) {
             navItemClass = [...navItemClass, 'active'];
             if (this.props.layout !== 'horizontal') {
@@ -88,9 +82,7 @@ class NavCollapse extends Component<INavCollapseProps> {
                 <a
                     href={SYS.BLANK_LINK}
                     className={navLinkClass.join(' ')}
-                    onClick={() =>
-                        this.props.onCollapseToggle(this.props.collapse.id, this.props.type)
-                    }
+                    onClick={() => this.props.onCollapseToggle(this.props.collapse.id, this.props.type)}
                 >
                     <NavIcon items={this.props.collapse} />
                     {itemTitle}
@@ -104,15 +96,8 @@ class NavCollapse extends Component<INavCollapseProps> {
             mainContent = (
                 <li
                     className={navItemClass.join(' ')}
-                    onMouseLeave={() =>
-                        this.props.onNavCollapseLeave(
-                            this.props.collapse.id,
-                            this.props.type
-                        )
-                    }
-                    onMouseEnter={() =>
-                        this.props.onCollapseToggle(this.props.collapse.id, this.props.type)
-                    }
+                    onMouseLeave={() => this.props.onNavCollapseLeave(this.props.collapse.id, this.props.type)}
+                    onMouseEnter={() => this.props.onCollapseToggle(this.props.collapse.id, this.props.type)}
                 >
                     {subContent}
                 </li>
@@ -144,6 +129,4 @@ const mapDispatchToProps = (dispatch: any) => {
             })
     };
 };
-export default withRouter(
-    connect(mapStateToProps, mapDispatchToProps)(NavCollapse)
-) as any;
+export default withRouter(connect(mapStateToProps, mapDispatchToProps)(NavCollapse)) as any;

@@ -6,8 +6,8 @@ import * as actionTypes from '../../../../../../store/actions';
 import { initialState } from '../../../../../../store/reducer';
 import SYS from '../../../../../../store/constant';
 interface IColorOptionsProps extends React.HTMLAttributes<Element> {
-  onChangeHeaderBackColor?: any;
-  headerBackColor: string;
+    onChangeHeaderBackColor?: any;
+    headerBackColor: string;
 }
 class ColorOptions extends Component<IColorOptionsProps> {
     render() {
@@ -27,9 +27,7 @@ class ColorOptions extends Component<IColorOptionsProps> {
                     <a
                         href={SYS.BLANK_LINK}
                         onClick={() => this.props.onChangeHeaderBackColor('header-blue')}
-                        className={
-                            this.props.headerBackColor === 'header-blue' ? 'active' : ''
-                        }
+                        className={this.props.headerBackColor === 'header-blue' ? 'active' : ''}
                         data-value="header-blue"
                     >
                         <span />
@@ -38,9 +36,7 @@ class ColorOptions extends Component<IColorOptionsProps> {
                     <a
                         href={SYS.BLANK_LINK}
                         onClick={() => this.props.onChangeHeaderBackColor('header-red')}
-                        className={
-                            this.props.headerBackColor === 'header-red' ? 'active' : ''
-                        }
+                        className={this.props.headerBackColor === 'header-red' ? 'active' : ''}
                         data-value="header-red"
                     >
                         <span />
@@ -49,9 +45,7 @@ class ColorOptions extends Component<IColorOptionsProps> {
                     <a
                         href={SYS.BLANK_LINK}
                         onClick={() => this.props.onChangeHeaderBackColor('header-purple')}
-                        className={
-                            this.props.headerBackColor === 'header-purple' ? 'active' : ''
-                        }
+                        className={this.props.headerBackColor === 'header-purple' ? 'active' : ''}
                         data-value="header-purple"
                     >
                         <span />
@@ -60,9 +54,7 @@ class ColorOptions extends Component<IColorOptionsProps> {
                     <a
                         href={SYS.BLANK_LINK}
                         onClick={() => this.props.onChangeHeaderBackColor('header-info')}
-                        className={
-                            this.props.headerBackColor === 'header-info' ? 'active' : ''
-                        }
+                        className={this.props.headerBackColor === 'header-info' ? 'active' : ''}
                         data-value="header-info"
                     >
                         <span />
@@ -71,9 +63,7 @@ class ColorOptions extends Component<IColorOptionsProps> {
                     <a
                         href={SYS.BLANK_LINK}
                         onClick={() => this.props.onChangeHeaderBackColor('header-dark')}
-                        className={
-                            this.props.headerBackColor === 'header-dark' ? 'active' : ''
-                        }
+                        className={this.props.headerBackColor === 'header-dark' ? 'active' : ''}
                         data-value="header-dark"
                     >
                         <span />

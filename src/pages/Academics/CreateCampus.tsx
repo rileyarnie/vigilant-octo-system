@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import axios from 'axios';
-import { Row, Col, Card,} from 'react-bootstrap';
+import { Row, Col, Card } from 'react-bootstrap';
 import Config from '../../config';
 import { ValidationForm, TextInput } from 'react-bootstrap4-form-validation';
 import Breadcrumb from '../../App/components/Breadcrumb';
@@ -9,7 +9,7 @@ const alerts: Alerts = new ToastifyAlerts();
 class CreateCampus extends Component {
     state = {
         name: '',
-        description: '',
+        description: ''
     };
 
     handleChange = (e) => {
@@ -22,12 +22,13 @@ class CreateCampus extends Component {
         e.preventDefault();
         const campus = {
             name: this.state.name,
-            description: this.state.description,
+            description: this.state.description
         };
         const timetablingSrv = Config.baseUrl.timetablingSrv;
         console.log(campus);
-        axios.put(`${timetablingSrv}/campuses`)
-            .then(res => {
+        axios
+            .put(`${timetablingSrv}/campuses`)
+            .then((res) => {
                 alerts.showSuccess('Campus created successfully');
                 this.setState({
                     name: '',
@@ -50,7 +51,6 @@ class CreateCampus extends Component {
         console.error(errorInputs);
     };
 
-
     render(): JSX.Element {
         return (
             <>
@@ -66,16 +66,39 @@ class CreateCampus extends Component {
                                 <Row>
                                     <Col md={6}>
                                         <ValidationForm onSubmit={this.handleSubmit} onErrorSubmit={this.handleErrorSubmit}>
-                                            <div className='form-group'>
-                                                <label htmlFor='name'><b>Name of Campus</b></label>
-                                                <TextInput name='name' id='name' type='text' value={this.state.name} placeholder="Enter name" onChange={this.handleChange}
-                                                    required /><br />
-                                                <label htmlFor='description'><b>Description</b></label>
-                                                <TextInput name='description' id='desc' type='textarea' value={this.state.description} multiline required minLength="4" placeholder="enter description" rows="5" onChange={this.handleChange} /><br />
-
+                                            <div className="form-group">
+                                                <label htmlFor="name">
+                                                    <b>Name of Campus</b>
+                                                </label>
+                                                <TextInput
+                                                    name="name"
+                                                    id="name"
+                                                    type="text"
+                                                    value={this.state.name}
+                                                    placeholder="Enter name"
+                                                    onChange={this.handleChange}
+                                                    required
+                                                />
+                                                <br />
+                                                <label htmlFor="description">
+                                                    <b>Description</b>
+                                                </label>
+                                                <TextInput
+                                                    name="description"
+                                                    id="desc"
+                                                    type="textarea"
+                                                    value={this.state.description}
+                                                    multiline
+                                                    required
+                                                    minLength="4"
+                                                    placeholder="enter description"
+                                                    rows="5"
+                                                    onChange={this.handleChange}
+                                                />
+                                                <br />
                                             </div>
-                                            <div className='form-group'>
-                                                <button className='btn btn-danger'>Submit</button>
+                                            <div className="form-group">
+                                                <button className="btn btn-danger">Submit</button>
                                             </div>
                                         </ValidationForm>
                                     </Col>

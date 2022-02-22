@@ -43,8 +43,6 @@ const chartData: { items: MenuItemType[] } = {
                             type: 'item',
                             url: '/roles'
                         }
-                     
-                       
                     ]
                 },
                 {
@@ -66,7 +64,6 @@ const chartData: { items: MenuItemType[] } = {
                             url: '/venues'
                         }
                     ]
-
                 },
                 {
                     id: 'Departments',
@@ -78,7 +75,7 @@ const chartData: { items: MenuItemType[] } = {
                             id: 'department',
                             title: 'Departments',
                             type: 'item',
-                            url: '/departments'                           
+                            url: '/departments'
                         },
                         {
                             id: 'trainers',
@@ -152,10 +149,9 @@ const chartData: { items: MenuItemType[] } = {
                         }
                     ]
                 }
-
             ]
         }
     ]
-}
+};
 
-export default chartData
+export default chartData;

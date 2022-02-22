@@ -5,13 +5,13 @@ import PerfectScrollbar from 'react-perfect-scrollbar';
 import * as actionTypes from '../../../../../../store/actions';
 import { initialState } from '../../../../../../store/reducer';
 interface ILayoutOptionsProps extends React.HTMLAttributes<Element> {
-  layout?: any;
-  onChangeNavFixedLayout?: any;
-  navFixedLayout?: any;
-  onChangeHeaderFixedLayout?: any;
-  headerFixedLayout?: any;
-  onChangeFullWidthLayout?: any;
-  fullWidthLayout?: any;
+    layout?: any;
+    onChangeNavFixedLayout?: any;
+    navFixedLayout?: any;
+    onChangeHeaderFixedLayout?: any;
+    headerFixedLayout?: any;
+    onChangeFullWidthLayout?: any;
+    fullWidthLayout?: any;
 }
 class LayoutOptions extends Component<ILayoutOptionsProps> {
     render() {
@@ -87,12 +87,9 @@ const mapStateToProps = (state: typeof initialState) => {
 };
 const mapDispatchToProps = (dispatch: any) => {
     return {
-        onChangeNavFixedLayout: () =>
-            dispatch({ type: actionTypes.NAV_FIXED_LAYOUT }),
-        onChangeHeaderFixedLayout: () =>
-            dispatch({ type: actionTypes.HEADER_FIXED_LAYOUT }),
-        onChangeFullWidthLayout: () =>
-            dispatch({ type: actionTypes.FULL_WIDTH_LAYOUT })
+        onChangeNavFixedLayout: () => dispatch({ type: actionTypes.NAV_FIXED_LAYOUT }),
+        onChangeHeaderFixedLayout: () => dispatch({ type: actionTypes.HEADER_FIXED_LAYOUT }),
+        onChangeFullWidthLayout: () => dispatch({ type: actionTypes.FULL_WIDTH_LAYOUT })
     };
 };
 export default connect(mapStateToProps, mapDispatchToProps)(LayoutOptions);

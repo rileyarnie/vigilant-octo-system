@@ -22,12 +22,12 @@ import { LinearProgress, Switch } from '@material-ui/core';
 import Alert from '@material-ui/lab/Alert';
 import Breadcrumb from '../../App/components/Breadcrumb';
 import { Row, Col, Card, Button, Modal } from 'react-bootstrap';
-import Config  from '../../config';
+import Config from '../../config';
 import { ValidationForm, TextInput } from 'react-bootstrap4-form-validation';
 import { Alerts, ToastifyAlerts } from '../lib/Alert';
 
 const tableIcons: Icons = {
-    Add: forwardRef((props, ref) => < AddBox  {...props} ref={ref} />),
+    Add: forwardRef((props, ref) => <AddBox {...props} ref={ref} />),
     Check: forwardRef((props, ref) => <Check {...props} ref={ref} />),
     Clear: forwardRef((props, ref) => <Clear {...props} ref={ref} />),
     Delete: forwardRef((props, ref) => <DeleteOutline {...props} ref={ref} />),
@@ -46,7 +46,7 @@ const tableIcons: Icons = {
     ViewColumn: forwardRef((props, ref) => <ViewColumn {...props} ref={ref} />)
 };
 const alerts: Alerts = new ToastifyAlerts();
-const CampusList = ():JSX.Element => {
+const CampusList = (): JSX.Element => {
     interface Campus {
         id: number;
         name: string;
@@ -64,7 +64,7 @@ const CampusList = ():JSX.Element => {
     const [selectedCampusName, setSelectedCampusName] = useState('');
     const [selectedDescription, setSelectedDescription] = useState('');
     const [linearDisplay, setLinearDisplay] = useState('none');
-    const[,setDisabled] = useState(false);
+    const [, setDisabled] = useState(false);
     let activationStatus: boolean;
     const handleActivationStatusToggle = (event, row: Campus) => {
         setDisabled(true);
@@ -79,16 +79,15 @@ const CampusList = ():JSX.Element => {
     };
     const handleToggleStatusSubmit = (e, row: Campus) => {
         const campus = {
-            activation_status: activationStatus,
+            activation_status: activationStatus
         };
         axios
             .put(`${timetablingSrv}/campuses/${row.id}`, campus)
             .then(() => {
-                const msg = activationStatus? 'Successfully activated campus' : 'Successfully Deactivated campus';
+                const msg = activationStatus ? 'Successfully activated campus' : 'Successfully Deactivated campus';
                 alerts.showSuccess(msg);
                 fetchCampuses();
                 setDisabled(false);
-
             })
             .catch((error) => {
                 console.error(error);
@@ -97,9 +96,8 @@ const CampusList = ():JSX.Element => {
             });
     };
 
-
     const columns = [
-        { title: 'ID', field: 'id'},
+        { title: 'ID', field: 'id' },
         { title: 'Campus name', field: 'name' },
         { title: 'Description', field: 'description' },
         {
@@ -109,17 +107,18 @@ const CampusList = ():JSX.Element => {
                 <Switch
                     onChange={(event) => handleActivationStatusToggle(event, row)}
                     inputProps={{ 'aria-label': 'controlled' }}
-                    defaultChecked={row.activation_status===true}
+                    defaultChecked={row.activation_status === true}
                 />
             )
-        },
+        }
     ];
 
     const [errorMessages] = useState([]);
     useEffect(() => {
         setLinearDisplay('block');
-        axios.get(`${timetablingSrv}/campuses`)
-            .then(res => {
+        axios
+            .get(`${timetablingSrv}/campuses`)
+            .then((res) => {
                 setData(res.data);
                 setLinearDisplay('none');
             })
@@ -131,22 +130,24 @@ const CampusList = ():JSX.Element => {
 
     const updateCampus = (deptId, updates) => {
         setLinearDisplay('block');
-        axios.put(`${timetablingSrv}/campuses/${campusId}`, updates)
+        axios
+            .put(`${timetablingSrv}/campuses/${campusId}`, updates)
             .then(() => {
                 alerts.showSuccess('Successfully updated Campus');
                 fetchCampuses();
                 resetStateCloseModal();
                 setLinearDisplay('none');
             })
-            .catch(error => {
+            .catch((error) => {
                 console.error(error);
                 alerts.showError(error.message);
             });
     };
     const fetchCampuses = () => {
         setLinearDisplay('block');
-        axios.get(`${timetablingSrv}/campuses`)
-            .then(res => {
+        axios
+            .get(`${timetablingSrv}/campuses`)
+            .then((res) => {
                 setData(res.data);
                 setLinearDisplay('none');
             })
@@ -159,7 +160,7 @@ const CampusList = ():JSX.Element => {
         e.preventDefault();
         const campus = {
             name: campusName,
-            description: description,
+            description: description
         };
 
         createCampus(campus);
@@ -168,7 +169,7 @@ const CampusList = ():JSX.Element => {
         e.preventDefault();
         const updates = {
             name: campusName === '' ? selectedCampusName : campusName,
-            description: description === '' ? selectedDescription : description,
+            description: description === '' ? selectedDescription : description
         };
         updateCampus(campusId, updates);
     };
@@ -201,7 +202,7 @@ const CampusList = ():JSX.Element => {
     };
     return (
         <>
-            <Row className='align-items-center page-header'>
+            <Row className="align-items-center page-header">
                 <Col>
                     <Breadcrumb />
                 </Col>
@@ -211,23 +212,23 @@ const CampusList = ():JSX.Element => {
                     </Button>
                 </Col>
             </Row>
-            <LinearProgress style={{display: linearDisplay}} />
+            <LinearProgress style={{ display: linearDisplay }} />
             <Row>
                 <Col>
                     <Card>
                         <div>
-                            {iserror &&
-                            <Alert severity='error'>
-                                {errorMessages.map((msg, i) => {
-                                    return <div key={i}>{msg}</div>;
-                                })}
-                            </Alert>
-                            }
+                            {iserror && (
+                                <Alert severity="error">
+                                    {errorMessages.map((msg, i) => {
+                                        return <div key={i}>{msg}</div>;
+                                    })}
+                                </Alert>
+                            )}
                         </div>
                         <MaterialTable
-                            title='Campuses'
+                            title="Campuses"
                             columns={columns}
-                            options={{actionsColumnIndex: -1}}
+                            options={{ actionsColumnIndex: -1 }}
                             data={data}
                             icons={tableIcons}
                             actions={[
@@ -259,16 +260,38 @@ const CampusList = ():JSX.Element => {
                 </Modal.Header>
                 <Modal.Body>
                     <ValidationForm>
-                        <div className='form-group'>
+                        <div className="form-group">
                             <label htmlFor="departmentName">Campus Name</label>
-                            <TextInput name='campusName' id='campusName' type='text' value={campusId ? selectedCampusName : campusName} placeholder={campusId ? selectedCampusName :campusName}
-                                onChange={(e) => campusId ? setSelectedCampusName(e.target.value) : setCampusName(e.target.value)} required /><br />
-                            <label htmlFor='Date'><b>Description</b></label><br />
-                            <TextInput name='description'  minLength="4" id='description' value={campusId ? selectedDescription : description} type="text" placeholder={campusId ?  selectedDescription :description} required multiline rows="5"
-                                onChange={(e) => campusId ? setSelectedDescription(e.target.value) : setDescription(e.target.value)}/><br />
+                            <TextInput
+                                name="campusName"
+                                id="campusName"
+                                type="text"
+                                value={campusId ? selectedCampusName : campusName}
+                                placeholder={campusId ? selectedCampusName : campusName}
+                                onChange={(e) => (campusId ? setSelectedCampusName(e.target.value) : setCampusName(e.target.value))}
+                                required
+                            />
+                            <br />
+                            <label htmlFor="Date">
+                                <b>Description</b>
+                            </label>
+                            <br />
+                            <TextInput
+                                name="description"
+                                minLength="4"
+                                id="description"
+                                value={campusId ? selectedDescription : description}
+                                type="text"
+                                placeholder={campusId ? selectedDescription : description}
+                                required
+                                multiline
+                                rows="5"
+                                onChange={(e) => (campusId ? setSelectedDescription(e.target.value) : setDescription(e.target.value))}
+                            />
+                            <br />
                         </div>
-                        <div className='form-group'>
-                            <button className="btn btn-info float-right" onClick={(e) => campusId ? handleEdit(e) : handleAdd(e)}>
+                        <div className="form-group">
+                            <button className="btn btn-info float-right" onClick={(e) => (campusId ? handleEdit(e) : handleAdd(e))}>
                                 Submit
                             </button>
                         </div>

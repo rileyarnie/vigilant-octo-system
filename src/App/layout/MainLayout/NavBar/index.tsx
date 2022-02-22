@@ -8,21 +8,16 @@ import darkLogo from '../../../../assets/images/logo-dark.png';
 import { initialState } from '../../../../store/reducer';
 import SYS from '../../../../store/constant';
 interface INavBarProps extends React.HTMLAttributes<Element> {
-  onToggleNavigation?: any;
-  fullWidthLayout?: any;
-  headerBackColor?: any;
-  collapseMenu?: any;
-  headerFixedLayout?: any;
+    onToggleNavigation?: any;
+    fullWidthLayout?: any;
+    headerBackColor?: any;
+    collapseMenu?: any;
+    headerFixedLayout?: any;
 }
 
 class NavBar extends Component<INavBarProps> {
     render(): JSX.Element {
-        let headerClass = [
-            'navbar',
-            'pcoded-header',
-            'navbar-expand-lg',
-            this.props.headerBackColor
-        ];
+        let headerClass = ['navbar', 'pcoded-header', 'navbar-expand-lg', this.props.headerBackColor];
         if (this.props.headerFixedLayout) {
             headerClass = [...headerClass, 'headerpos-fixed'];
         }

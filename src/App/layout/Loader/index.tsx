@@ -1,5 +1,5 @@
 import * as React from 'react';
-const loader = ():JSX.Element => {
+const loader = (): JSX.Element => {
     return (
         <div className="loader-bg">
             <div className="loader-track">

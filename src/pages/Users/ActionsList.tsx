@@ -26,7 +26,7 @@ import LinearProgress from '@material-ui/core/LinearProgress';
 const alerts: Alerts = new ToastifyAlerts();
 
 const tableIcons: Icons = {
-    Add: forwardRef((props, ref) => < AddBox  {...props} ref={ref} />),
+    Add: forwardRef((props, ref) => <AddBox {...props} ref={ref} />),
     Check: forwardRef((props, ref) => <Check {...props} ref={ref} />),
     Clear: forwardRef((props, ref) => <Clear {...props} ref={ref} />),
     Delete: forwardRef((props, ref) => <DeleteOutline {...props} ref={ref} />),
@@ -44,7 +44,7 @@ const tableIcons: Icons = {
     ThirdStateCheck: forwardRef((props, ref) => <Remove {...props} ref={ref} />),
     ViewColumn: forwardRef((props, ref) => <ViewColumn {...props} ref={ref} />)
 };
-export const ActionsList = (props):JSX.Element => {
+export const ActionsList = (props): JSX.Element => {
     const [actions, setActions] = useState([]);
     const [linearDisplay, setLinearDisplay] = useState('none');
     useEffect(() => {
@@ -64,18 +64,12 @@ export const ActionsList = (props):JSX.Element => {
 
     const columns = [
         { title: 'id', field: 'id' },
-        { title: 'Action Name', field: 'ActionName' },
+        { title: 'Action Name', field: 'ActionName' }
     ];
     return (
         <div>
-            <LinearProgress style={{display: linearDisplay}} /> 
-            <MaterialTable
-                title='Action List'
-                columns={columns}
-                data={actions}
-                icons={tableIcons}
-
-            />
+            <LinearProgress style={{ display: linearDisplay }} />
+            <MaterialTable title="Action List" columns={columns} data={actions} icons={tableIcons} />
         </div>
     );
 };

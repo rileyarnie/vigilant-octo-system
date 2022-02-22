@@ -12,20 +12,16 @@ import routes from '../../../routes';
 import * as actionTypes from '../../../store/actions';
 import { initialState } from '../../../store/reducer';
 interface IMainLayoutProps extends React.HTMLAttributes<Element> {
-  defaultPath?: string;
-  fullWidthLayout?: string;
-  collapseMenu?: string;
-  windowWidth?: unknown;
-  onComponentWillMount?: any;
-  layout?: string;
+    defaultPath?: string;
+    fullWidthLayout?: string;
+    collapseMenu?: string;
+    windowWidth?: unknown;
+    onComponentWillMount?: any;
+    layout?: string;
 }
 class MainLayout extends Component<IMainLayoutProps> {
     componentDidMount() {
-        if (
-            this.props.windowWidth > 992 &&
-        this.props.windowWidth <= 1024 &&
-        this.props.layout !== 'horizontal'
-        ) {
+        if (this.props.windowWidth > 992 && this.props.windowWidth <= 1024 && this.props.layout !== 'horizontal') {
             this.props.onComponentWillMount();
         }
     }
@@ -37,13 +33,7 @@ class MainLayout extends Component<IMainLayoutProps> {
     render() {
         const menu = routes.map((route, index) => {
             return route.component ? (
-                <Route
-                    key={index}
-                    path={route.path}
-                    exact={route.exact}
-
-                    render={props => <route.component {...props} />}
-                />
+                <Route key={index} path={route.path} exact={route.exact} render={(props) => <route.component {...props} />} />
             ) : null;
         });
         let mainClass = ['content-main'];
@@ -57,10 +47,7 @@ class MainLayout extends Component<IMainLayoutProps> {
                 <NavBar />
                 <div className={mainClass.join(' ')}>
                     <Navigation />
-                    <div
-                        className="pcoded-main-container full-screenable-node"
-                        onClick={() => this.mobileOutClickHandler}
-                    >
+                    <div className="pcoded-main-container full-screenable-node" onClick={() => this.mobileOutClickHandler}>
                         <div className="pcoded-wrapper">
                             <div className="pcoded-content">
                                 <div className="pcoded-inner-content">
@@ -97,7 +84,4 @@ const mapDispatchToProps = (dispatch: any) => {
         onComponentWillMount: () => dispatch({ type: actionTypes.COLLAPSE_MENU })
     };
 };
-export default connect(
-    mapStateToProps,
-    mapDispatchToProps
-)(windowSize(MainLayout as any));
+export default connect(mapStateToProps, mapDispatchToProps)(windowSize(MainLayout as any));

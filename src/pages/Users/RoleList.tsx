@@ -1,35 +1,35 @@
 /* eslint-disable react/display-name */
-import React, { useState, useEffect,forwardRef } from 'react'
-import Config from '../../config'
-import MaterialTable, { Icons } from 'material-table'
-import AddBox from '@material-ui/icons/AddBox'
-import ArrowDownward from '@material-ui/icons/ArrowDownward'
-import Check from '@material-ui/icons/Check'
-import ChevronLeft from '@material-ui/icons/ChevronLeft'
-import ChevronRight from '@material-ui/icons/ChevronRight'
-import Clear from '@material-ui/icons/Clear'
-import DeleteOutline from '@material-ui/icons/DeleteOutline'
-import Edit from '@material-ui/icons/Edit'
-import FilterList from '@material-ui/icons/FilterList'
-import FirstPage from '@material-ui/icons/FirstPage'
-import LastPage from '@material-ui/icons/LastPage'
-import Remove from '@material-ui/icons/Remove'
-import SaveAlt from '@material-ui/icons/SaveAlt'
-import Search from '@material-ui/icons/Search'
-import ViewColumn from '@material-ui/icons/ViewColumn'
-import axios from 'axios'
-import Alert from '@material-ui/lab/Alert'
-import {Card, Col, Row } from 'react-bootstrap'
-import Breadcrumb from '../../App/components/Breadcrumb'
-import {Actions} from './ActionsByRole/Actions'
-import { AddActions } from './AddActionsModal/AddActions'
-import CreateRole from './Role/CreateRole'
-import { Alerts, ToastifyAlerts } from '../lib/Alert'
-import { LinearProgress } from '@mui/material'
-const alerts: Alerts = new ToastifyAlerts()
+import React, { useState, useEffect, forwardRef } from 'react';
+import Config from '../../config';
+import MaterialTable, { Icons } from 'material-table';
+import AddBox from '@material-ui/icons/AddBox';
+import ArrowDownward from '@material-ui/icons/ArrowDownward';
+import Check from '@material-ui/icons/Check';
+import ChevronLeft from '@material-ui/icons/ChevronLeft';
+import ChevronRight from '@material-ui/icons/ChevronRight';
+import Clear from '@material-ui/icons/Clear';
+import DeleteOutline from '@material-ui/icons/DeleteOutline';
+import Edit from '@material-ui/icons/Edit';
+import FilterList from '@material-ui/icons/FilterList';
+import FirstPage from '@material-ui/icons/FirstPage';
+import LastPage from '@material-ui/icons/LastPage';
+import Remove from '@material-ui/icons/Remove';
+import SaveAlt from '@material-ui/icons/SaveAlt';
+import Search from '@material-ui/icons/Search';
+import ViewColumn from '@material-ui/icons/ViewColumn';
+import axios from 'axios';
+import Alert from '@material-ui/lab/Alert';
+import { Card, Col, Row } from 'react-bootstrap';
+import Breadcrumb from '../../App/components/Breadcrumb';
+import { Actions } from './ActionsByRole/Actions';
+import { AddActions } from './AddActionsModal/AddActions';
+import CreateRole from './Role/CreateRole';
+import { Alerts, ToastifyAlerts } from '../lib/Alert';
+import { LinearProgress } from '@mui/material';
+const alerts: Alerts = new ToastifyAlerts();
 const tableIcons: Icons = {
     // eslint-disable-next-line @typescript-eslint/naming-convention
-    Add: forwardRef((props, ref) => < AddBox  {...props} ref={ref} />),
+    Add: forwardRef((props, ref) => <AddBox {...props} ref={ref} />),
     // eslint-disable-next-line @typescript-eslint/naming-convention
     Check: forwardRef((props, ref) => <Check {...props} ref={ref} />),
     // eslint-disable-next-line @typescript-eslint/naming-convention
@@ -62,101 +62,102 @@ const tableIcons: Icons = {
     ThirdStateCheck: forwardRef((props, ref) => <Remove {...props} ref={ref} />),
     // eslint-disable-next-line @typescript-eslint/naming-convention
     ViewColumn: forwardRef((props, ref) => <ViewColumn {...props} ref={ref} />)
-}
+};
 interface Role {
-    id:number
+    id: number;
     // eslint-disable-next-line @typescript-eslint/naming-convention
-    created_on:string
-    name:string,
+    created_on: string;
+    name: string;
     // eslint-disable-next-line @typescript-eslint/naming-convention
-    RoleName:string
+    RoleName: string;
 }
-function roleList():JSX.Element{
+function roleList(): JSX.Element {
     const columns = [
-        { title: 'id', field: 'id', editable: 'never' as const},   
-        { title: 'RoleName', field: 'RoleName', editable: 'always' as const},
-        { title: 'Activation Status', field: 'activation_status',editable: 'never' as const},
-        { title: 'Created On', render:(row:Role):string=>row.created_on.slice(0,10), editable: 'never' as const }
-        
-    ]
-    const [data, setData] = useState([])
-    const [id,setId] = useState(0)
-    const [roleName,setRoleName] = useState('')
+        { title: 'id', field: 'id', editable: 'never' as const },
+        { title: 'RoleName', field: 'RoleName', editable: 'always' as const },
+        { title: 'Activation Status', field: 'activation_status', editable: 'never' as const },
+        { title: 'Created On', render: (row: Role): string => row.created_on.slice(0, 10), editable: 'never' as const }
+    ];
+    const [data, setData] = useState([]);
+    const [id, setId] = useState(0);
+    const [roleName, setRoleName] = useState('');
 
     //for error handling
-    const [isError] = useState(false)
-    const [errorMessages] = useState([])
-    const [linearDisplay, setLinearDisplay] = useState('none')
+    const [isError] = useState(false);
+    const [errorMessages] = useState([]);
+    const [linearDisplay, setLinearDisplay] = useState('none');
 
     useEffect(() => {
-        fetchRoles()
-    }, [])
+        fetchRoles();
+    }, []);
 
-    function fetchRoles ():void {
-        const authnzSrv = Config.baseUrl.authnzSrv
-        setLinearDisplay('block')
-        axios.get(`${authnzSrv}/roles`)
-            .then((res:{data:[]}) => {
-                setData(res.data)
-                setLinearDisplay('none')
+    function fetchRoles(): void {
+        const authnzSrv = Config.baseUrl.authnzSrv;
+        setLinearDisplay('block');
+        axios
+            .get(`${authnzSrv}/roles`)
+            .then((res: { data: [] }) => {
+                setData(res.data);
+                setLinearDisplay('none');
             })
-            .catch(error => {
-                console.log(error)
-                alerts.showError((error as Error).message)
-            })
+            .catch((error) => {
+                console.log(error);
+                alerts.showError((error as Error).message);
+            });
     }
-    function handleRowDelete (oldData:{id:number}, resolve:()=>void):void{
-        const baseUrl = Config.baseUrl.authnzSrv
-        setLinearDisplay('block')
-        axios.delete(`${baseUrl}/roles/${oldData.id}`)
+    function handleRowDelete(oldData: { id: number }, resolve: () => void): void {
+        const baseUrl = Config.baseUrl.authnzSrv;
+        setLinearDisplay('block');
+        axios
+            .delete(`${baseUrl}/roles/${oldData.id}`)
             .then(() => {
-                resolve()
-                fetchRoles()
-                setLinearDisplay('none')
-                alerts.showSuccess('Successfully deleted role')
+                resolve();
+                fetchRoles();
+                setLinearDisplay('none');
+                alerts.showSuccess('Successfully deleted role');
             })
             .catch((error) => {
                 //handle error using logging library
-                console.error(error)
-                alerts.showError((error as Error).message)
-            })
+                console.error(error);
+                alerts.showError((error as Error).message);
+            });
     }
 
-    function handleRowSelection (roleName:string,roleId:number):void {
-        setRoleName(roleName)
-        setId(roleId)
+    function handleRowSelection(roleName: string, roleId: number): void {
+        setRoleName(roleName);
+        setId(roleId);
     }
 
     const selectedRowProps = {
         id: id,
         name: roleName
-    }
+    };
     return (
         <>
             <div>
-                <Row className='align-items-center page-header'>
+                <Row className="align-items-center page-header">
                     <Col>
                         <Breadcrumb />
                     </Col>
                     <Col>
-                        <CreateRole fetchRoles = {fetchRoles}/>
+                        <CreateRole fetchRoles={fetchRoles} />
                     </Col>
                 </Row>
-                <LinearProgress style={{display: linearDisplay}} />
+                <LinearProgress style={{ display: linearDisplay }} />
                 <Row>
                     <Col>
                         <Card>
                             <div>
-                                {isError &&
-                            <Alert severity='error'>
-                                {errorMessages.map((msg, i) => {
-                                    return <div key={i}>{msg}</div>
-                                })}
-                            </Alert>
-                                }
+                                {isError && (
+                                    <Alert severity="error">
+                                        {errorMessages.map((msg, i) => {
+                                            return <div key={i}>{msg}</div>;
+                                        })}
+                                    </Alert>
+                                )}
                             </div>
                             <MaterialTable
-                                title='Role List'
+                                title="Role List"
                                 columns={columns}
                                 data={data}
                                 options={{
@@ -164,27 +165,26 @@ function roleList():JSX.Element{
                                     showSelectAllCheckbox: false,
                                     showTextRowsSelected: false
                                 }}
-                                onSelectionChange = {(rows:Role[]):void => { 
-                                    handleRowSelection(rows[0]?.RoleName,rows[0]?.id) 
+                                onSelectionChange={(rows: Role[]): void => {
+                                    handleRowSelection(rows[0]?.RoleName, rows[0]?.id);
                                 }}
                                 icons={tableIcons}
                                 editable={{
-                                    onRowDelete: (oldData:Role):Promise<void> =>
+                                    onRowDelete: (oldData: Role): Promise<void> =>
                                         new Promise((resolve) => {
-                                            handleRowDelete(oldData, resolve)
+                                            handleRowDelete(oldData, resolve);
                                         })
                                 }}
                             />
                         </Card>
                     </Col>
-              
                 </Row>
                 <Actions {...selectedRowProps}> </Actions>
-            &nbsp;&nbsp;&nbsp;
-                <AddActions {...selectedRowProps} > </AddActions>
+                &nbsp;&nbsp;&nbsp;
+                <AddActions {...selectedRowProps}> </AddActions>
             </div>
         </>
-    )
+    );
 }
 
-export default roleList
+export default roleList;

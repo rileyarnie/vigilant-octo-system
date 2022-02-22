@@ -1,5 +1,5 @@
-import React, {useState} from 'react';
-import {Modal, Button} from 'react-bootstrap';
+import React, { useState } from 'react';
+import { Modal, Button } from 'react-bootstrap';
 import { Row, Col } from 'react-bootstrap';
 import { ValidationForm, TextInput } from 'react-bootstrap4-form-validation';
 import validator from 'validator';
@@ -8,38 +8,40 @@ import axios from 'axios';
 import { Alerts, ToastifyAlerts } from '../../lib/Alert';
 const alerts: Alerts = new ToastifyAlerts();
 interface IProps {
-    fetchRoles: () => void
+    fetchRoles: () => void;
 }
-const CreateRole = (props:IProps):JSX.Element => {
-    const authnzSrv = Config.baseUrl.authnzSrv; 
-    const [roleName,setRoleName] = useState('');
-    const [showCreateModal,setShowCreateModal] = useState(false);
+const CreateRole = (props: IProps): JSX.Element => {
+    const authnzSrv = Config.baseUrl.authnzSrv;
+    const [roleName, setRoleName] = useState('');
+    const [showCreateModal, setShowCreateModal] = useState(false);
     const handleRoleChange = (event) => {
         setRoleName(event.target.value);
     };
 
     const handleRoleSubmit = () => {
-        axios.put(`${authnzSrv}/roles`, { 'roleName': roleName })
+        axios
+            .put(`${authnzSrv}/roles`, { roleName: roleName })
             .then(() => {
                 alerts.showSuccess('Success created role');
                 props.fetchRoles();
                 setShowCreateModal(false);
             })
-            .catch(error => {
+            .catch((error) => {
                 alerts.showError(error.message);
                 console.log(error);
             });
     };
     return (
         <>
-            <Button className = 'float-right' variant = "danger" onClick={() => setShowCreateModal(true)} >Create Role</Button>
-            <Modal  size="lg" aria-labelledby="contained-modal-title-vcenter" show ={showCreateModal} centered>
+            <Button className="float-right" variant="danger" onClick={() => setShowCreateModal(true)}>
+                Create Role
+            </Button>
+            <Modal size="lg" aria-labelledby="contained-modal-title-vcenter" show={showCreateModal} centered>
                 <Modal.Header>
                     <Modal.Title id="contained-modal-title-vcenter">Create Role</Modal.Title>
                 </Modal.Header>
                 <Modal.Body>
                     <div>
-       
                         <Row>
                             <Col md={12}>
                                 <ValidationForm onSubmit={handleRoleSubmit}>
@@ -55,28 +57,25 @@ const CreateRole = (props:IProps):JSX.Element => {
                                             validator={validator.isAlphanumeric}
                                             errorMessage={{ validator: 'Please enter a valid Role name' }}
                                             value={roleName}
-                                            onChange = {handleRoleChange}
+                                            onChange={handleRoleChange}
                                         />
-                                    </div>                                                   
+                                    </div>
                                 </ValidationForm>
                             </Col>
                         </Row>
-                         
                     </div>
                 </Modal.Body>
                 <Modal.Footer>
-                    <Col> 
-                        <Button className = "float-right" variant="info" onClick={handleRoleSubmit}>
-                        Submit
+                    <Col>
+                        <Button className="float-right" variant="info" onClick={handleRoleSubmit}>
+                            Submit
                         </Button>
-                        <Button className = "float-left" variant="danger" onClick={() => setShowCreateModal(false)}>
-                        Cancel
+                        <Button className="float-left" variant="danger" onClick={() => setShowCreateModal(false)}>
+                            Cancel
                         </Button>
                     </Col>
-                    
                 </Modal.Footer>
             </Modal>
-            
         </>
     );
 };

@@ -23,8 +23,8 @@ const reducer = (state = initialState, action: ACTIONTYPE): typeof initialState 
             trigger = state.isTrigger;
             const triggerIndex = trigger.indexOf(action.menu.id);
             if (triggerIndex > -1) {
-                open = open.filter(item => item !== action.menu.id);
-                trigger = trigger.filter(item => item !== action.menu.id);
+                open = open.filter((item) => item !== action.menu.id);
+                trigger = trigger.filter((item) => item !== action.menu.id);
             }
             if (triggerIndex === -1) {
                 open = [...open, action.menu.id];
@@ -53,8 +53,8 @@ const reducer = (state = initialState, action: ACTIONTYPE): typeof initialState 
             trigger = state.isTrigger;
             const triggerIndex = trigger.indexOf(action.menu.id);
             if (triggerIndex > -1) {
-                open = open.filter(item => item !== action.menu.id);
-                trigger = trigger.filter(item => item !== action.menu.id);
+                open = open.filter((item) => item !== action.menu.id);
+                trigger = trigger.filter((item) => item !== action.menu.id);
             }
             return {
                 ...state,
@@ -77,8 +77,7 @@ const reducer = (state = initialState, action: ACTIONTYPE): typeof initialState 
     case actionTypes.NAV_BACK_COLOR:
         return {
             ...state,
-            layoutType:
-          state.layoutType === 'menu-light' ? 'menu-dark' : state.layoutType
+            layoutType: state.layoutType === 'menu-light' ? 'menu-dark' : state.layoutType
         };
     case actionTypes.HEADER_BACK_COLOR:
         return {

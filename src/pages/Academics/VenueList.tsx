@@ -30,7 +30,7 @@ import { Alerts, ToastifyAlerts } from '../lib/Alert';
 import { LinearProgress } from '@mui/material';
 const alerts: Alerts = new ToastifyAlerts();
 const tableIcons: Icons = {
-    Add: forwardRef((props, ref) => < AddBox  {...props} ref={ref} />),
+    Add: forwardRef((props, ref) => <AddBox {...props} ref={ref} />),
     Check: forwardRef((props, ref) => <Check {...props} ref={ref} />),
     Clear: forwardRef((props, ref) => <Clear {...props} ref={ref} />),
     Delete: forwardRef((props, ref) => <DeleteOutline {...props} ref={ref} />),
@@ -48,16 +48,16 @@ const tableIcons: Icons = {
     ThirdStateCheck: forwardRef((props, ref) => <Remove {...props} ref={ref} />),
     ViewColumn: forwardRef((props, ref) => <ViewColumn {...props} ref={ref} />)
 };
-const VenueList = (props):JSX.Element => {
+const VenueList = (props): JSX.Element => {
     const columns = [
         { title: 'ID', field: 'venue_id' },
-        { title: 'Venue name', field: 'venue_name'},
-        {title: 'Capacity', field: 'venue_capacity'},
-        {title: 'Campus', field: 'campus_name'}
+        { title: 'Venue name', field: 'venue_name' },
+        { title: 'Capacity', field: 'venue_capacity' },
+        { title: 'Campus', field: 'campus_name' }
     ];
-    interface venue{
-        venue_name:string,
-        venue_id:number
+    interface venue {
+        venue_name: string;
+        venue_id: number;
     }
     const [data, setData] = useState([]);
     const timetablingSrv = Config.baseUrl.timetablingSrv;
@@ -65,14 +65,14 @@ const VenueList = (props):JSX.Element => {
     const [errorMessages] = useState([]);
     const [showModal, setModal] = useState(false);
     const [showEditModal, setEditModal] = useState(false);
-    const [selectedVenue,setSelectedVenue] = useState({} as venue);
+    const [selectedVenue, setSelectedVenue] = useState({} as venue);
     const [linearDisplay, setLinearDisplay] = useState('none');
 
     useEffect(() => {
         fetchVenues();
     }, []);
 
-    const fetchVenues = () =>{
+    const fetchVenues = () => {
         setLinearDisplay('block');
         axios
             .get(`${timetablingSrv}/venues`)
@@ -89,8 +89,8 @@ const VenueList = (props):JSX.Element => {
     const toggleCreateModal = () => {
         showModal ? setModal(false) : setModal(true);
     };
-    const toggleEditModal = () =>{
-        showEditModal ? setEditModal(false):setEditModal(true);
+    const toggleEditModal = () => {
+        showEditModal ? setEditModal(false) : setEditModal(true);
     };
     return (
         <>
@@ -104,7 +104,7 @@ const VenueList = (props):JSX.Element => {
                     </Button>
                 </Col>
             </Row>
-            <LinearProgress style={{display: linearDisplay}} /> 
+            <LinearProgress style={{ display: linearDisplay }} />
             <Row>
                 <Col>
                     <Card>
@@ -128,32 +128,46 @@ const VenueList = (props):JSX.Element => {
                                     tooltip: 'Edit Row',
                                     onClick: (event, rowData) => {
                                         setSelectedVenue(rowData);
-                                        toggleEditModal(); 
+                                        toggleEditModal();
                                     }
-                                } 
+                                }
                             ]}
                         />
                     </Card>
                 </Col>
             </Row>
-            <Modal {...props} size="lg" aria-labelledby="contained-modal-title-vcenter" centered show={showModal}  backdrop="static">
+            <Modal {...props} size="lg" aria-labelledby="contained-modal-title-vcenter" centered show={showModal} backdrop="static">
                 <Modal.Header>
                     <Modal.Title id="contained-modal-title-vcenter">Create Venue</Modal.Title>
                 </Modal.Header>
                 <Modal.Body>
-                    <CreateVenue setModal={setModal} setLinearDisplay={setLinearDisplay} linearDisplay={linearDisplay} fetchVenues={fetchVenues}> </CreateVenue>
+                    <CreateVenue
+                        setModal={setModal}
+                        setLinearDisplay={setLinearDisplay}
+                        linearDisplay={linearDisplay}
+                        fetchVenues={fetchVenues}
+                    >
+                        {' '}
+                    </CreateVenue>
                 </Modal.Body>
-
             </Modal>
             <Modal {...props} size="lg" aria-labelledby="contained-modal-title-vcenter" centered show={showEditModal}>
-              
                 <Modal.Header>
                     <Modal.Title id="contained-modal-title-vcenter">Edit {selectedVenue.venue_name} </Modal.Title>
                 </Modal.Header>
                 <Modal.Body>
-                    <EditVenue {...selectedVenue } linearDisplay={linearDisplay} setLinearDisplay={setLinearDisplay} setData={setData} data={data} setEditModal={setEditModal} fetchVenues={fetchVenues}> </EditVenue>
+                    <EditVenue
+                        {...selectedVenue}
+                        linearDisplay={linearDisplay}
+                        setLinearDisplay={setLinearDisplay}
+                        setData={setData}
+                        data={data}
+                        setEditModal={setEditModal}
+                        fetchVenues={fetchVenues}
+                    >
+                        {' '}
+                    </EditVenue>
                 </Modal.Body>
-
             </Modal>
         </>
     );

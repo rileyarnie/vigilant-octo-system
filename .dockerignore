@@ -1,0 +1,15 @@
+.gitiginore
+README.md
+.dockerignore
+Dockerfile
+
+*.md
+
+.cache
+!README*.md
+
+
+
+.git
+node-modules
+build

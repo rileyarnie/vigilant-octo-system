@@ -4,30 +4,30 @@ import Select from 'react-select';
 import Config from '../../../config';
 import axios from 'axios';
 import { Alerts, ToastifyAlerts } from '../../lib/Alert';
-import {customSelectTheme} from '../../lib/SelectThemes';
+import { customSelectTheme } from '../../lib/SelectThemes';
 const alerts: Alerts = new ToastifyAlerts();
 interface IProps {
     onHide: () => void;
-    selectedRowProps:ISelectedRowProps;
-    show:boolean
-    toggleModal: ()=>void;
+    selectedRowProps: ISelectedRowProps;
+    show: boolean;
+    toggleModal: () => void;
 }
 
-interface ISelectedRowProps{
-    name:string;
-    id:number
+interface ISelectedRowProps {
+    name: string;
+    id: number;
 }
 
 interface IOptions {
-    value:number;
-    label:string;
+    value: number;
+    label: string;
 }
-export const AddActionsModal = (props:IProps):JSX.Element => {
+export const AddActionsModal = (props: IProps): JSX.Element => {
     const authnzSrv = Config.baseUrl.authnzSrv;
     const [actions, setActions] = useState([]);
     const [isMulti] = useState(true);
     const [selectedOptions, setSelectedOptions] = useState([]);
-    const options:IOptions[] = [];
+    const options: IOptions[] = [];
     useEffect(() => {
         axios
             .get(`${authnzSrv}/actions`)
@@ -40,7 +40,6 @@ export const AddActionsModal = (props:IProps):JSX.Element => {
             });
     }, []);
 
-
     actions.map((action) => {
         return options.push({ value: action.id, label: action.ActionName });
     });
@@ -49,8 +48,6 @@ export const AddActionsModal = (props:IProps):JSX.Element => {
         setSelectedOptions(selectedOptions);
     };
 
-  
-
     const handlePostRoles = async () => {
         const actionsArr = [];
         const roleId = props.selectedRowProps.id;
@@ -58,7 +55,7 @@ export const AddActionsModal = (props:IProps):JSX.Element => {
             return actionsArr.push(option.value);
         });
         axios
-            .post(`${authnzSrv}/roles/${roleId}/actions`,{ 'actionID': actionsArr})
+            .post(`${authnzSrv}/roles/${roleId}/actions`, { actionID: actionsArr })
             .then((res) => {
                 if (res.status == 200) {
                     alerts.showSuccess('Successfully assigned actions to role');

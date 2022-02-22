@@ -2,7 +2,9 @@ import axios from 'axios';
 import Config from '../../src/config';
 import TimetablingUnit from './TimetableUnit';
 const timetablingSrv = Config.baseUrl.timetablingSrv;
+
 export class TimetableService {
+
     static async createTimetableUnit(timetableUnit: object): Promise<void> {
         return axios.post(`${timetablingSrv}/timetabling-units`, timetableUnit);
     }

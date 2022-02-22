@@ -14,12 +14,7 @@ class App extends Component {
     render(): JSX.Element {
         const menu = routes.map((route, index) => {
             return route.component ? (
-                <Route
-                    key={index}
-                    path={route.path}
-                    exact={route.exact}
-                    render={props => <route.component {...props} />}
-                />
+                <Route key={index} path={route.path} exact={route.exact} render={(props) => <route.component {...props} />} />
             ) : null;
         });
         return (
