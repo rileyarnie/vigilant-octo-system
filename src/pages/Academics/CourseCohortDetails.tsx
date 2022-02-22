@@ -31,6 +31,8 @@ import CardPreview from './CardPreview';
 import { Link } from 'react-router-dom';
 import Select from 'react-select';
 import CertificationType from './enums/CertificationType';
+import { ProgramsService } from '../services/ProgramService';
+import Program from '../services/Program';
 const alerts: Alerts = new ToastifyAlerts();
 const tableIcons: Icons = {
     Add: forwardRef((props, ref) => <AddBox {...props} ref={ref} />),
@@ -60,10 +62,11 @@ const CourseCohortsDetails = (props: any): JSX.Element => {
     const [errorMessages] = useState([]);
     const [linearDisplay, setLinearDisplay] = useState('none');
     const [marks,setMarks] = useState('');
+    const [certificationType,setCertificationType] = useState('');
     const simSrv = Config.baseUrl.simsSrv;
     let enterredMarks;
-    let selectedMarks
-
+    let selectedMarks;
+    let programs;
 
     const shortTermMarks = [
         {value:'complete', label:'complete'},
@@ -86,7 +89,7 @@ const CourseCohortsDetails = (props: any): JSX.Element => {
                     placeholder="Select short term marks"
                     noOptionsMessage={() => 'No available short term marks options'}
                     onChange={(e) => handleSelect(e)}
-                    defaultValue={rowData.marks}
+                    defaultValue={rowData.certificationType}
                 />
             );
 
@@ -97,7 +100,7 @@ const CourseCohortsDetails = (props: any): JSX.Element => {
                     isMulti={false}
                     noOptionsMessage={() => 'No available competency based marks options'}
                     onChange={(e) => handleSelect(e)}
-                    defaultValue={rowData.marks}
+                    defaultValue={rowData.certificationType}
                 />
             );  
         default:
@@ -120,9 +123,29 @@ const CourseCohortsDetails = (props: any): JSX.Element => {
     useEffect(() => {
         setLinearDisplay('block');
         fetchcourseCohortsRegistrations();
+        fetchProgramByCourseCohortId();
     }, []);
 
     const courseCohortId = props.match.params.id;
+   
+    
+    const fetchProgramByCourseCohortId = () => {
+
+        axios.get(`${Config.baseUrl.timetablingSrv}/programs`,{
+            params:{
+                courseCohortId:courseCohortId,
+                loadExtras: 'program'
+            }
+        })
+            .then((res:any) => {
+                const program = res.data[0];
+                setCertificationType(program.certificationType);
+                
+            })
+            .catch((error) => {
+                alerts.showError(error.response.data);
+            });
+    };
 
     const fetchcourseCohortsRegistrations = (): void => {
         axios.get(`${simSrv}/course-cohort-registrations`, { params: { loadExtras: 'marks', courseCohortIds: courseCohortId } }).then((res) => {
@@ -131,6 +154,8 @@ const CourseCohortsDetails = (props: any): JSX.Element => {
             setLinearDisplay('none');
         });
     };
+
+
 
     const updateMarks = async (id:number,marks:string) => {
         axios.put(`${simSrv}/course-cohort-registration-marks/${id}`, { marks:marks }).then((res) => {
@@ -150,6 +175,8 @@ const CourseCohortsDetails = (props: any): JSX.Element => {
     const handleSelect= (e) => {
         selectedMarks=e.target.value;
     };
+    console.log('Non hooks',programs);
+    
     return (
         <>
             <Row className="align-items-center page-header">
@@ -157,8 +184,8 @@ const CourseCohortsDetails = (props: any): JSX.Element => {
                     <Breadcrumb />
                 </Col>
 
-                <Col>                
-                    <CreateMarksModal fetchcourseCohortsRegistrations = {fetchcourseCohortsRegistrations} setLinearDisplay={setLinearDisplay} courseCohortId={courseCohortId} ></CreateMarksModal>
+                <Col>               
+                    <CreateMarksModal fetchcourseCohortsRegistrations = {fetchcourseCohortsRegistrations} setLinearDisplay={setLinearDisplay} courseCohortId={courseCohortId} certificationType={certificationType} ></CreateMarksModal>
                 </Col>
             </Row>
             <LinearProgress style={{ display: linearDisplay }} />

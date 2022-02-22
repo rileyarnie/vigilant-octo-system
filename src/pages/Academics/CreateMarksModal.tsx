@@ -9,11 +9,14 @@ import validator from 'validator';
 import Select from 'react-select';
 import { customSelectTheme } from '../lib/SelectThemes';
 import CreatableSelect from 'react-select/creatable';
+import {  FileInput } from 'react-bootstrap4-form-validation';
+import CertificationType from './enums/CertificationType';
 const alerts: Alerts = new ToastifyAlerts();
 interface Props extends React.HTMLAttributes<Element> {
     setLinearDisplay: (string) => void;
     fetchcourseCohortsRegistrations: () => void;
-    courseCohortId:number
+    courseCohortId:number;
+    certificationType:string;
 }
 const CreateMarksModal = (props:Props) => {
     const [courseCohortId,setCourseCohortId] = useState(0);
@@ -22,20 +25,123 @@ const CreateMarksModal = (props:Props) => {
     const [marks,setMarks] = useState(0);
     const [programCohortSemesterId,setProgramCohortSemesterId] = useState(1);
     const [ccRegistrations,setCCRegistrations] = useState([]);
-    const [modalShow,setModalShow] = useState(false)
-    const options= []
-    const simSrv = Config.baseUrl.simsSrv
-
+    const [modalShow,setModalShow] = useState(false);
+    const options= [];
+    const simSrv = Config.baseUrl.simsSrv;
+    const timetablingSrv = Config.baseUrl.timetablingSrv;
+    const [imageUploaded, setImageUploaded] = useState('');
+    const [showUploadModal, setShowUploadModal] = useState(false);
+    let selectedMarks;
     const markTypes = [
         {label:'Main', value:'main'},
         {label: 'Supplementary', value:'supplementary'},
         {label:'Credit Transfer', value:'creditTransfer'},
     ];
 
+    const shortTermMarks = [
+        {value:'complete', label:'complete'},
+        {value:'incomplete', label:'incomplete'}
+    ];
+
+    const competencyBasedMarks = [
+        {value:'pass', label:'pass'},
+        {value:'fail', label:'fail'}
+    ];
+
+    const handleSelect= (e) => {
+        selectedMarks=e.target.value;
+    };
     useEffect(() => {
         fetchcourseCohortRegistrations();
     });
+    function renderSwitch(){
+        switch(props.certificationType) {
+        case CertificationType.shortTerm:                                                                         
+            return (
+                <>
+                    <label htmlFor="name">
+                        <b>Short Term Marks</b>
+                    </label>                
+                    <Select
+                        options={shortTermMarks}
+                        isMulti={false}
+                        placeholder="Select short term marks"
+                        noOptionsMessage={() => 'No available short term marks options'}
+                        onChange={(e) => handleSelect(e)}
+                    />
+                    <br />
+                    <label htmlFor="cohortName">
+                        <b>Upload Transcript</b>
+                    </label>
+                    <br />
+                    <br />   
+                    <label >
+                        <b>Upload Transcript</b>
+                    </label>
+                    <br />
+                    <button
+                        className="btn btn-primary"
+                        onClick={(e) => {
+                            e.preventDefault();
+                            setShowUploadModal(true);
+                        }}
+                    >
+                                        Upload transcript
+                    </button> 
+                    <br></br>     
+                    <br></br>  
+                </>
+            );
 
+        case CertificationType.competencyBased:            
+            return (
+                <>
+                    <label htmlFor="name">
+                        <b>Comptenecy Based Marks</b>
+                    </label>                  
+                    <Select
+                        options={competencyBasedMarks}
+                        isMulti={false}
+                        noOptionsMessage={() => 'No available competency based marks options'}
+                        onChange={(e) => handleSelect(e)}
+                    />
+                    <br />   
+                    <label >
+                        <b>Upload Transcript</b>
+                    </label>
+                    <br />
+                    <button
+                        className="btn btn-primary"
+                        onClick={(e) => {
+                            e.preventDefault();
+                            setShowUploadModal(true);
+                        }}
+                    >
+                                        Upload transcript
+                    </button> 
+                    <br></br>     
+                    <br></br>  
+                </>                    
+            );  
+        default:
+            return (
+                <>
+                    <label htmlFor="name">
+                        <b>Marks</b>
+                    </label>
+                    <TextInput
+                        name="name"
+                        id="name"
+                        type="text"
+                        placeholder="Enter marks"
+                        required
+                        onChange={handleMarksInput}
+                    />
+                    <br></br>  
+                </>             
+            );    
+        }
+    }
     function fetchcourseCohortRegistrations() {
         axios
             .get(`${simSrv}/course-cohort-registrations`, {
@@ -43,7 +149,7 @@ const CreateMarksModal = (props:Props) => {
                     courseCohortIds:props.courseCohortId
                 }})
             .then((res) => {
-                const ccRegs = res.data
+                const ccRegs = res.data;
                 setCCRegistrations(ccRegs);
             })
             .catch((error) => {
@@ -55,37 +161,19 @@ const CreateMarksModal = (props:Props) => {
     ccRegistrations.map((cc:any) => {
         return options.push({ value: cc.id, label: cc.id });
     });
-    function postMarks() {
-        axios
-            .post(`${simSrv}/course-cohort-registrations-marks`, {
-                params: {
-                    courseCohortIds:courseCohortId
-                }})
-            .then((res) => {
-                setCCRegistrations(res.data);
-                // ccRegistrations.map((cc:any) => {
-                //     return options.push({ value: cc.id, label: cc.id });
-                // });
-            })
-            .catch((error) => {
-            //handle error using logging library
-                console.error(error);
-                alerts.showError(error.message);
-            });
-    }
 
 
     const handleMarkTypeChange = (selectedOption) => {
-        setTypeOfMarks(selectedOption.value)
+        setTypeOfMarks(selectedOption.value);
     };
 
     const handleSelectChange = (selectedOption) => {
-        setCourseCohortRegistrationId(selectedOption.value)
+        setCourseCohortRegistrationId(selectedOption.value);
     };
 
     const handleMarksInput = (e) => {
-        setMarks(e.target.value)
-    }
+        setMarks(e.target.value);
+    };
 
     const handleSubmit = (e) => {
         e.preventDefault();
@@ -94,14 +182,14 @@ const CreateMarksModal = (props:Props) => {
             .post(`${simSrv}/course-cohort-registration-marks`, { 
                 courseCohortRegistrationId: courseCohortRegistrationId,
                 typeOfMarks: typeOfMarks,
-                marks: marks,
+                marks: marks | selectedMarks,
                 programCohortSemesterId:programCohortSemesterId
             })
             .then(() => {
                 alerts.showSuccess('Marks Created Successfully');
                 props.fetchcourseCohortsRegistrations();
                 props.setLinearDisplay('none');
-                setModalShow(false)
+                setModalShow(false);
             })
             .catch((error) => {
                 //handle error using logging library
@@ -112,6 +200,31 @@ const CreateMarksModal = (props:Props) => {
 
     const handleErrorSubmit = (e, _formData, errorInputs) => {
         console.error(errorInputs);
+    };
+
+    const toggleUploadModal = () => {
+        showUploadModal ? setShowUploadModal(false) : setShowUploadModal(true);
+    };
+
+    const handleUpload = (): void => {
+        const form = new FormData();
+        form.append('fileUploaded', imageUploaded);
+        const config = {
+            headers: { 'content-type': 'multipart/form-data' }
+        };
+        props.setLinearDisplay('block');
+        axios
+            .post(`${timetablingSrv}/files`, form, config)
+            .then((res) => {
+                console.log(res.data);
+                alerts.showSuccess('successfully uploaded');
+                props.setLinearDisplay('none');
+                toggleUploadModal();
+            })
+            .catch((error) => {
+                console.error(error);
+                alerts.showError(error.message);
+            });
     };
 
     return (
@@ -143,7 +256,7 @@ const CreateMarksModal = (props:Props) => {
                                                 &nbsp;&nbsp;&nbsp;
                                                 <br />      
 
-                                                <label htmlFor="name">
+                                                {/* <label htmlFor="name">
                                                     <b>Marks</b>
                                                 </label>
                                                 <TextInput
@@ -154,8 +267,8 @@ const CreateMarksModal = (props:Props) => {
                                                     required
                                                     onChange={handleMarksInput}
                                                 />
-                                                <br />                    
-
+                                                <br />                     */}
+                                                {renderSwitch()}
 
 
                                                 <label htmlFor="name">
@@ -185,6 +298,46 @@ const CreateMarksModal = (props:Props) => {
                     </Col>
                 </Row>
         
+            </Modal>
+            <Modal backdrop="static" show={showUploadModal} onHide={toggleUploadModal} size="sm" centered>
+                <Modal.Header closeButton>
+                    <Modal.Title>Add image</Modal.Title>
+                </Modal.Header>
+                <Modal.Body>
+                    <ValidationForm>
+                        <FileInput
+                            name="fileUploaded"
+                            id="image"
+                            encType="multipart/form-data"
+                            onChange={(e) => {
+                                setImageUploaded(() => {
+                                    return e.target.files[0];
+                                });
+                            }}
+                            required
+                            fileType={['png', 'jpg', 'jpeg']}
+                            maxFileSize="3mb"
+                            errorMessage={{
+                                required: 'Please upload an image',
+                                fileType: 'Only image is allowed',
+                                maxFileSize: 'Max file size is 3MB'
+                            }}
+                        />
+                    </ValidationForm>
+                </Modal.Body>
+                <Modal.Footer style={{ display: 'flex', justifyContent: 'space-between' }}>
+                    <Button variant="btn btn-info btn-rounded" onClick={toggleUploadModal}>
+                        Close
+                    </Button>
+                    <Button
+                        onClick={() => {
+                            handleUpload();
+                        }}
+                        variant="btn btn-danger btn-rounded"
+                    >
+                        Upload
+                    </Button>
+                </Modal.Footer>
             </Modal>
         </>    
     );
