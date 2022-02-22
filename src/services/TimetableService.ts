@@ -1,6 +1,5 @@
 import axios from 'axios';
 import Config from '../../src/config';
-import Semester from './Semester';
 import TimetablingUnit from './TimetableUnit';
 const timetablingSrv = Config.baseUrl.timetablingSrv;
 export class TimetableService {

@@ -14,6 +14,8 @@ const alerts = new ToastifyAlerts()
 const currentDate = new Date()
 const draggingGroupName = 'appointmentsGroup'
 import { ToastifyAlerts } from '../lib/Alert'
+import AppointmentTooltip  from './AppointmentTooltip'
+import TestTextInput from './test'
 import { SemesterService } from '../../services/SemesterService'
 const venueData = VenueService.fetchVenues().then((res) => {
     return res['data'].map((venue) => {
@@ -31,8 +33,19 @@ const trainerData = TrainerService.fetchTrainers().then((res) => {
     .catch((error) => {
         console.error(error)
     })
-class Timetable extends React.Component {
+    const priorities = [
+      {
+        text: 'High',
+        id: 1,
+        color: '#cc5c53',
+      }, {
+        text: 'Low',
+        id: 2,
+        color: '#ff9747',
+      },
+    ];
 
+class Timetable extends React.Component {
     courseCohortData = []
     constructor(props) {
         super(props)
@@ -64,8 +77,8 @@ class Timetable extends React.Component {
             colorId:0,
             timeTabledUnitErrors:[],
             timetableDataWithErrors:[],
-            itemsWithColor:[
-           ],
+            itemsWithColor:[],
+            priorityId: 2
 
         }
         this.onAppointmentRemove = this.onAppointmentRemove.bind(this)
@@ -88,7 +101,6 @@ class Timetable extends React.Component {
       if (prevState.timeTabledUnitErrors !== this.state.timeTabledUnitErrors||prevState.timetableData !== this.state.timetableData) {
         this.timeTabledUnitsWithErrors(this.state.timetableData, this.state.timeTabledUnitErrors);
       }
-
     }
     fetchTimetableUnitErrors = (semesterId) => {
         TimetableService.getTimetableUnitErrors(semesterId)
@@ -101,7 +113,15 @@ class Timetable extends React.Component {
         CourseCohortService.fetchCourseCohorts(loadExtras, semesterId)
             .then((res) => {
                 const courseCohorts = res.data
-                this.setState({courseCohort: res.data})
+                const courseCohortData = courseCohorts.map((cc) => {
+                                    return {
+                                        text: cc.course.name,
+                                        id: cc.id,
+                                        trainerId: cc.trainerId,
+                                        trainingHours: cc.course.trainingHours
+                                    }
+                                })
+                this.setState({courseCohort: courseCohortData})
                 let datasourceTu = []
                 for(const courseCohort of courseCohorts){
                     courseCohort.timetablingUnit.map((tu) => {
@@ -115,7 +135,6 @@ class Timetable extends React.Component {
                             trainerId: tu.trainerId,
                             startDate: new Date(tu.recurrenceStartDate),
                             endDate: new Date(tu.recurrenceEndDate),
-                            colorId: 0
                         })
                     } )
                 }
@@ -132,26 +151,21 @@ class Timetable extends React.Component {
 
 timeTabledUnitsWithErrors (timeTabledUnits,timeTabledUnitErrors) {
 const items = timeTabledUnits.map(unit=>({
-...timeTabledUnitErrors.find((error)=>(error.timetablingUnitId===unit.timetablingUnitId)&&error),...unit
+...timeTabledUnitErrors.find((error)=>(error.timetablingUnitId===unit.timetablingUnitId)&&error),priorityId: 2
+,...unit
 }))
-
- const itemsWithColor=[ {id:1, color:"#ff9747" }]
-
+ const itemsWithColor=[]
 // const itemsWithColor=items.map(item=>item.errors.length>0?({...item,item.color:"#ff0000"}):({{...item,item.color:"#000ff0"}})}
-
  for(let i=0;i<items.length;i++){
  if(items[i].errors?.length>0){
- itemsWithColor.push({...items[i], priorityId:itemsWithColor[0]})
+ itemsWithColor.push({...items[i],  color:"#ff97471"})
  }
  else{
-  itemsWithColor.push({text:"this text",id:items[i].id,color:"#ff9747"})
-
+  itemsWithColor.push({...items[i],priorityId:2})
  }
  }
  return this.setState({timetableDataWithErrors:items,itemsWithColor:itemsWithColor})
-
 }
-
 
     fetchSemesters = () => {
         SemesterService.fetchSemesters()
@@ -203,23 +217,6 @@ const items = timeTabledUnits.map(unit=>({
             })
             .catch((error) => {
                 console.error(error)
-                this.setState({status: error.response.status, errorMessage: error.response.data, color: '#ff9747'})
-                const colorData = [{
-                id: 1,
-                text: this.state.errorMessage,
-                color: this.state.color
-                }]
-                console.log(colorData)
-                this.setState({colorData:colorData})
-
-                if (error.response.status >= 400) {
-                        colorId = 1
-                    } else {
-                        colorId = 0
-                    }
-                 this.setState({colorId:colorId})
-               //alerts.showError(color)
-
             })
         if (index >= 0) {
             this.state.courseCohort.splice(index, 1)
@@ -254,7 +251,7 @@ const items = timeTabledUnits.map(unit=>({
                         trainerId = e.target.value
                         alert(trainerId)
                     }
-                }
+                },
             }, {
                 label: {
                     text: 'Select a Venue'
@@ -276,6 +273,7 @@ const items = timeTabledUnits.map(unit=>({
                 },
                 dataField: 'startDate',
                 editorType: 'dxDateBox',
+                itemTemplate:"TestTextInput",
                 editorOptions: {
                     width: '100%',
                     type: 'time',
@@ -385,7 +383,6 @@ const items = timeTabledUnits.map(unit=>({
                 alerts.showError(error.message)
             })
     }
-
     getTimetablingUnitId(courseCohorts, courseCohortId){
         const cc = courseCohorts.filter(courseCohort => courseCohort.id === courseCohortId )
 
@@ -395,6 +392,19 @@ const items = timeTabledUnits.map(unit=>({
         alert(JSON.stringify(e.appointmentData))
     }
     render() {
+    const Content = (() => (
+      <AppointmentTooltip.Content appointmentData={appointmentData}>
+        <Grid container alignItems="center">
+          <StyledGrid item xs={2} className="textCenter">
+            <StyledRoom  />
+          </StyledGrid>
+          <Grid item xs={10}>
+            <span>Hello</span>
+          </Grid>
+        </Grid>
+      </AppointmentTooltip.Content>
+    ));
+
         return (
             <React.Fragment>
                 {this.state.semesterId? <Button  onClick={() =>  this.publishTimetable() } className="float-right" variant="danger" style={{transform: `translateX(${-40}px)`}} >Publish Timetable</Button>: '' }
@@ -432,7 +442,7 @@ const items = timeTabledUnits.map(unit=>({
                                 data={courseCohort}
                                 onDragStart={this.onItemDragStart}
                                 onDragEnd={this.onItemDragEnd}>
-                                {<>Course name: {courseCohort.course.name}</>}<br/>{<>TrainingHours: {courseCohort.course.trainingHours}</>}<br/>{<>Trainer: {courseCohort.trainerId || 'No Set Trainer'}</>}<br/>
+                                {<>Course name: {courseCohort.text}</>}<br/>{<>TrainingHours: {courseCohort.trainingHours}</>}<br/>{<>Trainer: {courseCohort.trainerId || 'No Set Trainer'}</>}<br/>
                             </Draggable>)}
                     </Draggable>
                 </ScrollView>
@@ -448,6 +458,7 @@ const items = timeTabledUnits.map(unit=>({
                     startDayHour={0}
                     endDayHour={24}
                     editing={true}
+                    appointmentTooltipComponent={AppointmentTooltip  }
                     onAppointmentFormOpening={this.onAppointmentFormOpening}
                     onAppointmentUpdated={e => {this.handleEdit(e)}}
                 >
@@ -455,24 +466,19 @@ const items = timeTabledUnits.map(unit=>({
                         fieldExpr='colorId'
                         dataSource={this.state.itemsWithColor}
                         label='text'
-
                         useColorAsDefault={ true }
                       />
-                    {/*                     <Resource */}
-                    {/*                         dataSource= {await venueData} */}
-                    {/*                         fieldExpr="trainerId" */}
-                    {/*                         useColorAsDefault={true} */}
-                    {/*                     /> */}
-                    {/*                     <Resource */}
-                    {/*                         dataSource= {await venueData} */}
-                    {/*                         fieldExpr="venueId" */}
-                    {/*                     /> */}
+                      <Resource
+                                  dataSource={priorities}
+                                  fieldExpr="priorityId"
+                                  label="Priority"
+                                />
                     <AppointmentDragging
                         group={draggingGroupName}
                         onRemove={this.onAppointmentRemove}
                         onAdd={this.onAppointmentAdd}
                     />
-                </Scheduler>                
+                </Scheduler>
             </React.Fragment>
         )
     }
