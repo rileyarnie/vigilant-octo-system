@@ -1,5 +1,5 @@
 /* eslint-disable react/display-name */
-import React, { useState, useEffect, forwardRef } from 'react';
+import React, { useState, useEffect, forwardRef, useCallback } from 'react';
 import { Row, Col, Modal, Button } from 'react-bootstrap';
 import Breadcrumb from '../../App/components/Breadcrumb';
 import { LinearProgress } from '@mui/material';
@@ -22,6 +22,7 @@ import SaveAlt from '@material-ui/icons/SaveAlt';
 import Search from '@material-ui/icons/Search';
 import ViewColumn from '@material-ui/icons/ViewColumn';
 import axios from 'axios';
+import { ProgramCohortService } from '../services/ProgramCohortService';
 
 const tableIcons: Icons = {
     Add: forwardRef((props, ref) => <AddBox {...props} ref={ref} />),
@@ -51,13 +52,30 @@ const ProgramCohortGraduationList: React.FunctionComponent<Props> = ({ toggleGra
     const [linearDisplay, setLinearDisplay] = useState('none');
     const [errorMessages] = useState([]);
     const [isError] = useState(false);
+    const [graduands, setGraduands] = useState([]);
+    const programCohortId = JSON.parse(localStorage.getItem('programCohortId'));
+
+    useEffect(() => {
+        ProgramCohortService.getGraduands({ programCohortId })
+            .then((res) => {
+                setGraduands(res.data);
+            })
+            .catch((error) => console.log('error', error));
+    }, []);
 
     const columns = [
+        { title: 'ID', field: 'studentId' },
         { title: 'Student Name', field: 'studentName' },
         { title: 'Grades', field: 'grades' }
     ];
 
-    const data = [{ studentName: 'John Doe', grades: 'These grades' }];
+    const data = graduands.map((graduand) => {
+        return {
+            studentId: graduand.name,
+            studentName: `${graduand.applications_firstName} ${graduand.applications_lastName}`,
+            grades: graduand.averageMarks
+        };
+    });
 
     return (
         <>
