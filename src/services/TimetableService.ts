@@ -17,4 +17,7 @@ export class TimetableService {
     static async getTimetableUnitErrors(semesterid: number): Promise<void> {
         return axios.get(`${timetablingSrv}/timetabling-units/errors`,{params: {semesterId:semesterid}});
     }
+    static async handleFileUpload (form:unknown, config:unknown):Promise<void> {
+        return axios.post(`${timetablingSrv}/files`, form, config);
+    }
 }

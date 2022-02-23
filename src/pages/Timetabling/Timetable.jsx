@@ -15,7 +15,6 @@ const currentDate = new Date()
 const draggingGroupName = 'appointmentsGroup'
 import { ToastifyAlerts } from '../lib/Alert'
 import AppointmentTooltip  from './AppointmentTooltip'
-import TestTextInput from './test'
 import { SemesterService } from '../../services/SemesterService'
 const venueData = VenueService.fetchVenues().then((res) => {
     return res['data'].map((venue) => {
