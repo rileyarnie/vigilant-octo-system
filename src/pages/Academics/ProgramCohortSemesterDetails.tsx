@@ -183,7 +183,7 @@ function ProgramCohortSemesterDetails() {
                 alerts.showSuccess('Successfully created a fee item');
             })
             .catch((error) => {
-                alerts.showError(error.message);
+                alerts.showError(error.response.data);
                 console.log(error);
             });
     }
@@ -197,7 +197,7 @@ function ProgramCohortSemesterDetails() {
             })
             .catch((error) => {
                 setLinearDisplay('block');
-                alerts.showError(error.message);
+                alerts.showError(error.response.data);
                 setLinearDisplay('none');
             });
     }
@@ -489,7 +489,6 @@ function ProgramCohortSemesterDetails() {
                     </Button>
                 </Modal.Footer>
             </Modal>
-            {/*Publish course cohort semester*/}
             <Modal
                 show={showPublishModal}
                 onHide={showPublishSemesterModal}
