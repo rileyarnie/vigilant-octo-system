@@ -24,11 +24,12 @@ import { Link } from 'react-router-dom';
 import Alert from '@material-ui/lab/Alert';
 import Breadcrumb from '../../App/components/Breadcrumb';
 import { Row, Col, Card, Button, Modal, ListGroup } from 'react-bootstrap';
-import { SelectGroup, TextInput, ValidationForm } from 'react-bootstrap4-form-validation';
+import { SelectGroup, TextInput, FileInput, ValidationForm } from 'react-bootstrap4-form-validation';
 import Config from '../../config';
 import { Icons } from 'material-table';
 import { Alerts, ToastifyAlerts } from '../lib/Alert';
 import LinearProgress from '@mui/material/LinearProgress';
+import { TimetableService } from '../../services/TimetableService';
 const alerts: Alerts = new ToastifyAlerts();
 const tableIcons: Icons = {
     Add: forwardRef((props, ref) => <AddBox {...props} ref={ref} />),
@@ -91,13 +92,14 @@ const ApplicationsList = (): JSX.Element => {
     const [physicalChallenges, setPhysicalChallenges] = useState('');
     const [courseStartDate, setCourseStartDate] = useState('');
     const [campus, setCampus] = useState('');
+    const [fileUploaded, setFileUploaded] = useState('');
     const [programCohortId, setProgramCohortId] = useState('');
     const [sponsor, setSponsor] = useState('');
     const [countryOfResidence, setCountryOfResidence] = useState('');
     const [documentsUrl, setDocumentsUrl] = useState('');
     const [applicationId, setApplicationId] = useState('');
     const [campuses, setCampuses] = useState([]);
-    const [, setShowUploadModal] = useState(false);
+    const [showUploadModal, setShowUploadModal] = useState(false);
     useEffect(() => {
         fetchProgramCohortApplications();
         axios
@@ -123,6 +125,24 @@ const ApplicationsList = (): JSX.Element => {
                 alerts.showError(error.message);
             });
     };
+    function handleUpload () {
+        const form = new FormData()
+        form.append('fileUploaded', fileUploaded)
+        const config = {
+            headers: { 'content-type': 'multipart/form-data' }
+        }
+        TimetableService.handleFileUpload(form, config)
+        axios.post(`${timetablingSrv}/files`, form, config)
+            .then((res) => {
+                toggleUploadModal()
+                alerts.showSuccess('File uploaded successfully')
+                setDocumentsUrl(res.data)
+            })
+            .catch((error) => {
+                console.log(error)
+                alerts.showError(error.message)
+            })
+    }
     const handleEdit = (e) => {
         e.preventDefault();
         const updates = {
@@ -210,6 +230,9 @@ const ApplicationsList = (): JSX.Element => {
     const handleCloseModal = () => {
         modalShow ? resetStateCloseModal() : setModalShow(false);
     };
+    const toggleUploadModal = () => {
+        showUploadModal ? setShowUploadModal(false) : setShowUploadModal(true)
+    }
     return (
         <>
             <Row className="align-items-center page-header">
@@ -796,8 +819,7 @@ const ApplicationsList = (): JSX.Element => {
                                     onClick={(e) => {
                                         e.preventDefault();
                                         setShowUploadModal(true);
-                                    }}
-                                >
+                                    }}>
                                     Upload documents
                                 </button>
                             </div>
@@ -814,6 +836,36 @@ const ApplicationsList = (): JSX.Element => {
                         Close
                     </Button>
                 </Modal.Body>
+            </Modal>
+            <Modal
+                backdrop="static"
+                show={showUploadModal}
+                onHide={toggleUploadModal}
+                size="sm"
+                aria-labelledby="contained-modal-title-vcenter"
+                centered
+            >
+                <Modal.Dialog>
+                    <Modal.Header closeButton>
+                        <Modal.Title>Upload document</Modal.Title>
+                    </Modal.Header>
+
+                    <Modal.Body>
+                        <ValidationForm>
+                            <FileInput name="fileUploaded" id="image" encType="multipart/form-data"
+                                       fileType={['pdf', 'doc', 'docx']} maxFileSize="10mb"
+                                       onInput={(e) => {
+                                           setFileUploaded(() => { return e.target.files[0] })
+                                       }}
+                                       errorMessage={{ required: 'Please upload a document', fileType: 'Only document is allowed', maxFileSize: 'Max file size is 10MB' }}/>
+                        </ValidationForm>
+                    </Modal.Body>
+
+                    <Modal.Footer style={{ display: 'flex', justifyContent: 'space-between' }} >
+                        <Button variant="primary" className="btn btn-primary rounded" onClick={toggleUploadModal}>Close</Button>
+                        <Button variant="danger" className="btn btn-danger rounded" onClick={() => handleUpload()}>Upload</Button>
+                    </Modal.Footer>
+                </Modal.Dialog>
             </Modal>
         </>
     );
