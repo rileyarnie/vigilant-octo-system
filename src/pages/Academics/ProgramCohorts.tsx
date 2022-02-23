@@ -304,9 +304,9 @@ const ProgramCohorts = (): JSX.Element => {
     const handleEdit = (e): void => {
         e.preventDefault();
         const updates = {
-            programId: programId === selectedProgramCohort.pg_id ? selectedProgramCohort.pg_id : selectedProgramCohort.pg_id,
-            campusId: campusId === selectedProgramCohort.program_cohorts_campusId ? selectedProgramCohort.program_cohorts_campusId : selectedProgramCohort.program_cohorts_campusId,
-            startDate: startDate === selectedProgramCohort.program_cohorts_startDate ? selectedProgramCohort.program_cohorts_startDate : selectedProgramCohort.program_cohorts_startDate,
+            programId: programId === selectedProgramCohort.pg_id ? selectedProgramCohort.pg_id : selectedProgramId,
+            campusId: campusId === selectedProgramCohort.program_cohorts_campusId ? selectedProgramCohort.program_cohorts_campusId : selectedCampusId,
+            startDate: startDate === selectedProgramCohort.program_cohorts_startDate ? selectedProgramCohort.program_cohorts_startDate : selectedStartDate,
             anticipatedGraduationYear: selectedProgramCohort.program_cohorts_anticipatedGraduationYear,
             anticipatedGraduationMonth: selectedProgramCohort.program_cohorts_anticipatedGraduationMonth,
             advertDescription: description === selectedProgramCohort.program_cohorts_advertDescription ? selectedProgramCohort.program_cohorts_advertDescription : description,
