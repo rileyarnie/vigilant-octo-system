@@ -57,7 +57,7 @@ const ProgramCohorts = (): JSX.Element => {
         program_cohorts_startDate: string;
         program_cohorts_anticipatedGraduationYear: number;
         program_cohorts_anticipatedGraduationMonth: number;
-        program_cohorts_isActive: boolean;
+        program_cohorts_status: string;
         program_cohorts_advertDescription: string;
         pg_name: string;
         program_cohorts_bannerImageUrl: string;
@@ -91,30 +91,31 @@ const ProgramCohorts = (): JSX.Element => {
     const [cancelModal, setCancelModal] = useState(false);
     const [selectedProgramCohort, setSelectedProgramCohort] = useState<programCohort>();
     const [linearDisplay, setLinearDisplay] = useState('none');
+    const [activationStatus, setStatus] = useState('');
     const timetablingSrv = Config.baseUrl.timetablingSrv;
     const year = graduationDate.split('').slice(0, 4).join('');
     const month = graduationDate.slice(5, 7);
-    let activationStatus: boolean;
+    
     const handleActivationStatusToggle = (event, row: programCohort) => {
         setDisabled(true);
-        if (row.program_cohorts_isActive) {
-            activationStatus = false;
+        if (row.program_cohorts_status === 'active') {
+            setStatus('canceled');
             handleToggleStatusSubmit(event, row);
         }
-        if (!row.program_cohorts_isActive) {
-            activationStatus = true;
+        if (row.program_cohorts_status === 'canceled') {
+            setStatus('active');
             handleToggleStatusSubmit(event, row);
         }
     };
     const handleToggleStatusSubmit = (e, row: programCohort) => {
         const cohortStatus = {
-            isActive: activationStatus
+            status: activationStatus
         };
         setLinearDisplay('block');
         axios
             .put(`${timetablingSrv}/program-cohorts/${row.program_cohorts_id}`, cohortStatus)
             .then(() => {
-                const msg = activationStatus ? 'Successfully Deactivated Program Cohorts' : 'Successfully activated Program Cohort';
+                const msg = activationStatus === 'canceled' ? 'Successfully Deactivated Program Cohorts' : 'Successfully activated Program Cohort';
                 alerts.showSuccess(msg);
                 fetchProgramCohorts();
                 setDisabled(false);
@@ -151,7 +152,7 @@ const ProgramCohorts = (): JSX.Element => {
                         handleActivationStatusToggle(event, row);
                     }}
                     inputProps={{ 'aria-label': 'controlled' }}
-                    defaultChecked={!row.program_cohorts_isActive}
+                    defaultChecked={row.program_cohorts_status === 'canceled' ? false : true}
                 />
             )
         },
