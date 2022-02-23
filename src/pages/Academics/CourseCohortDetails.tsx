@@ -1,5 +1,10 @@
 /* eslint-disable react/display-name */
-import React, { useState, useEffect, forwardRef } from 'react';
+import React, { useState, useEffect, forwardRef, useCallback } from 'react';
+import { Row, Col, Modal, Button } from 'react-bootstrap';
+import Breadcrumb from '../../App/components/Breadcrumb';
+import { LinearProgress } from '@mui/material';
+import Card from '@material-ui/core/Card';
+import Alert from '@material-ui/lab/Alert';
 import MaterialTable, { Icons } from 'material-table';
 import AddBox from '@material-ui/icons/AddBox';
 import ArrowDownward from '@material-ui/icons/ArrowDownward';
@@ -17,29 +22,8 @@ import SaveAlt from '@material-ui/icons/SaveAlt';
 import Search from '@material-ui/icons/Search';
 import ViewColumn from '@material-ui/icons/ViewColumn';
 import axios from 'axios';
-import Card from '@material-ui/core/Card';
-import Alert from '@material-ui/lab/Alert';
-import Breadcrumb from '../../App/components/Breadcrumb';
-import { Row, Col, Modal, Button } from 'react-bootstrap';
-import Config from '../../config';
-import { Alerts, ToastifyAlerts } from '../lib/Alert';
-import { LinearProgress } from '@mui/material';
-import CreateMarksModal from './CreateMarksModal';
-import { MenuItem, Switch } from '@material-ui/core';
-import { ValidationForm, SelectGroup, FileInput, TextInput } from 'react-bootstrap4-form-validation';
-import CardPreview from './CardPreview';
-import { Link } from 'react-router-dom';
-<<<<<<< HEAD
-import Select from 'react-select';
-import CertificationType from './enums/CertificationType';
-import { ProgramsService } from '../services/ProgramService';
-import Program from '../services/Program';
-=======
-import { Alerts, ToastifyAlerts } from '../lib/Alert';
-import { LinearProgress } from '@mui/material';
-import ProgramCohortGraduationList from './ProgramCohortGraduationList';
->>>>>>> b863ae05fed8cf28224341b44d08260e45a47e2b
-const alerts: Alerts = new ToastifyAlerts();
+import { ProgramCohortService } from '../services/ProgramCohortService';
+
 const tableIcons: Icons = {
     Add: forwardRef((props, ref) => <AddBox {...props} ref={ref} />),
     Check: forwardRef((props, ref) => <Check {...props} ref={ref} />),
@@ -59,142 +43,56 @@ const tableIcons: Icons = {
     ThirdStateCheck: forwardRef((props, ref) => <Remove {...props} ref={ref} />),
     ViewColumn: forwardRef((props, ref) => <ViewColumn {...props} ref={ref} />)
 };
-const CourseCohortsDetails = (props: any): JSX.Element => {
-    const [data, setData] = useState([]);
-    const [trainersData, setTrainers] = useState([]);
-    const [semesters, setSemesters] = useState([]);
-    const [isError] = useState(false);
-    const [, setDisabled] = useState(false);
+
+interface Props {
+    toggleGraduationList: () => void;
+}
+
+const ProgramCohortGraduationList: React.FunctionComponent<Props> = ({ toggleGraduationList }) => {
+    const [linearDisplay, setLinearDisplay] = useState('none');
     const [errorMessages] = useState([]);
-    const [linearDisplay, setLinearDisplay] = useState('block');
-    const [marks,setMarks] = useState('');
-    const [certificationType,setCertificationType] = useState('');
-    const simSrv = Config.baseUrl.simsSrv;
-    const [showGraduating, setShowGraduating] = useState(false);
-    const timetablingSrv = Config.baseUrl.timetablingSrv;
-    let enterredMarks;
-    let selectedMarks;
-    let programs;
-
-    const shortTermMarks = [
-        {value:'complete', label:'complete'},
-        {value:'incomplete', label:'incomplete'}
-    ];
-
-    const competencyBasedMarks = [
-        {value:'pass', label:'pass'},
-        {value:'fail', label:'fail'}
-    ];
-    
-
-    function renderSwitch(rowData){
-        switch(rowData.certificationType) {
-        case CertificationType.shortTerm:                                                                         
-            return (
-                <Select
-                    options={shortTermMarks}
-                    isMulti={false}
-                    placeholder="Select short term marks"
-                    noOptionsMessage={() => 'No available short term marks options'}
-                    onChange={(e) => handleSelect(e)}
-                    defaultValue={rowData.certificationType}
-                />
-            );
-
-        case CertificationType.competencyBased:            
-            return (
-                <Select
-                    options={competencyBasedMarks}
-                    isMulti={false}
-                    noOptionsMessage={() => 'No available competency based marks options'}
-                    onChange={(e) => handleSelect(e)}
-                    defaultValue={rowData.certificationType}
-                />
-            );  
-        default:
-            return (
-                <input
-                    type="text"
-                    defaultValue={rowData.marks}
-                    onChange = {e => handleMarksChange(e)}
-                />
-            );    
-        }
-    }
-    const columns = [
-        { title: 'Course Cohort ID', render: () =>props.match.params.id, hidden: false, editable: 'never' as const },
-        {title: 'Certification Type', field: 'certificationType', hidden: true },
-        {title: 'Id', field: 'id', hidden: true },
-        { title: 'Marks', field: 'marks',   editComponent: tableData => (renderSwitch(tableData.rowData))},
-        { title: 'Grade', field: 'grade', editable: 'never' as const }
-    ];
+    const [isError] = useState(false);
+    const [graduands, setGraduands] = useState([]);
+    const programCohortId = JSON.parse(localStorage.getItem('programCohortId'));
 
     useEffect(() => {
-        fetchcourseCohortsRegistrations();
-        fetchProgramByCourseCohortId();
+        ProgramCohortService.getGraduands({ programCohortId })
+            .then((res) => {
+                setGraduands(res.data);
+            })
+            .catch((error) => console.log('error', error));
     }, []);
 
-    const courseCohortId = props.match.params.id;
-   
-    
-    const fetchProgramByCourseCohortId = () => {
+    const columns = [
+        { title: 'ID', field: 'studentId' },
+        { title: 'Student Name', field: 'studentName' },
+        { title: 'Grades', field: 'grades' }
+    ];
 
-        axios.get(`${Config.baseUrl.timetablingSrv}/programs`,{
-            params:{
-                courseCohortId:courseCohortId,
-                loadExtras: 'program'
-            }
-        })
-            .then((res:any) => {
-                const program = res.data[0];
-                setCertificationType(program.certificationType);
-                
-            })
-            .catch((error) => {
-                alerts.showError(error.response.data);
-            });
-    };
+    const data = graduands.map((graduand) => {
+        return {
+            studentId: graduand.name,
+            studentName: `${graduand.applications_firstName} ${graduand.applications_lastName}`,
+            grades: graduand.averageMarks
+        };
+    });
 
-    const fetchcourseCohortsRegistrations = (): void => {
-        axios.get(`${simSrv}/course-cohort-registrations`, { params: { loadExtras: 'marks', courseCohortIds: courseCohortId } }).then((res) => {
-            const ccData = res.data;
-            setData(ccData);
-            setLinearDisplay('none');
-        });
-    };
-
-<<<<<<< HEAD
-
-
-    const updateMarks = async (id:number,marks:string) => {
-        axios.put(`${simSrv}/course-cohort-registration-marks/${id}`, { marks:marks }).then((res) => {
-            setLinearDisplay('none');
-            fetchcourseCohortsRegistrations();
-            alerts.showSuccess('Successfuly updated marks');
-        })
-            .catch((error) => {
-                alerts.showError(error.response.data);
-            });
-    };
-
-    const handleMarksChange = (e) => {
-        enterredMarks=parseInt(e.target.value);
-    };
-
-    const handleSelect= (e) => {
-        selectedMarks=e.target.value;
-    };
-    console.log('Non hooks',programs);
-    
     return (
         <>
             <Row className="align-items-center page-header">
                 <Col>
                     <Breadcrumb />
                 </Col>
-
-                <Col>               
-                    <CreateMarksModal fetchcourseCohortsRegistrations = {fetchcourseCohortsRegistrations} setLinearDisplay={setLinearDisplay} courseCohortId={courseCohortId} certificationType={certificationType} ></CreateMarksModal>
+                <Col>
+                    <Button
+                        className="float-right"
+                        variant="primary"
+                        onClick={() => {
+                            toggleGraduationList();
+                        }}
+                    >
+                        Show All Students
+                    </Button>
                 </Col>
             </Row>
             <LinearProgress style={{ display: linearDisplay }} />
@@ -211,75 +109,17 @@ const CourseCohortsDetails = (props: any): JSX.Element => {
                             )}
                         </div>
                         <MaterialTable
-                            title="Course Cohort Student/Marks Details"
+                            title="List of Graduating Students"
                             icons={tableIcons}
                             columns={columns}
                             data={data}
-                            options={{ actionsColumnIndex: 0 }}                            
-
-                            editable={{
-                                onRowUpdate: (newData) => updateMarks(newData.id,enterredMarks || selectedMarks)
-
-                            }}
+                            options={{ actionsColumnIndex: -1 }}
                         />
                     </Card>
                 </Col>
             </Row>
-=======
-    const toggleGraduationList = () => {
-        setShowGraduating((prevState) => !prevState);
-    };
-
-    return (
-        <>
-            {!showGraduating ? (
-                <>
-                    <Row className="align-items-center page-header">
-                        <Col>
-                            <Breadcrumb />
-                        </Col>
-                        <Col>
-                            <Button
-                                className="float-right"
-                                variant="primary"
-                                onClick={() => {
-                                    toggleGraduationList();
-                                }}
-                            >
-                                Show Graduating Students
-                            </Button>
-                        </Col>
-                    </Row>
-                    <LinearProgress style={{ display: linearDisplay }} />
-                    <Row>
-                        <Col>
-                            <Card>
-                                <div>
-                                    {isError && (
-                                        <Alert severity="error">
-                                            {errorMessages.map((msg, i) => {
-                                                return <div key={i}>{msg}</div>;
-                                            })}
-                                        </Alert>
-                                    )}
-                                </div>
-                                <MaterialTable
-                                    title="Course Cohort Student/Marks Details"
-                                    icons={tableIcons}
-                                    columns={columns}
-                                    data={data}
-                                    options={{ actionsColumnIndex: -1 }}
-                                />
-                            </Card>
-                        </Col>
-                    </Row>
-                </>
-            ) : (
-                <ProgramCohortGraduationList toggleGraduationList={toggleGraduationList} />
-            )}
->>>>>>> b863ae05fed8cf28224341b44d08260e45a47e2b
         </>
     );
 };
 
-export default CourseCohortsDetails;
+export default ProgramCohortGraduationList;
