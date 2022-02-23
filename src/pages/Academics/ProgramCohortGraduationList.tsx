@@ -23,6 +23,8 @@ import Search from '@material-ui/icons/Search';
 import ViewColumn from '@material-ui/icons/ViewColumn';
 import axios from 'axios';
 import { ProgramCohortService } from '../services/ProgramCohortService';
+import { Alerts, ToastifyAlerts } from '../lib/Alert';
+const alerts: Alerts = new ToastifyAlerts();
 
 const tableIcons: Icons = {
     Add: forwardRef((props, ref) => <AddBox {...props} ref={ref} />),
@@ -60,7 +62,10 @@ const ProgramCohortGraduationList: React.FunctionComponent<Props> = ({ toggleGra
             .then((res) => {
                 setGraduands(res.data);
             })
-            .catch((error) => console.log('error', error));
+            .catch((error) => {
+                console.log('error', error);
+                alerts.showError(error.message);
+            });
     }, []);
 
     const columns = [
