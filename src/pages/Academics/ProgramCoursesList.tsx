@@ -55,7 +55,7 @@ const ProgramCoursesList = (): JSX.Element => {
         { title: 'Training Hours', field: 'trainingHours' },
         { title: 'Timetableable', field: 'isTimetablable' },
         { title: 'Technical Assistant', field: 'needsTechnicalAssistant' },
-        { title: 'Prerequisite Courses', field: 'prerequisiteCourses' },
+        { title: 'Prerequisite Courses', field: 'prerequisiteCourseIds' },
         { title: 'Approved', field: 'isApproved' }
     ];
     const [data, setData] = useState([]);
