@@ -62,6 +62,7 @@ const ProgramCohorts = (): JSX.Element => {
         pg_name: string;
         program_cohorts_bannerImageUrl: string;
         pg_id: number;
+        program_cohorts_campusId: number;
     }
 
     const [data, setData] = useState([]);
@@ -180,7 +181,7 @@ const ProgramCohorts = (): JSX.Element => {
                             setSelectedProgramCohort(row);
                         }}
                     >
-                        <MenuItem value="Edit">Cancel</MenuItem>
+                        <MenuItem value="Cancel">Cancel</MenuItem>
                     </button>
                     <Link
                         to="/cohortscourses"
@@ -304,15 +305,14 @@ const ProgramCohorts = (): JSX.Element => {
     const handleEdit = (e): void => {
         e.preventDefault();
         const updates = {
-            programId: programId === 0 ? selectedProgramId : programId,
-            campusId: campusId === 0 ? selectedCampusId : campusId,
-            startDate: startDate === '' ? selectedStartDate : startDate,
-            anticipatedGraduationYear: year,
-            anticipatedGraduationMonth: month,
-            advertDescription: description === '' ? selectedDescription : description,
+            programId: programId === selectedProgramCohort.pg_id ? selectedProgramCohort.pg_id : selectedProgramId,
+            campusId: campusId === selectedProgramCohort.program_cohorts_campusId ? selectedProgramCohort.program_cohorts_campusId : selectedCampusId,
+            startDate: startDate === selectedProgramCohort.program_cohorts_startDate ? selectedProgramCohort.program_cohorts_startDate : selectedStartDate,
+            anticipatedGraduationYear: selectedProgramCohort.program_cohorts_anticipatedGraduationYear,
+            anticipatedGraduationMonth: selectedProgramCohort.program_cohorts_anticipatedGraduationMonth,
+            advertDescription: description === selectedProgramCohort.program_cohorts_advertDescription ? selectedProgramCohort.program_cohorts_advertDescription : description,
             bannerImageUrl: banner
         };
-
         updateProgramCohort(cohortId, updates);
     };
     const handleCreate = (e): void => {
