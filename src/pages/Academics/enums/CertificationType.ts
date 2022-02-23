@@ -9,4 +9,4 @@
 
   }
 
-export default CertificationType
+export default CertificationType;

@@ -33,6 +33,7 @@ import Select from 'react-select';
 import CertificationType from './enums/CertificationType';
 import { ProgramsService } from '../services/ProgramService';
 import Program from '../services/Program';
+import ProgramCohortGraduationList from './ProgramCohortGraduationList';
 const alerts: Alerts = new ToastifyAlerts();
 const tableIcons: Icons = {
     Add: forwardRef((props, ref) => <AddBox {...props} ref={ref} />),
@@ -64,6 +65,8 @@ const CourseCohortsDetails = (props: any): JSX.Element => {
     const [marks,setMarks] = useState('');
     const [certificationType,setCertificationType] = useState('');
     const simSrv = Config.baseUrl.simsSrv;
+    const [showGraduating, setShowGraduating] = useState(false);
+    const timetablingSrv = Config.baseUrl.timetablingSrv;
     let enterredMarks;
     let selectedMarks;
     let programs;
@@ -120,13 +123,14 @@ const CourseCohortsDetails = (props: any): JSX.Element => {
         { title: 'Marks', field: 'marks',   editComponent: tableData => (renderSwitch(tableData.rowData))},
         { title: 'Grade', field: 'grade', editable: 'never' as const }
     ];
+
     useEffect(() => {
         fetchcourseCohortsRegistrations();
         fetchProgramByCourseCohortId();
     }, []);
 
     const courseCohortId = props.match.params.id;
-   
+
     
     const fetchProgramByCourseCohortId = () => {
 
@@ -154,7 +158,9 @@ const CourseCohortsDetails = (props: any): JSX.Element => {
         });
     };
 
-
+    const toggleGraduationList = () => {
+        setShowGraduating((prevState) => !prevState);
+    };
 
     const updateMarks = async (id:number,marks:string) => {
         axios.put(`${simSrv}/course-cohort-registration-marks/${id}`, { marks:marks }).then((res) => {
@@ -176,45 +182,67 @@ const CourseCohortsDetails = (props: any): JSX.Element => {
     };
     console.log('Non hooks',programs);
     
+
     return (
         <>
-            <Row className="align-items-center page-header">
-                <Col>
-                    <Breadcrumb />
-                </Col>
+            {!showGraduating ? (
+                <div>
+                    <Row className="align-items-center page-header">
+                        <Col>
+                            <Breadcrumb />
+                        </Col>
 
-                <Col>               
-                    <CreateMarksModal fetchcourseCohortsRegistrations = {fetchcourseCohortsRegistrations} setLinearDisplay={setLinearDisplay} courseCohortId={courseCohortId} certificationType={certificationType} ></CreateMarksModal>
-                </Col>
-            </Row>
-            <LinearProgress style={{ display: linearDisplay }} />
-            <Row>
-                <Col>
-                    <Card>
-                        <div>
-                            {isError && (
-                                <Alert severity="error">
-                                    {errorMessages.map((msg, i) => {
-                                        return <div key={i}>{msg}</div>;
-                                    })}
-                                </Alert>
-                            )}
-                        </div>
-                        <MaterialTable
-                            title="Course Cohort Student/Marks Details"
-                            icons={tableIcons}
-                            columns={columns}
-                            data={data}
-                            options={{ actionsColumnIndex: 0 }}                            
+                        <Col>        
+                            <Row >
+                                <Col>
+                                    <CreateMarksModal fetchcourseCohortsRegistrations = {fetchcourseCohortsRegistrations} setLinearDisplay={setLinearDisplay} courseCohortId={courseCohortId} certificationType={certificationType} ></CreateMarksModal>
+                                </Col>
+                                <Col>
+                                    <Button
+                                        className="float-right"
+                                        variant="primary"
+                                        onClick={() => {
+                                            toggleGraduationList();
+                                        }}
+                                    >
+                                Show Graduating Students
+                                    </Button>
+                                </Col>
+                            </Row>       
+                        </Col>
+                    </Row>
+                    <LinearProgress style={{ display: linearDisplay }} />
+                    <Row>
+                        <Col>
+                            <Card>
+                                <div>
+                                    {isError && (
+                                        <Alert severity="error">
+                                            {errorMessages.map((msg, i) => {
+                                                return <div key={i}>{msg}</div>;
+                                            })}
+                                        </Alert>
+                                    )}
+                                </div>
+                                <MaterialTable
+                                    title="Course Cohort Student/Marks Details"
+                                    icons={tableIcons}
+                                    columns={columns}
+                                    data={data}
+                                    options={{ actionsColumnIndex: 0 }}                            
 
-                            editable={{
-                                onRowUpdate: (newData) => updateMarks(newData.id,enterredMarks || selectedMarks)
+                                    editable={{
+                                        onRowUpdate: (newData) => updateMarks(newData.id,enterredMarks || selectedMarks)
 
-                            }}
-                        />
-                    </Card>
-                </Col>
-            </Row>
+                                    }}
+                                />
+                            </Card>
+                        </Col>
+                    </Row>
+                </div>
+            ) : (
+                <ProgramCohortGraduationList toggleGraduationList={toggleGraduationList} />
+            )}
         </>
     );
 };

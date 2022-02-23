@@ -177,7 +177,11 @@ const CourseCohorts = (): JSX.Element => {
                                                 }}
                                             >
                                                 {trainersData.map((tr) => {
-                                                    return <MenuItem key={tr.tr_id} value={tr.tr_id}>{tr.tr_id}</MenuItem>;
+                                                    return (
+                                                        <MenuItem key={tr.tr_id} value={tr.tr_id}>
+                                                            {tr.tr_id}
+                                                        </MenuItem>
+                                                    );
                                                 })}
                                             </Select>
 
@@ -191,7 +195,11 @@ const CourseCohorts = (): JSX.Element => {
                                                 }}
                                             >
                                                 {semesters.map((sem) => {
-                                                    return <MenuItem key={sem.id} value={sem.id}>{sem.name}</MenuItem>;
+                                                    return (
+                                                        <MenuItem key={sem.id} value={sem.id}>
+                                                            {sem.name}
+                                                        </MenuItem>
+                                                    );
                                                 })}
                                             </Select>
                                         </div>

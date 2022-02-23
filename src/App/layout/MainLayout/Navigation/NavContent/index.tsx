@@ -53,10 +53,10 @@ class NavContent extends Component<INavContentProps, NavContentState> {
     render(): JSX.Element {
         const navItems = this.props.navigation.map((item: any) => {
             switch (item.type) {
-                case 'group':
-                    return <NavGroup layout={this.props.layout} key={item.id} group={item} />;
-                default:
-                    return false;
+            case 'group':
+                return <NavGroup layout={this.props.layout} key={item.id} group={item} />;
+            default:
+                return false;
             }
         });
         let scrollStyle: { marginLeft?: string; marginRight?: string } = {
