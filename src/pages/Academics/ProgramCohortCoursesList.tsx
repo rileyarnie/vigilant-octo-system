@@ -71,12 +71,14 @@ const CourseCohortsList = (): JSX.Element => {
     }
     interface CourseCohort {
         id: number;
-        semester: semester;
         course: course;
         semesterId: number;
         programCohortId: number;
         published: boolean;
+        programCohortSemester?:{semester:semester,id:number}
     }
+
+
     const [selectedRow, setSelectedRow] = useState<CourseCohort>();
     const columns = [
         { title: 'Course cohort ID', field: 'id', hidden: false },
@@ -93,7 +95,7 @@ const CourseCohortsList = (): JSX.Element => {
         {
             title: 'Action',
             field: 'internal_action',
-            render: (row: CourseCohort) => (
+            render: (row) => (
                 <button
                     className="btn btn btn-link"
                     onClick={() => {
@@ -101,13 +103,14 @@ const CourseCohortsList = (): JSX.Element => {
                         setSelectedRow(row);
                     }}
                 >
-                    {row.semesterId ? (
-                        <>
+                    {row.programCohortSemester ? (
+                       
+                        <>                        
                             Change Semester
                             <AssignmentTurnedIn fontSize="inherit" style={{ fontSize: '20px', color: 'black' }} />
                         </>
                     ) : (
-                        <>
+                        <>                            
                             Assign Semester
                             <AssignmentTurnedIn fontSize="inherit" style={{ fontSize: '20px', color: 'black' }} />
                         </>
@@ -239,15 +242,15 @@ const CourseCohortsList = (): JSX.Element => {
                 alerts.showError(error.message);
             });
     };
-    const handleSemesterUpdate = (e, row: CourseCohort) => {
+    const handleSemesterUpdate = () => {
         const courseSemester = {
-            'program-cohort-semester': {
-                semester_id: semesterId
+            'ModifyProgramCohortSemesterRequest': {
+                semesterId: semesterId
             }
         };
         setLinearDisplay('block');
         axios
-            .patch(`${timetablingSrv}/course-cohorts/${row.id}`, courseSemester)
+            .put(`${timetablingSrv}/program-cohort-semesters/${selectedRow.programCohortSemester.id}`, courseSemester)
             .then(() => {
                 alerts.showSuccess('Successfully changed semester');
                 setLinearDisplay('none');
@@ -482,7 +485,7 @@ const CourseCohortsList = (): JSX.Element => {
                 <Modal.Header closeButton>
                     <Modal.Title id="contained-modal-title-vcenter">
                         {' '}
-                        {selectedRow?.semesterId ? 'Change semester' : 'Assign a semester'}{' '}
+                        {selectedRow?.programCohortSemester?.semester ? 'Change semester' : 'Assign a semester' }{' '}
                     </Modal.Title>
                 </Modal.Header>
                 <Modal.Body>
@@ -506,10 +509,20 @@ const CourseCohortsList = (): JSX.Element => {
                             })}
                         </SelectGroup>
                         <br></br>
+                        {
+                            selectedRow?.programCohortSemester?.semester ?
 
-                        <Button className="btn btn-info float-right" onClick={(e) => handleAssignSemesterSubmit(e)}>
-                            Submit
-                        </Button>
+                                <Button className="btn btn-info float-right" onClick={(e) => handleSemesterUpdate()}>
+                                Submit
+                                </Button>
+                                :
+                                <Button className="btn btn-info float-right" onClick={(e) => handleAssignSemesterSubmit(e)}>
+                                Submit
+                                </Button>
+                        
+
+                        }   
+
 
                         <Button className="btn btn-danger float-left" onClick={handleClose}>
                             Close

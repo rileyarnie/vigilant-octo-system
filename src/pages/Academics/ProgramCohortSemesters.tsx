@@ -83,15 +83,15 @@ function ProgramCohortSemesters() {
                 //setData(ccData)
                 setLinearDisplay('none');
                 const uniqueSemIds = ccData
-                    .map((v: CourseCohort) => v.programCohortSemester.semesterId)
+                    .map((v: CourseCohort) => v.programCohortSemester?.semesterId)
                     .filter((value, index, self) => self.indexOf(value) === index);
                 const semesterData = uniqueSemIds.map((semId) => {
-                    const cc = ccData.filter((v: CourseCohort) => v.programCohortSemester.semesterId === semId)[0];
+                    const cc = ccData.filter((v: CourseCohort) => v.programCohortSemester?.semester.id === semId)[0];
                     return {
-                        id: cc.programCohortSemester.semester.id,
-                        name: cc.programCohortSemester.semester.name,
-                        startDate: cc.programCohortSemester.semester.startDate,
-                        endDate: cc.programCohortSemester.semester.endDate,
+                        id: cc.programCohortSemester?.semester.id,
+                        name: cc.programCohortSemester?.semester.name,
+                        startDate: cc.programCohortSemester?.semester.startDate,
+                        endDate: cc.programCohortSemester?.semester.endDate,
                         programCohortId: cc.programCohortId,
                         programCohortSemesterId: cc.programCohortSemesterId
                     };
