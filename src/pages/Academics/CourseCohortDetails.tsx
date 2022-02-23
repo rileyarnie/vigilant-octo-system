@@ -29,10 +29,16 @@ import { MenuItem, Switch } from '@material-ui/core';
 import { ValidationForm, SelectGroup, FileInput, TextInput } from 'react-bootstrap4-form-validation';
 import CardPreview from './CardPreview';
 import { Link } from 'react-router-dom';
+<<<<<<< HEAD
 import Select from 'react-select';
 import CertificationType from './enums/CertificationType';
 import { ProgramsService } from '../services/ProgramService';
 import Program from '../services/Program';
+=======
+import { Alerts, ToastifyAlerts } from '../lib/Alert';
+import { LinearProgress } from '@mui/material';
+import ProgramCohortGraduationList from './ProgramCohortGraduationList';
+>>>>>>> b863ae05fed8cf28224341b44d08260e45a47e2b
 const alerts: Alerts = new ToastifyAlerts();
 const tableIcons: Icons = {
     Add: forwardRef((props, ref) => <AddBox {...props} ref={ref} />),
@@ -64,6 +70,8 @@ const CourseCohortsDetails = (props: any): JSX.Element => {
     const [marks,setMarks] = useState('');
     const [certificationType,setCertificationType] = useState('');
     const simSrv = Config.baseUrl.simsSrv;
+    const [showGraduating, setShowGraduating] = useState(false);
+    const timetablingSrv = Config.baseUrl.timetablingSrv;
     let enterredMarks;
     let selectedMarks;
     let programs;
@@ -120,6 +128,7 @@ const CourseCohortsDetails = (props: any): JSX.Element => {
         { title: 'Marks', field: 'marks',   editComponent: tableData => (renderSwitch(tableData.rowData))},
         { title: 'Grade', field: 'grade', editable: 'never' as const }
     ];
+
     useEffect(() => {
         setLinearDisplay('block');
         fetchcourseCohortsRegistrations();
@@ -155,6 +164,7 @@ const CourseCohortsDetails = (props: any): JSX.Element => {
         });
     };
 
+<<<<<<< HEAD
 
 
     const updateMarks = async (id:number,marks:string) => {
@@ -216,6 +226,59 @@ const CourseCohortsDetails = (props: any): JSX.Element => {
                     </Card>
                 </Col>
             </Row>
+=======
+    const toggleGraduationList = () => {
+        setShowGraduating((prevState) => !prevState);
+    };
+
+    return (
+        <>
+            {!showGraduating ? (
+                <>
+                    <Row className="align-items-center page-header">
+                        <Col>
+                            <Breadcrumb />
+                        </Col>
+                        <Col>
+                            <Button
+                                className="float-right"
+                                variant="primary"
+                                onClick={() => {
+                                    toggleGraduationList();
+                                }}
+                            >
+                                Show Graduating Students
+                            </Button>
+                        </Col>
+                    </Row>
+                    <LinearProgress style={{ display: linearDisplay }} />
+                    <Row>
+                        <Col>
+                            <Card>
+                                <div>
+                                    {isError && (
+                                        <Alert severity="error">
+                                            {errorMessages.map((msg, i) => {
+                                                return <div key={i}>{msg}</div>;
+                                            })}
+                                        </Alert>
+                                    )}
+                                </div>
+                                <MaterialTable
+                                    title="Course Cohort Student/Marks Details"
+                                    icons={tableIcons}
+                                    columns={columns}
+                                    data={data}
+                                    options={{ actionsColumnIndex: -1 }}
+                                />
+                            </Card>
+                        </Col>
+                    </Row>
+                </>
+            ) : (
+                <ProgramCohortGraduationList toggleGraduationList={toggleGraduationList} />
+            )}
+>>>>>>> b863ae05fed8cf28224341b44d08260e45a47e2b
         </>
     );
 };
