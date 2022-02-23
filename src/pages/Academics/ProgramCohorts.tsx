@@ -312,8 +312,6 @@ const ProgramCohorts = (): JSX.Element => {
             advertDescription: description === selectedProgramCohort.program_cohorts_advertDescription ? selectedProgramCohort.program_cohorts_advertDescription : description,
             bannerImageUrl: banner
         };
-        console.log(updates)
-        console.log(startDate)
         updateProgramCohort(cohortId, updates);
     };
     const handleCreate = (e): void => {
