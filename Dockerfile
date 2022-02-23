@@ -20,25 +20,36 @@ WORKDIR /staff_portal
 
 COPY package.json ./
 
-# COPY package-lock.json ./
+COPY package-lock.json ./
 
 RUN --mount=type=ssh \
     npm install --force
 
 COPY ./ ./
 
-RUN --mount=type=ssh \
-    npm run build
+EXPOSE 3000
 
-FROM nginx:1.19.0
+CMD ["npm", "run", "start:dev"]
 
-WORKDIR /usr/share/nginx/html
+# # COPY package-lock.json ./
 
-# Remove default nginx static resources
-RUN rm -rf ./*
-# Copies static resources from builder stage
-COPY --from=builder /staff_portal/build /usr/share/nginx/html
-# Containers run nginx with global directives and daemon off
+# RUN --mount=type=ssh \
+#     npm install --force
 
-ENTRYPOINT ["nginx", "-g", "daemon off;"]
+# COPY ./ ./
+
+# RUN --mount=type=ssh \
+#     npm run build
+
+# FROM nginx:1.19.0
+
+# WORKDIR /usr/share/nginx/html
+
+# # Remove default nginx static resources
+# RUN rm -rf ./*
+# # Copies static resources from builder stage
+# COPY --from=builder /staff_portal/build /usr/share/nginx/html
+# # Containers run nginx with global directives and daemon off
+
+# ENTRYPOINT ["nginx", "-g", "daemon off;"]
 
