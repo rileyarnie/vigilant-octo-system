@@ -55,7 +55,14 @@ function ProgramCohortSemesters() {
         { title: 'ID', field: 'id', editable: 'never' as const },
         { title: 'Name', field: 'name' },
         { title: 'Start Date', render: (rowData) => rowData?.startDate?.slice(0, 10) },
-        { title: 'End Date', render: (rowData) => rowData?.endDate?.slice(0, 10) }
+        { title: 'End Date', render: (rowData) => rowData?.endDate?.slice(0, 10) },
+        {title: 'Transcripts', render: (rowData) => (
+            <a href='#'
+                onClick={e => {fetchTranscript(parseInt(programCohortId)); e.stopPropagation()}}
+            >
+            Download Transcript
+            </a>
+        )}
     ];
     const [errorMessages] = useState([]);
     const programName = localStorage.getItem('programName');
@@ -65,6 +72,7 @@ function ProgramCohortSemesters() {
     const [data, setData] = useState([]);
     const [linearDisplay, setLinearDisplay] = useState('none');
     const [isError] = useState(false);
+    const simSrv = Config.baseUrl.simsSrv;
     useEffect(() => {
         fetchProgramCohortSemester('semester', programCohortId);
     }, []);
@@ -95,6 +103,20 @@ function ProgramCohortSemesters() {
                 alerts.showError(error.message);
             });
     }
+
+    function fetchTranscript(programCohortId:number){
+        axios.get(`${simSrv}/transcripts`, {
+            params: {
+                programCohortId:programCohortId
+            }
+        })
+            .then(() => {
+                alerts.showSuccess('Downloading transcript')
+            })
+            .catch((error) => {
+                alerts.showError(error.message);
+            });
+    }
     return (
         <>
             <Row className="align-items-center page-header">
@@ -120,7 +142,10 @@ function ProgramCohortSemesters() {
                             columns={columns}
                             data={data}
                             icons={tableIcons}
-                            onRowClick={(event, row) => {
+                            onRowClick={(event:any, row) => {
+                                if(event.target.innerHTML === 'Download Transcript'){
+                                    event.stopPropagation();
+                                }
                                 window.location.href = '/pcsdetails';
                                 localStorage.setItem('programName', programName);
                                 localStorage.setItem('programCohortCode', programCohortCode);

@@ -1,9 +1,10 @@
 import axios from 'axios';
 import Config from '../../src/config';
-import Semester from './Semester';
 import TimetablingUnit from './TimetableUnit';
 const timetablingSrv = Config.baseUrl.timetablingSrv;
+
 export class TimetableService {
+
     static async createTimetableUnit(timetableUnit: object): Promise<void> {
         return axios.post(`${timetablingSrv}/timetabling-units`, timetableUnit);
     }
@@ -12,5 +13,11 @@ export class TimetableService {
     }
     static async getTimetableUnit(semesterId?: number): Promise<TimetablingUnit[]> {
         return axios.get(`${timetablingSrv}/timetabling-units`, { params: { semesterId: semesterId } });
+    }
+    static async getTimetableUnitErrors(semesterid: number): Promise<void> {
+        return axios.get(`${timetablingSrv}/timetabling-units/errors`,{params: {semesterId:semesterid}});
+    }
+    static async handleFileUpload (form:unknown, config:unknown):Promise<void> {
+        return axios.post(`${timetablingSrv}/files`, form, config);
     }
 }
