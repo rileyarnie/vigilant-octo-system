@@ -203,13 +203,14 @@ const items = timeTabledUnits?.map(unit=>({
         const min =  Math.min(timetableData.trainingHours, this.state.maxNumUnitRepetition)
         const timetableUnit = {
             courseCohortId: timetableData.id,
-            recurrenceStartDate: timetableData.startDate,
-            recurrenceEndDate: timetableData.endDate,
+            recurrenceStartDate: new Date(timetableData.startDate),
+            recurrenceEndDate: new Date(timetableData.endDate),
             startTime: timetableData.startDate.toTimeString().slice(0,8),
             numSessions: min || 1,
             durationInMinutes: 60,
             colorId: this.state.colorId,
         }
+        console.log(timetableUnit)
         TimetableService.createTimetableUnit(timetableUnit)
             .then(() => {
                 alerts.showSuccess('TimetableUnit added successfully')
