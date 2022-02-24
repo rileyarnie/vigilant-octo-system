@@ -149,9 +149,9 @@ class Timetable extends React.Component {
 
 
 timeTabledUnitsWithErrors (timeTabledUnits,timeTabledUnitErrors) {
-const items = timeTabledUnits.map(unit=>({
-...timeTabledUnitErrors?.find((error)=>(error.timetablingUnitId===unit.timetablingUnitId)&&error),priorityId: 2,
-...unit
+const items = timeTabledUnits?.map(unit=>({
+...timeTabledUnitErrors?.find((error)=>(error.timetablingUnitId===unit.timetablingUnitId)&&error),priorityId: 2
+,...unit
 }))
  const itemsWithColor=[]
 // const itemsWithColor=items.map(item=>item.errors.length>0?({...item,item.color:"#ff0000"}):({{...item,item.color:"#000ff0"}})}
