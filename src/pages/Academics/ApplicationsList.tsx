@@ -31,6 +31,7 @@ import { Alerts, ToastifyAlerts } from '../lib/Alert';
 import LinearProgress from '@mui/material/LinearProgress';
 import { TimetableService } from '../../services/TimetableService';
 import RecordFeePayment from './RecordFeePayment';
+import FeeWaiver from './FeeWaiver';
 
 const alerts: Alerts = new ToastifyAlerts();
 const tableIcons: Icons = {
@@ -118,12 +119,19 @@ const ApplicationsList = (): JSX.Element => {
     const [campuses, setCampuses] = useState([]);
     const [showUploadModal, setShowUploadModal] = useState(false);
     const [show, setShow] = useState(false);
+    const [showWaiver, setShowWaiver] = useState(false);
 
     const closeModalHandler = () => {
         setShow(false);
     };
     const openModalHandler = () => {
         setShow(true);
+    };
+    const closeWaiverModalHandler = () => {
+        setShowWaiver(false);
+    };
+    const openWaiverModalHandler = () => {
+        setShowWaiver(true);
     };
 
     useEffect(() => {
@@ -913,6 +921,7 @@ const ApplicationsList = (): JSX.Element => {
             </Modal>
 
             <RecordFeePayment show={show} closeModal={closeModalHandler} />
+            <FeeWaiver show={showWaiver} closeModal={closeWaiverModalHandler} />
         </>
     );
 };
