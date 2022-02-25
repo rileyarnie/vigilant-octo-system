@@ -1,6 +1,6 @@
 /* eslint-disable react/display-name */
-import React,{useState,useEffect} from 'react';
-import {forwardRef} from 'react';
+import React, { useState, useEffect } from 'react';
+import { forwardRef } from 'react';
 import MaterialTable, { MTableToolbar } from 'material-table';
 import AddBox from '@material-ui/icons/AddBox';
 import ArrowDownward from '@material-ui/icons/ArrowDownward';
@@ -28,14 +28,16 @@ import useMediaQuery from '@mui/material/useMediaQuery';
 import { useTheme } from '@mui/material/styles';
 import Alert from '@material-ui/lab/Alert';
 import Breadcrumb from '../../App/components/Breadcrumb';
-import {Row,Col, Button, Modal} from 'react-bootstrap';
+import { Row, Col, Button, Modal } from 'react-bootstrap';
 import { MenuItem, Select, Switch } from '@material-ui/core';
 import { Alerts, ToastifyAlerts } from '../lib/Alert';
 import { ValidationForm, TextInput } from 'react-bootstrap4-form-validation';
 import { StudentFeesManagementService } from '../../services/StudentFeesManagementService';
+import RecordFeePayment from './RecordFeePayment';
+import FeeWaiver from './FeeWaiver';
 const alerts: Alerts = new ToastifyAlerts();
 const tableIcons: Icons = {
-    Add: forwardRef((props, ref) => < AddBox  {...props} ref={ref} />),
+    Add: forwardRef((props, ref) => <AddBox {...props} ref={ref} />),
     Check: forwardRef((props, ref) => <Check {...props} ref={ref} />),
     Clear: forwardRef((props, ref) => <Clear {...props} ref={ref} />),
     Delete: forwardRef((props, ref) => <DeleteOutline {...props} ref={ref} />),
@@ -53,9 +55,9 @@ const tableIcons: Icons = {
     ThirdStateCheck: forwardRef((props, ref) => <Remove {...props} ref={ref} />),
     ViewColumn: forwardRef((props, ref) => <ViewColumn {...props} ref={ref} />)
 };
-const StudentFeeReport = ():JSX.Element => {
-    const [data,setData]=useState([]);
-    const [isError]=useState(false);
+const StudentFeeReport = (): JSX.Element => {
+    const [data, setData] = useState([]);
+    const [isError] = useState(false);
     const [open, setOpen] = React.useState(false);
     const theme = useTheme();
     const fullScreen = useMediaQuery(theme.breakpoints.down('md'));
@@ -63,41 +65,117 @@ const StudentFeeReport = ():JSX.Element => {
     const [narrative, setNarrative] = useState('');
     const [amount, setAmount] = useState('');
     const [showModal, setModal] = useState(false);
-    const [errorMessages]=useState([]);
+    const [errorMessages] = useState([]);
     const [feeBalance, setFeeBalance] = useState([]);
-    const columns=[
-        {title:'ID',field:'id'},
-        {title:'Narrative',field:'narrative'},
-        {title:'Amount',field:'amount'},
+    const [show, setShow] = useState(false);
+    const [showWaiver, setShowWaiver] = useState(false);
+
+    const closeModalHandler = () => {
+        setShow(false);
+    };
+    const openModalHandler = () => {
+        setShow(true);
+    };
+    const closeWaiverModalHandler = () => {
+        setShowWaiver(false);
+    };
+    const openWaiverModalHandler = () => {
+        setShowWaiver(true);
+    };
+
+    const columns = [
+        { title: 'ID', field: 'id' },
+        { title: 'Narrative', field: 'narrative' },
+        { title: 'Amount', field: 'amount' },
         {
             title: 'Actions',
-            field: 'internal_action',
-            render: (row) => (
-                    <button className="btn btn btn-link" onClick={() => { handleClickOpen();setNarrative(row.narrative);setAmount(row.amount);}}>Reverse Transaction</button>
+            render: (rowData) => (
+                <Select>
+                    <div style={{ paddingLeft: '8px', paddingRight: '8px' }}>
+                        <div style={{ cursor: 'pointer' }} onClick={openModalHandler}>
+                            <p>Upload Fee Item</p>
+                        </div>
+                        <div style={{ cursor: 'pointer' }} onClick={openWaiverModalHandler}>
+                            <p>Waiver Fee</p>
+                        </div>
+                        <div
+                            style={{ cursor: 'pointer' }}
+                            onClick={() => {
+                                handleClickOpen();
+                                setNarrative(rowData.narrative);
+                                setAmount(rowData.amount);
+                            }}
+                        >
+                            <p>Reverse Transaction</p>
+                        </div>
+                    </div>
+                </Select>
             )
         }
     ];
-    useEffect(()=>{
-    	fetchFeesData(studentId);
-    },[studentId]);
-    function fetchFeesData (studentId:number) {
-    	StudentFeesManagementService.fetchFeesData(studentId)
-    		.then(res=>{
-    			const feesData = res['data'];
-    			setFeeBalance(feesData);
-    			setData(feesData.entries);
-    		})
-    		.catch((error)=>{
-    			console.error(error);
-    			alerts.showError(error.message);
-    		});
-    }
+    const dummyData = [
+        {
+            id: 1,
+            narrative: 'This Narrative',
+            amount: 500
+        },
+        {
+            id: 2,
+            narrative: 'This Narrative',
+            amount: 500
+        },
+        {
+            id: 3,
+            narrative: 'This Narrative',
+            amount: 500
+        },
+        {
+            id: 4,
+            narrative: 'This Narrative',
+            amount: 500
+        },
+        {
+            id: 5,
+            narrative: 'This Narrative',
+            amount: 500
+        },
+        {
+            id: 6,
+            narrative: 'This Narrative',
+            amount: 500
+        },
+        {
+            id: 7,
+            narrative: 'This Narrative',
+            amount: 500
+        },
+        {
+            id: 8,
+            narrative: 'This Narrative',
+            amount: 500
+        }
+    ];
+    // useEffect(() => {
+    //     fetchFeesData(studentId);
+    // }, [studentId]);
+    // function fetchFeesData(studentId: number) {
+    //     StudentFeesManagementService.fetchFeesData(studentId)
+    //         .then((res) => {
+    //             const feesData = res['data'];
+    //             setFeeBalance(feesData);
+    //             setData(feesData.entries);
+    //         })
+    //         .catch((error) => {
+    //             console.error(error);
+    //             alerts.showError(error.message);
+    //         });
+    // }
     function handleReversal() {
         StudentFeesManagementService.handleFeeReversal(studentId)
-            .then(() =>{
+            .then(() => {
                 alerts.showSuccess('Successfully reversed transaction');
             })
-            .catch((error)=>{
+            .catch((error) => {
                 console.error(error);
                 alerts.showError(error.message);
             });
@@ -111,57 +189,57 @@ const StudentFeeReport = ():JSX.Element => {
     };
     return (
         <>
-            <Row className='align-items-center page-header'>
+            <Row className="align-items-center page-header">
                 <Col>
-                    <Breadcrumb/>
+                    <Breadcrumb />
+                    <div style={{ padding: '0px 10px' }}>
+                        <Button className="float-left" variant="danger" style={{ marginLeft: '1rem' }}>
+                            Waiver fees
+                        </Button>{' '}
+                        <Button className="float-left" variant="danger" style={{ marginLeft: '1rem' }}>
+                            Invoice
+                        </Button>{' '}
+                        <div className="" style={{ marginLeft: '2rem' }}>
+                            <h6> Fee Balance: {feeBalance}</h6>
+                        </div>
+                    </div>
                 </Col>
             </Row>
             <Row>
                 <Col>
                     <Card>
                         <div>
-                            {isError&&
-                            <Alert severity='error'>
-                                {errorMessages.map((msg,i)=>{
-                                    return <div key={i}>{msg}</div>;
-                                })}
-                            </Alert>
-                            }
+                            {isError && (
+                                <Alert severity="error">
+                                    {errorMessages.map((msg, i) => {
+                                        return <div key={i}>{msg}</div>;
+                                    })}
+                                </Alert>
+                            )}
                         </div>
                         <MaterialTable
-                            title='Fees Reports'
+                            title="Fees Reports"
                             icons={tableIcons}
                             columns={columns}
-                            data={data}
+                            data={dummyData}
                             components={{
-                                Toolbar: props => (
+                                Toolbar: (props) => (
                                     <div>
                                         <MTableToolbar {...props} />
-                                        <div style={{padding: '0px 10px'}}>
-                                            <Button className="float-left" variant="danger" style={{ marginLeft: '1rem' }}>Waiver fees</Button>{' '}
-                                            <Button className="float-left" variant="danger" style={{ marginLeft: '1rem' }}>Invoice</Button>{' '}
-                                            <h6 style={{ marginLeft: '1rem' }}> Fee Balance: {feeBalance}</h6>
-                                        </div>
                                     </div>
-                                ),
+                                )
                             }}
                         />
                     </Card>
                 </Col>
             </Row>
             <div>
-                <Dialog
-                    fullScreen={fullScreen}
-                    open={open}
-                    onClose={handleClose}
-                    aria-labelledby="responsive-dialog-title"
-                >
-                    <DialogTitle id="responsive-dialog-title">
-                        {"Transaction Reversal"}
-                    </DialogTitle>
+                <Dialog fullScreen={fullScreen} open={open} onClose={handleClose} aria-labelledby="responsive-dialog-title">
+                    <DialogTitle id="responsive-dialog-title">{'Transaction Reversal'}</DialogTitle>
                     <DialogContent>
                         <DialogContentText>
-                            You are about  to reverse  <b>{narrative}</b> : {amount}. Click <b>"confirm"</b> to continue or <b>"cancel"</b> to stop.
+                            You are about to reverse <b>{narrative}</b> : {amount}. Click <b>{'confirm'}</b> to continue or{' '}
+                            <b>{'cancel'}</b> to stop.
                         </DialogContentText>
                     </DialogContent>
                     <DialogActions>
@@ -174,6 +252,8 @@ const StudentFeeReport = ():JSX.Element => {
                     </DialogActions>
                 </Dialog>
             </div>
+            <RecordFeePayment show={show} closeModal={closeModalHandler} />
+            <FeeWaiver show={showWaiver} closeModal={closeWaiverModalHandler} />
         </>
     );
 };
