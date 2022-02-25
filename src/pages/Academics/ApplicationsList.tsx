@@ -30,6 +30,8 @@ import { Icons } from 'material-table';
 import { Alerts, ToastifyAlerts } from '../lib/Alert';
 import LinearProgress from '@mui/material/LinearProgress';
 import { TimetableService } from '../../services/TimetableService';
+import RecordFeePayment from './RecordFeePayment';
+
 const alerts: Alerts = new ToastifyAlerts();
 const tableIcons: Icons = {
     Add: forwardRef((props, ref) => <AddBox {...props} ref={ref} />),
@@ -58,7 +60,22 @@ const ApplicationsList = (): JSX.Element => {
         { title: 'Name', render: (rowData) => rowData.applications_firstName + ' ' + rowData.applications_lastName },
         { title: 'Email', field: 'applications_emailAddress' },
         { title: 'Program', field: 'applications_programCohortId' },
-        { title: 'Admission Status', field: 'applications_status' }
+        { title: 'Admission Status', field: 'applications_status' },
+        {
+            title: 'Actions',
+            render: (rowData) => (
+                <Select>
+                    <div style={{ paddingLeft: '8px', paddingRight: '8px' }}>
+                        <div style={{ cursor: 'pointer' }} className="applicationList__menuItem" onClick={() => showDetails(rowData)}>
+                            <p>View Details</p>
+                        </div>
+                        <div style={{ cursor: 'pointer' }} onClick={openModalHandler}>
+                            <p>Upload Fee Item</p>
+                        </div>
+                    </div>
+                </Select>
+            )
+        }
     ];
     enum admissionStatus {
         ADMITTED = 'ADMITTED',
@@ -100,6 +117,15 @@ const ApplicationsList = (): JSX.Element => {
     const [applicationId, setApplicationId] = useState('');
     const [campuses, setCampuses] = useState([]);
     const [showUploadModal, setShowUploadModal] = useState(false);
+    const [show, setShow] = useState(false);
+
+    const closeModalHandler = () => {
+        setShow(false);
+    };
+    const openModalHandler = () => {
+        setShow(true);
+    };
+
     useEffect(() => {
         fetchProgramCohortApplications();
         axios
@@ -125,23 +151,24 @@ const ApplicationsList = (): JSX.Element => {
                 alerts.showError(error.message);
             });
     };
-    function handleUpload () {
-        const form = new FormData()
-        form.append('fileUploaded', fileUploaded)
+    function handleUpload() {
+        const form = new FormData();
+        form.append('fileUploaded', fileUploaded);
         const config = {
             headers: { 'content-type': 'multipart/form-data' }
-        }
-        TimetableService.handleFileUpload(form, config)
-        axios.post(`${timetablingSrv}/files`, form, config)
+        };
+        TimetableService.handleFileUpload(form, config);
+        axios
+            .post(`${timetablingSrv}/files`, form, config)
             .then((res) => {
-                toggleUploadModal()
-                alerts.showSuccess('File uploaded successfully')
-                setDocumentsUrl(res.data)
+                toggleUploadModal();
+                alerts.showSuccess('File uploaded successfully');
+                setDocumentsUrl(res.data);
             })
             .catch((error) => {
-                console.log(error)
-                alerts.showError(error.message)
-            })
+                console.log(error);
+                alerts.showError(error.message);
+            });
     }
     const handleEdit = (e) => {
         e.preventDefault();
@@ -231,8 +258,36 @@ const ApplicationsList = (): JSX.Element => {
         modalShow ? resetStateCloseModal() : setModalShow(false);
     };
     const toggleUploadModal = () => {
-        showUploadModal ? setShowUploadModal(false) : setShowUploadModal(true)
-    }
+        showUploadModal ? setShowUploadModal(false) : setShowUploadModal(true);
+    };
+
+    const showDetails = (row) => {
+        toggleCreateModal();
+        setFirstName(row.applications_firstName);
+        setLastName(row.applications_lastName);
+        setOtherName(row.applications_otherName);
+        setIdentification(row.applications_identification);
+        setGender(row.applications_gender);
+        setMaritalStatus(row.applications_maritalStatus);
+        setReligion(row.applications_religion);
+        setDateOfBirth(row.applications_dateOfBirth.slice(0, 10));
+        setPlaceOfBirth(row.applications_placeofBirth);
+        setPhoneNumber(row.applications_phoneNumber);
+        setEmailAddress(row.applications_emailAddress);
+        setNationality(row.applications_nationality);
+        setPhysicalChallenges(row.applications_physicalChallenges);
+        setCourseStartDate(row.applications_courseStartDate.slice(0, 10));
+        setCampus(row.applications_campus);
+        setSponsor(row.applications_sponsor);
+        setCountryOfResidence(row.applications_countryOfResidence);
+        setProgramCohortId(row.applications_programCohortId);
+        setIsAdmitted(row.applications_status);
+        setNextOfKinName(row.nkd_name);
+        setNextOfKinPhoneNumber(row.nkd_nextOfKinPhoneNumber);
+        setNextOfKinRelation(row.nkd_relation);
+        setApplicationId(row.applications_id);
+        setDocumentsUrl(row.sdocs_documentUrl);
+    };
     return (
         <>
             <Row className="align-items-center page-header">
@@ -258,33 +313,6 @@ const ApplicationsList = (): JSX.Element => {
                             columns={columns}
                             data={data}
                             icons={tableIcons}
-                            onRowClick={(event, row) => {
-                                toggleCreateModal();
-                                setFirstName(row.applications_firstName);
-                                setLastName(row.applications_lastName);
-                                setOtherName(row.applications_otherName);
-                                setIdentification(row.applications_identification);
-                                setGender(row.applications_gender);
-                                setMaritalStatus(row.applications_maritalStatus);
-                                setReligion(row.applications_religion);
-                                setDateOfBirth(row.applications_dateOfBirth.slice(0, 10));
-                                setPlaceOfBirth(row.applications_placeofBirth);
-                                setPhoneNumber(row.applications_phoneNumber);
-                                setEmailAddress(row.applications_emailAddress);
-                                setNationality(row.applications_nationality);
-                                setPhysicalChallenges(row.applications_physicalChallenges);
-                                setCourseStartDate(row.applications_courseStartDate.slice(0, 10));
-                                setCampus(row.applications_campus);
-                                setSponsor(row.applications_sponsor);
-                                setCountryOfResidence(row.applications_countryOfResidence);
-                                setProgramCohortId(row.applications_programCohortId);
-                                setIsAdmitted(row.applications_status);
-                                setNextOfKinName(row.nkd_name);
-                                setNextOfKinPhoneNumber(row.nkd_nextOfKinPhoneNumber);
-                                setNextOfKinRelation(row.nkd_relation);
-                                setApplicationId(row.applications_id);
-                                setDocumentsUrl(row.sdocs_documentUrl);
-                            }}
                             options={{
                                 rowStyle: (rowData) => ({
                                     backgroundColor: selectedRow === rowData.tableData.id ? '#EEE' : '#FFF'
@@ -819,7 +847,8 @@ const ApplicationsList = (): JSX.Element => {
                                     onClick={(e) => {
                                         e.preventDefault();
                                         setShowUploadModal(true);
-                                    }}>
+                                    }}
+                                >
                                     Upload documents
                                 </button>
                             </div>
@@ -852,21 +881,38 @@ const ApplicationsList = (): JSX.Element => {
 
                     <Modal.Body>
                         <ValidationForm>
-                            <FileInput name="fileUploaded" id="image" encType="multipart/form-data"
-                                       fileType={['pdf', 'doc', 'docx']} maxFileSize="10mb"
-                                       onInput={(e) => {
-                                           setFileUploaded(() => { return e.target.files[0] })
-                                       }}
-                                       errorMessage={{ required: 'Please upload a document', fileType: 'Only document is allowed', maxFileSize: 'Max file size is 10MB' }}/>
+                            <FileInput
+                                name="fileUploaded"
+                                id="image"
+                                encType="multipart/form-data"
+                                fileType={['pdf', 'doc', 'docx']}
+                                maxFileSize="10mb"
+                                onInput={(e) => {
+                                    setFileUploaded(() => {
+                                        return e.target.files[0];
+                                    });
+                                }}
+                                errorMessage={{
+                                    required: 'Please upload a document',
+                                    fileType: 'Only document is allowed',
+                                    maxFileSize: 'Max file size is 10MB'
+                                }}
+                            />
                         </ValidationForm>
                     </Modal.Body>
 
-                    <Modal.Footer style={{ display: 'flex', justifyContent: 'space-between' }} >
-                        <Button variant="primary" className="btn btn-primary rounded" onClick={toggleUploadModal}>Close</Button>
-                        <Button variant="danger" className="btn btn-danger rounded" onClick={() => handleUpload()}>Upload</Button>
+                    <Modal.Footer style={{ display: 'flex', justifyContent: 'space-between' }}>
+                        <Button variant="primary" className="btn btn-primary rounded" onClick={toggleUploadModal}>
+                            Close
+                        </Button>
+                        <Button variant="danger" className="btn btn-danger rounded" onClick={() => handleUpload()}>
+                            Upload
+                        </Button>
                     </Modal.Footer>
                 </Modal.Dialog>
             </Modal>
+
+            <RecordFeePayment show={show} closeModal={closeModalHandler} />
         </>
     );
 };
