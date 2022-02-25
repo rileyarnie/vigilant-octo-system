@@ -148,7 +148,21 @@ const chartData: { items: MenuItemType[] } = {
                             ]
                         }
                     ]
-                }
+                },
+                {
+                    id: 'Finance',
+                    title: 'Finance',
+                    type: 'collapse',
+                    icon: 'feather icon-user',
+                    children: [
+                        {
+                            id: 'finanace',
+                            title: 'Finance',
+                            type: 'item',
+                            url: '/studentlist'
+                        }
+                    ]
+                },
             ]
         }
     ]
