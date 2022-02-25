@@ -19,6 +19,13 @@ import SaveAlt from '@material-ui/icons/SaveAlt';
 import Search from '@material-ui/icons/Search';
 import ViewColumn from '@material-ui/icons/ViewColumn';
 import Card from '@material-ui/core/Card';
+import Dialog from '@mui/material/Dialog';
+import DialogActions from '@mui/material/DialogActions';
+import DialogContent from '@mui/material/DialogContent';
+import DialogContentText from '@mui/material/DialogContentText';
+import DialogTitle from '@mui/material/DialogTitle';
+import useMediaQuery from '@mui/material/useMediaQuery';
+import { useTheme } from '@mui/material/styles';
 import Alert from '@material-ui/lab/Alert';
 import Breadcrumb from '../../App/components/Breadcrumb';
 import {Row,Col, Button, Modal} from 'react-bootstrap';
@@ -54,6 +61,9 @@ const StudentFeeReport = ():JSX.Element => {
         {id:459, narrative:'Caution Money', amount:4500},
     ]);
     const [isError]=useState(false);
+    const [open, setOpen] = React.useState(false);
+    const theme = useTheme();
+    const fullScreen = useMediaQuery(theme.breakpoints.down('md'));
     const [studentId] = useState(2);
     const [showModal, setModal] = useState(false);
     const [errorMessages]=useState([]);
@@ -66,7 +76,7 @@ const StudentFeeReport = ():JSX.Element => {
             title: 'Actions',
             field: 'internal_action',
             render: (row) => (
-                    <button className="btn btn btn-link" onClick={toggleReversalModal}>Reverse Transaction</button>
+                    <button className="btn btn btn-link" onClick={handleClickOpen}>Reverse Transaction</button>
             )
         }
     ];
@@ -85,14 +95,22 @@ const StudentFeeReport = ():JSX.Element => {
     			alerts.showError(error.message);
     		});
     }
-    const resetStateCloseModal = () => {
-        setModal(false);
+    function handleReversal() {
+        StudentFeesManagementService.handleFeeReversal(studentId)
+            .then(() =>{
+                alerts.showSuccess('Successfully reversed transaction');
+            })
+            .catch((error)=>{
+                console.error(error);
+                alerts.showError(error.message);
+            });
+    }
+    const handleClickOpen = () => {
+        setOpen(true);
     };
-    const toggleReversalModal = () => {
-        showModal ? resetStateCloseModal() : setModal(true);
-    };
+
     const handleClose = () => {
-        showModal ? resetStateCloseModal() : setModal(false);
+        setOpen(false);
     };
     return (
         <>
@@ -134,43 +152,31 @@ const StudentFeeReport = ():JSX.Element => {
                     </Card>
                 </Col>
             </Row>
-            <Modal
-                show={showModal}
-                onHide={toggleReversalModal}
-                size="lg"
-                backdrop="static"
-                aria-labelledby="contained-modal-title-vcenter"
-                centered
-            >
-                <Modal.Header closeButton>
-                    <Modal.Title id="contained-modal-title-vcenter">Transaction Reversal</Modal.Title>
-                </Modal.Header>
-                <Modal.Body>
-                    <ValidationForm>
-                        <div className="form-group">
-                            <label htmlFor="departmentName">Narrative</label>
-                            <TextInput
-                                name="Narrative"
-                                id="narrative"
-                                type="text"
-                            />
-                            <br />
-                            <label htmlFor="amount">
-                                <b>Amount</b>
-                            </label>
-                            <br />
-                            <TextInput  name="amount"  id="amount"
-                                type="number"
-                                required/>
-                            <br />
-                        </div>
-                        <div className="form-group">
-                            <button className="btn btn-info float-right">Submit</button>
-                        </div>
-                    </ValidationForm>
-                    <Button className="btn btn-danger btn-rounded float-left" onClick={handleClose}>Cancel</Button>
-                </Modal.Body>
-            </Modal>
+            <div>
+                <Dialog
+                    fullScreen={fullScreen}
+                    open={open}
+                    onClose={handleClose}
+                    aria-labelledby="responsive-dialog-title"
+                >
+                    <DialogTitle id="responsive-dialog-title">
+                        {"Transaction Reversal"}
+                    </DialogTitle>
+                    <DialogContent>
+                        <DialogContentText>
+                            You are about  to reverse this transaction. Click <b>"confirm"</b> to continue or <b>"cancel"</b> to stop.
+                        </DialogContentText>
+                    </DialogContent>
+                    <DialogActions>
+                        <Button variant="danger" autoFocus onClick={handleClose}>
+                            Cancel
+                        </Button>
+                        <Button variant="info" onClick={handleClose} autoFocus>
+                            Confirm
+                        </Button>
+                    </DialogActions>
+                </Dialog>
+            </div>
         </>
     );
 };
