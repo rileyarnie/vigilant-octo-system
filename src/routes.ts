@@ -25,6 +25,8 @@ import CourseCohorts from './pages/Academics/CourseCohorts';
 import CourseCohortsDetails from './pages/Academics/CourseCohortDetails';
 import ProgramCohortSemesters from './pages/Academics/ProgramCohortSemesters';
 import ProgramCohortSemesterDetails from './pages/Academics/ProgramCohortSemesterDetails';
+import ApplicantsList from './pages/finance/ApplicantsList';
+import StudentFeesReport from './pages/finance/StudentFeesReport';
 
 const routes = [
     { path: '/dashboard', exact: true, name: 'default', component: Default },
@@ -59,6 +61,8 @@ const routes = [
     { path: '/coursecohorts', exact: true, name: 'default', component: CourseCohorts },
     { path: '/coursecohortdetails/:id', exact: true, name: 'default', component: CourseCohortsDetails },
     { path: '/programcohortsemester', exact: true, name: 'default', component: ProgramCohortSemesters },
-    { path: '/pcsdetails', exact: true, name: 'default', component: ProgramCohortSemesterDetails }
+    { path: '/pcsdetails', exact: true, name: 'default', component: ProgramCohortSemesterDetails },
+    { path: '/studentlist', exact: true, name: 'default', component: ApplicantsList },
+    { path: '/studentfeesreport', exact: true, name: 'default', component: StudentFeesReport }
 ];
 export default routes;
