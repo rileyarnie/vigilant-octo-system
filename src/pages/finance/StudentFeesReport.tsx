@@ -19,11 +19,19 @@ import SaveAlt from '@material-ui/icons/SaveAlt';
 import Search from '@material-ui/icons/Search';
 import ViewColumn from '@material-ui/icons/ViewColumn';
 import Card from '@material-ui/core/Card';
+import Dialog from '@mui/material/Dialog';
+import DialogActions from '@mui/material/DialogActions';
+import DialogContent from '@mui/material/DialogContent';
+import DialogContentText from '@mui/material/DialogContentText';
+import DialogTitle from '@mui/material/DialogTitle';
+import useMediaQuery from '@mui/material/useMediaQuery';
+import { useTheme } from '@mui/material/styles';
 import Alert from '@material-ui/lab/Alert';
 import Breadcrumb from '../../App/components/Breadcrumb';
-import {Row,Col, Button} from 'react-bootstrap';
+import {Row,Col, Button, Modal} from 'react-bootstrap';
 import { MenuItem, Select, Switch } from '@material-ui/core';
 import { Alerts, ToastifyAlerts } from '../lib/Alert';
+import { ValidationForm, TextInput } from 'react-bootstrap4-form-validation';
 import { StudentFeesManagementService } from '../../services/StudentFeesManagementService';
 const alerts: Alerts = new ToastifyAlerts();
 const tableIcons: Icons = {
@@ -48,7 +56,13 @@ const tableIcons: Icons = {
 const StudentFeeReport = ():JSX.Element => {
     const [data,setData]=useState([]);
     const [isError]=useState(false);
+    const [open, setOpen] = React.useState(false);
+    const theme = useTheme();
+    const fullScreen = useMediaQuery(theme.breakpoints.down('md'));
     const [studentId] = useState(2);
+    const [narrative, setNarrative] = useState('');
+    const [amount, setAmount] = useState('');
+    const [showModal, setModal] = useState(false);
     const [errorMessages]=useState([]);
     const [feeBalance, setFeeBalance] = useState([]);
     const columns=[
@@ -59,13 +73,7 @@ const StudentFeeReport = ():JSX.Element => {
             title: 'Actions',
             field: 'internal_action',
             render: (row) => (
-                <Select>
-                    <button
-                        className="btn btn btn-link"
-                    >
-                        <MenuItem value="reverse">Reverse Transaction</MenuItem>
-                    </button>
-                </Select>
+                    <button className="btn btn btn-link" onClick={() => { handleClickOpen();setNarrative(row.narrative);setAmount(row.amount);}}>Reverse Transaction</button>
             )
         }
     ];
@@ -84,6 +92,23 @@ const StudentFeeReport = ():JSX.Element => {
     			alerts.showError(error.message);
     		});
     }
+    function handleReversal() {
+        StudentFeesManagementService.handleFeeReversal(studentId)
+            .then(() =>{
+                alerts.showSuccess('Successfully reversed transaction');
+            })
+            .catch((error)=>{
+                console.error(error);
+                alerts.showError(error.message);
+            });
+    }
+    const handleClickOpen = () => {
+        setOpen(true);
+    };
+
+    const handleClose = () => {
+        setOpen(false);
+    };
     return (
         <>
             <Row className='align-items-center page-header'>
@@ -115,7 +140,7 @@ const StudentFeeReport = ():JSX.Element => {
                                         <div style={{padding: '0px 10px'}}>
                                             <Button className="float-left" variant="danger" style={{ marginLeft: '1rem' }}>Waiver fees</Button>{' '}
                                             <Button className="float-left" variant="danger" style={{ marginLeft: '1rem' }}>Invoice</Button>{' '}
-                                            <h6 style={{ marginLeft: '1rem' }}>Fee Balance: {feeBalance}</h6>
+                                            <h6 style={{ marginLeft: '1rem' }}> Fee Balance: {feeBalance}</h6>
                                         </div>
                                     </div>
                                 ),
@@ -124,6 +149,31 @@ const StudentFeeReport = ():JSX.Element => {
                     </Card>
                 </Col>
             </Row>
+            <div>
+                <Dialog
+                    fullScreen={fullScreen}
+                    open={open}
+                    onClose={handleClose}
+                    aria-labelledby="responsive-dialog-title"
+                >
+                    <DialogTitle id="responsive-dialog-title">
+                        {"Transaction Reversal"}
+                    </DialogTitle>
+                    <DialogContent>
+                        <DialogContentText>
+                            You are about  to reverse  <b>{narrative}</b> : {amount}. Click <b>"confirm"</b> to continue or <b>"cancel"</b> to stop.
+                        </DialogContentText>
+                    </DialogContent>
+                    <DialogActions>
+                        <Button variant="danger" autoFocus onClick={handleClose}>
+                            Cancel
+                        </Button>
+                        <Button variant="info" onClick={handleClose} autoFocus>
+                            Confirm
+                        </Button>
+                    </DialogActions>
+                </Dialog>
+            </div>
         </>
     );
 };
