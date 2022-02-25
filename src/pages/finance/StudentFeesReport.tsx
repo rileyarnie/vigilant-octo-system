@@ -21,9 +21,10 @@ import ViewColumn from '@material-ui/icons/ViewColumn';
 import Card from '@material-ui/core/Card';
 import Alert from '@material-ui/lab/Alert';
 import Breadcrumb from '../../App/components/Breadcrumb';
-import {Row,Col, Button} from 'react-bootstrap';
+import {Row,Col, Button, Modal} from 'react-bootstrap';
 import { MenuItem, Select, Switch } from '@material-ui/core';
 import { Alerts, ToastifyAlerts } from '../lib/Alert';
+import { ValidationForm, TextInput } from 'react-bootstrap4-form-validation';
 import { StudentFeesManagementService } from '../../services/StudentFeesManagementService';
 const alerts: Alerts = new ToastifyAlerts();
 const tableIcons: Icons = {
@@ -46,9 +47,15 @@ const tableIcons: Icons = {
     ViewColumn: forwardRef((props, ref) => <ViewColumn {...props} ref={ref} />)
 };
 const StudentFeeReport = ():JSX.Element => {
-    const [data,setData]=useState([]);
+    const [data,setData]=useState([
+        {id:456, narrative:'Caution Money', amount:4500},
+        {id:457, narrative:'Admission', amount:4500},
+        {id:458, narrative:'Caution Money', amount:4500},
+        {id:459, narrative:'Caution Money', amount:4500},
+    ]);
     const [isError]=useState(false);
     const [studentId] = useState(2);
+    const [showModal, setModal] = useState(false);
     const [errorMessages]=useState([]);
     const [feeBalance, setFeeBalance] = useState([]);
     const columns=[
@@ -59,13 +66,7 @@ const StudentFeeReport = ():JSX.Element => {
             title: 'Actions',
             field: 'internal_action',
             render: (row) => (
-                <Select>
-                    <button
-                        className="btn btn btn-link"
-                    >
-                        <MenuItem value="reverse">Reverse Transaction</MenuItem>
-                    </button>
-                </Select>
+                    <button className="btn btn btn-link" onClick={toggleReversalModal}>Reverse Transaction</button>
             )
         }
     ];
@@ -84,6 +85,15 @@ const StudentFeeReport = ():JSX.Element => {
     			alerts.showError(error.message);
     		});
     }
+    const resetStateCloseModal = () => {
+        setModal(false);
+    };
+    const toggleReversalModal = () => {
+        showModal ? resetStateCloseModal() : setModal(true);
+    };
+    const handleClose = () => {
+        showModal ? resetStateCloseModal() : setModal(false);
+    };
     return (
         <>
             <Row className='align-items-center page-header'>
@@ -115,7 +125,7 @@ const StudentFeeReport = ():JSX.Element => {
                                         <div style={{padding: '0px 10px'}}>
                                             <Button className="float-left" variant="danger" style={{ marginLeft: '1rem' }}>Waiver fees</Button>{' '}
                                             <Button className="float-left" variant="danger" style={{ marginLeft: '1rem' }}>Invoice</Button>{' '}
-                                            <h6 style={{ marginLeft: '1rem' }}>Fee Balance: {feeBalance}</h6>
+                                            <h6 style={{ marginLeft: '1rem' }}> Fee Balance: {feeBalance}</h6>
                                         </div>
                                     </div>
                                 ),
@@ -124,6 +134,43 @@ const StudentFeeReport = ():JSX.Element => {
                     </Card>
                 </Col>
             </Row>
+            <Modal
+                show={showModal}
+                onHide={toggleReversalModal}
+                size="lg"
+                backdrop="static"
+                aria-labelledby="contained-modal-title-vcenter"
+                centered
+            >
+                <Modal.Header closeButton>
+                    <Modal.Title id="contained-modal-title-vcenter">Transaction Reversal</Modal.Title>
+                </Modal.Header>
+                <Modal.Body>
+                    <ValidationForm>
+                        <div className="form-group">
+                            <label htmlFor="departmentName">Narrative</label>
+                            <TextInput
+                                name="Narrative"
+                                id="narrative"
+                                type="text"
+                            />
+                            <br />
+                            <label htmlFor="amount">
+                                <b>Amount</b>
+                            </label>
+                            <br />
+                            <TextInput  name="amount"  id="amount"
+                                type="number"
+                                required/>
+                            <br />
+                        </div>
+                        <div className="form-group">
+                            <button className="btn btn-info float-right">Submit</button>
+                        </div>
+                    </ValidationForm>
+                    <Button className="btn btn-danger btn-rounded float-left" onClick={handleClose}>Cancel</Button>
+                </Modal.Body>
+            </Modal>
         </>
     );
 };
