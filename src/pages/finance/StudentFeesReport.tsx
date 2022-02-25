@@ -54,17 +54,14 @@ const tableIcons: Icons = {
     ViewColumn: forwardRef((props, ref) => <ViewColumn {...props} ref={ref} />)
 };
 const StudentFeeReport = ():JSX.Element => {
-    const [data,setData]=useState([
-        {id:456, narrative:'Caution Money', amount:4500},
-        {id:457, narrative:'Admission', amount:4500},
-        {id:458, narrative:'Caution Money', amount:4500},
-        {id:459, narrative:'Caution Money', amount:4500},
-    ]);
+    const [data,setData]=useState([]);
     const [isError]=useState(false);
     const [open, setOpen] = React.useState(false);
     const theme = useTheme();
     const fullScreen = useMediaQuery(theme.breakpoints.down('md'));
     const [studentId] = useState(2);
+    const [narrative, setNarrative] = useState('');
+    const [amount, setAmount] = useState('');
     const [showModal, setModal] = useState(false);
     const [errorMessages]=useState([]);
     const [feeBalance, setFeeBalance] = useState([]);
@@ -76,7 +73,7 @@ const StudentFeeReport = ():JSX.Element => {
             title: 'Actions',
             field: 'internal_action',
             render: (row) => (
-                    <button className="btn btn btn-link" onClick={handleClickOpen}>Reverse Transaction</button>
+                    <button className="btn btn btn-link" onClick={() => { handleClickOpen();setNarrative(row.narrative);setAmount(row.amount);}}>Reverse Transaction</button>
             )
         }
     ];
@@ -164,7 +161,7 @@ const StudentFeeReport = ():JSX.Element => {
                     </DialogTitle>
                     <DialogContent>
                         <DialogContentText>
-                            You are about  to reverse this transaction. Click <b>"confirm"</b> to continue or <b>"cancel"</b> to stop.
+                            You are about  to reverse  <b>{narrative}</b> : {amount}. Click <b>"confirm"</b> to continue or <b>"cancel"</b> to stop.
                         </DialogContentText>
                     </DialogContent>
                     <DialogActions>
