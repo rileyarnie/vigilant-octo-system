@@ -35,6 +35,7 @@ import { ValidationForm, TextInput } from 'react-bootstrap4-form-validation';
 import { StudentFeesManagementService } from '../../services/StudentFeesManagementService';
 import RecordFeePayment from './RecordFeePayment';
 import FeeWaiver from './FeeWaiver';
+import Invoice from './Invoice';
 const alerts: Alerts = new ToastifyAlerts();
 const tableIcons: Icons = {
     Add: forwardRef((props, ref) => <AddBox {...props} ref={ref} />),
@@ -69,6 +70,7 @@ const StudentFeeReport = (): JSX.Element => {
     const [feeBalance, setFeeBalance] = useState([]);
     const [show, setShow] = useState(false);
     const [showWaiver, setShowWaiver] = useState(false);
+    const [showInvoice, setShowInvoice] = useState(false);
 
     const closeModalHandler = () => {
         setShow(false);
@@ -82,6 +84,12 @@ const StudentFeeReport = (): JSX.Element => {
     const openWaiverModalHandler = () => {
         setShowWaiver(true);
     };
+    const closeInvoiceModalHandler = () => {
+        setShowInvoice(false);
+    };
+    const openInvoiceModalHandler = () => {
+        setShowInvoice(true);
+    };
 
     const columns = [
         { title: 'ID', field: 'id' },
@@ -90,63 +98,53 @@ const StudentFeeReport = (): JSX.Element => {
         {
             title: 'Actions',
             render: (rowData) => (
-                <Select>
-                    <div style={{ paddingLeft: '8px', paddingRight: '8px' }}>
-                        <div style={{ cursor: 'pointer' }} onClick={openModalHandler}>
-                            <p>Upload Fee Item</p>
-                        </div>
-                        <div style={{ cursor: 'pointer' }} onClick={openWaiverModalHandler}>
-                            <p>Waiver Fee</p>
-                        </div>
-                        <div
-                            style={{ cursor: 'pointer' }}
-                            onClick={() => {
-                                handleClickOpen();
-                                setNarrative(rowData.narrative);
-                                setAmount(rowData.amount);
-                            }}
-                        >
-                            <p>Reverse Transaction</p>
-                        </div>
-                    </div>
-                </Select>
+                <div
+                    style={{ cursor: 'pointer', color: 'blue' }}
+                    onClick={() => {
+                        handleClickOpen();
+                        setNarrative(rowData.narrative);
+                        setAmount(rowData.amount);
+                    }}
+                >
+                    <p>Reverse Transaction</p>
+                </div>
             )
         }
     ];
     const dummyData = [
         {
             id: 1,
-            narrative: 'This Narrative',
+            narrative: 'Test Narrative',
             amount: 500
         },
         {
             id: 2,
-            narrative: 'This Narrative',
+            narrative: 'Test Narrative',
             amount: 500
         },
         {
             id: 3,
-            narrative: 'This Narrative',
+            narrative: 'Test Narrative',
             amount: 500
         },
         {
             id: 4,
-            narrative: 'This Narrative',
+            narrative: 'Test Narrative',
             amount: 500
         },
         {
             id: 5,
-            narrative: 'This Narrative',
+            narrative: 'Test Narrative',
             amount: 500
         },
         {
             id: 6,
-            narrative: 'This Narrative',
+            narrative: 'Test Narrative',
             amount: 500
         },
         {
             id: 7,
-            narrative: 'This Narrative',
+            narrative: 'Test Narrative',
             amount: 500
         },
         {
@@ -192,16 +190,19 @@ const StudentFeeReport = (): JSX.Element => {
             <Row className="align-items-center page-header">
                 <Col>
                     <Breadcrumb />
-                    <div style={{ padding: '0px 10px' }}>
-                        <Button className="float-left" variant="danger" style={{ marginLeft: '1rem' }}>
+                    <div style={{ padding: '0px 10px', display: 'flex', alignItems: 'center' }}>
+                        <Button onClick={openWaiverModalHandler} className="float-left" variant="danger" style={{ marginLeft: '1rem' }}>
                             Waiver fees
                         </Button>{' '}
-                        <Button className="float-left" variant="danger" style={{ marginLeft: '1rem' }}>
+                        <Button className="float-left" variant="danger" style={{ marginLeft: '1rem' }} onClick={openModalHandler}>
+                            Record Fee Item
+                        </Button>{' '}
+                        <Button className="float-left" variant="danger" style={{ marginLeft: '1rem' }} onClick={openInvoiceModalHandler}>
                             Invoice
                         </Button>{' '}
-                        <div className="" style={{ marginLeft: '2rem' }}>
-                            <h6> Fee Balance: {feeBalance}</h6>
-                        </div>
+                        <h6 className="float-left" style={{ marginLeft: '1rem' }}>
+                            Fee Balance: {feeBalance}
+                        </h6>{' '}
                     </div>
                 </Col>
             </Row>
@@ -218,7 +219,7 @@ const StudentFeeReport = (): JSX.Element => {
                             )}
                         </div>
                         <MaterialTable
-                            title="Fees Reports"
+                            title={`Fee Reports For Student ${studentId}`}
                             icons={tableIcons}
                             columns={columns}
                             data={dummyData}
@@ -254,6 +255,7 @@ const StudentFeeReport = (): JSX.Element => {
             </div>
             <RecordFeePayment show={show} closeModal={closeModalHandler} />
             <FeeWaiver show={showWaiver} closeModal={closeWaiverModalHandler} />
+            <Invoice show={showInvoice} closeModal={closeInvoiceModalHandler} />
         </>
     );
 };
