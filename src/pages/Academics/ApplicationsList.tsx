@@ -30,8 +30,6 @@ import { Icons } from 'material-table';
 import { Alerts, ToastifyAlerts } from '../lib/Alert';
 import LinearProgress from '@mui/material/LinearProgress';
 import { TimetableService } from '../../services/TimetableService';
-import RecordFeePayment from './RecordFeePayment';
-import FeeWaiver from './FeeWaiver';
 
 const alerts: Alerts = new ToastifyAlerts();
 const tableIcons: Icons = {
@@ -61,22 +59,7 @@ const ApplicationsList = (): JSX.Element => {
         { title: 'Name', render: (rowData) => rowData.applications_firstName + ' ' + rowData.applications_lastName },
         { title: 'Email', field: 'applications_emailAddress' },
         { title: 'Program', field: 'applications_programCohortId' },
-        { title: 'Admission Status', field: 'applications_status' },
-        {
-            title: 'Actions',
-            render: (rowData) => (
-                <Select>
-                    <div style={{ paddingLeft: '8px', paddingRight: '8px' }}>
-                        <div style={{ cursor: 'pointer' }} className="applicationList__menuItem" onClick={() => showDetails(rowData)}>
-                            <p>View Details</p>
-                        </div>
-                        <div style={{ cursor: 'pointer' }} onClick={openModalHandler}>
-                            <p>Upload Fee Item</p>
-                        </div>
-                    </div>
-                </Select>
-            )
-        }
+        { title: 'Admission Status', field: 'applications_status' }
     ];
     enum admissionStatus {
         ADMITTED = 'ADMITTED',
@@ -118,21 +101,6 @@ const ApplicationsList = (): JSX.Element => {
     const [applicationId, setApplicationId] = useState('');
     const [campuses, setCampuses] = useState([]);
     const [showUploadModal, setShowUploadModal] = useState(false);
-    const [show, setShow] = useState(false);
-    const [showWaiver, setShowWaiver] = useState(false);
-
-    const closeModalHandler = () => {
-        setShow(false);
-    };
-    const openModalHandler = () => {
-        setShow(true);
-    };
-    const closeWaiverModalHandler = () => {
-        setShowWaiver(false);
-    };
-    const openWaiverModalHandler = () => {
-        setShowWaiver(true);
-    };
 
     useEffect(() => {
         fetchProgramCohortApplications();
@@ -269,33 +237,6 @@ const ApplicationsList = (): JSX.Element => {
         showUploadModal ? setShowUploadModal(false) : setShowUploadModal(true);
     };
 
-    const showDetails = (row) => {
-        toggleCreateModal();
-        setFirstName(row.applications_firstName);
-        setLastName(row.applications_lastName);
-        setOtherName(row.applications_otherName);
-        setIdentification(row.applications_identification);
-        setGender(row.applications_gender);
-        setMaritalStatus(row.applications_maritalStatus);
-        setReligion(row.applications_religion);
-        setDateOfBirth(row.applications_dateOfBirth.slice(0, 10));
-        setPlaceOfBirth(row.applications_placeofBirth);
-        setPhoneNumber(row.applications_phoneNumber);
-        setEmailAddress(row.applications_emailAddress);
-        setNationality(row.applications_nationality);
-        setPhysicalChallenges(row.applications_physicalChallenges);
-        setCourseStartDate(row.applications_courseStartDate.slice(0, 10));
-        setCampus(row.applications_campus);
-        setSponsor(row.applications_sponsor);
-        setCountryOfResidence(row.applications_countryOfResidence);
-        setProgramCohortId(row.applications_programCohortId);
-        setIsAdmitted(row.applications_status);
-        setNextOfKinName(row.nkd_name);
-        setNextOfKinPhoneNumber(row.nkd_nextOfKinPhoneNumber);
-        setNextOfKinRelation(row.nkd_relation);
-        setApplicationId(row.applications_id);
-        setDocumentsUrl(row.sdocs_documentUrl);
-    };
     return (
         <>
             <Row className="align-items-center page-header">
@@ -319,6 +260,57 @@ const ApplicationsList = (): JSX.Element => {
                         <MaterialTable
                             title="Applications"
                             columns={columns}
+                            onRowClick={(event, row) => {
+                                toggleCreateModal();
+
+                                setFirstName(row.applications_firstName);
+
+                                setLastName(row.applications_lastName);
+
+                                setOtherName(row.applications_otherName);
+
+                                setIdentification(row.applications_identification);
+
+                                setGender(row.applications_gender);
+
+                                setMaritalStatus(row.applications_maritalStatus);
+
+                                setReligion(row.applications_religion);
+
+                                setDateOfBirth(row.applications_dateOfBirth.slice(0, 10));
+
+                                setPlaceOfBirth(row.applications_placeofBirth);
+
+                                setPhoneNumber(row.applications_phoneNumber);
+
+                                setEmailAddress(row.applications_emailAddress);
+
+                                setNationality(row.applications_nationality);
+
+                                setPhysicalChallenges(row.applications_physicalChallenges);
+
+                                setCourseStartDate(row.applications_courseStartDate.slice(0, 10));
+
+                                setCampus(row.applications_campus);
+
+                                setSponsor(row.applications_sponsor);
+
+                                setCountryOfResidence(row.applications_countryOfResidence);
+
+                                setProgramCohortId(row.applications_programCohortId);
+
+                                setIsAdmitted(row.applications_status);
+
+                                setNextOfKinName(row.nkd_name);
+
+                                setNextOfKinPhoneNumber(row.nkd_nextOfKinPhoneNumber);
+
+                                setNextOfKinRelation(row.nkd_relation);
+
+                                setApplicationId(row.applications_id);
+
+                                setDocumentsUrl(row.sdocs_documentUrl);
+                            }}
                             data={data}
                             icons={tableIcons}
                             options={{
@@ -919,9 +911,6 @@ const ApplicationsList = (): JSX.Element => {
                     </Modal.Footer>
                 </Modal.Dialog>
             </Modal>
-
-            <RecordFeePayment show={show} closeModal={closeModalHandler} />
-            <FeeWaiver show={showWaiver} closeModal={closeWaiverModalHandler} />
         </>
     );
 };

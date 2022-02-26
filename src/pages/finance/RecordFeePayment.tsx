@@ -1,5 +1,5 @@
 import React from 'react';
-import {  Col, Form, FormControl, Row } from 'react-bootstrap';
+import { Col, Form, FormControl, Row } from 'react-bootstrap';
 import ModalWrapper from '../../App/components/modal/ModalWrapper';
 
 interface Props {
@@ -8,8 +8,6 @@ interface Props {
 }
 
 const RecordFeePayment: React.FunctionComponent<Props> = (props) => {
-
-
     //submit function to come here
     const handleSubmit = () => {
         console.log('Submitted');
@@ -19,7 +17,7 @@ const RecordFeePayment: React.FunctionComponent<Props> = (props) => {
             <ModalWrapper
                 show={props.show}
                 closeModal={props.closeModal}
-                title="Upload Fee Item"
+                title="Record Fee Item"
                 modalSize="lg"
                 submitButton
                 submitFunction={handleSubmit}

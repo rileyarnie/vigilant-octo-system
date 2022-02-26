@@ -26,6 +26,7 @@ import Config from '../../config';
 import { Icons } from 'material-table';
 import { Alerts, ToastifyAlerts } from '../lib/Alert';
 import LinearProgress from '@mui/material/LinearProgress';
+
 const alerts: Alerts = new ToastifyAlerts();
 const tableIcons: Icons = {
     Add: forwardRef((props, ref) => <AddBox {...props} ref={ref} />),
@@ -61,6 +62,7 @@ const StudentFeesManagement = (): JSX.Element => {
     const [linearDisplay, setLinearDisplay] = useState('none');
     const [isAdmitted, setIsAdmitted] = useState('PENDING');
     const [selectedRow] = useState(null);
+
     useEffect(() => {
         fetchProgramCohortApplications();
     }, [isAdmitted]);
