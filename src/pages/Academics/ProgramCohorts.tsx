@@ -62,6 +62,7 @@ const ProgramCohorts = (): JSX.Element => {
         pg_name: string;
         program_cohorts_bannerImageUrl: string;
         pg_id: number;
+        bannerImageUrl: string;
         program_cohorts_campusId: number;
     }
 
@@ -470,7 +471,7 @@ const ProgramCohorts = (): JSX.Element => {
                                         }}
                                     >
                                         <option defaultValue={cohortId ? selectedProgramCohort.pg_id : selectedProgramId} value="">
-                                            -- Select a program --
+                                             -- Select a program --
                                         </option>
                                         {programs.map((program) => {
                                             return (
@@ -603,11 +604,11 @@ const ProgramCohorts = (): JSX.Element => {
                         </Col>
                         <Col sm={4}>
                             <CardPreview
-                                programName={programName}
-                                description={description}
-                                startDate={startDate}
-                                graduationDate={graduationDate}
-                                bannerImage={banner}
+                                programName={ cohortId ? selectedProgramCohort.pg_name : programName}
+                                description={ cohortId ? selectedProgramCohort.program_cohorts_advertDescription : description }
+                                startDate={cohortId ? selectedProgramCohort.program_cohorts_startDate.slice(0,10) : startDate}
+                                graduationDate={cohortId ? selectedProgramCohort.program_cohorts_anticipatedGraduationYear+' - '+selectedProgramCohort.program_cohorts_anticipatedGraduationMonth : graduationDate}
+                                bannerImage={ cohortId ? selectedProgramCohort.program_cohorts_bannerImageUrl : banner}
                             />
                         </Col>
                     </Row>
