@@ -111,48 +111,6 @@ const StudentFeeReport = (): JSX.Element => {
             )
         }
     ];
-    const dummyData = [
-        {
-            id: 1,
-            narrative: 'Test Narrative',
-            amount: 500
-        },
-        {
-            id: 2,
-            narrative: 'Test Narrative',
-            amount: 500
-        },
-        {
-            id: 3,
-            narrative: 'Test Narrative',
-            amount: 500
-        },
-        {
-            id: 4,
-            narrative: 'Test Narrative',
-            amount: 500
-        },
-        {
-            id: 5,
-            narrative: 'Test Narrative',
-            amount: 500
-        },
-        {
-            id: 6,
-            narrative: 'Test Narrative',
-            amount: 500
-        },
-        {
-            id: 7,
-            narrative: 'Test Narrative',
-            amount: 500
-        },
-        {
-            id: 8,
-            narrative: 'This Narrative',
-            amount: 500
-        }
-    ];
     // useEffect(() => {
     //     fetchFeesData(studentId);
     // }, [studentId]);
@@ -222,7 +180,7 @@ const StudentFeeReport = (): JSX.Element => {
                             title={`Fee Reports For Student ${studentId}`}
                             icons={tableIcons}
                             columns={columns}
-                            data={dummyData}
+                            data={data}
                             components={{
                                 Toolbar: (props) => (
                                     <div>
