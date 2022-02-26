@@ -192,7 +192,7 @@ const StudentFeeReport = (): JSX.Element => {
                     <Breadcrumb />
                     <div style={{ padding: '0px 10px', display: 'flex', alignItems: 'center' }}>
                         <Button onClick={openWaiverModalHandler} className="float-left" variant="danger" style={{ marginLeft: '1rem' }}>
-                            Waiver fees
+                            Waive Fees
                         </Button>{' '}
                         <Button className="float-left" variant="danger" style={{ marginLeft: '1rem' }} onClick={openModalHandler}>
                             Record Fee Item

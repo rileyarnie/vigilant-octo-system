@@ -35,14 +35,6 @@ const FeeWaiver: React.FunctionComponent<Props> = (props) => {
                         </Form.Group>
                         <Form.Group controlId="formAmmount">
                             <Row style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                                <Col sm={3}>Narrative:</Col>
-                                <Col sm={9}>
-                                    <FormControl type="text" as="textarea" placeholder="Enter Narrative" />
-                                </Col>
-                            </Row>
-                        </Form.Group>
-                        <Form.Group controlId="formAmmount">
-                            <Row style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
                                 <Col sm={3}>Invoice Number:</Col>
                                 <Col sm={9}>
                                     <FormControl type="select" as="select" placeholder="Enter Invoice Number" />
