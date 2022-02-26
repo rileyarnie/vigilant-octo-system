@@ -200,8 +200,8 @@ class CourseCreation extends Component<Props> {
                                                 <br />
                                                 <SelectGroup name="timetabelable" id="timetableable" required onChange={this.handleChange}>
                                                     <option value="">--- Please select ---</option>
-                                                    <option value="true">True</option>
-                                                    <option value="false">False</option>
+                                                    <option value="true">Yes</option>
+                                                    <option value="false">No</option>
                                                 </SelectGroup>{' '}
                                                 <br />
                                                 <label htmlFor="technicalAssistant">
@@ -215,8 +215,8 @@ class CourseCreation extends Component<Props> {
                                                     onChange={this.handleChange}
                                                 >
                                                     <option value="">--- Please select ---</option>
-                                                    <option value="true">True</option>
-                                                    <option value="false">False</option>
+                                                    <option value="true">Yes</option>
+                                                    <option value="false">No</option>
                                                 </SelectGroup>
                                                 <br />
                                                 <label htmlFor="isElective">
@@ -225,8 +225,8 @@ class CourseCreation extends Component<Props> {
                                                 <br />
                                                 <SelectGroup name="isElective" id="isElective" required onChange={this.handleChange}>
                                                     <option value="">--- Please select ---</option>
-                                                    <option value="true">True</option>
-                                                    <option value="false">False</option>
+                                                    <option value="true">Yes</option>
+                                                    <option value="false">No</option>
                                                 </SelectGroup>
                                                 <br />
                                             </div>

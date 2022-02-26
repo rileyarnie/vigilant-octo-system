@@ -21,7 +21,7 @@ import axios from 'axios';
 import Alert from '@material-ui/lab/Alert';
 import Breadcrumb from '../../App/components/Breadcrumb';
 import { Row, Col, Card } from 'react-bootstrap';
-import { Button } from '@material-ui/core';
+import { Button, LinearProgress } from '@material-ui/core';
 import Config from '../../config';
 import { Alerts, ToastifyAlerts } from '../lib/Alert';
 
@@ -54,14 +54,13 @@ const AssignCourse = (): JSX.Element => {
         { title: 'Training Hours', field: 'trainingHours' },
         { title: 'Timetableable', field: 'isTimetablable' },
         { title: 'Technical Assistant', field: 'needsTechnicalAssistant' },
-        { title: 'Prerequisite Courses', field: 'prerequisiteCourseIds' },
-        { title: 'Approved', field: 'isApproved' }
     ];
     const [data, setData] = useState([]);
     const [programId, setProgramId] = useState();
     const [, setCourseName] = useState('');
     const [courseId, setCourseId] = useState(null);
     const [iserror] = useState(false);
+    const [linearDisplay, setLinearDisplay] = useState('none');
     const [selectedRows, setSelectedRows] = useState([]);
     const [errorMessages] = useState([]);
     const progId = JSON.parse(localStorage.getItem('programId'));
@@ -70,12 +69,14 @@ const AssignCourse = (): JSX.Element => {
             .get(`${timetablingSrv}/courses`)
             .then((res) => {
                 setData(res.data);
+                setLinearDisplay('none');
                 setProgramId(progId);
             })
             .catch((error) => {
-                //handle error using logging library
+                setLinearDisplay('block');
                 console.error(error);
                 alerts.showError(error.message);
+                setLinearDisplay('none');
             });
     }, []);
 
@@ -93,7 +94,6 @@ const AssignCourse = (): JSX.Element => {
     };
 
     const handleRowSelection = (courseName: string, courseId: number, rows) => {
-        console.log(rows);
         const courseIds = rows.map((row) => row.id);
         const uniq = [...new Set(courseIds)];
         setSelectedRows(uniq);
@@ -103,14 +103,15 @@ const AssignCourse = (): JSX.Element => {
     };
 
     const assignSelectedCoursesToProgram = (selectedCourses: Array<number>) => {
-        console.log('this is the array being given here: ' + selectedCourses[0]);
-
+        setLinearDisplay('block');
         axios
             .put(`${timetablingSrv}/programs/${programId}/courses`, { courses: selectedCourses })
             .then((res) => {
+                setLinearDisplay('block');
                 alerts.showSuccess('Course assignment successful');
                 fetchCourses();
                 return res;
+                setLinearDisplay('none');
             })
             .catch((error) => {
                 alerts.showError(error.message);
@@ -124,6 +125,7 @@ const AssignCourse = (): JSX.Element => {
                     <Breadcrumb />
                 </Col>
             </Row>
+            <LinearProgress style={{ display: linearDisplay }} />
             <Row>
                 <Col>
                     <Card>

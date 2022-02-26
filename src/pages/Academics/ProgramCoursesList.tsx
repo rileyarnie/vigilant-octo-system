@@ -55,8 +55,6 @@ const ProgramCoursesList = (): JSX.Element => {
         { title: 'Training Hours', field: 'trainingHours' },
         { title: 'Timetableable', field: 'isTimetablable' },
         { title: 'Technical Assistant', field: 'needsTechnicalAssistant' },
-        { title: 'Prerequisite Courses', field: 'prerequisiteCourseIds' },
-        { title: 'Approved', field: 'isApproved' }
     ];
     const [data, setData] = useState([]);
     const [programId, setProgramId] = useState();
@@ -74,8 +72,8 @@ const ProgramCoursesList = (): JSX.Element => {
         axios
             .get(`${timetablingSrv}/programs/${progId}/courses`)
             .then((res) => {
-                console.log(res.data);
                 setData(res.data);
+                console.log('Program Courses',res.data);
                 setLinearDisplay('none');
                 setProgramId(progId);
             })
