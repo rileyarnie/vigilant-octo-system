@@ -110,6 +110,7 @@ const AssignCourse = (): JSX.Element => {
             .then((res) => {
                 alerts.showSuccess('Course assignment successful');
                 fetchCourses();
+                setSelectedRows([]);
                 return res;
             })
             .catch((error) => {
@@ -151,17 +152,18 @@ const AssignCourse = (): JSX.Element => {
                     </Card>
                 </Col>
             </Row>
-
-            <Button
-                style={{ display: !courseId ? 'none' : 'block' }}
-                variant="contained"
-                color="secondary"
-                onClick={() => {
-                    assignSelectedCoursesToProgram(selectedRows);
-                }}
-            >
-                Assign courses
-            </Button>
+            {selectedRows.length > 0 && (
+                <Button
+                    style={{ display: !courseId ? 'none' : 'block' }}
+                    variant="contained"
+                    color="secondary"
+                    onClick={() => {
+                        assignSelectedCoursesToProgram(selectedRows);
+                    }}
+                >
+                    Assign courses
+                </Button>
+            )}
         </>
     );
 };
