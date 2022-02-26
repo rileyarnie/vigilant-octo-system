@@ -1,6 +1,7 @@
 import * as React from 'react';
 import { Row, Col, Card } from 'react-bootstrap';
 import Breadcrumb from '../../App/components/Breadcrumb';
+import PowerBIEmbed from './PowerBIReports';
 class Default extends React.Component {
     render(): JSX.Element {
         return (
@@ -80,6 +81,9 @@ class Default extends React.Component {
                             </Card.Body>
                         </Card>
                     </Col>
+                </Row>
+                <Row>
+                    <DashboardReports/>
                 </Row>
             </>
         );
