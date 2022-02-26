@@ -52,8 +52,8 @@ const AssignCourse = (): JSX.Element => {
         { title: 'Name', field: 'name' },
         { title: 'Description', field: 'description' },
         { title: 'Training Hours', field: 'trainingHours' },
-        { title: 'Timetableable', field: 'isTimetablable' },
-        { title: 'Technical Assistant', field: 'needsTechnicalAssistant' },
+        { title: 'Timetableable', render: (row) =>(<>{row.isTimetablable === true ? 'Yes' : 'No'}</>)},
+        { title: 'Technical Assistant', render: (row) =>(<>{row.needsTechnicalAssistant === true ? 'Yes' : 'No'}</>)},
     ];
     const [data, setData] = useState([]);
     const [programId, setProgramId] = useState();
