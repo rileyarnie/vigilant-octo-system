@@ -26,6 +26,7 @@ import { AddActions } from './AddActionsModal/AddActions';
 import CreateRole from './Role/CreateRole';
 import { Alerts, ToastifyAlerts } from '../lib/Alert';
 import { LinearProgress } from '@mui/material';
+import { MenuItem, Select } from '@material-ui/core';
 const alerts: Alerts = new ToastifyAlerts();
 const tableIcons: Icons = {
     // eslint-disable-next-line @typescript-eslint/naming-convention
@@ -76,7 +77,15 @@ function roleList(): JSX.Element {
         { title: 'id', field: 'id', editable: 'never' as const },
         { title: 'RoleName', field: 'RoleName', editable: 'always' as const },
         { title: 'Activation Status', field: 'activation_status', editable: 'never' as const },
-        { title: 'Created On', render: (row: Role): string => row.created_on.slice(0, 10), editable: 'never' as const }
+        { title: 'Created On', render: (row: Role): string => row.created_on.slice(0, 10), editable: 'never' as const },
+        {
+            title: 'Role Actions',
+            render: (row: Role) => <Actions {...row}>View Actions</Actions>
+        },
+        {
+            title: 'Add Actions',
+            render: (row: Role) => <AddActions {...row}> </AddActions>
+        }
     ];
     const [data, setData] = useState([]);
     const [id, setId] = useState(0);
@@ -161,9 +170,10 @@ function roleList(): JSX.Element {
                                 columns={columns}
                                 data={data}
                                 options={{
-                                    selection: true,
-                                    showSelectAllCheckbox: false,
-                                    showTextRowsSelected: false
+                                    actionsColumnIndex: -1
+                                    // selection: true,
+                                    // showSelectAllCheckbox: false,
+                                    // showTextRowsSelected: false
                                 }}
                                 onSelectionChange={(rows: Role[]): void => {
                                     handleRowSelection(rows[0]?.RoleName, rows[0]?.id);
@@ -179,9 +189,6 @@ function roleList(): JSX.Element {
                         </Card>
                     </Col>
                 </Row>
-                <Actions {...selectedRowProps}> </Actions>
-                &nbsp;&nbsp;&nbsp;
-                <AddActions {...selectedRowProps}> </AddActions>
             </div>
         </>
     );
