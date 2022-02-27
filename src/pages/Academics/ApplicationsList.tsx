@@ -352,20 +352,41 @@ const ApplicationsList = (): JSX.Element => {
             >
                 <Modal.Header closeButton>
                     <Modal.Title id="contained-modal-title-vcenter">
-                        Application Id: {applicationId}{' '}
-                        {isAdmitted === 'APPROVED' ? (
-                            <Link to={'/publishedsemesters'} onClick={() => localStorage.setItem('programId', programCohortId)}>
-                                <Button variant="info" onClick={handleClose}>
-                                    Semesters
-                                </Button>
-                            </Link>
-                        ) : (
+                        Application Id: {applicationId}
+                        {isAdmitted === 'ADMITTED' && (
                             <>
-                                <Button variant="info" onClick={(e) => handleAdmission(e, admissionStatus.ADMITTED)}>
-                                    Admit
-                                </Button>{' '}
+                                <Link to={'/publishedsemesters'} onClick={() => localStorage.setItem('programId', programCohortId)}>
+                                    <Button style={{ marginRight: '.5rem', marginLeft: '.5rem' }} variant="info" onClick={handleClose}>
+                                        View Semesters
+                                    </Button>
+                                </Link>
                                 <Button variant="danger" onClick={(e) => handleAdmission(e, admissionStatus.REJECTED)}>
                                     Reject
+                                </Button>
+                            </>
+                        )}
+                        {isAdmitted === 'PENDING' && (
+                            <>
+                                <Button
+                                    style={{ marginRight: '.5rem', marginLeft: '.5rem' }}
+                                    variant="info"
+                                    onClick={(e) => handleAdmission(e, admissionStatus.ADMITTED)}
+                                >
+                                    Admit
+                                </Button>
+                                <Button variant="danger" onClick={(e) => handleAdmission(e, admissionStatus.REJECTED)}>
+                                    Reject
+                                </Button>
+                            </>
+                        )}
+                        {isAdmitted === 'REJECTED' && (
+                            <>
+                                <Button
+                                    style={{ marginRight: '.5rem', marginLeft: '.5rem' }}
+                                    variant="info"
+                                    onClick={(e) => handleAdmission(e, admissionStatus.ADMITTED)}
+                                >
+                                    Admit
                                 </Button>
                             </>
                         )}
