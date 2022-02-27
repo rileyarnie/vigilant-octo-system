@@ -27,6 +27,9 @@ import CreateRole from './Role/CreateRole';
 import { Alerts, ToastifyAlerts } from '../lib/Alert';
 import { LinearProgress } from '@mui/material';
 import { MenuItem, Select } from '@material-ui/core';
+import { VerticalModal } from './ActionsByRole/VerticalModal';
+import { AddActionsModal } from './AddActionsModal/AddActionsModal';
+
 const alerts: Alerts = new ToastifyAlerts();
 const tableIcons: Icons = {
     // eslint-disable-next-line @typescript-eslint/naming-convention
@@ -82,12 +85,12 @@ function roleList(): JSX.Element {
             title: ' Actions',
             render: (row: Role) => (
                 <Select>
-                    <Actions {...row}>
+                    <div className="" onClick={() => setVerticalModal(true)}>
                         <MenuItem value="View courses">View Role Actions</MenuItem>
-                    </Actions>
-                    <AddActions {...row}>
+                    </div>
+                    <div className="" onClick={() => setActionModal(true)}>
                         <MenuItem value="View courses">Add Actions</MenuItem>
-                    </AddActions>
+                    </div>
                     <div className="" onClick={() => handleRowDelete(row.id)}>
                         <MenuItem value="View courses">Delete Role</MenuItem>
                     </div>
@@ -103,6 +106,15 @@ function roleList(): JSX.Element {
     const [isError] = useState(false);
     const [errorMessages] = useState([]);
     const [linearDisplay, setLinearDisplay] = useState('none');
+    const [open, setOpen] = useState(false);
+
+    //modal functions
+    const [verticalModal, setVerticalModal] = React.useState(false);
+    const [actionModal, setActionModal] = React.useState(false);
+
+    const toggleActionModal = () => {
+        actionModal ? setActionModal(false) : setActionModal(true);
+    };
 
     useEffect(() => {
         fetchRoles();
@@ -176,6 +188,13 @@ function roleList(): JSX.Element {
                 &nbsp;&nbsp;&nbsp;
                 <AddActions {...selectedRowProps}> </AddActions>
             </div>
+            <VerticalModal show={verticalModal} onHide={() => setVerticalModal(false)} selectedrowprops={selectedRowProps} />
+            <AddActionsModal
+                show={actionModal}
+                toggleModal={toggleActionModal}
+                onHide={() => setActionModal(false)}
+                selectedRowProps={selectedRowProps}
+            />
         </>
     );
 }
