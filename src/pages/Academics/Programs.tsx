@@ -335,8 +335,8 @@ const Programs = (): JSX.Element => {
                                 onChange={(e) => setRequiresClearance(e.target.value)}
                             >
                                 <option value="">--- Please select ---</option>
-                                <option value="true">True</option>
-                                <option value="false">False</option>
+                                <option value="true">Yes</option>
+                                <option value="false">No</option>
                             </SelectGroup>
                             <br />
                             <br />

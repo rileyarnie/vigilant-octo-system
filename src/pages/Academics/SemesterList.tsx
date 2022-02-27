@@ -117,7 +117,7 @@ const SemesterList = (): JSX.Element => {
     const [selectedEndDate, setSelectedEndDate] = useState('');
     const [selectedSemester, setSelectedSemester] = useState<Semester>();
     const [linearDisplay, setLinearDisplay] = useState('none');
-
+    const today = new Date().toISOString().slice(0, 10);
     useEffect(() => {
         axios
             .get(`${timetablingSrv}/semesters`)
@@ -297,6 +297,7 @@ const SemesterList = (): JSX.Element => {
                                 name="startDate"
                                 id="startDate"
                                 type="date"
+                                min={today}
                                 required
                                 defaultValue={getStartDate(selectedSemester?.startDate, semesterId)}
                                 onChange={(e) => {
@@ -312,6 +313,7 @@ const SemesterList = (): JSX.Element => {
                                 name="endDate"
                                 id="endDate"
                                 type="date"
+                                min={today && startDate}
                                 required
                                 defaultValue={getEndDate(selectedSemester?.endDate, semesterId)}
                                 onChange={(e) => {
