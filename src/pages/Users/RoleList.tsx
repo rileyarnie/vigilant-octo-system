@@ -79,12 +79,20 @@ function roleList(): JSX.Element {
         { title: 'Activation Status', field: 'activation_status', editable: 'never' as const },
         { title: 'Created On', render: (row: Role): string => row.created_on.slice(0, 10), editable: 'never' as const },
         {
-            title: 'Role Actions',
-            render: (row: Role) => <Actions {...row}>View Actions</Actions>
-        },
-        {
-            title: 'Add Actions',
-            render: (row: Role) => <AddActions {...row}> </AddActions>
+            title: ' Actions',
+            render: (row: Role) => (
+                <Select>
+                    <Actions {...row}>
+                        <MenuItem value="View courses">View Role Actions</MenuItem>
+                    </Actions>
+                    <AddActions {...row}>
+                        <MenuItem value="View courses">Add Actions</MenuItem>
+                    </AddActions>
+                    <div className="" onClick={() => handleRowDelete(row.id)}>
+                        <MenuItem value="View courses">Delete Role</MenuItem>
+                    </div>
+                </Select>
+            )
         }
     ];
     const [data, setData] = useState([]);
@@ -114,13 +122,13 @@ function roleList(): JSX.Element {
                 alerts.showError((error as Error).message);
             });
     }
-    function handleRowDelete(oldData: { id: number }, resolve: () => void): void {
+    // function handleRowDelete(oldData: { id: number }, resolve: () => void): void {
+    function handleRowDelete(id: number): void {
         const baseUrl = Config.baseUrl.authnzSrv;
         setLinearDisplay('block');
         axios
-            .delete(`${baseUrl}/roles/${oldData.id}`)
+            .delete(`${baseUrl}/roles/${id}`)
             .then(() => {
-                resolve();
                 fetchRoles();
                 setLinearDisplay('none');
                 alerts.showSuccess('Successfully deleted role');
@@ -130,11 +138,6 @@ function roleList(): JSX.Element {
                 console.error(error);
                 alerts.showError((error as Error).message);
             });
-    }
-
-    function handleRowSelection(roleName: string, roleId: number): void {
-        setRoleName(roleName);
-        setId(roleId);
     }
 
     const selectedRowProps = {
@@ -165,30 +168,13 @@ function roleList(): JSX.Element {
                                     </Alert>
                                 )}
                             </div>
-                            <MaterialTable
-                                title="Role List"
-                                columns={columns}
-                                data={data}
-                                options={{
-                                    actionsColumnIndex: -1
-                                    // selection: true,
-                                    // showSelectAllCheckbox: false,
-                                    // showTextRowsSelected: false
-                                }}
-                                onSelectionChange={(rows: Role[]): void => {
-                                    handleRowSelection(rows[0]?.RoleName, rows[0]?.id);
-                                }}
-                                icons={tableIcons}
-                                editable={{
-                                    onRowDelete: (oldData: Role): Promise<void> =>
-                                        new Promise((resolve) => {
-                                            handleRowDelete(oldData, resolve);
-                                        })
-                                }}
-                            />
+                            <MaterialTable title="Role List" columns={columns} data={data} icons={tableIcons} />
                         </Card>
                     </Col>
                 </Row>
+                <Actions {...selectedRowProps}> </Actions>
+                &nbsp;&nbsp;&nbsp;
+                <AddActions {...selectedRowProps}> </AddActions>
             </div>
         </>
     );

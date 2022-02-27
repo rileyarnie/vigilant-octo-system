@@ -1,3 +1,4 @@
+/* eslint-disable react/prop-types */
 import React from 'react';
 import { Button } from 'react-bootstrap';
 import { VerticalModal } from './VerticalModal';
@@ -5,9 +6,9 @@ export const Actions = (props): JSX.Element => {
     const [modalShow, setModalShow] = React.useState(false);
     return (
         <>
-            <Button variant="danger" onClick={() => setModalShow(true)}>
-                Role Actions
-            </Button>
+            <div style={{ cursor: 'pointer', color: 'blue' }} onClick={() => setModalShow(true)}>
+                {props.children}
+            </div>
 
             <VerticalModal show={modalShow} onHide={() => setModalShow(false)} selectedrowprops={props} />
         </>
