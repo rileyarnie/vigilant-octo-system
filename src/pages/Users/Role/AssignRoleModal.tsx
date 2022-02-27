@@ -22,7 +22,6 @@ export const AssignRoleModal = (props: IProps): JSX.Element => {
     const [selectedOptions, setSelectedOptions] = useState([]);
     const options = [];
     useEffect(() => {
-        console.log(props);
         axios
             .get(`${authnzSrv}/roles`)
             .then((res) => {

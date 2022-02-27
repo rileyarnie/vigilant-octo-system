@@ -25,7 +25,7 @@ import Breadcrumb from '../../App/components/Breadcrumb';
 import { Icons } from 'material-table';
 import { Assign } from './Role/Assign';
 import { Alerts, ToastifyAlerts } from '../lib/Alert';
-import { render } from 'react-dom';
+
 const alerts: Alerts = new ToastifyAlerts();
 const tableIcons: Icons = {
     Add: forwardRef((props, ref) => <AddBox {...props} ref={ref} />),
@@ -48,20 +48,11 @@ const tableIcons: Icons = {
 };
 const AssignRole = (): JSX.Element => {
     const columns = [
-        {
-            field: 'id',
-            render: (row) => (
-                <Form.Group>
-                    <Form.Check value={row.id} name="group1" type="radio" id={row.id} />
-                </Form.Group>
-            )
-        },
         { title: 'id', field: 'id' },
-        { title: 'AAD ALIAS', field: 'AADAlias' }
+        { title: 'AAD ALIAS', field: 'AADAlias' },
+        { title: 'Actions', render: (row) => <Assign {...row}></Assign> }
     ];
     const [data, setData] = useState([]);
-    const [id, setId] = useState(0);
-    const [AADAlias, setAADAlias] = useState('');
 
     //for error handling
     const [iserror] = useState(false);
@@ -79,15 +70,7 @@ const AssignRole = (): JSX.Element => {
                 alerts.showError(error.message);
             });
     }, []);
-    const handleRowSelection = (rows) => {
-        setId(rows[0]?.id);
-        setAADAlias(rows[0]?.AADAlias);
-    };
 
-    const selectedRowProps = {
-        id: id,
-        AADAlias: AADAlias
-    };
     return (
         <>
             <div>
@@ -108,21 +91,11 @@ const AssignRole = (): JSX.Element => {
                                     </Alert>
                                 )}
                             </div>
-                            <MaterialTable
-                                title="Select User to assign role"
-                                columns={columns}
-                                data={data}
-                                onRowClick={(event, rowData) => {
-                                    setId(rowData.id);
-                                    setAADAlias(rowData.AADAlias);
-                                }}
-                                icons={tableIcons}
-                            />
+                            <MaterialTable icons={tableIcons} title="Select User to assign role" columns={columns} data={data} />
                         </Card>
                     </Col>
                 </Row>
                 &nbsp;&nbsp;&nbsp;
-                <Assign {...selectedRowProps}></Assign>
             </div>
         </>
     );
