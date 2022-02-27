@@ -27,6 +27,11 @@ import Config from '../../config';
 import { Alerts, ToastifyAlerts } from '../lib/Alert';
 import LoadingBar from 'react-top-loading-bar';
 import LinearProgress from '@material-ui/core/LinearProgress';
+import { withRouter } from 'react-router-dom';
+import { createStyles, Theme, makeStyles } from '@material-ui/core/styles';
+import Button from '@material-ui/core/Button';
+import IconButton from '@material-ui/core/IconButton';
+import ArrowBackIcon from '@material-ui/icons/ArrowBack';
 const alerts: Alerts = new ToastifyAlerts();
 const tableIcons: Icons = {
     Add: forwardRef((props, ref) => <AddBox {...props} ref={ref} />),
@@ -47,7 +52,18 @@ const tableIcons: Icons = {
     ThirdStateCheck: forwardRef((props, ref) => <Remove {...props} ref={ref} />),
     ViewColumn: forwardRef((props, ref) => <ViewColumn {...props} ref={ref} />)
 };
-const ProgramCoursesList = (): JSX.Element => {
+const useStyles = makeStyles((theme: Theme) =>
+    createStyles({
+        margin: {
+            margin: theme.spacing(1),
+        },
+        extendedIcon: {
+            marginRight: theme.spacing(1),
+        },
+    }),
+);
+const ProgramCoursesList = (props): JSX.Element => {
+    const classes = useStyles();
     const columns = [
         { title: 'ID', field: 'id', hidden: false },
         { title: 'Name', field: 'name' },
@@ -66,7 +82,7 @@ const ProgramCoursesList = (): JSX.Element => {
     const [errorMessages, setErrorMessages] = useState([]);
     const timetablingSrv = Config.baseUrl.timetablingSrv;
     const progId = JSON.parse(localStorage.getItem('programId'));
-    console.log(progId);
+
     useEffect(() => {
         setLinearDisplay('block');
         axios
@@ -109,12 +125,22 @@ const ProgramCoursesList = (): JSX.Element => {
                 alerts.showError(error.message);
             });
     };
+    const  handleBack = () => {
+        props.history.goBack()
+    }
     return (
         <>
             <Row className="align-items-center page-header">
                 <Col>
                     <Breadcrumb />
                 </Col>
+            </Row>
+            <Row>
+                <div className="">
+                    <IconButton aria-label="delete" className={classes.margin} onClick={handleBack} size="small">
+                        <ArrowBackIcon fontSize="inherit" /> Back
+                    </IconButton>
+                </div>
             </Row>
             <LinearProgress style={{ display: linearDisplay }} />
 

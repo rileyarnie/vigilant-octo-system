@@ -30,6 +30,9 @@ import { ValidationForm, SelectGroup, TextInput } from 'react-bootstrap4-form-va
 import { LinearProgress } from '@mui/material';
 import CourseCohort from '../services/CourseCohort';
 import { CourseCohortService } from '../services/CourseCohortsService';
+import { createStyles, Theme, makeStyles } from '@material-ui/core/styles';
+import IconButton from '@material-ui/core/IconButton';
+import ArrowBackIcon from '@material-ui/icons/ArrowBack';
 const alerts: Alerts = new ToastifyAlerts();
 const tableIcons: Icons = {
     Add: forwardRef((props, ref) => <AddBox {...props} ref={ref} />),
@@ -50,7 +53,18 @@ const tableIcons: Icons = {
     ThirdStateCheck: forwardRef((props, ref) => <Remove {...props} ref={ref} />),
     ViewColumn: forwardRef((props, ref) => <ViewColumn {...props} ref={ref} />)
 };
-function ProgramCohortSemesters() {
+const useStyles = makeStyles((theme: Theme) =>
+    createStyles({
+        margin: {
+            margin: theme.spacing(1),
+        },
+        extendedIcon: {
+            marginRight: theme.spacing(1),
+        },
+    }),
+);
+function ProgramCohortSemesters(props) {
+    const classes = useStyles();
     const columns = [
         { title: 'ID', field: 'id', editable: 'never' as const },
         { title: 'Name', field: 'name' },
@@ -117,6 +131,9 @@ function ProgramCohortSemesters() {
                 alerts.showError(error.message);
             });
     }
+    const  handleBack = () => {
+        props.history.goBack()
+    }
     return (
         <>
             <Row className="align-items-center page-header">
@@ -125,6 +142,13 @@ function ProgramCohortSemesters() {
                 </Col>
             </Row>
             <LinearProgress style={{ display: linearDisplay }} />
+            <Row>
+                <div className="">
+                    <IconButton aria-label="delete" className={classes.margin} onClick={handleBack} size="small">
+                        <ArrowBackIcon fontSize="inherit" /> Back
+                    </IconButton>
+                </div>
+            </Row>
             <Row>
                 <Col>
                     <Card>
