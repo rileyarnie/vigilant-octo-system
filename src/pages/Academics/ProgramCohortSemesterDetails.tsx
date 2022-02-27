@@ -26,7 +26,6 @@ import { Row, Col, Card, Button, Modal } from 'react-bootstrap';
 import { ValidationForm, TextInput } from 'react-bootstrap4-form-validation';
 import { LinearProgress } from '@mui/material';
 import { CourseCohortService } from '../services/CourseCohortsService';
-import { makeStyles, Theme } from '@material-ui/core/styles';
 import AppBar from '@material-ui/core/AppBar';
 import Tabs from '@material-ui/core/Tabs';
 import Tab from '@material-ui/core/Tab';
@@ -34,6 +33,9 @@ import Typography from '@material-ui/core/Typography';
 import Box from '@material-ui/core/Box';
 import { FeesManagementService } from '../services/FeesManagementService';
 import { ProgramCohortService } from '../services/ProgramCohortService';
+import { createStyles, Theme, makeStyles } from '@material-ui/core/styles';
+import IconButton from '@material-ui/core/IconButton';
+import ArrowBackIcon from '@material-ui/icons/ArrowBack';
 const alerts: Alerts = new ToastifyAlerts();
 const tableIcons: Icons = {
     Add: forwardRef((props, ref) => <AddBox {...props} ref={ref} />),
@@ -54,7 +56,23 @@ const tableIcons: Icons = {
     ThirdStateCheck: forwardRef((props, ref) => <Remove {...props} ref={ref} />),
     ViewColumn: forwardRef((props, ref) => <ViewColumn {...props} ref={ref} />)
 };
-function ProgramCohortSemesterDetails() {
+function ProgramCohortSemesterDetails(props) {
+    const useStyles = makeStyles((theme: Theme) =>
+        createStyles({
+            margin: {
+                margin: theme.spacing(1),
+            },
+            extendedIcon: {
+                marginRight: theme.spacing(1),
+            },
+            root: {
+                flexGrow: 1,
+                width: '100%',
+                backgroundColor: theme.palette.background.paper
+            }
+        }),
+    );
+    const classes = useStyles();
     interface TabPanelProps {
         children?: React.ReactNode;
         index: number;
@@ -88,13 +106,6 @@ function ProgramCohortSemesterDetails() {
             'aria-controls': `scrollable-auto-tabpanel-${index}`
         };
     }
-    const useStyles = makeStyles((theme: Theme) => ({
-        root: {
-            flexGrow: 1,
-            width: '100%',
-            backgroundColor: theme.palette.background.paper
-        }
-    }));
     const columns = [
         { title: 'ID', field: 'course.id', editable: 'never' as const },
         { title: 'Name', field: 'course.name' },
@@ -150,7 +161,6 @@ function ProgramCohortSemesterDetails() {
                 alerts.showError(error.message);
             });
     }
-    const classes = useStyles();
     const [value, setValue] = React.useState(0);
     const handleChange = (event: React.ChangeEvent<unknown>, newValue: number) => {
         setValue(newValue);
@@ -250,12 +260,22 @@ function ProgramCohortSemesterDetails() {
     const togglePublishModalDialog = () => {
         showPublishModal ? setShowPublishDialog(false) : setShowPublishDialog(true);
     };
+    const  handleBack = () => {
+        props.history.goBack()
+    }
     return (
         <>
             <Row className="align-items-center page-header">
                 <Col>
                     <Breadcrumb />
                 </Col>
+            </Row>
+            <Row>
+                <div className="">
+                    <IconButton aria-label="delete" className={classes.margin} onClick={handleBack} size="small">
+                        <ArrowBackIcon fontSize="inherit" /> Back
+                    </IconButton>
+                </div>
             </Row>
             <LinearProgress style={{ display: linearDisplay }} />
             <Row>

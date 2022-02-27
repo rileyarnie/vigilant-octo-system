@@ -28,11 +28,13 @@ import { ValidationForm, SelectGroup, TextInput } from 'react-bootstrap4-form-va
 import { Row, Col, Card, Modal, Button } from 'react-bootstrap';
 import DeleteIcon from '@material-ui/icons/Delete';
 import Config from '../../config';
-import { makeStyles } from '@material-ui/core';
 import SelectCurrency from 'react-select-currency';
 import { DeactivateCourseCohort } from './DeactivateCourseCohort';
 import { Alerts, ToastifyAlerts } from '../lib/Alert';
 const alerts: Alerts = new ToastifyAlerts();
+import { createStyles, Theme, makeStyles } from '@material-ui/core/styles';
+import IconButton from '@material-ui/core/IconButton';
+import ArrowBackIcon from '@material-ui/icons/ArrowBack';
 const tableIcons: Icons = {
     Add: forwardRef((props, ref) => <AddBox {...props} ref={ref} />),
     Check: forwardRef((props, ref) => <Check {...props} ref={ref} />),
@@ -52,12 +54,20 @@ const tableIcons: Icons = {
     ThirdStateCheck: forwardRef((props, ref) => <Remove {...props} ref={ref} />),
     ViewColumn: forwardRef((props, ref) => <ViewColumn {...props} ref={ref} />)
 };
-const useStyles = makeStyles({
-    root: {
-        width: '100%'
-    }
-});
-const CourseCohortsList = (): JSX.Element => {
+const useStyles = makeStyles((theme: Theme) =>
+    createStyles({
+        margin: {
+            margin: theme.spacing(1),
+        },
+        extendedIcon: {
+            marginRight: theme.spacing(1),
+        },
+        root: {
+            width: '100%'
+        }
+    }),
+);
+const CourseCohortsList = (props): JSX.Element => {
     const classes = useStyles();
     interface semester {
         id: number;
@@ -296,7 +306,9 @@ const CourseCohortsList = (): JSX.Element => {
     const toggleDialog = () => {
         showDialog ? setDialog(false) : setDialog(true);
     };
-
+    const  handleBack = () => {
+        props.history.goBack()
+    }
     const onSelectedCurrency = (currencyAbbrev) => {
         setCurrency(currencyAbbrev);
     };
@@ -320,8 +332,14 @@ const CourseCohortsList = (): JSX.Element => {
                     <Breadcrumb />
                 </Col>
             </Row>
-
             <LinearProgress style={{ display: linearDisplay }} />
+            <Row>
+                <div className="">
+                    <IconButton aria-label="delete" className={classes.margin} onClick={handleBack} size="small">
+                        <ArrowBackIcon fontSize="inherit" /> Back
+                    </IconButton>
+                </div>
+            </Row>
             <Row>
                 <Col>
                     <Card>
