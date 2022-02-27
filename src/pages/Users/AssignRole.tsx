@@ -20,11 +20,12 @@ import Search from '@material-ui/icons/Search';
 import ViewColumn from '@material-ui/icons/ViewColumn';
 import axios from 'axios';
 import Alert from '@material-ui/lab/Alert';
-import { Card, Col, Row } from 'react-bootstrap';
+import { Card, Col, Form, Row } from 'react-bootstrap';
 import Breadcrumb from '../../App/components/Breadcrumb';
 import { Icons } from 'material-table';
 import { Assign } from './Role/Assign';
 import { Alerts, ToastifyAlerts } from '../lib/Alert';
+import { render } from 'react-dom';
 const alerts: Alerts = new ToastifyAlerts();
 const tableIcons: Icons = {
     Add: forwardRef((props, ref) => <AddBox {...props} ref={ref} />),
@@ -47,6 +48,14 @@ const tableIcons: Icons = {
 };
 const AssignRole = (): JSX.Element => {
     const columns = [
+        {
+            field: 'id',
+            render: (row) => (
+                <Form.Group>
+                    <Form.Check value={row.id} name="group1" type="radio" id={row.id} />
+                </Form.Group>
+            )
+        },
         { title: 'id', field: 'id' },
         { title: 'AAD ALIAS', field: 'AADAlias' }
     ];
@@ -70,11 +79,11 @@ const AssignRole = (): JSX.Element => {
                 alerts.showError(error.message);
             });
     }, []);
-    const handleRowSelection = (row) => {
-        setId(row[0]?.id);
-        setAADAlias(row[0]?.AADAlias);
-        console.log(row);
+    const handleRowSelection = (rows) => {
+        setId(rows[0]?.id);
+        setAADAlias(rows[0]?.AADAlias);
     };
+
     const selectedRowProps = {
         id: id,
         AADAlias: AADAlias
@@ -103,12 +112,10 @@ const AssignRole = (): JSX.Element => {
                                 title="Select User to assign role"
                                 columns={columns}
                                 data={data}
-                                options={{
-                                    selection: true,
-                                    showSelectAllCheckbox: false,
-                                    showTextRowsSelected: false
+                                onRowClick={(event, rowData) => {
+                                    setId(rowData.id);
+                                    setAADAlias(rowData.AADAlias);
                                 }}
-                                onSelectionChange={(rows) => handleRowSelection(rows)}
                                 icons={tableIcons}
                             />
                         </Card>

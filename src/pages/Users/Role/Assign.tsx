@@ -10,6 +10,7 @@ export const Assign = (props): JSX.Element => {
             </Button>
 
             <AssignRoleModal show={modalShow} onHide={() => setModalShow(false)} selectedrowprops={props} />
+            {console.log('props', props)}
         </>
     );
 };
