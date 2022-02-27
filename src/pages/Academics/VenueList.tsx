@@ -122,6 +122,7 @@ const VenueList = (props): JSX.Element => {
                             columns={columns}
                             data={data}
                             icons={tableIcons}
+                            options={{ actionsColumnIndex: -1 }}
                             actions={[
                                 {
                                     icon: Edit,
