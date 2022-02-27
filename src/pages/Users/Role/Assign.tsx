@@ -8,7 +8,6 @@ export const Assign = (props): JSX.Element => {
             <Button variant="danger mr-2" onClick={() => setModalShow(true)}>
                 Assign Role
             </Button>
-
             <AssignRoleModal show={modalShow} onHide={() => setModalShow(false)} selectedrowprops={props} />
         </>
     );

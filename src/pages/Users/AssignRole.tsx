@@ -20,11 +20,12 @@ import Search from '@material-ui/icons/Search';
 import ViewColumn from '@material-ui/icons/ViewColumn';
 import axios from 'axios';
 import Alert from '@material-ui/lab/Alert';
-import { Card, Col, Row } from 'react-bootstrap';
+import { Card, Col, Form, Row } from 'react-bootstrap';
 import Breadcrumb from '../../App/components/Breadcrumb';
 import { Icons } from 'material-table';
 import { Assign } from './Role/Assign';
 import { Alerts, ToastifyAlerts } from '../lib/Alert';
+
 const alerts: Alerts = new ToastifyAlerts();
 const tableIcons: Icons = {
     Add: forwardRef((props, ref) => <AddBox {...props} ref={ref} />),
@@ -48,11 +49,10 @@ const tableIcons: Icons = {
 const AssignRole = (): JSX.Element => {
     const columns = [
         { title: 'id', field: 'id' },
-        { title: 'AAD ALIAS', field: 'AADAlias' }
+        { title: 'AAD ALIAS', field: 'AADAlias' },
+        { title: 'Actions', render: (row) => <Assign {...row}></Assign> }
     ];
     const [data, setData] = useState([]);
-    const [id, setId] = useState(0);
-    const [AADAlias, setAADAlias] = useState('');
 
     //for error handling
     const [iserror] = useState(false);
@@ -70,15 +70,7 @@ const AssignRole = (): JSX.Element => {
                 alerts.showError(error.message);
             });
     }, []);
-    const handleRowSelection = (row) => {
-        setId(row[0]?.id);
-        setAADAlias(row[0]?.AADAlias);
-        console.log(row);
-    };
-    const selectedRowProps = {
-        id: id,
-        AADAlias: AADAlias
-    };
+
     return (
         <>
             <div>
@@ -99,23 +91,11 @@ const AssignRole = (): JSX.Element => {
                                     </Alert>
                                 )}
                             </div>
-                            <MaterialTable
-                                title="Select User to assign role"
-                                columns={columns}
-                                data={data}
-                                options={{
-                                    selection: true,
-                                    showSelectAllCheckbox: false,
-                                    showTextRowsSelected: false
-                                }}
-                                onSelectionChange={(rows) => handleRowSelection(rows)}
-                                icons={tableIcons}
-                            />
+                            <MaterialTable icons={tableIcons} title="Select User to assign role" columns={columns} data={data} />
                         </Card>
                     </Col>
                 </Row>
                 &nbsp;&nbsp;&nbsp;
-                <Assign {...selectedRowProps}></Assign>
             </div>
         </>
     );
