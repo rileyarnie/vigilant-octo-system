@@ -1,3 +1,4 @@
+/* eslint-disable react/prop-types */
 /* eslint-disable react/display-name */
 import React, { useState, useEffect } from 'react';
 import { forwardRef } from 'react';

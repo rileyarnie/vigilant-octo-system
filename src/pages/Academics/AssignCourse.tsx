@@ -25,8 +25,7 @@ import { Button, LinearProgress } from '@material-ui/core';
 import Config from '../../config';
 import { Alerts, ToastifyAlerts } from '../lib/Alert';
 import { createStyles, Theme, makeStyles } from '@material-ui/core/styles';
-import IconButton from '@material-ui/core/IconButton';
-import ArrowBackIcon from '@material-ui/icons/ArrowBack';
+
 const tableIcons: Icons = {
     Add: forwardRef((props, ref) => <AddBox {...props} ref={ref} />),
     Check: forwardRef((props, ref) => <Check {...props} ref={ref} />),
@@ -49,24 +48,23 @@ const tableIcons: Icons = {
 const useStyles = makeStyles((theme: Theme) =>
     createStyles({
         margin: {
-            margin: theme.spacing(1),
+            margin: theme.spacing(1)
         },
         extendedIcon: {
-            marginRight: theme.spacing(1),
-        },
-    }),
+            marginRight: theme.spacing(1)
+        }
+    })
 );
 const alerts: Alerts = new ToastifyAlerts();
-const AssignCourse = (props): JSX.Element => {
-    const classes = useStyles();
+const AssignCourse = (): JSX.Element => {
     const timetablingSrv = Config.baseUrl.timetablingSrv;
     const columns = [
         { title: 'ID', field: 'id', hidden: false },
         { title: 'Name', field: 'name' },
         { title: 'Description', field: 'description' },
         { title: 'Training Hours', field: 'trainingHours' },
-        { title: 'Timetableable', render: (row) =>(<>{row.isTimetablable === true ? 'Yes' : 'No'}</>)},
-        { title: 'Technical Assistant', render: (row) =>(<>{row.needsTechnicalAssistant === true ? 'Yes' : 'No'}</>)},
+        { title: 'Timetableable', render: (row) => <>{row.isTimetablable === true ? 'Yes' : 'No'}</> },
+        { title: 'Technical Assistant', render: (row) => <>{row.needsTechnicalAssistant === true ? 'Yes' : 'No'}</> }
     ];
     const [data, setData] = useState([]);
     const [programId, setProgramId] = useState();
@@ -130,9 +128,6 @@ const AssignCourse = (props): JSX.Element => {
             .catch((error) => {
                 alerts.showError(error.message);
             });
-    };
-    const  handleBack = () => {
-        props.history.goBack();
     };
 
     return (
