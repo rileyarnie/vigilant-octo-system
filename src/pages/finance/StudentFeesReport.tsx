@@ -87,9 +87,6 @@ const StudentFeeReport = (): JSX.Element => {
     const closeInvoiceModalHandler = () => {
         setShowInvoice(false);
     };
-    const openInvoiceModalHandler = () => {
-        setShowInvoice(true);
-    };
 
     const columns = [
         { title: 'Narrative', field: 'narrative' },

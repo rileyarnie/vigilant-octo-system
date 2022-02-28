@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 /* eslint-disable react/prop-types */
 /* eslint-disable react/display-name */
 import React, { useState, useEffect } from 'react';
@@ -21,13 +22,10 @@ import Search from '@material-ui/icons/Search';
 import ViewColumn from '@material-ui/icons/ViewColumn';
 import axios from 'axios';
 import { Icons } from 'material-table';
-import { Switch } from '@material-ui/core';
 import Alert from '@material-ui/lab/Alert';
 import Breadcrumb from '../../App/components/Breadcrumb';
-import { Row, Col, Card, Button, Modal } from 'react-bootstrap';
+import { Row, Col, Card, } from 'react-bootstrap';
 import Config from '../../config';
-import { Link } from 'react-router-dom';
-import { ValidationForm, SelectGroup, TextInput } from 'react-bootstrap4-form-validation';
 import { LinearProgress } from '@mui/material';
 import CourseCohort from '../services/CourseCohort';
 import { CourseCohortService } from '../services/CourseCohortsService';
@@ -64,14 +62,14 @@ const useStyles = makeStyles((theme: Theme) =>
         },
     }),
 );
-function ProgramCohortSemesters(props) {
+function ProgramCohortSemesters(props: { history: { goBack: () => void; }; }) {
     const classes = useStyles();
     const columns = [
         { title: 'ID', field: 'id', editable: 'never' as const },
         { title: 'Name', field: 'name' },
-        { title: 'Start Date', render: (rowData) => rowData?.startDate?.slice(0, 10) },
-        { title: 'End Date', render: (rowData) => rowData?.endDate?.slice(0, 10) },
-        {title: 'Transcripts', render: (rowData) => (
+        { title: 'Start Date', render: (rowData: { startDate: string | unknown[]; }) => rowData?.startDate?.slice(0, 10) },
+        { title: 'End Date', render: (rowData: { endDate: string | unknown[]; }) => rowData?.endDate?.slice(0, 10) },
+        {title: 'Transcripts', render: () => (
             <a href='#'
                 onClick={e => {fetchTranscript(parseInt(programCohortId)); e.stopPropagation();}}
             >
@@ -99,8 +97,8 @@ function ProgramCohortSemesters(props) {
                 setLinearDisplay('none');
                 const uniqueSemIds = ccData
                     .map((v: CourseCohort) => v.programCohortSemester?.semesterId)
-                    .filter((value, index, self) => self.indexOf(value) === index);
-                const semesterData = uniqueSemIds.map((semId) => {
+                    .filter((value: any, index: any, self: string | any[]) => self.indexOf(value) === index);
+                const semesterData = uniqueSemIds.map((semId: number) => {
                     const cc = ccData.filter((v: CourseCohort) => v.programCohortSemester?.semester.id === semId)[0];
                     return {
                         id: cc.programCohortSemester?.semester.id,

@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 /* eslint-disable react/display-name */
 import React, { useState, useEffect, forwardRef } from 'react';
 import Config from '../../config';
@@ -106,7 +107,6 @@ function roleList(): JSX.Element {
     const [isError] = useState(false);
     const [errorMessages] = useState([]);
     const [linearDisplay, setLinearDisplay] = useState('none');
-    const [open, setOpen] = useState(false);
 
     //modal functions
     const [verticalModal, setVerticalModal] = React.useState(false);

@@ -1,14 +1,11 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import React, { Component, useEffect, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import { Row, Col, Card, Modal, Button } from 'react-bootstrap';
 import { ValidationForm, TextInput } from 'react-bootstrap4-form-validation';
 import Config from '../../config';
 import { Alerts, ToastifyAlerts } from '../lib/Alert';
-import validator from 'validator';
 import Select from 'react-select';
-import { customSelectTheme } from '../lib/SelectThemes';
-import CreatableSelect from 'react-select/creatable';
 import {  FileInput } from 'react-bootstrap4-form-validation';
 import CertificationType from './enums/CertificationType';
 const alerts: Alerts = new ToastifyAlerts();
@@ -19,11 +16,10 @@ interface Props extends React.HTMLAttributes<Element> {
     certificationType:string;
 }
 const CreateMarksModal = (props:Props) => {
-    const [courseCohortId,setCourseCohortId] = useState(0);
     const [courseCohortRegistrationId,setCourseCohortRegistrationId] = useState(0);
     const [typeOfMarks,setTypeOfMarks] = useState('');
     const [marks,setMarks] = useState(0);
-    const [programCohortSemesterId,setProgramCohortSemesterId] = useState(1);
+    const [programCohortSemesterId,] = useState(1);
     const [ccRegistrations,setCCRegistrations] = useState([]);
     const [modalShow,setModalShow] = useState(false);
     const options= [];

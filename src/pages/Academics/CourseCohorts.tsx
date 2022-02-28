@@ -23,15 +23,13 @@ import axios from 'axios';
 import Card from '@material-ui/core/Card';
 import Alert from '@material-ui/lab/Alert';
 import Breadcrumb from '../../App/components/Breadcrumb';
-import { Row, Col, Modal, Button } from 'react-bootstrap';
+import { Row, Col, } from 'react-bootstrap';
 import Config from '../../config';
 import { MenuItem, Select, InputLabel } from '@material-ui/core';
-import { ValidationForm, SelectGroup, FileInput, TextInput } from 'react-bootstrap4-form-validation';
-import CardPreview from './CardPreview';
+
 import { Link } from 'react-router-dom';
-import { Alerts, ToastifyAlerts } from '../lib/Alert';
 import { LinearProgress } from '@mui/material';
-const alerts: Alerts = new ToastifyAlerts();
+
 const tableIcons: Icons = {
     Add: forwardRef((props, ref) => <AddBox {...props} ref={ref} />),
     Check: forwardRef((props, ref) => <Check {...props} ref={ref} />),
@@ -56,23 +54,6 @@ const CourseCohorts = (): JSX.Element => {
     const [trainersData, setTrainers] = useState([]);
     const [semesters, setSemesters] = useState([]);
     const [isError] = useState(false);
-    const [programId, setProgramId] = useState(0);
-    const [campusId, setCampusId] = useState(0);
-    const [startDate, setStartDate] = useState('');
-    const [banner, setBanner] = useState('');
-    const [graduationDate, setGraduationDate] = useState('');
-    const [description] = useState('');
-    const [imageUploaded, setImageUploaded] = useState('');
-    const [programs, setPrograms] = useState([]);
-    const [campus, setCampus] = useState([]);
-    const [programName, setProgramName] = useState('');
-    const [selectedCampusId, setSelectedCampusId] = useState(0);
-    const [selectedProgramId, setSelectedProgramId] = useState(0);
-    const [selectedGraduationDate] = useState();
-    const [selectedStartDate] = useState();
-    const [selectedDescription] = useState();
-    const [showModal, setModal] = useState(false);
-    const [cohortId, setCohortId] = useState(null);
     const [errorMessages] = useState([]);
     const [linearDisplay, setLinearDisplay] = useState('none');
     const timetablingSrv = Config.baseUrl.timetablingSrv;

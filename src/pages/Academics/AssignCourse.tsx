@@ -24,7 +24,6 @@ import { Row, Col, Card } from 'react-bootstrap';
 import { Button, LinearProgress } from '@material-ui/core';
 import Config from '../../config';
 import { Alerts, ToastifyAlerts } from '../lib/Alert';
-import { createStyles, Theme, makeStyles } from '@material-ui/core/styles';
 
 const tableIcons: Icons = {
     Add: forwardRef((props, ref) => <AddBox {...props} ref={ref} />),
@@ -45,16 +44,7 @@ const tableIcons: Icons = {
     ThirdStateCheck: forwardRef((props, ref) => <Remove {...props} ref={ref} />),
     ViewColumn: forwardRef((props, ref) => <ViewColumn {...props} ref={ref} />)
 };
-const useStyles = makeStyles((theme: Theme) =>
-    createStyles({
-        margin: {
-            margin: theme.spacing(1)
-        },
-        extendedIcon: {
-            marginRight: theme.spacing(1)
-        }
-    })
-);
+
 const alerts: Alerts = new ToastifyAlerts();
 const AssignCourse = (): JSX.Element => {
     const timetablingSrv = Config.baseUrl.timetablingSrv;
