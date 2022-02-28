@@ -3,6 +3,6 @@ export default class FeePaymentRecord {
 		public studentId: number,
 		public narrative: string,
 		public evidenceUrls: string,
-		public amount: string
+		public amount: number
     ) {}
 }

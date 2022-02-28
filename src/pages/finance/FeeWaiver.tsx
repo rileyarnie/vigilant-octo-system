@@ -7,13 +7,14 @@ const alerts: Alerts = new ToastifyAlerts();
 interface Props {
     show: boolean;
     closeModal: () => void;
+    studentId: number
 }
 const FeeWaiver: React.FunctionComponent<Props> = (props) => {
     const [amount, setAmount] = useState('');
     const [narrative, setNarrative] = useState('');
     const handleSubmit = () => {
         const waiver = {
-            //studentId:studentId,
+            studentId: props.studentId,
             narrative:narrative,
             amount: parseInt(amount)
         };

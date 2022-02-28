@@ -106,7 +106,7 @@ const StudentFeesManagement = (): JSX.Element => {
                             data={data}
                             icons={tableIcons}
                             onRowClick={(event, row) => {
-                                window.location.href = `/studentfeesreport?studentId=${row.applications_studentId}`;
+                                window.location.href = `/studentfeesreport?studentId=${row.applications_studentId}&studentName=${row.applications_firstName+' '+ row.applications_lastName}`;
                                 event.stopPropagation();
                             }}
                             options={{

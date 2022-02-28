@@ -8,10 +8,10 @@ export class StudentFeesManagementService {
     // static async  fetchFeesData (studentId: number): Promise<FeeReport[]> {
     //     return axios.get(`${financeSrv}/fee-reports`, {params:{studentId}});
     // }
-    static async  handleFeeReversal (studentId: string): Promise<void> {
+    static async  handleFeeReversal (studentId: number): Promise<void> {
         return axios.put(`${financeSrv}/fee-reversal`, {params:{studentId}});
     }
-    static async  fetchFeesReport (studentId: string): Promise<FeeReport[]> {
+    static async  fetchFeesReport (studentId: number): Promise<FeeReport[]> {
         return axios.get(`${financeSrv}/fees/reports`, {params:{studentId}});
     }
     static async  uploadSupportDocument (form:unknown, config:unknown): Promise<void> {

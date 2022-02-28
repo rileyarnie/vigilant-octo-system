@@ -8,6 +8,7 @@ import { StudentFeesManagementService } from '../../services/StudentFeesManageme
 interface Props {
     show: boolean;
     closeModal: () => void;
+    studentId: number
 }
 const RecordFeePayment: React.FunctionComponent<Props> = (props) => {
     const [studentId, setStudentId] = useState(2);
@@ -35,10 +36,10 @@ const RecordFeePayment: React.FunctionComponent<Props> = (props) => {
     };
     const handleSubmit = () => {
         const createFeeRecord = {
-            studentId:studentId,
+            studentId: props.studentId,
             narrative: narrative,
             evidenceUrls: evidenceUrl,
-            amount: amount
+            amount: parseInt(amount)
         };
         StudentFeesManagementService.recordFeesReport(createFeeRecord)
             .then(() => {

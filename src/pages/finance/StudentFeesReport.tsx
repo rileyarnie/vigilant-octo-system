@@ -63,6 +63,7 @@ const StudentFeeReport = (): JSX.Element => {
     const theme = useTheme();
     const fullScreen = useMediaQuery(theme.breakpoints.down('md'));
     const [narrative, setNarrative] = useState('');
+    const [transactionId, setTransactionId] = useState(0);
     const [amount, setAmount] = useState('');
     const [showModal, setModal] = useState(false);
     const [errorMessages] = useState([]);
@@ -71,7 +72,8 @@ const StudentFeeReport = (): JSX.Element => {
     const [showWaiver, setShowWaiver] = useState(false);
     const [showInvoice, setShowInvoice] = useState(false);
     const queryParams = new URLSearchParams(window.location.search);
-    const studentId = queryParams.get('studentId');
+    const studentId = parseInt(queryParams.get('studentId'));
+    const studentName = queryParams.get('studentName');
 
     const closeModalHandler = () => {
         setShow(false);
@@ -102,8 +104,7 @@ const StudentFeeReport = (): JSX.Element => {
                     style={{ cursor: 'pointer', color: 'blue' }}
                     onClick={() => {
                         handleClickOpen();
-                        setNarrative(rowData.narrative);
-                        setAmount(rowData.amount);
+                        setTransactionId(rowData.transactionId);
                     }}
                 >
                     <p>Reverse Transaction</p>
@@ -114,7 +115,7 @@ const StudentFeeReport = (): JSX.Element => {
     useEffect(()=>{
         fetchFeesData(studentId);
     },[studentId]);
-    function fetchFeesData (studentId:string) {
+    function fetchFeesData (studentId:number) {
         StudentFeesManagementService.fetchFeesReport(studentId)
             .then(res=>{
                 const feesData = res['data'];
@@ -127,7 +128,10 @@ const StudentFeeReport = (): JSX.Element => {
                 alerts.showError(error.message);
             });
     }
-    function handleReversal(studentId:string) {
+    function handleReversal(studentId:number) {
+        const createFeeRecord = {
+            transactionId:transactionId
+        };
         StudentFeesManagementService.handleFeeReversal(studentId)
             .then(() => {
                 alerts.showSuccess('Successfully reversed transaction');
@@ -178,7 +182,7 @@ const StudentFeeReport = (): JSX.Element => {
                             )}
                         </div>
                         <MaterialTable
-                            title={`Fee Reports For Student ${studentId}`}
+                            title={`Fee Reports For ${studentName}`}
                             icons={tableIcons}
                             columns={columns}
                             data={data}
@@ -212,8 +216,8 @@ const StudentFeeReport = (): JSX.Element => {
                     </DialogActions>
                 </Dialog>
             </div>
-            <RecordFeePayment show={show} closeModal={closeModalHandler} />
-            <FeeWaiver show={showWaiver} closeModal={closeWaiverModalHandler} />
+            <RecordFeePayment studentId={studentId} show={show} closeModal={closeModalHandler} />
+            <FeeWaiver studentId={studentId} show={showWaiver} closeModal={closeWaiverModalHandler} />
             <Invoice show={showInvoice} closeModal={closeInvoiceModalHandler} />
         </>
     );
