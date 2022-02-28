@@ -5,11 +5,8 @@ import Config from '../config';
 const financeSrv = Config.baseUrl.financeSrv;
 const timetablingSrv = Config.baseUrl.timetablingSrv;
 export class StudentFeesManagementService {
-    // static async  fetchFeesData (studentId: number): Promise<FeeReport[]> {
-    //     return axios.get(`${financeSrv}/fee-reports`, {params:{studentId}});
-    // }
-    static async  handleFeeReversal (studentId: number): Promise<void> {
-        return axios.put(`${financeSrv}/fees/reversals`, {params:{studentId}});
+    static async  handleFeeReversal (reversal:unknown): Promise<void> {
+        return axios.put(`${financeSrv}/fees/reversals`, reversal);
     }
     static async  fetchFeesReport (studentId: number): Promise<FeeReport[]> {
         return axios.get(`${financeSrv}/fees/reports`, {params:{studentId}});

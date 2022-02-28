@@ -11,7 +11,6 @@ interface Props {
     studentId: number
 }
 const RecordFeePayment: React.FunctionComponent<Props> = (props) => {
-    const [studentId, setStudentId] = useState(2);
     const [narrative, setNarrative] = useState('');
     const [evidenceUrl, setEvidenceUrl] = useState('');
     const [showUploadModal, setShowUploadModal] = useState(false);
@@ -64,31 +63,31 @@ const RecordFeePayment: React.FunctionComponent<Props> = (props) => {
                 submitFunction={handleSubmit}
             >
                 <Form>
-                    <Form.Group controlId="formAmmount">
+                    <Form.Group controlId="formAmount">
                         <Row style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
                             <Col sm={3}>Amount:</Col>
                             <Col sm={9}>
                                 <FormControl type="number"
-                                             onChange={(e) => {
-                                                 setAmount(e.target.value);
-                                             }}
-                                             placeholder="Enter Amount" />
+                                    onChange={(e) => {
+                                        setAmount(e.target.value);
+                                    }}
+                                    placeholder="Enter Amount" />
                             </Col>
                         </Row>
                     </Form.Group>
-                    <Form.Group controlId="formAmmount">
+                    <Form.Group controlId="formAmount">
                         <Row style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
                             <Col sm={3}>Narrative:</Col>
                             <Col sm={9}>
                                 <FormControl type="text" as="textarea"
-                                             onChange={(e) => {
-                                                 setNarrative(e.target.value);
-                                             }}
-                                             placeholder="Enter Narrative" />
+                                    onChange={(e) => {
+                                        setNarrative(e.target.value);
+                                    }}
+                                    placeholder="Enter Narrative" />
                             </Col>
                         </Row>
                     </Form.Group>
-                    <Form.Group controlId="formAmmount">
+                    <Form.Group controlId="formAmount">
                         <Row style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
                             <Col sm={3}>Supporting Documents:</Col>
                             <Col sm={9}>
@@ -114,10 +113,10 @@ const RecordFeePayment: React.FunctionComponent<Props> = (props) => {
                     <Modal.Body>
                         <ValidationForm>
                             <FileInput name="fileUploaded" id="image" encType="multipart/form-data"
-                                       fileType={['pdf', 'doc', 'docx']} maxFileSize="10mb"
-                                       onInput={(e) => { setFileUploaded(() => { return e.target.files[0]; });
-                                       }}
-                                       errorMessage={{ required: 'Please upload a document', fileType: 'Only document is allowed', maxFileSize: 'Max file size is 10MB' }}/>
+                                fileType={['pdf', 'doc', 'docx']} maxFileSize="10mb"
+                                onInput={(e) => { setFileUploaded(() => { return e.target.files[0]; });
+                                }}
+                                errorMessage={{ required: 'Please upload a document', fileType: 'Only document is allowed', maxFileSize: 'Max file size is 10MB' }}/>
                         </ValidationForm>
                     </Modal.Body>
 
