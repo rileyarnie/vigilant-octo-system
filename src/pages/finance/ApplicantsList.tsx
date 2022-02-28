@@ -73,6 +73,7 @@ const StudentFeesManagement = (): JSX.Element => {
             .then((res) => {
                 setLinearDisplay('none');
                 setData(res.data);
+                console.log(res.data)
             })
             .catch((error) => {
                 console.error(error);
@@ -105,7 +106,7 @@ const StudentFeesManagement = (): JSX.Element => {
                             data={data}
                             icons={tableIcons}
                             onRowClick={(event, row) => {
-                                window.location.href = `/studentfeesreport?studentId=${row.studentId}`;
+                                window.location.href = `/studentfeesreport?studentId=${row.applications_studentId}&studentName=${row.applications_firstName+' '+ row.applications_lastName}`;
                                 event.stopPropagation();
                             }}
                             options={{

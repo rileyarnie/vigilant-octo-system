@@ -62,8 +62,8 @@ const StudentFeeReport = (): JSX.Element => {
     const [open, setOpen] = React.useState(false);
     const theme = useTheme();
     const fullScreen = useMediaQuery(theme.breakpoints.down('md'));
-    const [studentId] = useState(2);
     const [narrative, setNarrative] = useState('');
+    const [transactionId, setTransactionId] = useState(0);
     const [amount, setAmount] = useState('');
     const [showModal, setModal] = useState(false);
     const [errorMessages] = useState([]);
@@ -71,6 +71,9 @@ const StudentFeeReport = (): JSX.Element => {
     const [show, setShow] = useState(false);
     const [showWaiver, setShowWaiver] = useState(false);
     const [showInvoice, setShowInvoice] = useState(false);
+    const queryParams = new URLSearchParams(window.location.search);
+    const studentId = parseInt(queryParams.get('studentId'));
+    const studentName = queryParams.get('studentName');
 
     const closeModalHandler = () => {
         setShow(false);
@@ -92,7 +95,6 @@ const StudentFeeReport = (): JSX.Element => {
     };
 
     const columns = [
-        { title: 'ID', field: 'id' },
         { title: 'Narrative', field: 'narrative' },
         { title: 'Amount', field: 'amount' },
         {
@@ -102,8 +104,7 @@ const StudentFeeReport = (): JSX.Element => {
                     style={{ cursor: 'pointer', color: 'blue' }}
                     onClick={() => {
                         handleClickOpen();
-                        setNarrative(rowData.narrative);
-                        setAmount(rowData.amount);
+                        setTransactionId(rowData.transactionId);
                     }}
                 >
                     <p>Reverse Transaction</p>
@@ -111,22 +112,26 @@ const StudentFeeReport = (): JSX.Element => {
             )
         }
     ];
-    // useEffect(() => {
-    //     fetchFeesData(studentId);
-    // }, [studentId]);
-    // function fetchFeesData(studentId: number) {
-    //     StudentFeesManagementService.fetchFeesData(studentId)
-    //         .then((res) => {
-    //             const feesData = res['data'];
-    //             setFeeBalance(feesData);
-    //             setData(feesData.entries);
-    //         })
-    //         .catch((error) => {
-    //             console.error(error);
-    //             alerts.showError(error.message);
-    //         });
-    // }
-    function handleReversal() {
+    useEffect(()=>{
+        fetchFeesData(studentId);
+    },[studentId]);
+    function fetchFeesData (studentId:number) {
+        StudentFeesManagementService.fetchFeesReport(studentId)
+            .then(res=>{
+                const feesData = res['data'];
+                setFeeBalance(feesData.balance);
+                setData(feesData.entries);
+
+            })
+            .catch((error)=>{
+                console.error(error);
+                alerts.showError(error.message);
+            });
+    }
+    function handleReversal(studentId:number) {
+        const createFeeRecord = {
+            transactionId:transactionId
+        };
         StudentFeesManagementService.handleFeeReversal(studentId)
             .then(() => {
                 alerts.showSuccess('Successfully reversed transaction');
@@ -155,9 +160,9 @@ const StudentFeeReport = (): JSX.Element => {
                         <Button className="float-left" variant="danger" style={{ marginLeft: '1rem' }} onClick={openModalHandler}>
                             Record Fee Item
                         </Button>{' '}
-                        <Button className="float-left" variant="danger" style={{ marginLeft: '1rem' }} onClick={openInvoiceModalHandler}>
-                            Invoice
-                        </Button>{' '}
+                        {/*<Button className="float-left" variant="danger" style={{ marginLeft: '1rem' }} onClick={openInvoiceModalHandler}>*/}
+                        {/*    Invoice*/}
+                        {/*</Button>{' '}*/}
                         <h6 className="float-left" style={{ marginLeft: '1rem' }}>
                             Fee Balance: {feeBalance}
                         </h6>{' '}
@@ -177,7 +182,7 @@ const StudentFeeReport = (): JSX.Element => {
                             )}
                         </div>
                         <MaterialTable
-                            title={`Fee Reports For Student ${studentId}`}
+                            title={`Fee Reports For ${studentName}`}
                             icons={tableIcons}
                             columns={columns}
                             data={data}
@@ -211,8 +216,8 @@ const StudentFeeReport = (): JSX.Element => {
                     </DialogActions>
                 </Dialog>
             </div>
-            <RecordFeePayment show={show} closeModal={closeModalHandler} />
-            <FeeWaiver show={showWaiver} closeModal={closeWaiverModalHandler} />
+            <RecordFeePayment studentId={studentId} show={show} closeModal={closeModalHandler} />
+            <FeeWaiver studentId={studentId} show={showWaiver} closeModal={closeWaiverModalHandler} />
             <Invoice show={showInvoice} closeModal={closeInvoiceModalHandler} />
         </>
     );
