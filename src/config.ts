@@ -1,3 +1,4 @@
+/* eslint-disable linebreak-style */
 const Config = {
     defaultPath: '/dashboard',
     basename: '/sims',
