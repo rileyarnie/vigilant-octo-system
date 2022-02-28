@@ -307,8 +307,8 @@ const CourseCohortsList = (props): JSX.Element => {
         showDialog ? setDialog(false) : setDialog(true);
     };
     const  handleBack = () => {
-        props.history.goBack()
-    }
+        props.history.goBack();
+    };
     const onSelectedCurrency = (currencyAbbrev) => {
         setCurrency(currencyAbbrev);
     };

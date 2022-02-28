@@ -72,7 +72,7 @@ function ProgramCohortSemesters(props) {
         { title: 'End Date', render: (rowData) => rowData?.endDate?.slice(0, 10) },
         {title: 'Transcripts', render: (rowData) => (
             <a href='#'
-                onClick={e => {fetchTranscript(parseInt(programCohortId)); e.stopPropagation()}}
+                onClick={e => {fetchTranscript(parseInt(programCohortId)); e.stopPropagation();}}
             >
             Download Transcript
             </a>
@@ -125,15 +125,15 @@ function ProgramCohortSemesters(props) {
             }
         })
             .then(() => {
-                alerts.showSuccess('Downloading transcript')
+                alerts.showSuccess('Downloading transcript');
             })
             .catch((error) => {
                 alerts.showError(error.message);
             });
     }
     const  handleBack = () => {
-        props.history.goBack()
-    }
+        props.history.goBack();
+    };
     return (
         <>
             <Row className="align-items-center page-header">

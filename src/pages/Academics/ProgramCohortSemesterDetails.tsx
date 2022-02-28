@@ -261,8 +261,8 @@ function ProgramCohortSemesterDetails(props) {
         showPublishModal ? setShowPublishDialog(false) : setShowPublishDialog(true);
     };
     const  handleBack = () => {
-        props.history.goBack()
-    }
+        props.history.goBack();
+    };
     return (
         <>
             <Row className="align-items-center page-header">

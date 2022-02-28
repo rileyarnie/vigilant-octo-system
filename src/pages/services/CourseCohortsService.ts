@@ -1,6 +1,5 @@
 import axios from 'axios';
 import Config from '../../config';
-import Semester from './Semester';
 import CourseCohort from './CourseCohort';
 const timetablingSrv = Config.baseUrl.timetablingSrv;
 export class CourseCohortService {

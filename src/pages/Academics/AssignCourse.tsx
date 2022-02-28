@@ -132,8 +132,8 @@ const AssignCourse = (props): JSX.Element => {
             });
     };
     const  handleBack = () => {
-        props.history.goBack()
-    }
+        props.history.goBack();
+    };
 
     return (
         <>

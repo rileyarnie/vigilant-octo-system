@@ -1,6 +1,5 @@
 import axios, { AxiosResponse } from 'axios';
 import Config from '../../config';
-import FeeItem from './FeeItem';
 const financeSrv = Config.baseUrl.financeSrv;
 const timetablingSrv = Config.baseUrl.timetablingSrv;
 const simsSrv = Config.baseUrl.simsSrv;
