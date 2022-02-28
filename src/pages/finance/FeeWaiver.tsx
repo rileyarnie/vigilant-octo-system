@@ -44,10 +44,10 @@ const FeeWaiver: React.FunctionComponent<Props> = (props) => {
                                 <Col sm={3}>Amount:</Col>
                                 <Col sm={9}>
                                     <FormControl type="number"
-                                                 onChange={(e) => {
-                                                     setAmount(e.target.value);
-                                                 }}
-                                                 placeholder="Enter Amount" />
+                                        onChange={(e) => {
+                                            setAmount(e.target.value);
+                                        }}
+                                        placeholder="Enter Amount" />
                                 </Col>
                             </Row>
                         </Form.Group>
@@ -56,10 +56,10 @@ const FeeWaiver: React.FunctionComponent<Props> = (props) => {
                                 <Col sm={3}>Narrative:</Col>
                                 <Col sm={9}>
                                     <FormControl type="text" as="textarea"
-                                                 onChange={(e) => {
-                                                     setNarrative(e.target.value);
-                                                 }}
-                                                 placeholder="Enter Narrative" />
+                                        onChange={(e) => {
+                                            setNarrative(e.target.value);
+                                        }}
+                                        placeholder="Enter Narrative" />
                                 </Col>
                             </Row>
                         </Form.Group>

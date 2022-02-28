@@ -126,8 +126,9 @@ const ProgramCoursesList = (props): JSX.Element => {
             });
     };
     const  handleBack = () => {
-        props.history.goBack()
-    }
+        // eslint-disable-next-line react/prop-types
+        props.history.goBack();
+    };
     return (
         <>
             <Row className="align-items-center page-header">

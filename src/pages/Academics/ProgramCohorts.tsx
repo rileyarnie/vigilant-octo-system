@@ -87,7 +87,6 @@ const ProgramCohorts = (): JSX.Element => {
     const [showModal, setModal] = useState(false);
     const [cohortId, setCohortId] = useState(null);
     const [cohortName, setCohortName] = useState('');
-    const [programCohortId, setProgramCohortId] = useState(0);
     const [errorMessages] = useState([]);
     const [showUploadModal, setShowUploadModal] = useState(false);
     const [cancelModal, setCancelModal] = useState(false);

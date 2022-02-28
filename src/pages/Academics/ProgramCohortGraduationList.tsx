@@ -1,6 +1,6 @@
 /* eslint-disable react/display-name */
-import React, { useState, useEffect, forwardRef, useCallback } from 'react';
-import { Row, Col, Modal, Button } from 'react-bootstrap';
+import React, { useState, useEffect, forwardRef } from 'react';
+import { Row, Col, Button } from 'react-bootstrap';
 import Breadcrumb from '../../App/components/Breadcrumb';
 import { LinearProgress } from '@mui/material';
 import Card from '@material-ui/core/Card';
@@ -21,7 +21,6 @@ import Remove from '@material-ui/icons/Remove';
 import SaveAlt from '@material-ui/icons/SaveAlt';
 import Search from '@material-ui/icons/Search';
 import ViewColumn from '@material-ui/icons/ViewColumn';
-import axios from 'axios';
 import { ProgramCohortService } from '../services/ProgramCohortService';
 import { Alerts, ToastifyAlerts } from '../lib/Alert';
 const alerts: Alerts = new ToastifyAlerts();
@@ -51,7 +50,7 @@ interface Props {
 }
 
 const ProgramCohortGraduationList: React.FunctionComponent<Props> = ({ toggleGraduationList }) => {
-    const [linearDisplay, setLinearDisplay] = useState('none');
+    const [linearDisplay,] = useState('none');
     const [errorMessages] = useState([]);
     const [isError] = useState(false);
     const [graduands, setGraduands] = useState([]);

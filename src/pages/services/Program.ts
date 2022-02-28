@@ -1,4 +1,4 @@
-import CertificationType from './CertificationType'
+import CertificationType from './CertificationType';
 
 
 export class  Program {
@@ -15,4 +15,4 @@ export class  Program {
     ) {}
 }
 
-export default Program
+export default Program;

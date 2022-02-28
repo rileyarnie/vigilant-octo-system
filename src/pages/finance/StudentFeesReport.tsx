@@ -28,10 +28,8 @@ import useMediaQuery from '@mui/material/useMediaQuery';
 import { useTheme } from '@mui/material/styles';
 import Alert from '@material-ui/lab/Alert';
 import Breadcrumb from '../../App/components/Breadcrumb';
-import { Row, Col, Button, Modal } from 'react-bootstrap';
-import { MenuItem, Select, Switch } from '@material-ui/core';
+import { Row, Col, Button} from 'react-bootstrap';
 import { Alerts, ToastifyAlerts } from '../lib/Alert';
-import { ValidationForm, TextInput } from 'react-bootstrap4-form-validation';
 import { StudentFeesManagementService } from '../../services/StudentFeesManagementService';
 import RecordFeePayment from './RecordFeePayment';
 import FeeWaiver from './FeeWaiver';
@@ -62,10 +60,9 @@ const StudentFeeReport = (): JSX.Element => {
     const [open, setOpen] = React.useState(false);
     const theme = useTheme();
     const fullScreen = useMediaQuery(theme.breakpoints.down('md'));
-    const [narrative, setNarrative] = useState('');
+    const [narrative] = useState('');
     const [transactionId, setTransactionId] = useState(0);
-    const [amount, setAmount] = useState('');
-    const [showModal, setModal] = useState(false);
+    const [amount] = useState('');
     const [errorMessages] = useState([]);
     const [feeBalance, setFeeBalance] = useState([]);
     const [show, setShow] = useState(false);
@@ -89,9 +86,6 @@ const StudentFeeReport = (): JSX.Element => {
     };
     const closeInvoiceModalHandler = () => {
         setShowInvoice(false);
-    };
-    const openInvoiceModalHandler = () => {
-        setShowInvoice(true);
     };
 
     const columns = [
@@ -128,11 +122,11 @@ const StudentFeeReport = (): JSX.Element => {
                 alerts.showError(error.message);
             });
     }
-    function handleReversal(studentId:number) {
-        const createFeeRecord = {
+    function handleReversal() {
+        const reversal = {
             transactionId:transactionId
         };
-        StudentFeesManagementService.handleFeeReversal(studentId)
+        StudentFeesManagementService.handleFeeReversal(reversal)
             .then(() => {
                 alerts.showSuccess('Successfully reversed transaction');
             })
@@ -210,7 +204,7 @@ const StudentFeeReport = (): JSX.Element => {
                         <Button variant="danger" autoFocus onClick={handleClose}>
                             Cancel
                         </Button>
-                        <Button variant="info" onClick={handleClose} autoFocus>
+                        <Button variant="info" onClick={handleReversal} autoFocus>
                             Confirm
                         </Button>
                     </DialogActions>

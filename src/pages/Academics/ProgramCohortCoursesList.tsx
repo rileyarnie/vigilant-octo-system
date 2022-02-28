@@ -1,3 +1,4 @@
+/* eslint-disable react/prop-types */
 /* eslint-disable linebreak-style */
 /* eslint-disable @typescript-eslint/no-unused-vars */
 /* eslint-disable react/display-name */
@@ -307,8 +308,8 @@ const CourseCohortsList = (props): JSX.Element => {
         showDialog ? setDialog(false) : setDialog(true);
     };
     const  handleBack = () => {
-        props.history.goBack()
-    }
+        props.history.goBack();
+    };
     const onSelectedCurrency = (currencyAbbrev) => {
         setCurrency(currencyAbbrev);
     };

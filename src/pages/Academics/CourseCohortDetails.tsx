@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 /* eslint-disable react/display-name */
 import React, { useState, useEffect, forwardRef } from 'react';
 import MaterialTable, { Icons } from 'material-table';
@@ -20,19 +21,15 @@ import axios from 'axios';
 import Card from '@material-ui/core/Card';
 import Alert from '@material-ui/lab/Alert';
 import Breadcrumb from '../../App/components/Breadcrumb';
-import { Row, Col, Modal, Button } from 'react-bootstrap';
+import { Row, Col, Button } from 'react-bootstrap';
 import Config from '../../config';
 import { Alerts, ToastifyAlerts } from '../lib/Alert';
 import { LinearProgress } from '@mui/material';
 import CreateMarksModal from './CreateMarksModal';
-import { MenuItem, Switch } from '@material-ui/core';
-import { ValidationForm, SelectGroup, FileInput, TextInput } from 'react-bootstrap4-form-validation';
-import CardPreview from './CardPreview';
-import { Link } from 'react-router-dom';
 import Select from 'react-select';
 import CertificationType from './enums/CertificationType';
-import { ProgramsService } from '../services/ProgramService';
-import Program from '../services/Program';
+// import { ProgramsService } from '../services/ProgramService';
+// import Program from '../services/Program';
 import ProgramCohortGraduationList from './ProgramCohortGraduationList';
 const alerts: Alerts = new ToastifyAlerts();
 const tableIcons: Icons = {
@@ -56,17 +53,14 @@ const tableIcons: Icons = {
 };
 const CourseCohortsDetails = (props: any): JSX.Element => {
     const [data, setData] = useState([]);
-    const [trainersData, setTrainers] = useState([]);
-    const [semesters, setSemesters] = useState([]);
+
     const [isError] = useState(false);
-    const [, setDisabled] = useState(false);
     const [errorMessages] = useState([]);
     const [linearDisplay, setLinearDisplay] = useState('block');
-    const [marks,setMarks] = useState('');
     const [certificationType,setCertificationType] = useState('');
     const simSrv = Config.baseUrl.simsSrv;
     const [showGraduating, setShowGraduating] = useState(false);
-    const timetablingSrv = Config.baseUrl.timetablingSrv;
+
     let enterredMarks;
     let selectedMarks;
     let programs;
@@ -163,7 +157,7 @@ const CourseCohortsDetails = (props: any): JSX.Element => {
     };
 
     const updateMarks = async (id:number,marks:string) => {
-        axios.put(`${simSrv}/course-cohort-registration-marks/${id}`, { marks:marks }).then((res) => {
+        axios.put(`${simSrv}/course-cohort-registration-marks/${id}`, { marks:marks }).then(() => {
             setLinearDisplay('none');
             fetchcourseCohortsRegistrations();
             alerts.showSuccess('Successfuly updated marks');

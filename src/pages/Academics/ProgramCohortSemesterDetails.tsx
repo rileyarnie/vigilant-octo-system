@@ -1,3 +1,5 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
+/* eslint-disable react/prop-types */
 /* eslint-disable react/display-name */
 import React, { useState, useEffect } from 'react';
 import { forwardRef } from 'react';
@@ -261,8 +263,8 @@ function ProgramCohortSemesterDetails(props) {
         showPublishModal ? setShowPublishDialog(false) : setShowPublishDialog(true);
     };
     const  handleBack = () => {
-        props.history.goBack()
-    }
+        props.history.goBack();
+    };
     return (
         <>
             <Row className="align-items-center page-header">
