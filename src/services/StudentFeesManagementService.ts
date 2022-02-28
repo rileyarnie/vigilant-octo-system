@@ -9,7 +9,7 @@ export class StudentFeesManagementService {
     //     return axios.get(`${financeSrv}/fee-reports`, {params:{studentId}});
     // }
     static async  handleFeeReversal (studentId: number): Promise<void> {
-        return axios.put(`${financeSrv}/fee-reversal`, {params:{studentId}});
+        return axios.put(`${financeSrv}/fees/reversals`, {params:{studentId}});
     }
     static async  fetchFeesReport (studentId: number): Promise<FeeReport[]> {
         return axios.get(`${financeSrv}/fees/reports`, {params:{studentId}});
