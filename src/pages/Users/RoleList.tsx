@@ -26,6 +26,10 @@ import { AddActions } from './AddActionsModal/AddActions';
 import CreateRole from './Role/CreateRole';
 import { Alerts, ToastifyAlerts } from '../lib/Alert';
 import { LinearProgress } from '@mui/material';
+import { MenuItem, Select } from '@material-ui/core';
+import { VerticalModal } from './ActionsByRole/VerticalModal';
+import { AddActionsModal } from './AddActionsModal/AddActionsModal';
+
 const alerts: Alerts = new ToastifyAlerts();
 const tableIcons: Icons = {
     // eslint-disable-next-line @typescript-eslint/naming-convention
@@ -76,7 +80,23 @@ function roleList(): JSX.Element {
         { title: 'id', field: 'id', editable: 'never' as const },
         { title: 'RoleName', field: 'RoleName', editable: 'always' as const },
         { title: 'Activation Status', field: 'activation_status', editable: 'never' as const },
-        { title: 'Created On', render: (row: Role): string => row.created_on.slice(0, 10), editable: 'never' as const }
+        { title: 'Created On', render: (row: Role): string => row.created_on.slice(0, 10), editable: 'never' as const },
+        {
+            title: ' Actions',
+            render: (row: Role) => (
+                <Select>
+                    <div className="" onClick={() => setVerticalModal(true)}>
+                        <MenuItem value="View courses">View Role Actions</MenuItem>
+                    </div>
+                    <div className="" onClick={() => setActionModal(true)}>
+                        <MenuItem value="View courses">Add Actions</MenuItem>
+                    </div>
+                    <div className="" onClick={() => handleRowDelete(row.id)}>
+                        <MenuItem value="View courses">Delete Role</MenuItem>
+                    </div>
+                </Select>
+            )
+        }
     ];
     const [data, setData] = useState([]);
     const [id, setId] = useState(0);
@@ -86,6 +106,15 @@ function roleList(): JSX.Element {
     const [isError] = useState(false);
     const [errorMessages] = useState([]);
     const [linearDisplay, setLinearDisplay] = useState('none');
+    const [open, setOpen] = useState(false);
+
+    //modal functions
+    const [verticalModal, setVerticalModal] = React.useState(false);
+    const [actionModal, setActionModal] = React.useState(false);
+
+    const toggleActionModal = () => {
+        actionModal ? setActionModal(false) : setActionModal(true);
+    };
 
     useEffect(() => {
         fetchRoles();
@@ -105,13 +134,13 @@ function roleList(): JSX.Element {
                 alerts.showError((error as Error).message);
             });
     }
-    function handleRowDelete(oldData: { id: number }, resolve: () => void): void {
+    // function handleRowDelete(oldData: { id: number }, resolve: () => void): void {
+    function handleRowDelete(id: number): void {
         const baseUrl = Config.baseUrl.authnzSrv;
         setLinearDisplay('block');
         axios
-            .delete(`${baseUrl}/roles/${oldData.id}`)
+            .delete(`${baseUrl}/roles/${id}`)
             .then(() => {
-                resolve();
                 fetchRoles();
                 setLinearDisplay('none');
                 alerts.showSuccess('Successfully deleted role');
@@ -121,11 +150,6 @@ function roleList(): JSX.Element {
                 console.error(error);
                 alerts.showError((error as Error).message);
             });
-    }
-
-    function handleRowSelection(roleName: string, roleId: number): void {
-        setRoleName(roleName);
-        setId(roleId);
     }
 
     const selectedRowProps = {
@@ -156,26 +180,7 @@ function roleList(): JSX.Element {
                                     </Alert>
                                 )}
                             </div>
-                            <MaterialTable
-                                title="Role List"
-                                columns={columns}
-                                data={data}
-                                options={{
-                                    selection: true,
-                                    showSelectAllCheckbox: false,
-                                    showTextRowsSelected: false
-                                }}
-                                onSelectionChange={(rows: Role[]): void => {
-                                    handleRowSelection(rows[0]?.RoleName, rows[0]?.id);
-                                }}
-                                icons={tableIcons}
-                                editable={{
-                                    onRowDelete: (oldData: Role): Promise<void> =>
-                                        new Promise((resolve) => {
-                                            handleRowDelete(oldData, resolve);
-                                        })
-                                }}
-                            />
+                            <MaterialTable title="Role List" columns={columns} data={data} icons={tableIcons} />
                         </Card>
                     </Col>
                 </Row>
@@ -183,6 +188,13 @@ function roleList(): JSX.Element {
                 &nbsp;&nbsp;&nbsp;
                 <AddActions {...selectedRowProps}> </AddActions>
             </div>
+            <VerticalModal show={verticalModal} onHide={() => setVerticalModal(false)} selectedrowprops={selectedRowProps} />
+            <AddActionsModal
+                show={actionModal}
+                toggleModal={toggleActionModal}
+                onHide={() => setActionModal(false)}
+                selectedRowProps={selectedRowProps}
+            />
         </>
     );
 }
