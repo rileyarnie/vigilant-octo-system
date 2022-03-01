@@ -1,7 +1,7 @@
 /* eslint-disable react/display-name */
 import React, { useState, useEffect } from 'react';
 import { forwardRef } from 'react';
-import MaterialTable, { MTableToolbar } from 'material-table';
+import MaterialTable from 'material-table';
 import AddBox from '@material-ui/icons/AddBox';
 import ArrowDownward from '@material-ui/icons/ArrowDownward';
 import Check from '@material-ui/icons/Check';
@@ -14,7 +14,6 @@ import FilterList from '@material-ui/icons/FilterList';
 import FirstPage from '@material-ui/icons/FirstPage';
 import LastPage from '@material-ui/icons/LastPage';
 import Remove from '@material-ui/icons/Remove';
-import { Select, MenuItem } from '@material-ui/core';
 import SaveAlt from '@material-ui/icons/SaveAlt';
 import Search from '@material-ui/icons/Search';
 import ViewColumn from '@material-ui/icons/ViewColumn';
@@ -60,7 +59,7 @@ const StudentFeesManagement = (): JSX.Element => {
     const [isError] = useState(false);
     const [errorMessages] = useState([]);
     const [linearDisplay, setLinearDisplay] = useState('none');
-    const [isAdmitted, setIsAdmitted] = useState('PENDING');
+    const [isAdmitted, ] = useState('PENDING');
     const [selectedRow] = useState(null);
 
     useEffect(() => {
@@ -69,7 +68,7 @@ const StudentFeesManagement = (): JSX.Element => {
 
     const fetchProgramCohortApplications = () => {
         axios
-            .get(`${simsSrv}/program-cohort-applications`, { params: { status: isAdmitted } })
+            .get(`${simsSrv}/program-cohort-applications`, { params: { status: 'ADMITTED' } })
             .then((res) => {
                 setLinearDisplay('none');
                 setData(res.data);
@@ -113,26 +112,7 @@ const StudentFeesManagement = (): JSX.Element => {
                                     backgroundColor: selectedRow === rowData.tableData.id ? '#EEE' : '#FFF'
                                 })
                             }}
-                            components={{
-                                Toolbar: (props) => (
-                                    <div>
-                                        <MTableToolbar {...props} />
-                                        <div style={{ padding: '0px 10px' }}>
-                                            <Select
-                                                labelId="demo-simple-select-label"
-                                                id="demo-simple-select"
-                                                style={{ width: 150 }}
-                                                value={isAdmitted}
-                                                onChange={(e) => setIsAdmitted(e.target.value as string)}
-                                            >
-                                                <MenuItem value={'ADMITTED'}>Admitted</MenuItem>
-                                                <MenuItem value={'PENDING'}>Pending</MenuItem>
-                                                <MenuItem value={'REJECTED'}>Rejected</MenuItem>
-                                            </Select>
-                                        </div>
-                                    </div>
-                                )
-                            }}
+                
                         />
                     </Card>
                 </Col>
