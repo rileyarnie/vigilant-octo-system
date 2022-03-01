@@ -69,7 +69,7 @@ const StudentFeesManagement = (): JSX.Element => {
 
     const fetchProgramCohortApplications = () => {
         axios
-            .get(`${simsSrv}/program-cohort-applications`, { params: { status: isAdmitted } })
+            .get(`${simsSrv}/program-cohort-applications`, { params: { status: 'ADMITTED' } })
             .then((res) => {
                 setLinearDisplay('none');
                 setData(res.data);
@@ -113,26 +113,7 @@ const StudentFeesManagement = (): JSX.Element => {
                                     backgroundColor: selectedRow === rowData.tableData.id ? '#EEE' : '#FFF'
                                 })
                             }}
-                            components={{
-                                Toolbar: (props) => (
-                                    <div>
-                                        <MTableToolbar {...props} />
-                                        <div style={{ padding: '0px 10px' }}>
-                                            <Select
-                                                labelId="demo-simple-select-label"
-                                                id="demo-simple-select"
-                                                style={{ width: 150 }}
-                                                value={isAdmitted}
-                                                onChange={(e) => setIsAdmitted(e.target.value as string)}
-                                            >
-                                                <MenuItem value={'ADMITTED'}>Admitted</MenuItem>
-                                                <MenuItem value={'PENDING'}>Pending</MenuItem>
-                                                <MenuItem value={'REJECTED'}>Rejected</MenuItem>
-                                            </Select>
-                                        </div>
-                                    </div>
-                                )
-                            }}
+                
                         />
                     </Card>
                 </Col>
