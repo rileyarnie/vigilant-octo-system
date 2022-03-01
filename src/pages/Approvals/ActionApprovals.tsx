@@ -89,6 +89,7 @@ const ActionApprovals = () => {
 
     //updata records
     const approvalActions = (actionApprovalId) => {
+        setLinearDisplay('none');
         axios
             .put(`..../action-approvals/${actionApprovalId}`)
             .then((res) => {
