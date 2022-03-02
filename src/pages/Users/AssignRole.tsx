@@ -49,7 +49,7 @@ const tableIcons: Icons = {
 const AssignRole = (): JSX.Element => {
     const columns = [
         { title: 'id', field: 'id' },
-        { title: 'AAD ALIAS', field: 'AADAlias' },
+        { title: 'AAD ALIAS', field: 'aadAlias' },
         { title: 'Actions', render: (row) => <Assign {...row}></Assign> }
     ];
     const [data, setData] = useState([]);

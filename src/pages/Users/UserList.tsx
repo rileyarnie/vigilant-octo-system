@@ -51,7 +51,7 @@ interface IProps {
 const UserList = (props: IProps): JSX.Element => {
     const columns = [
         { title: 'ID', field: 'id' },
-        { title: 'AAD Alias', field: 'AADAlias' }
+        { title: 'AAD Alias', field: 'aadAlias' }
     ];
     const [data, setData] = useState([]);
     const [linearDisplay, setLinearDisplay] = useState('none');

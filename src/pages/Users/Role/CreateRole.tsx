@@ -71,7 +71,7 @@ const CreateRole = (props: IProps): JSX.Element => {
                                             id="description"
                                             type="text"
                                             placeholder="Role description"
-                                            validator={validator.isAlphanumeric}
+                                            validator={!validator.isAlphanumeric}
                                             errorMessage={{ validator: 'Please enter a valid Role description' }}
                                             value={roleDescription}
                                             onChange={(e) => handleRoleChange(e, 'description')}
