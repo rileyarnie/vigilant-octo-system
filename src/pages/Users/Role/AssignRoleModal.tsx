@@ -34,7 +34,7 @@ export const AssignRoleModal = (props: IProps): JSX.Element => {
     }, []);
 
     roles.map((role) => {
-        return options.push({ value: role.id, label: role.RoleName });
+        return options.push({ value: role.id, label: role.name });
     });
 
     const handleChange = (selectedOptions) => {
