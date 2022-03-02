@@ -2,9 +2,7 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
-      <module fileurl="file://$PROJECT_DIR$/public-portal/public-portal.iml" filepath="$PROJECT_DIR$/public-portal/public-portal.iml" />
-      <module fileurl="file://$PROJECT_DIR$/staff-portal/staff-portal.iml" filepath="$PROJECT_DIR$/staff-portal/staff-portal.iml" />
-      <module fileurl="file://$PROJECT_DIR$/student-portal/student-portal.iml" filepath="$PROJECT_DIR$/student-portal/student-portal.iml" />
+      <module fileurl="file://$PROJECT_DIR$/staff-portal.iml" filepath="$PROJECT_DIR$/staff-portal.iml" />
     </modules>
   </component>
 </project>
