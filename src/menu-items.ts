@@ -163,6 +163,20 @@ const chartData: { items: MenuItemType[] } = {
                         }
                     ]
                 },
+                {
+                    id: 'workflow',
+                    title: 'Work Flow',
+                    type: 'collapse',
+                    icon: 'feather icon-user',
+                    children: [
+                        {
+                            id: 'Work Flow',
+                            title: 'Work Flow',
+                            type: 'item',
+                            url: '/workflows'
+                        }
+                    ]
+                },
             ]
         }
     ]

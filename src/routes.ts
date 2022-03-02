@@ -27,6 +27,7 @@ import ProgramCohortSemesters from './pages/Academics/ProgramCohortSemesters';
 import ProgramCohortSemesterDetails from './pages/Academics/ProgramCohortSemesterDetails';
 import ApplicantsList from './pages/finance/ApplicantsList';
 import StudentFeesReport from './pages/finance/StudentFeesReport';
+import WorkFlows from './pages/workFlows/WorkFlows';
 import ActionApprovals from './pages/Approvals/ActionApprovals';
 
 const routes = [
@@ -65,6 +66,7 @@ const routes = [
     { path: '/pcsdetails', exact: true, name: 'default', component: ProgramCohortSemesterDetails },
     { path: '/studentlist', exact: true, name: 'default', component: ApplicantsList },
     { path: '/studentfeesreport', exact: true, name: 'default', component: StudentFeesReport },
-    { path: '/action-approvals/mine', exact: true, name: 'default', component: ActionApprovals }
+    { path: '/workflows', exact: true, name: 'default', component: WorkFlows },
+    { path: '/actionapprovals', exact: true, name: 'default', component: ActionApprovals }
 ];
 export default routes;
