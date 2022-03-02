@@ -7,7 +7,7 @@ import { Alerts, ToastifyAlerts } from '../../lib/Alert';
 import { customSelectTheme } from '../../lib/SelectThemes';
 const alerts: Alerts = new ToastifyAlerts();
 interface ISelectedRow {
-    AADAlias: string;
+    aadAlias: string;
     id: number;
 }
 interface IProps {
@@ -34,7 +34,7 @@ export const AssignRoleModal = (props: IProps): JSX.Element => {
     }, []);
 
     roles.map((role) => {
-        return options.push({ value: role.id, label: role.RoleName });
+        return options.push({ value: role.id, label: role.name });
     });
 
     const handleChange = (selectedOptions) => {
@@ -69,7 +69,7 @@ export const AssignRoleModal = (props: IProps): JSX.Element => {
     return (
         <Modal {...props} size="lg" aria-labelledby="contained-modal-title-vcenter" centered>
             <Modal.Header closeButton>
-                <Modal.Title id="contained-modal-title-vcenter">{props.selectedrowprops.AADAlias}&apos;s Roles</Modal.Title>
+                <Modal.Title id="contained-modal-title-vcenter">{props.selectedrowprops.aadAlias}&apos;s Roles</Modal.Title>
             </Modal.Header>
             <Modal.Body>
                 <Select
