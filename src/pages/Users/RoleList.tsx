@@ -1,3 +1,4 @@
+/* eslint-disable linebreak-style */
 /* eslint-disable @typescript-eslint/no-unused-vars */
 /* eslint-disable react/display-name */
 import React, { useState, useEffect, forwardRef } from 'react';
@@ -79,7 +80,8 @@ interface Role {
 function roleList(): JSX.Element {
     const columns = [
         { title: 'id', field: 'id', editable: 'never' as const },
-        { title: 'RoleName', field: 'RoleName', editable: 'always' as const },
+        { title: 'RoleName', field: 'name', editable: 'always' as const },
+        { title: 'RoleDescription', field: 'description', editable: 'always' as const },
         { title: 'Activation Status', field: 'activation_status', editable: 'never' as const },
         { title: 'Created On', render: (row: Role): string => row.created_on.slice(0, 10), editable: 'never' as const },
         {

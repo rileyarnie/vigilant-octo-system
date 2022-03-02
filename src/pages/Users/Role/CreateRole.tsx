@@ -14,13 +14,15 @@ const CreateRole = (props: IProps): JSX.Element => {
     const authnzSrv = Config.baseUrl.authnzSrv;
     const [roleName, setRoleName] = useState('');
     const [showCreateModal, setShowCreateModal] = useState(false);
-    const handleRoleChange = (event) => {
-        setRoleName(event.target.value);
+    const [roleDescription, setRoleDescription] = useState('');
+    const handleRoleChange = (event, field) => {
+        field === 'name' ? setRoleName(event.target.value) :
+            setRoleDescription(event.target.value);
     };
 
     const handleRoleSubmit = () => {
         axios
-            .put(`${authnzSrv}/roles`, { roleName: roleName })
+            .put(`${authnzSrv}/roles`, { roleName: roleName, description: roleDescription })
             .then(() => {
                 alerts.showSuccess('Success created role');
                 props.fetchRoles();
@@ -57,7 +59,22 @@ const CreateRole = (props: IProps): JSX.Element => {
                                             validator={validator.isAlphanumeric}
                                             errorMessage={{ validator: 'Please enter a valid Role name' }}
                                             value={roleName}
-                                            onChange={handleRoleChange}
+                                            onChange={(e) => handleRoleChange(e,'name')}
+                                        />
+                                    </div>
+                                    <div className="form-group">
+                                        <label htmlFor="email">
+                                            <b>Enter Role Description</b>
+                                        </label>
+                                        <TextInput
+                                            name="description"
+                                            id="description"
+                                            type="text"
+                                            placeholder="Role description"
+                                            validator={!validator.isAlphanumeric}
+                                            errorMessage={{ validator: 'Please enter a valid Role description' }}
+                                            value={roleDescription}
+                                            onChange={(e) => handleRoleChange(e, 'description')}
                                         />
                                     </div>
                                 </ValidationForm>
