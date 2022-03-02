@@ -113,7 +113,7 @@ const ActionApprovals = () => {
                 <Col>
                     <Card>
                         <MaterialTable
-                            title="Approvals"
+                            title="Approval Requests"
                             columns={columns}
                             data={approvals}
                             icons={tableIcons}
