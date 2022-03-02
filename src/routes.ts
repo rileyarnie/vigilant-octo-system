@@ -29,8 +29,10 @@ import ApplicantsList from './pages/finance/ApplicantsList';
 import StudentFeesReport from './pages/finance/StudentFeesReport';
 import WorkFlows from './pages/workFlows/WorkFlows';
 import ActionApprovals from './pages/Approvals/ActionApprovals';
+import Login from './pages/Auth/Login';
 
 const routes = [
+    { path: '/login', exact: true, name: 'default', component: Login },
     { path: '/dashboard', exact: true, name: 'default', component: Default },
     { path: '/roles', exact: true, name: 'default', component: RoleList },
     { path: '/cohorts', exact: true, name: 'default', component: ProgramCohorts },
