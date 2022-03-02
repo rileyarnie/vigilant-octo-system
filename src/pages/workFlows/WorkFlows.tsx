@@ -26,7 +26,6 @@ import {getAuthnzServiceActions} from '../../authnz-library/authnz-actions';
 import {getSimServiceActions} from '../../authnz-library/sim-actions';
 import {getFinanceServiceActions} from '../../authnz-library/finance-actions';
 import {getTimetablingServiceActions} from '../../authnz-library/timetabling-actions';
-import Action from '../../authnz-library/timetabling-actions';
 import { customSelectTheme } from '../lib/SelectThemes';
 import {AuthnzService} from '../../services/AuthnzService';
 import Select from 'react-select';
@@ -61,7 +60,7 @@ const WorkFlows = (): JSX.Element => {
         { title: 'Actions', render: () =>
             <>
                 <Button className="btn btn-info" size="sm"
-                    onClick={(row:Action) => {toggleCreateModal(); setActionName(row.name);}}>
+                    onClick={() => {toggleCreateModal();}}>
                     Create Workflow
                 </Button>
             </>
@@ -69,7 +68,7 @@ const WorkFlows = (): JSX.Element => {
     ];
     const options = [];
     const [iserror] = useState(false);
-    const [actionName, setActionName] = useState(0);
+    const [actionName] = useState('');
     const [errorMessages] = useState([]);
     const [isMulti] = useState(true);
     const [, setSelectedOptions] = useState([]);

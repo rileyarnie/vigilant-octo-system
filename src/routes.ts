@@ -65,6 +65,8 @@ const routes = [
     { path: '/programcohortsemester', exact: true, name: 'default', component: ProgramCohortSemesters },
     { path: '/pcsdetails', exact: true, name: 'default', component: ProgramCohortSemesterDetails },
     { path: '/studentlist', exact: true, name: 'default', component: ApplicantsList },
-    { path: '/studentfeesreport', exact: true, name: 'default', component: StudentFeesReport }
+    { path: '/studentfeesreport', exact: true, name: 'default', component: StudentFeesReport },
+    { path: '/workflows', exact: true, name: 'default', component: WorkFlows },
+    { path: '/actionapprovals', exact: true, name: 'default', component: ActionApprovals }
 ];
 export default routes;
