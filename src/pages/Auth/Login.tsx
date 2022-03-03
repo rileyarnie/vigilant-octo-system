@@ -139,7 +139,7 @@ const Login = () => {
     return (
         <div className="login" style={{ display: 'grid', placeItems: 'center', height: '100vh' }}>
             <Button onClick={login} size="lg">
-                Log In
+                Log In with your KPC E-mail Address
             </Button>
         </div>
     );
