@@ -52,18 +52,15 @@ const tableIcons: Icons = {
 };
 const WorkFlows = (): JSX.Element => {
     const columns = [
-        { title: 'ID', field: 'tableData.id'},
         { title: 'Name', field: 'name'},
         { title: 'Description', field: 'description' },
-        { title: 'Path', field: 'path' },
-        { title: 'Method', field: 'verb' },
         { title: 'Actions', render: (row) =>
             <>
                 <Button className="btn btn-info" size="sm"
                     onClick={() => {
                         toggleCreateModal();
                         setActionName(row.name);
-                        console.log(row);
+                        fetchActionApprovers(row.name);
                     }}>
                     Create Workflow
                 </Button>
@@ -87,6 +84,16 @@ const WorkFlows = (): JSX.Element => {
     useEffect(() => {
         fetchRoles();
     }, []);
+    function fetchActionApprovers (actionName:string) {
+        WorkFlowService.fetchActionApprovers(actionName)
+            .then((res) => {
+                const roles = res.map((it) =>{
+                    return it.role;
+                    console.log('GET APPROVERS', roles);
+                } );
+                setSelectedOptions(roles);
+            });
+    }
     function fetchRoles() {
         setLinearDisplay('block');
         WorkFlowService.fetchRoles()
@@ -100,13 +107,11 @@ const WorkFlows = (): JSX.Element => {
                 alerts.showError(error.message);
             });
     }
-    console.log(actionName);
     roles.map((role) => {
         return options.push({ value: role.id, label: role.name });
     });
     const handleChange = (selectedOptions) => {
         setSelectedOptions(selectedOptions);
-
     };
     function handleSubmitWorkFlow () {
         const approvingRoles = [];
