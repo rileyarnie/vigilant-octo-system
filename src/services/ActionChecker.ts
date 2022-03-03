@@ -1,6 +1,6 @@
 /* eslint-disable no-prototype-builtins */
-import { Action } from 'authnz-library/dist';
-import Config from '../config';
+
+import { Action } from '../authnz-library/Action';
 
 interface Role {
     id: number;
@@ -19,6 +19,7 @@ interface User {
 }
 
 function getCurrUserActions(): { string: Action } {
+    console.log('get actions called');
     const userDetails = JSON.parse(localStorage.getItem('userInfo')) as unknown as User;
     if (!userDetails) {
         // debugger;
@@ -30,6 +31,11 @@ function getCurrUserActions(): { string: Action } {
 
 function cannotPerformAllActions(...actionNames: string[]): boolean {
     const actions = getCurrUserActions();
+
+    if (Object.keys(actions).length < 1) {
+        return false;
+    }
+
     actionNames.forEach((actionName) => {
         if (actions.hasOwnProperty(actionName)) {
             return false;
@@ -40,6 +46,10 @@ function cannotPerformAllActions(...actionNames: string[]): boolean {
 
 function canPerformActions(...actionNames: string[]): boolean {
     const actions = getCurrUserActions();
+
+    if (Object.keys(actions).length < 1) {
+        return false;
+    }
     actionNames.forEach((actionName) => {
         if (!actions.hasOwnProperty(actionName)) {
             return false;
@@ -49,9 +59,3 @@ function canPerformActions(...actionNames: string[]): boolean {
 }
 
 export { canPerformActions, cannotPerformAllActions };
-
-// function logout() {
-//     localStorage.clear();
-//     window.location.href = `${Config.PUBLIC_URL}?showLoggedOutModal=true`;
-// }
-// export { logout };
