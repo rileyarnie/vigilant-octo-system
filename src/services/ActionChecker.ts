@@ -19,7 +19,6 @@ interface User {
 }
 
 function getCurrUserActions(): { string: Action } {
-    console.log('get actions called');
     const userDetails = JSON.parse(localStorage.getItem('userInfo')) as unknown as User;
     if (!userDetails) {
         // debugger;
