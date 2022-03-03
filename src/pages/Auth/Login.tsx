@@ -122,7 +122,7 @@ const Login = () => {
             })
             .catch((error) => {
                 alerts.showError(error.message);
-                // return <Redirect to="/login" />;
+                return <Redirect to="/login" />;
             });
     };
     const loadPortal = (userInfo?: userInfoI) => {

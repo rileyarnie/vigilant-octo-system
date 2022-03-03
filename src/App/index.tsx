@@ -12,36 +12,12 @@ const MainLayout = Loadable({
     loader: () => import('./layout/MainLayout'),
     loading: Loader
 });
-// class App extends Component {
-//     render(): JSX.Element {
-//         const menu = routes.map((route, index) => {
-//             return route.component ? (
-//                 <Route key={index} path={route.path} exact={route.exact} render={(props) => <route.component {...props} />} />
-//             ) : null;
-//         });
-//         return (
-//             <>
-//                 <ScrollToTop>
-//                     <Suspense fallback={<Loader />}>
-//                         <Switch>
-//                             {menu}
-//                             <Route path="/" component={MainLayout} />
-//                         </Switch>
-//                     </Suspense>
-//                 </ScrollToTop>
-//             </>
-//         );
-//     }
-// }
-// export default App;
-
-// import React from 'react';
 
 const App = () => {
     const [isAuthenticated, setAuthState] = useState(false);
 
     const [isLoggedIn, setIsLoggedIn] = useState(false);
-    const token = localStorage.getItem('idToken');
+    const token = localStorage.getItem('userInfo');
 
     useEffect(() => {
         if (token) {
