@@ -27,7 +27,7 @@ import {getSimServiceActions} from '../../authnz-library/sim-actions';
 import {getFinanceServiceActions} from '../../authnz-library/finance-actions';
 import {getTimetablingServiceActions} from '../../authnz-library/timetabling-actions';
 import { customSelectTheme } from '../lib/SelectThemes';
-import {AuthnzService} from '../../services/AuthnzService';
+import { WorkFlowService } from '../../services/WorkFlowService';
 import Select from 'react-select';
 import {LinearProgress} from '@material-ui/core';
 const alerts: Alerts = new ToastifyAlerts();
@@ -57,10 +57,14 @@ const WorkFlows = (): JSX.Element => {
         { title: 'Description', field: 'description' },
         { title: 'Path', field: 'path' },
         { title: 'Method', field: 'verb' },
-        { title: 'Actions', render: () =>
+        { title: 'Actions', render: (row) =>
             <>
                 <Button className="btn btn-info" size="sm"
-                    onClick={() => {toggleCreateModal();}}>
+                    onClick={() => {
+                        toggleCreateModal();
+                        setActionName(row.name);
+                        console.log(row);
+                    }}>
                     Create Workflow
                 </Button>
             </>
@@ -68,10 +72,10 @@ const WorkFlows = (): JSX.Element => {
     ];
     const options = [];
     const [iserror] = useState(false);
-    const [actionName] = useState('');
+    const [actionName, setActionName] = useState('');
     const [errorMessages] = useState([]);
     const [isMulti] = useState(true);
-    const [, setSelectedOptions] = useState([]);
+    const [selectedOptions, setSelectedOptions] = useState([]);
     const [linearDisplay, setLinearDisplay] = useState('none');
     const [showModal, setModal] = useState(false);
     const [roles, setRoles] = useState([]);
@@ -83,9 +87,9 @@ const WorkFlows = (): JSX.Element => {
     useEffect(() => {
         fetchRoles();
     }, []);
-    function fetchRoles(): void {
+    function fetchRoles() {
         setLinearDisplay('block');
-        AuthnzService.fetchRoles()
+        WorkFlowService.fetchRoles()
             .then(res=>{
                 const roles = res['data'];
                 setRoles(roles);
@@ -96,14 +100,29 @@ const WorkFlows = (): JSX.Element => {
                 alerts.showError(error.message);
             });
     }
+    console.log(actionName);
     roles.map((role) => {
-        return options.push({ value: role.id, label: role.RoleName });
+        return options.push({ value: role.id, label: role.name });
     });
     const handleChange = (selectedOptions) => {
         setSelectedOptions(selectedOptions);
+
     };
-    function handleWorkFlow () {
-        console.log(actionName);
+    function handleSubmitWorkFlow () {
+        const approvingRoles = [];
+        selectedOptions.forEach((selectedOption,i) => {
+            approvingRoles.push({
+                rank:i+1,
+                roleId:selectedOption.value
+            });
+        });
+        WorkFlowService.handleSubmitWorkFlow(actionName,approvingRoles)
+            .then(() => {
+                alerts.showSuccess('Successfully created a workflow');
+            })
+            .catch((error) => {
+                alerts.showError(error.message);
+            });
     }
     const resetStateCloseModal = () => {
         setModal(false);
@@ -165,7 +184,7 @@ const WorkFlows = (): JSX.Element => {
                 </Modal.Body>
                 <Modal.Footer>
                     <Button className="btn btn-danger float-left" onClick={handleClose}>Close</Button>
-                    <Button className="btn btn-info float-right" onClick={handleWorkFlow}>Submit</Button>
+                    <Button className="btn btn-info float-right" onClick={handleSubmitWorkFlow}>Submit</Button>
                 </Modal.Footer>
             </Modal>
         </>

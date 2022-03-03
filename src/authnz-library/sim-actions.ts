@@ -9,7 +9,6 @@ export const ACTION_INSERT_COURSE_COHORT_EVALUATION = new Action(
     'POST',
     '/course-cohort-evaluations/'
 );
-
 simServiceActions.set(
     ACTION_INSERT_COURSE_COHORT_EVALUATION.name,
     ACTION_INSERT_COURSE_COHORT_EVALUATION

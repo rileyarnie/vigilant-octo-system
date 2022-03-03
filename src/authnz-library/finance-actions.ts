@@ -10,7 +10,6 @@ export const ACTION_CREATE_FEE_ITEM = new Action(
     'POST',
     '/fee-items'
 );
-
 financeServiceActions.set(
     ACTION_CREATE_FEE_ITEM.name,
     ACTION_CREATE_FEE_ITEM
