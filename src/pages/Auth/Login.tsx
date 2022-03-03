@@ -1,9 +1,9 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 /* eslint-disable camelcase */
 // eslint-disable-next-line no-use-before-define
 import React, { useContext, useState, useEffect } from 'react';
 import { PublicClientApplication } from '@azure/msal-browser';
 import { Redirect } from 'react-router-dom';
-// import './Login.css';
 import axios from 'axios';
 import { Alerts, ToastifyAlerts } from '../lib/Alert';
 import { getUserDetails } from '../lib/GraphService';

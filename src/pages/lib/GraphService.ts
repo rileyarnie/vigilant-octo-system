@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import * as graph from '@microsoft/microsoft-graph-client';
 
 export const getAuthenticatedClient = (accessToken: any) => {
