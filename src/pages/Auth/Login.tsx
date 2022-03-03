@@ -23,6 +23,7 @@ const Login = () => {
     const ERR_USER_NOT_FOUND = 'Error, User not found';
     // let userInfo = {} as userInfoI
     const [userInfo, setUserInfo] = useState<userInfoI>();
+    // const history = useHistory();
 
     useEffect(() => {
         loadPortal(userInfo);
@@ -44,8 +45,11 @@ const Login = () => {
 
     const login = async () => {
         try {
-            await loginAAD();
-            await fetchUserDetails();
+            const userId = await loginAAD();
+            // console.log('userId', userId);
+            const userDetails = await fetchUserDetails();
+            console.log('userDetails here', userDetails);
+            loadPortal(userDetails);
         } catch (err: any) {
             logout(err);
         }
@@ -72,6 +76,7 @@ const Login = () => {
             email: user.mail || user.userPrincipalName
         });
         localStorage.setItem('User', JSON.stringify(user));
+        return user;
     };
 
     const getAccessToken = async (publicClientApplication: PublicClientApplication, scopes: any) => {
@@ -106,7 +111,7 @@ const Login = () => {
         );
     };
 
-    const fetchUserDetails = async () => {
+    const fetchUserDetails: any = async () => {
         const token = localStorage.getItem('idToken');
         const config = {
             headers: { Authorization: `Bearer ${token}` }
@@ -116,22 +121,30 @@ const Login = () => {
             .get(`${authnzSrv}/users/me`, config)
             .then((res) => {
                 localStorage.setItem('userInfo', JSON.stringify(res.data));
-                setUserInfo(() => {
-                    return res.data[0];
-                });
+                setUserInfo(res.data);
+                return res.data;
             })
             .catch((error) => {
                 alerts.showError(error.message);
-                return <Redirect to="/login" />;
             });
     };
     const loadPortal = (userInfo?: userInfoI) => {
         if (!userInfo) {
             return alerts.showError('Please login');
         }
-        if (userInfo?.users_isStaff) {
+        // if (userInfo?.users_isStaff && userInfo?.users_isStudent) {
+        //     alerts.showSuccess('Successful login');
+        //     return history.push('/select');
+        // }
+        // if (userInfo?.users_isStudent) {
+        //     alerts.showSuccess('Successful login');
+        //     window.location.href = Config.STUDENT_URL;
+        //     return;
+        // }
+        if (userInfo) {
             alerts.showSuccess('Successful login');
-            return <Redirect to="/" />;
+            window.location.href = 'http://localhost:3001/';
+            return;
         }
         return alerts.showError(ERR_USER_NOT_FOUND);
     };
