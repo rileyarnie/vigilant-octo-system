@@ -26,7 +26,7 @@ const App = () => {
             setIsLoggedIn(true);
         }
         setUserInfo(loggedInUser);
-    }, [userInfo]);
+    }, []);
 
     const menu = routes.map((route, index) => {
         return route.component ? (
