@@ -14,19 +14,21 @@ import { Button } from 'react-bootstrap';
 const alerts: Alerts = new ToastifyAlerts();
 const Login = () => {
     interface userInfoI {
-        users_isStaff: boolean;
-        users_isStudent: boolean;
+        isStaff: boolean;
+        isStudent: boolean;
     }
-    const [, setError] = useState(null);
+    // const [, setError] = useState(null);
     const { setAuthState } = useContext(AuthContext);
     const [, setUser] = useState({});
-    const ERR_USER_NOT_FOUND = 'Error, User not found';
+    // const ERR_USER_NOT_FOUND = 'Error, User not found';
     // let userInfo = {} as userInfoI
     const [userInfo, setUserInfo] = useState<userInfoI>();
-    // const history = useHistory();
 
     useEffect(() => {
-        loadPortal(userInfo);
+        if (userInfo && userInfo.isStaff) {
+            loadPortal(userInfo);
+            setAuthState(true);
+        }
     }, [userInfo]);
 
     // Initialize MSAL Object
@@ -45,22 +47,19 @@ const Login = () => {
 
     const login = async () => {
         try {
-            const userId = await loginAAD();
-            // console.log('userId', userId);
-            const userDetails = await fetchUserDetails();
-            console.log('userDetails here', userDetails);
-            loadPortal(userDetails);
+            await loginAAD();
+            await fetchUserDetails();
         } catch (err: any) {
             logout(err);
         }
     };
 
     const logout = (err) => {
-        setError(err.message);
-        setAuthState(false);
-        setUser({});
+        // setError(err.message);
+        // setAuthState(false);
+        // setUser({});
         console.log(err);
-        localStorage.clear();
+        // localStorage.clear();
     };
 
     const loginAAD = async () => {
@@ -70,7 +69,7 @@ const Login = () => {
             prompt: 'select_account'
         });
         const user: any = await getUserDetails(await getAccessToken(publicClientApplication, Config.scopes));
-        setAuthState(true);
+        // setAuthState(true);
         setUser({
             displayName: user.displayName,
             email: user.mail || user.userPrincipalName
@@ -130,23 +129,13 @@ const Login = () => {
     };
     const loadPortal = (userInfo?: userInfoI) => {
         if (!userInfo) {
-            return alerts.showError('Please login');
-        }
-        // if (userInfo?.users_isStaff && userInfo?.users_isStudent) {
-        //     alerts.showSuccess('Successful login');
-        //     return history.push('/select');
-        // }
-        // if (userInfo?.users_isStudent) {
-        //     alerts.showSuccess('Successful login');
-        //     window.location.href = Config.STUDENT_URL;
-        //     return;
-        // }
-        if (userInfo) {
-            alerts.showSuccess('Successful login');
-            window.location.href = 'http://localhost:3001/';
+            alerts.showError('Please login');
             return;
         }
-        return alerts.showError(ERR_USER_NOT_FOUND);
+        if (userInfo) {
+            window.location.assign('http://localhost:3001');
+            return;
+        }
     };
 
     return (

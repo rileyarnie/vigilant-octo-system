@@ -17,13 +17,16 @@ const App = () => {
     const [isAuthenticated, setAuthState] = useState(false);
 
     const [isLoggedIn, setIsLoggedIn] = useState(false);
-    const token = localStorage.getItem('userInfo');
+    const [userInfo, setUserInfo] = useState();
+    // const token = ;
 
     useEffect(() => {
-        if (token) {
+        const loggedInUser = JSON.parse(localStorage.getItem('userInfo'));
+        if (loggedInUser && loggedInUser.isStaff) {
             setIsLoggedIn(true);
         }
-    }, [token]);
+        setUserInfo(loggedInUser);
+    }, [userInfo]);
 
     const menu = routes.map((route, index) => {
         return route.component ? (
@@ -37,17 +40,14 @@ const App = () => {
                 setAuthState
             }}
         >
-            {!isLoggedIn && <Login />}
-            {isLoggedIn && (
-                <ScrollToTop>
-                    <Suspense fallback={<Loader />}>
-                        <Switch>
-                            {menu}
-                            <Route path="/" component={MainLayout} />
-                        </Switch>
-                    </Suspense>
-                </ScrollToTop>
-            )}
+            <ScrollToTop>
+                <Suspense fallback={<Loader />}>
+                    <Switch>
+                        {menu}
+                        <Route path="/" component={MainLayout} />
+                    </Switch>
+                </Suspense>
+            </ScrollToTop>
         </AuthContext.Provider>
     );
 };

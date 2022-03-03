@@ -1,6 +1,6 @@
 /* eslint-disable react/prop-types */
-import { Switch, Route, Redirect, RouteProps } from 'react-router-dom';
-import React, { ComponentType } from 'react';
+import { Route, Redirect, RouteProps } from 'react-router-dom';
+import React from 'react';
 
 interface Props extends RouteProps {
     isLoggedIn: boolean;
