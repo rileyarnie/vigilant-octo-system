@@ -10,7 +10,6 @@ export const ACTION_CREATE_CAMPUS = new Action(
     'POST',
     '/campuses'
 );
-
 timetablingServiceActions.set(
     ACTION_CREATE_CAMPUS.name,
     ACTION_CREATE_CAMPUS

@@ -5,7 +5,6 @@ const authnzServiceActions = new Map<string, Action>();
 export function getAuthnzServiceActions(): Map<string, Action> {
     return authnzServiceActions;
 }
-
 export const ACTION_GET_ACTIONS_BY_ROLE_ID = new Action(
     'getActionsByRoleId',
     'Returns a list of actions associated with a role id',
