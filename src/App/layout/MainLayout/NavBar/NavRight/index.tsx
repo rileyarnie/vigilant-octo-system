@@ -1,6 +1,8 @@
 import React, { useEffect, useState } from 'react';
 import { Dropdown } from 'react-bootstrap';
+import { Redirect } from 'react-router-dom';
 import Avatar1 from '../../../../../assets/images/user/avatar.png';
+import Config from '../../../../../config';
 import SYS from '../../../../../store/constant';
 
 const NavRight = () => {
@@ -12,6 +14,11 @@ const NavRight = () => {
             setDisplayName(JSON.parse(details).displayName);
         }
     }, []);
+
+    const handleLogout = () => {
+        localStorage.clear();
+        window.location.assign('/login');
+    };
     return (
         <>
             <ul className="navbar-nav ml-auto">
@@ -24,7 +31,7 @@ const NavRight = () => {
                             <div className="pro-head">
                                 <img src={Avatar1} className="img-radius" alt="User Profile" />
                                 <span>{displayName}</span>
-                                <a href={SYS.BLANK_LINK} className="dud-logout" title="Logout">
+                                <a href={SYS.BLANK_LINK} className="dud-logout" title="Logout" onClick={handleLogout}>
                                     <i className="feather icon-log-out" />
                                 </a>
                             </div>
