@@ -180,16 +180,17 @@ const WorkFlows = (): JSX.Element => {
                     </Modal.Title>
                 </Modal.Header>
                 <Modal.Body>
-                    <ValidationForm/>
-                    <Select
-                        theme={customSelectTheme}
-                        defaultValue={approvers}
-                        options={options}
-                        isMulti={isMulti}
-                        placeholder="Select roles for this workflow"
-                        noOptionsMessage={() => 'No roles available'}
-                        onChange={handleChange}
-                    />
+                    <ValidationForm>
+                        <Select
+                            theme={customSelectTheme}
+                            defaultValue={approvers}
+                            options={options}
+                            isMulti={isMulti}
+                            placeholder="Select roles for this workflow"
+                            noOptionsMessage={() => 'No roles available'}
+                            onChange={handleChange}
+                        />
+                    </ValidationForm>
                 </Modal.Body>
                 <Modal.Footer>
                     <Button className="btn btn-danger float-left" onClick={handleClose}>Close</Button>
