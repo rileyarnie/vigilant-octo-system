@@ -103,6 +103,7 @@ const ActionApprovals = () => {
         };
         WorkFlowService.handleApprovals(actionApprovalId, approval)
             .then((res) => {
+                alerts.showSuccess('Action approved successfully');
             })
             .catch((err) => {
                 console.log('err', err);
@@ -117,6 +118,7 @@ const ActionApprovals = () => {
         };
         WorkFlowService.handleApprovals(actionApprovalId, approval)
             .then((res) => {
+                alerts.showSuccess('Action rejected Successfully');
             })
             .catch((err) => {
                 console.log('err', err);
