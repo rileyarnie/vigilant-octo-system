@@ -4,6 +4,7 @@
     "private": true,
     "homepage": "http://localhost:3000/",
     "dependencies": {
+        "@azure/msal-browser": "^2.22.0",
         "@ckeditor/ckeditor5-build-balloon": "^31.1.0",
         "@ckeditor/ckeditor5-build-classic": "^31.1.0",
         "@ckeditor/ckeditor5-build-decoupled-document": "^31.1.0",
@@ -19,6 +20,7 @@
         "@material-ui/core": "^4.12.3",
         "@material-ui/icons": "^4.11.2",
         "@material-ui/lab": "^4.0.0-alpha.60",
+        "@microsoft/microsoft-graph-client": "^3.0.2",
         "@mui/material": "^5.2.2",
         "@popperjs/core": "^2.11.2",
         "@types/react-draft-wysiwyg": "^1.13.4",

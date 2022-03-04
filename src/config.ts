@@ -1,5 +1,9 @@
 /* eslint-disable linebreak-style */
 const Config = {
+    appId: '5309142a-1a45-449e-a645-3977166cf64e',
+    redirectUri: 'http://localhost:3001/login',
+    authority: 'https://login.microsoftonline.com/poshit.onmicrosoft.com',
+    scopes: ['user.read'],
     defaultPath: '/dashboard',
     basename: '/sims',
     layout: 'horizontal',

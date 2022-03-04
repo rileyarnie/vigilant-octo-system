@@ -1,3 +1,20 @@
+import { ACTION_GET_ROLES, ACTION_GET_USERS } from './authnz-library/authnz-actions';
+import { ACTION_GET_FEE_REPORTS } from './authnz-library/finance-actions';
+import { ACTION_GET_PROGRAM_COHORT_APPLICATIONS } from './authnz-library/sim-actions';
+import {
+    ACTION_GET_CAMPUSES,
+    ACTION_GET_COURSES,
+    ACTION_GET_COURSE_COHORTS,
+    ACTION_GET_DEPARTMENTS,
+    ACTION_GET_PROGRAMS,
+    ACTION_GET_PROGRAM_COHORTS,
+    ACTION_GET_SEMESTERS,
+    ACTION_GET_TIMETABLING_UNITS,
+    ACTION_GET_TRAINERS,
+    ACTION_GET_VENUE
+} from './authnz-library/timetabling-actions';
+import { canPerformActions } from './services/ActionChecker';
+
 interface Badge {
     title: string;
     type: string;
@@ -15,6 +32,7 @@ export interface MenuItemType {
     target?: boolean;
     classes?: string;
     external?: boolean;
+    hidden?: boolean;
 }
 
 const chartData: { items: MenuItemType[] } = {
@@ -24,24 +42,28 @@ const chartData: { items: MenuItemType[] } = {
             title: 'Dashboard',
             type: 'group',
             icon: 'feather icon-monitor',
+            hidden: !canPerformActions(ACTION_GET_USERS.name, ACTION_GET_ROLES.name),
             children: [
                 {
                     id: 'Default',
                     title: 'Users',
                     type: 'collapse',
                     icon: 'feather icon-user',
+                    hidden: !canPerformActions(ACTION_GET_USERS.name, ACTION_GET_ROLES.name),
                     children: [
                         {
                             id: 'users',
                             title: 'Users',
                             type: 'item',
-                            url: '/users'
+                            url: '/users',
+                            hidden: !canPerformActions(ACTION_GET_USERS.name)
                         },
                         {
                             id: 'roles',
                             title: 'Roles',
                             type: 'item',
-                            url: '/roles'
+                            url: '/roles',
+                            hidden: !canPerformActions(ACTION_GET_ROLES.name)
                         }
                     ]
                 },
@@ -55,13 +77,15 @@ const chartData: { items: MenuItemType[] } = {
                             id: 'campuses',
                             title: 'Campuses',
                             type: 'item',
-                            url: '/campuses'
+                            url: '/campuses',
+                            hidden: !canPerformActions(ACTION_GET_CAMPUSES.name)
                         },
                         {
                             id: 'venues',
                             title: 'Venues',
                             type: 'item',
-                            url: '/venues'
+                            url: '/venues',
+                            hidden: !canPerformActions(ACTION_GET_VENUE.name)
                         }
                     ]
                 },
@@ -75,13 +99,15 @@ const chartData: { items: MenuItemType[] } = {
                             id: 'department',
                             title: 'Departments',
                             type: 'item',
-                            url: '/departments'
+                            url: '/departments',
+                            hidden: !canPerformActions(ACTION_GET_DEPARTMENTS.name)
                         },
                         {
                             id: 'trainers',
                             title: 'Trainers',
                             type: 'item',
-                            url: '/trainers'
+                            url: '/trainers',
+                            hidden: !canPerformActions(ACTION_GET_TRAINERS.name)
                         },
                         {
                             id: 'programs',
@@ -92,13 +118,15 @@ const chartData: { items: MenuItemType[] } = {
                                     id: 'programs',
                                     title: 'Programs',
                                     type: 'item',
-                                    url: '/programs'
+                                    url: '/programs',
+                                    hidden: !canPerformActions(ACTION_GET_PROGRAMS.name)
                                 },
                                 {
                                     id: 'cohort',
                                     title: 'Cohorts',
                                     type: 'item',
-                                    url: '/cohorts'
+                                    url: '/cohorts',
+                                    hidden: !canPerformActions(ACTION_GET_PROGRAM_COHORTS.name)
                                 }
                             ]
                         },
@@ -111,13 +139,15 @@ const chartData: { items: MenuItemType[] } = {
                                     id: 'courses',
                                     title: 'Courses',
                                     type: 'item',
-                                    url: '/courses'
+                                    url: '/courses',
+                                    hidden: !canPerformActions(ACTION_GET_COURSES.name)
                                 },
                                 {
                                     id: 'cohort',
                                     title: 'Cohorts',
                                     type: 'item',
-                                    url: '/coursecohorts'
+                                    url: '/coursecohorts',
+                                    hidden: !canPerformActions(ACTION_GET_COURSE_COHORTS.name)
                                 }
                             ]
                         },
@@ -125,13 +155,15 @@ const chartData: { items: MenuItemType[] } = {
                             id: 'semesters',
                             title: 'Semesters',
                             type: 'item',
-                            url: '/semesters'
+                            url: '/semesters',
+                            hidden: !canPerformActions(ACTION_GET_SEMESTERS.name)
                         },
                         {
                             id: 'applications',
                             title: 'Applications',
                             type: 'item',
-                            url: '/applications'
+                            url: '/applications',
+                            hidden: !canPerformActions(ACTION_GET_PROGRAM_COHORT_APPLICATIONS.name)
                         },
                         {
                             id: 'timetable',
@@ -143,7 +175,8 @@ const chartData: { items: MenuItemType[] } = {
                                     id: 'timetable',
                                     title: 'Edit Timetable',
                                     type: 'item',
-                                    url: '/timetable'
+                                    url: '/timetable',
+                                    hidden: !canPerformActions(ACTION_GET_TIMETABLING_UNITS.name)
                                 }
                             ]
                         }
@@ -159,7 +192,8 @@ const chartData: { items: MenuItemType[] } = {
                             id: 'finanace',
                             title: 'Finance',
                             type: 'item',
-                            url: '/studentlist'
+                            url: '/studentlist',
+                            hidden: !canPerformActions(ACTION_GET_FEE_REPORTS.name)
                         }
                     ]
                 },
@@ -176,7 +210,7 @@ const chartData: { items: MenuItemType[] } = {
                             url: '/workflows'
                         }
                     ]
-                },
+                }
             ]
         }
     ]

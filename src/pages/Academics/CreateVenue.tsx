@@ -152,10 +152,10 @@ class CreateVenue extends Component<Props> {
                                             </div>
 
                                             <div className="form-group">
-                                                <button className="btn btn-danger float-right">Submit</button>
+                                                <button className="btn btn-info float-right">Submit</button>
                                             </div>
                                         </ValidationForm>
-                                        <button className="btn btn-info float-left" onClick={() => this.props.setModal(false)}>
+                                        <button className="btn btn-danger float-left" onClick={() => this.props.setModal(false)}>
                                             Cancel
                                         </button>
                                     </Col>

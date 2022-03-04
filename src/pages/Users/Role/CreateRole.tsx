@@ -27,11 +27,16 @@ const CreateRole = (props: IProps): JSX.Element => {
                 alerts.showSuccess('Success created role');
                 props.fetchRoles();
                 setShowCreateModal(false);
+                resetStateCloseModal();
             })
             .catch((error) => {
                 alerts.showError(error.message);
                 console.log(error);
             });
+    };
+    const resetStateCloseModal = () => {
+        setRoleName('');
+        setRoleDescription('');
     };
     return (
         <>
