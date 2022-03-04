@@ -58,10 +58,10 @@ const EditVenue = (props): JSX.Element => {
                                             &nbsp;&nbsp;&nbsp;
                                         </div>
                                         <div className="form-group">
-                                            <button className="btn btn-danger float-right">Submit</button>
+                                            <button className="btn btn-info float-right">Submit</button>
                                         </div>
                                     </ValidationForm>
-                                    <button className="btn btn-info float-left" onClick={() => props.setEditModal(false)}>
+                                    <button className="btn btn-danger float-left" onClick={() => props.setEditModal(false)}>
                                         Cancel
                                     </button>
                                 </Col>
