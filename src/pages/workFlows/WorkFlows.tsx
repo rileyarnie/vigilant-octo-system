@@ -20,6 +20,7 @@ import ViewColumn from '@material-ui/icons/ViewColumn';
 import Alert from '@material-ui/lab/Alert';
 import { Card, Col, Modal, Button, Row } from 'react-bootstrap';
 import Breadcrumb from '../../App/components/Breadcrumb';
+import { ValidationForm } from 'react-bootstrap4-form-validation';
 import { Icons } from 'material-table';
 import { Alerts, ToastifyAlerts } from '../lib/Alert';
 import {getAuthnzServiceActions} from '../../authnz-library/authnz-actions';
@@ -106,7 +107,6 @@ const WorkFlows = (): JSX.Element => {
     });
     const handleChange = (selectedOptions) => {
         setSelectedOptions(selectedOptions);
-
     };
     function handleSubmitWorkFlow () {
         const approvingRoles = [];
@@ -166,25 +166,34 @@ const WorkFlows = (): JSX.Element => {
             <Modal
                 size="lg"
                 show={showModal}
-                aria-labelledby="contained-modal-title-vcenter" centered>
+                onHide={toggleCreateModal}
+                backdrop="static"
+                aria-labelledby="contained-modal-title-vcenter"
+                centered>
                 <Modal.Header closeButton>
                     <Modal.Title id="contained-modal-title-vcenter">
                         Administer Workflow
                     </Modal.Title>
                 </Modal.Header>
                 <Modal.Body>
-                    <Select
-                        theme={customSelectTheme}
-                        options={options}
-                        isMulti={isMulti}
-                        placeholder="Select roles for this workflow"
-                        noOptionsMessage={() => 'No roles available'}
-                        onChange={handleChange}
-                    />
+                    <ValidationForm>
+                        <Select
+                            theme={customSelectTheme}
+                            options={options}
+                            isMulti={isMulti}
+                            placeholder="Select roles for this workflow"
+                            noOptionsMessage={() => 'No roles available'}
+                            onChange={handleChange}
+                        /><br/>
+
+                    </ValidationForm>
+                    <button className="btn btn-info float-right" onClick={handleSubmitWorkFlow}>
+                        Submit
+                    </button>
+                    <button className="btn btn-danger float-left" onClick={handleClose}>Close</button>
                 </Modal.Body>
                 <Modal.Footer>
-                    <Button className="btn btn-danger float-left" onClick={handleClose}>Close</Button>
-                    <Button className="btn btn-info float-right" onClick={handleSubmitWorkFlow}>Submit</Button>
+
                 </Modal.Footer>
             </Modal>
         </>
