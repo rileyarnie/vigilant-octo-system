@@ -20,8 +20,8 @@ import ViewColumn from '@material-ui/icons/ViewColumn';
 import Alert from '@material-ui/lab/Alert';
 import { Card, Col, Modal, Button, Row } from 'react-bootstrap';
 import Breadcrumb from '../../App/components/Breadcrumb';
-import { ValidationForm } from 'react-bootstrap4-form-validation';
 import { Icons } from 'material-table';
+import {ValidationForm} from 'react-bootstrap4-form-validation';
 import { Alerts, ToastifyAlerts } from '../lib/Alert';
 import {getAuthnzServiceActions} from '../../authnz-library/authnz-actions';
 import {getSimServiceActions} from '../../authnz-library/sim-actions';
@@ -53,18 +53,15 @@ const tableIcons: Icons = {
 };
 const WorkFlows = (): JSX.Element => {
     const columns = [
-        { title: 'ID', field: 'tableData.id'},
         { title: 'Name', field: 'name'},
         { title: 'Description', field: 'description' },
-        { title: 'Path', field: 'path' },
-        { title: 'Method', field: 'verb' },
         { title: 'Actions', render: (row) =>
             <>
                 <Button className="btn btn-info" size="sm"
                     onClick={() => {
                         toggleCreateModal();
                         setActionName(row.name);
-                        console.log(row);
+                        fetchActionApprovers(row.name);
                     }}>
                     Create Workflow
                 </Button>
@@ -77,6 +74,7 @@ const WorkFlows = (): JSX.Element => {
     const [errorMessages] = useState([]);
     const [isMulti] = useState(true);
     const [selectedOptions, setSelectedOptions] = useState([]);
+    const [approvers,setApprovers] = useState([]);
     const [linearDisplay, setLinearDisplay] = useState('none');
     const [showModal, setModal] = useState(false);
     const [roles, setRoles] = useState([]);
@@ -88,6 +86,16 @@ const WorkFlows = (): JSX.Element => {
     useEffect(() => {
         fetchRoles();
     }, []);
+    function fetchActionApprovers (actionName:string) {
+        WorkFlowService.fetchActionApprovers(actionName)
+            .then((res) => {
+                const approvingroles = res['data'];
+                const roles = approvingroles.map((it) =>{
+                    return { value: it.role.id, label: it.role.name };
+                } );
+                setApprovers(roles);
+            });
+    }
     function fetchRoles() {
         setLinearDisplay('block');
         WorkFlowService.fetchRoles()
@@ -101,7 +109,6 @@ const WorkFlows = (): JSX.Element => {
                 alerts.showError(error.message);
             });
     }
-    console.log(actionName);
     roles.map((role) => {
         return options.push({ value: role.id, label: role.name });
     });
@@ -166,10 +173,7 @@ const WorkFlows = (): JSX.Element => {
             <Modal
                 size="lg"
                 show={showModal}
-                onHide={toggleCreateModal}
-                backdrop="static"
-                aria-labelledby="contained-modal-title-vcenter"
-                centered>
+                aria-labelledby="contained-modal-title-vcenter" centered>
                 <Modal.Header closeButton>
                     <Modal.Title id="contained-modal-title-vcenter">
                         Administer Workflow
@@ -179,25 +183,21 @@ const WorkFlows = (): JSX.Element => {
                     <ValidationForm>
                         <Select
                             theme={customSelectTheme}
+                            defaultValue={approvers}
                             options={options}
                             isMulti={isMulti}
                             placeholder="Select roles for this workflow"
                             noOptionsMessage={() => 'No roles available'}
                             onChange={handleChange}
-                        /><br/>
-
+                        />
                     </ValidationForm>
-                    <button className="btn btn-info float-right" onClick={handleSubmitWorkFlow}>
-                        Submit
-                    </button>
-                    <button className="btn btn-danger float-left" onClick={handleClose}>Close</button>
                 </Modal.Body>
                 <Modal.Footer>
-
+                    <Button className="btn btn-danger float-left" onClick={handleClose}>Close</Button>
+                    <Button className="btn btn-info float-right" onClick={handleSubmitWorkFlow}>Submit</Button>
                 </Modal.Footer>
             </Modal>
         </>
     );
 };
-
 export default WorkFlows;

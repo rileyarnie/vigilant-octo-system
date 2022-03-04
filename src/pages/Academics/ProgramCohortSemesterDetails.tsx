@@ -195,7 +195,7 @@ function ProgramCohortSemesterDetails(props) {
                 alerts.showSuccess('Successfully created a fee item');
             })
             .catch((error) => {
-                alerts.showError(error.response.data);
+                alerts.showError(error.message);
                 console.log(error);
             });
     }
@@ -493,7 +493,7 @@ function ProgramCohortSemesterDetails(props) {
                 </Modal.Body>
                 <Modal.Footer style={{ display: 'flex', justifyContent: 'space-between' }}>
                     <Button
-                        variant="btn btn-info btn-rounded"
+                        variant="btn btn-danger btn-rounded"
                         onClick={(e) => {
                             e.preventDefault();
                             setShowDialog(false);
@@ -505,7 +505,7 @@ function ProgramCohortSemesterDetails(props) {
                         onClick={(e) => {
                             feeItemId ? handleEdit(e) : handleFeeItemsCreation();
                         }}
-                        variant="btn btn-danger btn-rounded"
+                        variant="btn btn-info btn-rounded"
                     >
                         Submit
                     </Button>
