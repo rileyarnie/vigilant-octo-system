@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 import React, { Suspense, useEffect, useState } from 'react';
 import { Switch, Route } from 'react-router-dom';
 import Loadable from 'react-loadable';
@@ -6,7 +7,6 @@ import Loader from './layout/Loader';
 import ScrollToTop from './layout/ScrollToTop';
 import routes from '../route';
 import { AuthContext } from './context/AuthContext';
-import Login from '../pages/Auth/Login';
 
 const MainLayout = Loadable({
     loader: () => import('./layout/MainLayout'),

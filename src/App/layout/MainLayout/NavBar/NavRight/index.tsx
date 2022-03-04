@@ -1,8 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { Dropdown } from 'react-bootstrap';
-import { Redirect } from 'react-router-dom';
 import Avatar1 from '../../../../../assets/images/user/avatar.png';
-import Config from '../../../../../config';
 import SYS from '../../../../../store/constant';
 
 const NavRight = () => {
