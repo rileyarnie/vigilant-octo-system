@@ -1,4 +1,5 @@
 import Role from './Role';
+
 export default class ApprovingRoles {
     constructor (
         public id: number,

@@ -195,5 +195,4 @@ const WorkFlows = (): JSX.Element => {
         </>
     );
 };
-
 export default WorkFlows;
