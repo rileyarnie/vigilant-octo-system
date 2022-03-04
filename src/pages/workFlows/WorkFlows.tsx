@@ -21,6 +21,7 @@ import Alert from '@material-ui/lab/Alert';
 import { Card, Col, Modal, Button, Row } from 'react-bootstrap';
 import Breadcrumb from '../../App/components/Breadcrumb';
 import { Icons } from 'material-table';
+import {ValidationForm} from 'react-bootstrap4-form-validation';
 import { Alerts, ToastifyAlerts } from '../lib/Alert';
 import {getAuthnzServiceActions} from '../../authnz-library/authnz-actions';
 import {getSimServiceActions} from '../../authnz-library/sim-actions';
@@ -73,6 +74,7 @@ const WorkFlows = (): JSX.Element => {
     const [errorMessages] = useState([]);
     const [isMulti] = useState(true);
     const [selectedOptions, setSelectedOptions] = useState([]);
+    const [approvers,setApprovers] = useState([]);
     const [linearDisplay, setLinearDisplay] = useState('none');
     const [showModal, setModal] = useState(false);
     const [roles, setRoles] = useState([]);
@@ -87,11 +89,11 @@ const WorkFlows = (): JSX.Element => {
     function fetchActionApprovers (actionName:string) {
         WorkFlowService.fetchActionApprovers(actionName)
             .then((res) => {
-                const roles = res.map((it) =>{
-                    return it.role;
-                    console.log('GET APPROVERS', roles);
+                const approvingroles = res['data'];
+                const roles = approvingroles.map((it) =>{
+                    return { value: it.role.id, label: it.role.name };
                 } );
-                setSelectedOptions(roles);
+                setApprovers(roles);
             });
     }
     function fetchRoles() {
@@ -178,8 +180,10 @@ const WorkFlows = (): JSX.Element => {
                     </Modal.Title>
                 </Modal.Header>
                 <Modal.Body>
+                    <ValidationForm/>
                     <Select
                         theme={customSelectTheme}
+                        defaultValue={approvers}
                         options={options}
                         isMulti={isMulti}
                         placeholder="Select roles for this workflow"
