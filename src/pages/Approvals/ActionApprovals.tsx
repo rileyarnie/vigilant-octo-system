@@ -1,5 +1,4 @@
 /* eslint-disable react/display-name */
-
 import { LinearProgress } from '@material-ui/core';
 import AddBox from '@material-ui/icons/AddBox';
 import ArrowDownward from '@material-ui/icons/ArrowDownward';
@@ -16,19 +15,17 @@ import Remove from '@material-ui/icons/Remove';
 import SaveAlt from '@material-ui/icons/SaveAlt';
 import Search from '@material-ui/icons/Search';
 import ViewColumn from '@material-ui/icons/ViewColumn';
-import axios from 'axios';
 import MaterialTable, { Icons } from 'material-table';
 import React, { forwardRef, useEffect, useState } from 'react';
 import { Breadcrumb, Button, Card, Col, Row } from 'react-bootstrap';
 import { Alerts, ToastifyAlerts } from '../lib/Alert';
-
+import { WorkFlowService } from '../../services/WorkFlowService';
 interface Approval {
     id: number;
     action_name: string;
     requester: string;
     payload: string;
 }
-
 const ActionApprovals = () => {
     const tableIcons: Icons = {
         Add: forwardRef((props, ref) => <AddBox {...props} ref={ref} />),
@@ -49,11 +46,10 @@ const ActionApprovals = () => {
         ThirdStateCheck: forwardRef((props, ref) => <Remove {...props} ref={ref} />),
         ViewColumn: forwardRef((props, ref) => <ViewColumn {...props} ref={ref} />)
     };
-
     const [linearDisplay, setLinearDisplay] = useState('none');
+    const [actionApprovalId, setActionApprovalId] = useState(0);
     const [approvals, setApprovals] = useState<Approval[]>();
     const alerts: Alerts = new ToastifyAlerts();
-
     const columns = [
         { title: 'Id', field: 'id' },
         { title: 'Action Name', field: 'action_name' },
@@ -63,44 +59,77 @@ const ActionApprovals = () => {
             title: 'Actions',
             render: (rowData) => (
                 <div>
-                    <Button className="mr-2 btn-info" variant="sm" onClick={() => approvalActions(rowData.id)}>
+                    <Button className="mr-2 btn-info" variant="sm"
+                        onClick={() =>{ 
+                            handleApprove();
+                            setActionApprovalId(rowData.id);}}>
                         Approve
                     </Button>
-                    <Button className="mr-2 btn-danger" variant="sm" onClick={() => approvalActions(rowData.id)}>
+                    <Button className="mr-2 btn-danger" variant="sm"
+                        onClick={() =>{
+                            handleReject();
+                            setActionApprovalId(rowData.id);
+                        }}>
                         Reject
                     </Button>
                 </div>
             )
         }
     ];
-
-    //Fetch Approvals
     useEffect(() => {
-        axios
-            .get('..../action-approvals/mine')
+        fetchApprovals();
+    }, []);
+    function fetchApprovals() {
+        const token = localStorage.getItem('idToken');
+        const config = {
+            headers: { Authorization: `Bearer ${token}` }
+        };
+        WorkFlowService.fetchActionApprovals(config)
             .then((res) => {
-                setApprovals(res.data);
+                const myData = res['data'];
+                setApprovals(myData);
             })
             .catch((err) => {
                 console.log('err', err);
                 alerts.showError(err.message);
             });
-    }, []);
-
-    //updata records
-    const approvalActions = (actionApprovalId) => {
+    }
+    const handleApprove = () => {
         setLinearDisplay('none');
-        axios
-            .put(`..../action-approvals/${actionApprovalId}`)
-            .then((res) => {
-                console.log(res.data);
+        const token = localStorage.getItem('idToken');
+        const config = {
+            headers: { Authorization: `Bearer ${token}` }
+        };
+        const approvalStatus = {
+            approvalStatus: 'approved',
+        };
+        WorkFlowService.handleApprovals(actionApprovalId, config, approvalStatus)
+            .then(() => {
+                alerts.showSuccess('Action approved successfully');
             })
             .catch((err) => {
                 console.log('err', err);
                 alerts.showError(err.message);
             });
     };
-
+    const handleReject = () => {
+        setLinearDisplay('none');
+        const token = localStorage.getItem('idToken');
+        const config = {
+            headers: { Authorization: `Bearer ${token}` }
+        };
+        const approvalStatus = {
+            approvalStatus: 'rejected',
+        };
+        WorkFlowService.handleApprovals(actionApprovalId, config, approvalStatus)
+            .then(() => {
+                alerts.showSuccess('Action rejected Successfully');
+            })
+            .catch((err) => {
+                console.log('err', err);
+                alerts.showError(err.message);
+            });
+    };
     return (
         <>
             <Row className="align-items-center page-header">
@@ -117,9 +146,6 @@ const ActionApprovals = () => {
                             columns={columns}
                             data={approvals}
                             icons={tableIcons}
-                            onRowClick={(event, row) => {
-                                console.log(row);
-                            }}
                         />
                     </Card>
                 </Col>
@@ -127,5 +153,4 @@ const ActionApprovals = () => {
         </>
     );
 };
-
 export default ActionApprovals;

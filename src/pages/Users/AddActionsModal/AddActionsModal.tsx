@@ -38,12 +38,12 @@ export const AddActionsModal = (props: IProps): JSX.Element => {
                 console.log(error);
                 alerts.showError(error.message);
             });
+
     }, []);
 
     actions.map((action) => {
         return options.push({ value: action.id, label: action.name });
     });
-
     const handleChange = (selectedOptions) => {
         setSelectedOptions(selectedOptions);
     };
