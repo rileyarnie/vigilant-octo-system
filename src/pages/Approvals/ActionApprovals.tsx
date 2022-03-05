@@ -50,7 +50,6 @@ const ActionApprovals = () => {
     const [actionApprovalId, setActionApprovalId] = useState(0);
     const [approvals, setApprovals] = useState<Approval[]>();
     const alerts: Alerts = new ToastifyAlerts();
-    const jwtToken = localStorage.getItem('idToken');
     const columns = [
         { title: 'Id', field: 'id' },
         { title: 'Action Name', field: 'action_name' },
@@ -81,7 +80,7 @@ const ActionApprovals = () => {
         fetchApprovals();
     }, []);
     function fetchApprovals() {
-        const token = jwtToken;
+        const token = localStorage.getItem('idToken');
         const config = {
             headers: { Authorization: `Bearer ${token}` }
         };
@@ -97,12 +96,15 @@ const ActionApprovals = () => {
     }
     const handleApprove = () => {
         setLinearDisplay('none');
-        const approval = {
-            approvalStatus: 'approved',
-            jwt: jwtToken
+        const token = localStorage.getItem('idToken');
+        const config = {
+            headers: { Authorization: `Bearer ${token}` }
         };
-        WorkFlowService.handleApprovals(actionApprovalId, approval)
-            .then((res) => {
+        const approvalStatus = {
+            approvalStatus: 'approved',
+        };
+        WorkFlowService.handleApprovals(actionApprovalId, config, approvalStatus)
+            .then(() => {
                 alerts.showSuccess('Action approved successfully');
             })
             .catch((err) => {
@@ -112,12 +114,15 @@ const ActionApprovals = () => {
     };
     const handleReject = () => {
         setLinearDisplay('none');
-        const approval = {
-            approvalStatus: 'rejected',
-            jwt: jwtToken
+        const token = localStorage.getItem('idToken');
+        const config = {
+            headers: { Authorization: `Bearer ${token}` }
         };
-        WorkFlowService.handleApprovals(actionApprovalId, approval)
-            .then((res) => {
+        const approvalStatus = {
+            approvalStatus: 'rejected',
+        };
+        WorkFlowService.handleApprovals(actionApprovalId, config, approvalStatus)
+            .then(() => {
                 alerts.showSuccess('Action rejected Successfully');
             })
             .catch((err) => {

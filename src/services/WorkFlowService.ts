@@ -19,10 +19,10 @@ export class WorkFlowService {
     }
 
     static async fetchActionApprovals(config: unknown): Promise<void> {
-        return await axios.get(`${authnzSrv}/actions/action-approvals/mine`, config);
+        return await axios.get(`${authnzSrv}/action-approvals/mine`, config);
     }
 
-    static async handleApprovals(actionApprovalId:number, approval:Approval): Promise<void> {
-        return await axios.put(`${authnzSrv}/actions/action-approvals/${actionApprovalId}`);
+    static async handleApprovals(actionApprovalId:number, config, approvalStatus:Approval): Promise<void> {
+        return await axios.put(`${authnzSrv}/action-approvals/${actionApprovalId}`, approvalStatus,{ headers: config });
     }
 }
