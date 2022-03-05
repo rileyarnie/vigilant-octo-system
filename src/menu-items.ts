@@ -208,6 +208,12 @@ const chartData: { items: MenuItemType[] } = {
                             title: 'Work Flow',
                             type: 'item',
                             url: '/workflows'
+                        },
+                        {
+                            id: 'Approvals',
+                            title: 'Approvals',
+                            type: 'item',
+                            url: '/actionapprovals'
                         }
                     ]
                 }

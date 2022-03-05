@@ -158,7 +158,7 @@ const TrainerList = (): JSX.Element => {
     };
 
     const getAADAlias = (id: number) => {
-        return users.filter((user) => user.id === id).map((user) => user.AADAlias)[0];
+        return users.filter((user) => user.id === id).map((user) => user.aadAlias)[0];
     };
     const toggleCreateModal = () => {
         showModal ? setModal(false) : setModal(true);
@@ -226,7 +226,7 @@ const TrainerList = (): JSX.Element => {
                                 {users.map((user) => {
                                     return (
                                         <option key={user.id} value={user.id}>
-                                            {user.AADAlias}
+                                            {user.aadAlias}
                                         </option>
                                     );
                                 })}

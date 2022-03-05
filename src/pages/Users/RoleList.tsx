@@ -21,7 +21,7 @@ import Search from '@material-ui/icons/Search';
 import ViewColumn from '@material-ui/icons/ViewColumn';
 import axios from 'axios';
 import Alert from '@material-ui/lab/Alert';
-import { Card, Col, Row } from 'react-bootstrap';
+import { Button, Card, Col, Modal, Row } from 'react-bootstrap';
 import Breadcrumb from '../../App/components/Breadcrumb';
 import { Actions } from './ActionsByRole/Actions';
 import { AddActions } from './AddActionsModal/AddActions';
@@ -32,7 +32,12 @@ import { MenuItem, Select } from '@material-ui/core';
 import { VerticalModal } from './ActionsByRole/VerticalModal';
 import { AddActionsModal } from './AddActionsModal/AddActionsModal';
 import { canPerformActions } from '../../services/ActionChecker';
-import { ACTION_ADD_ACTIONS_TO_ROLE, ACTION_DEACTIVATE_ROLE, ACTION_GET_ACTIONS, ACTION_GET_ROLES } from '../../authnz-library/authnz-actions';
+import {
+    ACTION_ADD_ACTIONS_TO_ROLE,
+    ACTION_DEACTIVATE_ROLE,
+    ACTION_GET_ACTIONS,
+    ACTION_GET_ROLES
+} from '../../authnz-library/authnz-actions';
 
 const alerts: Alerts = new ToastifyAlerts();
 const tableIcons: Icons = {
@@ -73,10 +78,8 @@ const tableIcons: Icons = {
 };
 interface Role {
     id: number;
-    // eslint-disable-next-line @typescript-eslint/naming-convention
     created_on: string;
     name: string;
-    // eslint-disable-next-line @typescript-eslint/naming-convention
     RoleName: string;
 }
 function roleList(): JSX.Element {
@@ -91,7 +94,14 @@ function roleList(): JSX.Element {
             render: (row: Role) => (
                 <Select>
                     {canPerformActions(ACTION_GET_ACTIONS.name) && (
-                        <div className="" onClick={() => setVerticalModal(true)}>
+                        <div
+                            className=""
+                            onClick={() => {
+                                roleActions(row.id);
+                                setRoleName(row.name);
+                                toggleActionsModal();
+                            }}
+                        >
                             <MenuItem value="View courses">View Role Actions</MenuItem>
                         </div>
                     )}
@@ -109,29 +119,26 @@ function roleList(): JSX.Element {
             )
         }
     ];
+    const actionColumns = [
+        { title: 'id', field: 'id' },
+        { title: 'Action Name', field: 'name' }
+    ];
     const [data, setData] = useState([]);
-    const [id, setId] = useState(0);
+    const [id] = useState(0);
+    const [showModal, setModal] = useState(false);
     const [roleName, setRoleName] = useState('');
-
-    //for error handling
     const [isError] = useState(false);
     const [errorMessages] = useState([]);
+    const [actions, setActions] = useState([]);
     const [linearDisplay, setLinearDisplay] = useState('none');
-
+    const authnzSrv = Config.baseUrl.authnzSrv;
     //modal functions
     const [verticalModal, setVerticalModal] = React.useState(false);
     const [actionModal, setActionModal] = React.useState(false);
-
-    const toggleActionModal = () => {
-        actionModal ? setActionModal(false) : setActionModal(true);
-    };
-
     useEffect(() => {
         fetchRoles();
     }, []);
-
     function fetchRoles(): void {
-        const authnzSrv = Config.baseUrl.authnzSrv;
         setLinearDisplay('block');
         axios
             .get(`${authnzSrv}/roles`)
@@ -144,12 +151,24 @@ function roleList(): JSX.Element {
                 alerts.showError((error as Error).message);
             });
     }
-    // function handleRowDelete(oldData: { id: number }, resolve: () => void): void {
-    function handleRowDelete(id: number): void {
-        const baseUrl = Config.baseUrl.authnzSrv;
+    function roleActions(roleId: number) {
         setLinearDisplay('block');
         axios
-            .delete(`${baseUrl}/roles/${id}`)
+            .get(`${authnzSrv}/actions`, { params: { roleId: roleId } })
+            .then((res) => {
+                const myData = res.data;
+                setActions(myData);
+                setLinearDisplay('none');
+            })
+            .catch((error) => {
+                console.log(error);
+                alerts.showError((error as Error).message);
+            });
+    }
+    function handleRowDelete(id: number): void {
+        setLinearDisplay('block');
+        axios
+            .delete(`${authnzSrv}/roles/${id}`)
             .then(() => {
                 fetchRoles();
                 setLinearDisplay('none');
@@ -165,6 +184,15 @@ function roleList(): JSX.Element {
     const selectedRowProps = {
         id: id,
         name: roleName
+    };
+    const resetStateCloseModal = () => {
+        setModal(false);
+    };
+    const toggleActionsModal = () => {
+        showModal ? resetStateCloseModal() : setModal(true);
+    };
+    const handleClose = () => {
+        showModal ? resetStateCloseModal() : setModal(false);
     };
     return (
         <>
@@ -203,10 +231,30 @@ function roleList(): JSX.Element {
             <VerticalModal show={verticalModal} onHide={() => setVerticalModal(false)} selectedrowprops={selectedRowProps} />
             <AddActionsModal
                 show={actionModal}
-                toggleModal={toggleActionModal}
+                toggleModal={toggleActionsModal}
                 onHide={() => setActionModal(false)}
                 selectedRowProps={selectedRowProps}
             />
+            <Modal
+                show={showModal}
+                onHide={toggleActionsModal}
+                size="lg"
+                backdrop="static"
+                aria-labelledby="contained-modal-title-vcenter"
+                centered
+            >
+                <Modal.Header closeButton>
+                    <Modal.Title id="contained-modal-title-vcenter">{roleName} Actions</Modal.Title>
+                </Modal.Header>
+                <Modal.Body>
+                    <MaterialTable title="Action List" columns={actionColumns} data={actions} icons={tableIcons} />
+                </Modal.Body>
+                <Modal.Footer style={{ display: 'flex', justifyContent: 'flex-start' }}>
+                    <Button variant="danger float-left" onClick={handleClose}>
+                        Close
+                    </Button>
+                </Modal.Footer>
+            </Modal>
         </>
     );
 }
