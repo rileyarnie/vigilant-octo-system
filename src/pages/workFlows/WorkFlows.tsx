@@ -59,8 +59,9 @@ const WorkFlows = (): JSX.Element => {
             <>
                 <Button className="btn btn-info" size="sm"
                     onClick={() => {
-                        toggleCreateModal();
                         setActionName(row.name);
+                        console.log(row);
+                        toggleCreateModal();
                         fetchActionApprovers(row.name);
                     }}>
                     Create Workflow
@@ -85,14 +86,16 @@ const WorkFlows = (): JSX.Element => {
     const data = [...authnzActions, ...financeActions, ...timetableActions, ...simsActions];
     useEffect(() => {
         fetchRoles();
+        //fetchActionApprovers (actionName);
     }, []);
     function fetchActionApprovers (actionName:string) {
         WorkFlowService.fetchActionApprovers(actionName)
             .then((res) => {
-                const approvingroles = res['data'];
-                const roles = approvingroles.map((it) =>{
+                const approvingRoles = res['data'];
+                const roles = approvingRoles.map((it) =>{
                     return { value: it.role.id, label: it.role.name };
                 } );
+
                 setApprovers(roles);
             });
     }
@@ -126,6 +129,7 @@ const WorkFlows = (): JSX.Element => {
         WorkFlowService.handleSubmitWorkFlow(actionName,approvingRoles)
             .then(() => {
                 alerts.showSuccess('Successfully created a workflow');
+                setModal(false);
             })
             .catch((error) => {
                 alerts.showError(error.message);
@@ -183,7 +187,7 @@ const WorkFlows = (): JSX.Element => {
                     <ValidationForm>
                         <Select
                             theme={customSelectTheme}
-                            defaultValue={approvers}
+                            value={approvers}
                             options={options}
                             isMulti={isMulti}
                             placeholder="Select roles for this workflow"
