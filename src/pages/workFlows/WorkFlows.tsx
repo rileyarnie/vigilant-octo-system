@@ -60,7 +60,6 @@ const WorkFlows = (): JSX.Element => {
                 <Button className="btn btn-info" size="sm"
                     onClick={() => {
                         setActionName(row.name);
-                        console.log(row);
                         toggleCreateModal();
                         fetchActionApprovers(row.name);
                     }}>
@@ -86,7 +85,6 @@ const WorkFlows = (): JSX.Element => {
     const data = [...authnzActions, ...financeActions, ...timetableActions, ...simsActions];
     useEffect(() => {
         fetchRoles();
-        //fetchActionApprovers (actionName);
     }, []);
     function fetchActionApprovers (actionName:string) {
         WorkFlowService.fetchActionApprovers(actionName)
@@ -95,7 +93,6 @@ const WorkFlows = (): JSX.Element => {
                 const roles = approvingRoles.map((it) =>{
                     return { value: it.role.id, label: it.role.name };
                 } );
-
                 setApprovers(roles);
             });
     }
@@ -144,6 +141,7 @@ const WorkFlows = (): JSX.Element => {
     const handleClose = () => {
         showModal ? resetStateCloseModal() : setModal(false);
     };
+    console.log('APPROVERS',approvers);
     return (
         <>
             <div>
@@ -187,7 +185,7 @@ const WorkFlows = (): JSX.Element => {
                     <ValidationForm>
                         <Select
                             theme={customSelectTheme}
-                            value={approvers}
+                            defaultValue={approvers}
                             options={options}
                             isMulti={isMulti}
                             placeholder="Select roles for this workflow"
