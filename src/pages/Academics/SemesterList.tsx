@@ -26,6 +26,8 @@ import Config from '../../config';
 import { ValidationForm, TextInput } from 'react-bootstrap4-form-validation';
 import { Icons } from 'material-table';
 import { Alerts, ToastifyAlerts } from '../lib/Alert';
+import { canPerformActions } from '../../services/ActionChecker';
+import { ACTION_CREATE_SEMESTERS, ACTION_GET_SEMESTERS } from '../../authnz-library/timetabling-actions';
 const alerts: Alerts = new ToastifyAlerts();
 const tableIcons: Icons = {
     Add: forwardRef((props, ref) => <AddBox {...props} ref={ref} />),
@@ -218,48 +220,54 @@ const SemesterList = (): JSX.Element => {
                     <Breadcrumb />
                 </Col>
                 <Col>
-                    <Button className="float-right" variant="danger" onClick={() => toggleCreateModal()}>
-                        Create Semester
-                    </Button>
+                    {canPerformActions(ACTION_CREATE_SEMESTERS.name) && (
+                        <Button className="float-right" variant="danger" onClick={() => toggleCreateModal()}>
+                            Create Semester
+                        </Button>
+                    )}
                 </Col>
             </Row>
-            <LinearProgress style={{ display: linearDisplay }} />
-            <Row>
-                <Col>
-                    <Card>
-                        <div>
-                            {isError && (
-                                <Alert severity="error">
-                                    {errorMessages.map((msg, i) => {
-                                        return <div key={i}>{msg}</div>;
-                                    })}
-                                </Alert>
-                            )}
-                        </div>
-                        <MaterialTable
-                            title="Semesters"
-                            columns={columns}
-                            data={data}
-                            options={{ actionsColumnIndex: -1 }}
-                            icons={tableIcons}
-                            actions={[
-                                {
-                                    icon: Edit,
-                                    tooltip: 'Edit Row',
-                                    onClick: (event, rowData) => {
-                                        setSemesterId(rowData.id);
-                                        setSelectedSemesterName(rowData.name);
-                                        setSelectedStartDate(rowData.startDate);
-                                        setSelectedEndDate(rowData.endDate);
-                                        setSelectedSemester(rowData);
-                                        toggleCreateModal();
-                                    }
-                                }
-                            ]}
-                        />
-                    </Card>
-                </Col>
-            </Row>
+            {canPerformActions(ACTION_GET_SEMESTERS.name) && (
+                <>
+                    <LinearProgress style={{ display: linearDisplay }} />
+                    <Row>
+                        <Col>
+                            <Card>
+                                <div>
+                                    {isError && (
+                                        <Alert severity="error">
+                                            {errorMessages.map((msg, i) => {
+                                                return <div key={i}>{msg}</div>;
+                                            })}
+                                        </Alert>
+                                    )}
+                                </div>
+                                <MaterialTable
+                                    title="Semesters"
+                                    columns={columns}
+                                    data={data}
+                                    options={{ actionsColumnIndex: -1 }}
+                                    icons={tableIcons}
+                                    actions={[
+                                        {
+                                            icon: Edit,
+                                            tooltip: 'Edit Row',
+                                            onClick: (event, rowData) => {
+                                                setSemesterId(rowData.id);
+                                                setSelectedSemesterName(rowData.name);
+                                                setSelectedStartDate(rowData.startDate);
+                                                setSelectedEndDate(rowData.endDate);
+                                                setSelectedSemester(rowData);
+                                                toggleCreateModal();
+                                            }
+                                        }
+                                    ]}
+                                />
+                            </Card>
+                        </Col>
+                    </Row>
+                </>
+            )}
 
             <Modal
                 show={showModal}

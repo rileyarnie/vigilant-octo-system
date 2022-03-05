@@ -28,6 +28,8 @@ import Config from '../../config';
 import { Link } from 'react-router-dom';
 import { ValidationForm, SelectGroup, TextInput } from 'react-bootstrap4-form-validation';
 import { LinearProgress } from '@mui/material';
+import { canPerformActions } from '../../services/ActionChecker';
+import { ACTION_CREATE_PROGRAM, ACTION_GET_PROGRAMS } from '../../authnz-library/timetabling-actions';
 
 const alerts: Alerts = new ToastifyAlerts();
 
@@ -222,36 +224,42 @@ const Programs = (): JSX.Element => {
                     <Breadcrumb />
                 </Col>
                 <Col>
-                    <Button className="float-right" variant="danger" onClick={() => toggleCreateModal()}>
-                        Create Program
-                    </Button>
+                    {canPerformActions(ACTION_CREATE_PROGRAM.name) && (
+                        <Button className="float-right" variant="danger" onClick={() => toggleCreateModal()}>
+                            Create Program
+                        </Button>
+                    )}
                 </Col>
             </Row>
 
-            <LinearProgress style={{ display: linearDisplay }} />
-            <Row>
-                <Col>
-                    <Card>
-                        <div>
-                            {iserror && (
-                                <Alert severity="error">
-                                    {errorMessages.map((msg, i) => {
-                                        return <div key={i}>{msg}</div>;
-                                    })}
-                                </Alert>
-                            )}
-                        </div>
-                        <MaterialTable
-                            title="Programs"
-                            columns={columns}
-                            data={data}
-                            // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-                            // @ts-ignore
-                            icons={tableIcons}
-                        />
-                    </Card>
-                </Col>
-            </Row>
+            {canPerformActions(ACTION_GET_PROGRAMS.name) && (
+                <>
+                    <LinearProgress style={{ display: linearDisplay }} />
+                    <Row>
+                        <Col>
+                            <Card>
+                                <div>
+                                    {iserror && (
+                                        <Alert severity="error">
+                                            {errorMessages.map((msg, i) => {
+                                                return <div key={i}>{msg}</div>;
+                                            })}
+                                        </Alert>
+                                    )}
+                                </div>
+                                <MaterialTable
+                                    title="Programs"
+                                    columns={columns}
+                                    data={data}
+                                    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+                                    // @ts-ignore
+                                    icons={tableIcons}
+                                />
+                            </Card>
+                        </Col>
+                    </Row>
+                </>
+            )}
             <Modal
                 show={showModal}
                 onHide={toggleCreateModal}

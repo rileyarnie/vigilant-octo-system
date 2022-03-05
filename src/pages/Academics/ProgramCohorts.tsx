@@ -31,6 +31,8 @@ import { Link } from 'react-router-dom';
 import { Alerts, ToastifyAlerts } from '../lib/Alert';
 import { LinearProgress } from '@mui/material';
 import { ProgramCohortService } from '../services/ProgramCohortService';
+import { canPerformActions } from '../../services/ActionChecker';
+import { ACTION_CREATE_PROGRAM_COHORT, ACTION_GET_PROGRAM_COHORTS } from '../../authnz-library/timetabling-actions';
 const alerts: Alerts = new ToastifyAlerts();
 const tableIcons: Icons = {
     Add: forwardRef((props, ref) => <AddBox {...props} ref={ref} />),
@@ -96,7 +98,7 @@ const ProgramCohorts = (): JSX.Element => {
     const timetablingSrv = Config.baseUrl.timetablingSrv;
     const year = graduationDate.split('').slice(0, 4).join('');
     const month = graduationDate.slice(5, 7);
-    
+
     const handleActivationStatusToggle = (event, row: programCohort) => {
         setDisabled(true);
         if (row.program_cohorts_status === 'active') {
@@ -116,7 +118,8 @@ const ProgramCohorts = (): JSX.Element => {
         axios
             .put(`${timetablingSrv}/program-cohorts/${row.program_cohorts_id}`, cohortStatus)
             .then(() => {
-                const msg = activationStatus === 'canceled' ? 'Successfully Deactivated Program Cohorts' : 'Successfully activated Program Cohort';
+                const msg =
+                    activationStatus === 'canceled' ? 'Successfully Deactivated Program Cohorts' : 'Successfully activated Program Cohort';
                 alerts.showSuccess(msg);
                 fetchProgramCohorts();
                 setDisabled(false);
@@ -306,11 +309,20 @@ const ProgramCohorts = (): JSX.Element => {
         e.preventDefault();
         const updates = {
             programId: programId === selectedProgramCohort.pg_id ? selectedProgramCohort.pg_id : selectedProgramId,
-            campusId: campusId === selectedProgramCohort.program_cohorts_campusId ? selectedProgramCohort.program_cohorts_campusId : selectedCampusId,
-            startDate: startDate === selectedProgramCohort.program_cohorts_startDate ? selectedProgramCohort.program_cohorts_startDate : selectedStartDate,
+            campusId:
+                campusId === selectedProgramCohort.program_cohorts_campusId
+                    ? selectedProgramCohort.program_cohorts_campusId
+                    : selectedCampusId,
+            startDate:
+                startDate === selectedProgramCohort.program_cohorts_startDate
+                    ? selectedProgramCohort.program_cohorts_startDate
+                    : selectedStartDate,
             anticipatedGraduationYear: selectedProgramCohort.program_cohorts_anticipatedGraduationYear,
             anticipatedGraduationMonth: selectedProgramCohort.program_cohorts_anticipatedGraduationMonth,
-            advertDescription: description === selectedProgramCohort.program_cohorts_advertDescription ? selectedProgramCohort.program_cohorts_advertDescription : description,
+            advertDescription:
+                description === selectedProgramCohort.program_cohorts_advertDescription
+                    ? selectedProgramCohort.program_cohorts_advertDescription
+                    : description,
             bannerImageUrl: banner
         };
         updateProgramCohort(cohortId, updates);
@@ -402,40 +414,46 @@ const ProgramCohorts = (): JSX.Element => {
                     <Breadcrumb />
                 </Col>
                 <Col>
-                    <Button
-                        className="float-right"
-                        variant="danger"
-                        onClick={() => {
-                            toggleCreateModal();
-                        }}
-                    >
-                        Create Program Cohort
-                    </Button>
+                    {canPerformActions(ACTION_CREATE_PROGRAM_COHORT.name) && (
+                        <Button
+                            className="float-right"
+                            variant="danger"
+                            onClick={() => {
+                                toggleCreateModal();
+                            }}
+                        >
+                            Create Program Cohort
+                        </Button>
+                    )}
                 </Col>
             </Row>
-            <LinearProgress style={{ display: linearDisplay }} />
-            <Row>
-                <Col>
-                    <Card>
-                        <div>
-                            {isError && (
-                                <Alert severity="error">
-                                    {errorMessages.map((msg, i) => {
-                                        return <div key={i}>{msg}</div>;
-                                    })}
-                                </Alert>
-                            )}
-                        </div>
-                        <MaterialTable
-                            title="Program Cohorts"
-                            icons={tableIcons}
-                            columns={columns}
-                            data={data}
-                            options={{ actionsColumnIndex: -1 }}
-                        />
-                    </Card>
-                </Col>
-            </Row>
+            {canPerformActions(ACTION_GET_PROGRAM_COHORTS.name) && (
+                <>
+                    <LinearProgress style={{ display: linearDisplay }} />
+                    <Row>
+                        <Col>
+                            <Card>
+                                <div>
+                                    {isError && (
+                                        <Alert severity="error">
+                                            {errorMessages.map((msg, i) => {
+                                                return <div key={i}>{msg}</div>;
+                                            })}
+                                        </Alert>
+                                    )}
+                                </div>
+                                <MaterialTable
+                                    title="Program Cohorts"
+                                    icons={tableIcons}
+                                    columns={columns}
+                                    data={data}
+                                    options={{ actionsColumnIndex: -1 }}
+                                />
+                            </Card>
+                        </Col>
+                    </Row>
+                </>
+            )}
             <Modal
                 backdrop="static"
                 show={showModal}
@@ -470,7 +488,7 @@ const ProgramCohorts = (): JSX.Element => {
                                         }}
                                     >
                                         <option defaultValue={cohortId ? selectedProgramCohort.pg_id : selectedProgramId} value="">
-                                             -- Select a program --
+                                            -- Select a program --
                                         </option>
                                         {programs.map((program) => {
                                             return (
@@ -603,11 +621,17 @@ const ProgramCohorts = (): JSX.Element => {
                         </Col>
                         <Col sm={4}>
                             <CardPreview
-                                programName={ cohortId ? selectedProgramCohort.pg_name : programName}
-                                description={ cohortId ? selectedProgramCohort.program_cohorts_advertDescription : description }
-                                startDate={cohortId ? selectedProgramCohort.program_cohorts_startDate.slice(0,10) : startDate}
-                                graduationDate={cohortId ? selectedProgramCohort.program_cohorts_anticipatedGraduationYear+' - '+selectedProgramCohort.program_cohorts_anticipatedGraduationMonth : graduationDate}
-                                bannerImage={ cohortId ? selectedProgramCohort.program_cohorts_bannerImageUrl : banner}
+                                programName={cohortId ? selectedProgramCohort.pg_name : programName}
+                                description={cohortId ? selectedProgramCohort.program_cohorts_advertDescription : description}
+                                startDate={cohortId ? selectedProgramCohort.program_cohorts_startDate.slice(0, 10) : startDate}
+                                graduationDate={
+                                    cohortId
+                                        ? selectedProgramCohort.program_cohorts_anticipatedGraduationYear +
+                                          ' - ' +
+                                          selectedProgramCohort.program_cohorts_anticipatedGraduationMonth
+                                        : graduationDate
+                                }
+                                bannerImage={cohortId ? selectedProgramCohort.program_cohorts_bannerImageUrl : banner}
                             />
                         </Col>
                     </Row>

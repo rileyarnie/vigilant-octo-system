@@ -31,6 +31,8 @@ import { LinearProgress } from '@mui/material';
 import { MenuItem, Select } from '@material-ui/core';
 import { VerticalModal } from './ActionsByRole/VerticalModal';
 import { AddActionsModal } from './AddActionsModal/AddActionsModal';
+import { canPerformActions } from '../../services/ActionChecker';
+import { ACTION_GET_ROLES } from '../../authnz-library/authnz-actions';
 
 const alerts: Alerts = new ToastifyAlerts();
 const tableIcons: Icons = {
@@ -170,22 +172,24 @@ function roleList(): JSX.Element {
                     </Col>
                 </Row>
                 <LinearProgress style={{ display: linearDisplay }} />
-                <Row>
-                    <Col>
-                        <Card>
-                            <div>
-                                {isError && (
-                                    <Alert severity="error">
-                                        {errorMessages.map((msg, i) => {
-                                            return <div key={i}>{msg}</div>;
-                                        })}
-                                    </Alert>
-                                )}
-                            </div>
-                            <MaterialTable title="Role List" columns={columns} data={data} icons={tableIcons} />
-                        </Card>
-                    </Col>
-                </Row>
+                {canPerformActions(ACTION_GET_ROLES.name) && (
+                    <Row>
+                        <Col>
+                            <Card>
+                                <div>
+                                    {isError && (
+                                        <Alert severity="error">
+                                            {errorMessages.map((msg, i) => {
+                                                return <div key={i}>{msg}</div>;
+                                            })}
+                                        </Alert>
+                                    )}
+                                </div>
+                                <MaterialTable title="Role List" columns={columns} data={data} icons={tableIcons} />
+                            </Card>
+                        </Col>
+                    </Row>
+                )}
                 <Actions {...selectedRowProps}> </Actions>
                 &nbsp;&nbsp;&nbsp;
                 <AddActions {...selectedRowProps}> </AddActions>

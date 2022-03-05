@@ -28,6 +28,8 @@ import CreateVenue from './CreateVenue';
 import EditVenue from './EditVenue';
 import { Alerts, ToastifyAlerts } from '../lib/Alert';
 import { LinearProgress } from '@mui/material';
+import { canPerformActions } from '../../services/ActionChecker';
+import { ACTION_CREATE_VENUE, ACTION_GET_VENUE } from '../../authnz-library/timetabling-actions';
 const alerts: Alerts = new ToastifyAlerts();
 const tableIcons: Icons = {
     Add: forwardRef((props, ref) => <AddBox {...props} ref={ref} />),
@@ -83,6 +85,7 @@ const VenueList = (props): JSX.Element => {
             })
             .catch((error) => {
                 console.error(error);
+                setLinearDisplay('none');
                 alerts.showError(error.message);
             });
     };
@@ -99,44 +102,50 @@ const VenueList = (props): JSX.Element => {
                     <Breadcrumb />
                 </Col>
                 <Col>
-                    <Button className="float-right" variant="danger" onClick={() => toggleCreateModal()}>
-                        Create Venue
-                    </Button>
+                    {canPerformActions(ACTION_CREATE_VENUE.name) && (
+                        <Button className="float-right" variant="danger" onClick={() => toggleCreateModal()}>
+                            Create Venue
+                        </Button>
+                    )}
                 </Col>
             </Row>
-            <LinearProgress style={{ display: linearDisplay }} />
-            <Row>
-                <Col>
-                    <Card>
-                        <div>
-                            {iserror && (
-                                <Alert severity="error">
-                                    {errorMessages.map((msg, i) => {
-                                        return <div key={i}>{msg}</div>;
-                                    })}
-                                </Alert>
-                            )}
-                        </div>
-                        <MaterialTable
-                            title="Venues"
-                            columns={columns}
-                            data={data}
-                            icons={tableIcons}
-                            options={{ actionsColumnIndex: -1 }}
-                            actions={[
-                                {
-                                    icon: Edit,
-                                    tooltip: 'Edit Row',
-                                    onClick: (event, rowData) => {
-                                        setSelectedVenue(rowData);
-                                        toggleEditModal();
-                                    }
-                                }
-                            ]}
-                        />
-                    </Card>
-                </Col>
-            </Row>
+            {canPerformActions(ACTION_GET_VENUE.name) && (
+                <>
+                    <LinearProgress style={{ display: linearDisplay }} />
+                    <Row>
+                        <Col>
+                            <Card>
+                                <div>
+                                    {iserror && (
+                                        <Alert severity="error">
+                                            {errorMessages.map((msg, i) => {
+                                                return <div key={i}>{msg}</div>;
+                                            })}
+                                        </Alert>
+                                    )}
+                                </div>
+                                <MaterialTable
+                                    title="Venues"
+                                    columns={columns}
+                                    data={data}
+                                    icons={tableIcons}
+                                    options={{ actionsColumnIndex: -1 }}
+                                    actions={[
+                                        {
+                                            icon: Edit,
+                                            tooltip: 'Edit Row',
+                                            onClick: (event, rowData) => {
+                                                setSelectedVenue(rowData);
+                                                toggleEditModal();
+                                            }
+                                        }
+                                    ]}
+                                />
+                            </Card>
+                        </Col>
+                    </Row>
+                </>
+            )}
             <Modal {...props} size="lg" aria-labelledby="contained-modal-title-vcenter" centered show={showModal} backdrop="static">
                 <Modal.Header>
                     <Modal.Title id="contained-modal-title-vcenter">Create Venue</Modal.Title>

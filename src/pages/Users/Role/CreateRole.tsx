@@ -6,6 +6,8 @@ import validator from 'validator';
 import Config from '../../../config';
 import axios from 'axios';
 import { Alerts, ToastifyAlerts } from '../../lib/Alert';
+import { canPerformActions } from '../../../services/ActionChecker';
+import { ACTION_CREATE_ROLE } from '../../../authnz-library/authnz-actions';
 const alerts: Alerts = new ToastifyAlerts();
 interface IProps {
     fetchRoles: () => void;
@@ -16,8 +18,7 @@ const CreateRole = (props: IProps): JSX.Element => {
     const [showCreateModal, setShowCreateModal] = useState(false);
     const [roleDescription, setRoleDescription] = useState('');
     const handleRoleChange = (event, field) => {
-        field === 'name' ? setRoleName(event.target.value) :
-            setRoleDescription(event.target.value);
+        field === 'name' ? setRoleName(event.target.value) : setRoleDescription(event.target.value);
     };
 
     const handleRoleSubmit = () => {
@@ -40,9 +41,11 @@ const CreateRole = (props: IProps): JSX.Element => {
     };
     return (
         <>
-            <Button className="float-right" variant="danger" onClick={() => setShowCreateModal(true)}>
-                Create Role
-            </Button>
+            {canPerformActions(ACTION_CREATE_ROLE.name) && (
+                <Button className="float-right" variant="danger" onClick={() => setShowCreateModal(true)}>
+                    Create Role
+                </Button>
+            )}
             <Modal size="lg" aria-labelledby="contained-modal-title-vcenter" show={showCreateModal} centered>
                 <Modal.Header>
                     <Modal.Title id="contained-modal-title-vcenter">Create Role</Modal.Title>
@@ -64,7 +67,7 @@ const CreateRole = (props: IProps): JSX.Element => {
                                             validator={validator.isAlphanumeric}
                                             errorMessage={{ validator: 'Please enter a valid Role name' }}
                                             value={roleName}
-                                            onChange={(e) => handleRoleChange(e,'name')}
+                                            onChange={(e) => handleRoleChange(e, 'name')}
                                         />
                                     </div>
                                     <div className="form-group">

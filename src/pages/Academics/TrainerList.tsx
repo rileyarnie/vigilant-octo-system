@@ -25,6 +25,8 @@ import Config from '../../config';
 import { ValidationForm, SelectGroup } from 'react-bootstrap4-form-validation';
 import { Alerts, ToastifyAlerts } from '../lib/Alert';
 import LinearProgress from '@mui/material/LinearProgress';
+import { canPerformActions } from '../../services/ActionChecker';
+import { ACTION_CREATE_TRAINER } from '../../authnz-library/timetabling-actions';
 
 const alerts: Alerts = new ToastifyAlerts();
 const tableIcons: Icons = {
@@ -167,29 +169,32 @@ const TrainerList = (): JSX.Element => {
                 <Col>
                     <Breadcrumb />
                 </Col>
-
                 <Col>
-                    <Button className="float-right" variant="danger" onClick={() => toggleCreateModal()}>
-                        Create trainer
-                    </Button>
+                    {canPerformActions(ACTION_CREATE_TRAINER.name) && (
+                        <Button className="float-right" variant="danger" onClick={() => toggleCreateModal()}>
+                            Create trainer
+                        </Button>
+                    )}
                 </Col>
             </Row>
 
             <LinearProgress style={{ display: linearDisplay }} />
             <Row>
                 <Col>
-                    <Card>
-                        <div>
-                            {isError && (
-                                <Alert severity="error">
-                                    {errorMessages.map((msg, i) => {
-                                        return <div key={i}>{msg}</div>;
-                                    })}
-                                </Alert>
-                            )}
-                        </div>
-                        <MaterialTable title="Trainers" columns={columns} data={data} icons={tableIcons} editable={{}} />
-                    </Card>
+                    {canPerformActions(ACTION_CREATE_TRAINER.name) && (
+                        <Card>
+                            <div>
+                                {isError && (
+                                    <Alert severity="error">
+                                        {errorMessages.map((msg, i) => {
+                                            return <div key={i}>{msg}</div>;
+                                        })}
+                                    </Alert>
+                                )}
+                            </div>
+                            <MaterialTable title="Trainers" columns={columns} data={data} icons={tableIcons} editable={{}} />
+                        </Card>
+                    )}
                 </Col>
             </Row>
             <Modal

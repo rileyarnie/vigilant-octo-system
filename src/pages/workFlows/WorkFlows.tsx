@@ -1,5 +1,5 @@
 /* eslint-disable react/display-name */
-import React, {useEffect, useState} from 'react';
+import React, { useEffect, useState } from 'react';
 import { forwardRef } from 'react';
 import MaterialTable from 'material-table';
 import AddBox from '@material-ui/icons/AddBox';
@@ -23,14 +23,15 @@ import Breadcrumb from '../../App/components/Breadcrumb';
 import { ValidationForm } from 'react-bootstrap4-form-validation';
 import { Icons } from 'material-table';
 import { Alerts, ToastifyAlerts } from '../lib/Alert';
-import {getAuthnzServiceActions} from '../../authnz-library/authnz-actions';
-import {getSimServiceActions} from '../../authnz-library/sim-actions';
-import {getFinanceServiceActions} from '../../authnz-library/finance-actions';
-import {getTimetablingServiceActions} from '../../authnz-library/timetabling-actions';
+import { ACTION_GET_ROLES, getAuthnzServiceActions } from '../../authnz-library/authnz-actions';
+import { getSimServiceActions } from '../../authnz-library/sim-actions';
+import { getFinanceServiceActions } from '../../authnz-library/finance-actions';
+import { getTimetablingServiceActions } from '../../authnz-library/timetabling-actions';
 import { customSelectTheme } from '../lib/SelectThemes';
 import { WorkFlowService } from '../../services/WorkFlowService';
 import Select from 'react-select';
-import {LinearProgress} from '@material-ui/core';
+import { LinearProgress } from '@material-ui/core';
+import { canPerformActions } from '../../services/ActionChecker';
 const alerts: Alerts = new ToastifyAlerts();
 const tableIcons: Icons = {
     Add: forwardRef((props, ref) => <AddBox {...props} ref={ref} />),
@@ -53,22 +54,28 @@ const tableIcons: Icons = {
 };
 const WorkFlows = (): JSX.Element => {
     const columns = [
-        { title: 'ID', field: 'tableData.id'},
-        { title: 'Name', field: 'name'},
+        { title: 'ID', field: 'tableData.id' },
+        { title: 'Name', field: 'name' },
         { title: 'Description', field: 'description' },
         { title: 'Path', field: 'path' },
         { title: 'Method', field: 'verb' },
-        { title: 'Actions', render: (row) =>
-            <>
-                <Button className="btn btn-info" size="sm"
-                    onClick={() => {
-                        toggleCreateModal();
-                        setActionName(row.name);
-                        console.log(row);
-                    }}>
-                    Create Workflow
-                </Button>
-            </>
+        {
+            title: 'Actions',
+            render: (row) => (
+                <>
+                    <Button
+                        className="btn btn-info"
+                        size="sm"
+                        onClick={() => {
+                            toggleCreateModal();
+                            setActionName(row.name);
+                            console.log(row);
+                        }}
+                    >
+                        Create Workflow
+                    </Button>
+                </>
+            )
         }
     ];
     const options = [];
@@ -91,7 +98,7 @@ const WorkFlows = (): JSX.Element => {
     function fetchRoles() {
         setLinearDisplay('block');
         WorkFlowService.fetchRoles()
-            .then(res=>{
+            .then((res) => {
                 const roles = res['data'];
                 setRoles(roles);
                 setLinearDisplay('none');
@@ -108,15 +115,15 @@ const WorkFlows = (): JSX.Element => {
     const handleChange = (selectedOptions) => {
         setSelectedOptions(selectedOptions);
     };
-    function handleSubmitWorkFlow () {
+    function handleSubmitWorkFlow() {
         const approvingRoles = [];
-        selectedOptions.forEach((selectedOption,i) => {
+        selectedOptions.forEach((selectedOption, i) => {
             approvingRoles.push({
-                rank:i+1,
-                roleId:selectedOption.value
+                rank: i + 1,
+                roleId: selectedOption.value
             });
         });
-        WorkFlowService.handleSubmitWorkFlow(actionName,approvingRoles)
+        WorkFlowService.handleSubmitWorkFlow(actionName, approvingRoles)
             .then(() => {
                 alerts.showSuccess('Successfully created a workflow');
             })
@@ -141,27 +148,27 @@ const WorkFlows = (): JSX.Element => {
                         <Breadcrumb />
                     </Col>
                 </Row>
-                <LinearProgress style={{ display: linearDisplay }} />
-                <Row>
-                    <Col>
-                        <Card>
-                            <div>
-                                {iserror && (
-                                    <Alert severity="error">
-                                        {errorMessages.map((msg, i) => {
-                                            return <div key={i}>{msg}</div>;
-                                        })}
-                                    </Alert>
-                                )}
-                            </div>
-                            <MaterialTable
-                                icons={tableIcons}
-                                title="Work Flows"
-                                columns={columns}
-                                data={data} />
-                        </Card>
-                    </Col>
-                </Row>
+                {canPerformActions(ACTION_GET_ROLES.name) && (
+                    <>
+                        <LinearProgress style={{ display: linearDisplay }} />
+                        <Row>
+                            <Col>
+                                <Card>
+                                    <div>
+                                        {iserror && (
+                                            <Alert severity="error">
+                                                {errorMessages.map((msg, i) => {
+                                                    return <div key={i}>{msg}</div>;
+                                                })}
+                                            </Alert>
+                                        )}
+                                    </div>
+                                    <MaterialTable icons={tableIcons} title="Work Flows" columns={columns} data={data} />
+                                </Card>
+                            </Col>
+                        </Row>
+                    </>
+                )}
             </div>
             <Modal
                 size="lg"
@@ -169,11 +176,10 @@ const WorkFlows = (): JSX.Element => {
                 onHide={toggleCreateModal}
                 backdrop="static"
                 aria-labelledby="contained-modal-title-vcenter"
-                centered>
+                centered
+            >
                 <Modal.Header closeButton>
-                    <Modal.Title id="contained-modal-title-vcenter">
-                        Administer Workflow
-                    </Modal.Title>
+                    <Modal.Title id="contained-modal-title-vcenter">Administer Workflow</Modal.Title>
                 </Modal.Header>
                 <Modal.Body>
                     <ValidationForm>
@@ -184,17 +190,17 @@ const WorkFlows = (): JSX.Element => {
                             placeholder="Select roles for this workflow"
                             noOptionsMessage={() => 'No roles available'}
                             onChange={handleChange}
-                        /><br/>
-
+                        />
+                        <br />
                     </ValidationForm>
                     <button className="btn btn-info float-right" onClick={handleSubmitWorkFlow}>
                         Submit
                     </button>
-                    <button className="btn btn-danger float-left" onClick={handleClose}>Close</button>
+                    <button className="btn btn-danger float-left" onClick={handleClose}>
+                        Close
+                    </button>
                 </Modal.Body>
-                <Modal.Footer>
-
-                </Modal.Footer>
+                <Modal.Footer></Modal.Footer>
             </Modal>
         </>
     );

@@ -25,6 +25,8 @@ import { Row, Col, Card, Button, Modal } from 'react-bootstrap';
 import Config from '../../config';
 import { ValidationForm, TextInput } from 'react-bootstrap4-form-validation';
 import { Alerts, ToastifyAlerts } from '../lib/Alert';
+import { canPerformActions } from '../../services/ActionChecker';
+import { ACTION_CREATE_CAMPUS, ACTION_GET_CAMPUSES } from '../../authnz-library/timetabling-actions';
 
 const tableIcons: Icons = {
     Add: forwardRef((props, ref) => <AddBox {...props} ref={ref} />),
@@ -207,46 +209,52 @@ const CampusList = (): JSX.Element => {
                     <Breadcrumb />
                 </Col>
                 <Col>
-                    <Button className="float-right" variant="danger" onClick={() => toggleCreateModal()}>
-                        Create Campus
-                    </Button>
+                    {canPerformActions(ACTION_CREATE_CAMPUS.name) && (
+                        <Button className="float-right" variant="danger" onClick={() => toggleCreateModal()}>
+                            Create Campus
+                        </Button>
+                    )}
                 </Col>
             </Row>
-            <LinearProgress style={{ display: linearDisplay }} />
-            <Row>
-                <Col>
-                    <Card>
-                        <div>
-                            {iserror && (
-                                <Alert severity="error">
-                                    {errorMessages.map((msg, i) => {
-                                        return <div key={i}>{msg}</div>;
-                                    })}
-                                </Alert>
-                            )}
-                        </div>
-                        <MaterialTable
-                            title="Campuses"
-                            columns={columns}
-                            options={{ actionsColumnIndex: -1 }}
-                            data={data}
-                            icons={tableIcons}
-                            actions={[
-                                {
-                                    icon: Edit,
-                                    tooltip: 'Edit Row',
-                                    onClick: (event, row) => {
-                                        setCampusId(row.id);
-                                        setSelectedCampusName(row.name);
-                                        setSelectedDescription(row.description);
-                                        toggleCreateModal();
-                                    }
-                                }
-                            ]}
-                        />
-                    </Card>
-                </Col>
-            </Row>
+            {canPerformActions(ACTION_GET_CAMPUSES.name) && (
+                <>
+                    <LinearProgress style={{ display: linearDisplay }} />
+                    <Row>
+                        <Col>
+                            <Card>
+                                <div>
+                                    {iserror && (
+                                        <Alert severity="error">
+                                            {errorMessages.map((msg, i) => {
+                                                return <div key={i}>{msg}</div>;
+                                            })}
+                                        </Alert>
+                                    )}
+                                </div>
+                                <MaterialTable
+                                    title="Campuses"
+                                    columns={columns}
+                                    options={{ actionsColumnIndex: -1 }}
+                                    data={data}
+                                    icons={tableIcons}
+                                    actions={[
+                                        {
+                                            icon: Edit,
+                                            tooltip: 'Edit Row',
+                                            onClick: (event, row) => {
+                                                setCampusId(row.id);
+                                                setSelectedCampusName(row.name);
+                                                setSelectedDescription(row.description);
+                                                toggleCreateModal();
+                                            }
+                                        }
+                                    ]}
+                                />
+                            </Card>
+                        </Col>
+                    </Row>
+                </>
+            )}
             <Modal
                 show={showModal}
                 onHide={toggleCreateModal}

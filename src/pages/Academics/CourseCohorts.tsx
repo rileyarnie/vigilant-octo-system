@@ -23,12 +23,14 @@ import axios from 'axios';
 import Card from '@material-ui/core/Card';
 import Alert from '@material-ui/lab/Alert';
 import Breadcrumb from '../../App/components/Breadcrumb';
-import { Row, Col, } from 'react-bootstrap';
+import { Row, Col } from 'react-bootstrap';
 import Config from '../../config';
 import { MenuItem, Select, InputLabel } from '@material-ui/core';
 
 import { Link } from 'react-router-dom';
 import { LinearProgress } from '@mui/material';
+import { canPerformActions } from '../../services/ActionChecker';
+import { ACTION_GET_COURSE_COHORTS } from '../../authnz-library/timetabling-actions';
 
 const tableIcons: Icons = {
     Add: forwardRef((props, ref) => <AddBox {...props} ref={ref} />),
@@ -124,73 +126,77 @@ const CourseCohorts = (): JSX.Element => {
                     <Breadcrumb />
                 </Col>
             </Row>
-            <LinearProgress style={{ display: linearDisplay }} />
-            <Row>
-                <Col>
-                    <Card>
-                        <div>
-                            {isError && (
-                                <Alert severity="error">
-                                    {errorMessages.map((msg, i) => {
-                                        return <div key={i}>{msg}</div>;
-                                    })}
-                                </Alert>
-                            )}
-                        </div>
-                        <MaterialTable
-                            title="Course Cohorts"
-                            icons={tableIcons}
-                            columns={columns}
-                            data={data}
-                            options={{ actionsColumnIndex: -1 }}
-                            components={{
-                                Toolbar: (props) => (
-                                    <div>
-                                        <MTableToolbar {...props} />
-                                        <div style={{ display: 'flex', padding: '0px 0px' }}>
-                                            <InputLabel id="demo-simple-select-label">Trainer</InputLabel>
-                                            <Select
-                                                labelId="demo-simple-select-label"
-                                                id="demo-simple-select"
-                                                style={{ width: 150, textAlign: 'center' }}
-                                                onChange={(e) => {
-                                                    fetchcourseCohortsByTrainerId(e.target.value as number);
-                                                }}
-                                            >
-                                                {trainersData.map((tr) => {
-                                                    return (
-                                                        <MenuItem key={tr.tr_id} value={tr.tr_id}>
-                                                            {tr.tr_id}
-                                                        </MenuItem>
-                                                    );
-                                                })}
-                                            </Select>
+            {canPerformActions(ACTION_GET_COURSE_COHORTS.name) && (
+                <>
+                    <LinearProgress style={{ display: linearDisplay }} />
+                    <Row>
+                        <Col>
+                            <Card>
+                                <div>
+                                    {isError && (
+                                        <Alert severity="error">
+                                            {errorMessages.map((msg, i) => {
+                                                return <div key={i}>{msg}</div>;
+                                            })}
+                                        </Alert>
+                                    )}
+                                </div>
+                                <MaterialTable
+                                    title="Course Cohorts"
+                                    icons={tableIcons}
+                                    columns={columns}
+                                    data={data}
+                                    options={{ actionsColumnIndex: -1 }}
+                                    components={{
+                                        Toolbar: (props) => (
+                                            <div>
+                                                <MTableToolbar {...props} />
+                                                <div style={{ display: 'flex', padding: '0px 0px' }}>
+                                                    <InputLabel id="demo-simple-select-label">Trainer</InputLabel>
+                                                    <Select
+                                                        labelId="demo-simple-select-label"
+                                                        id="demo-simple-select"
+                                                        style={{ width: 150, textAlign: 'center' }}
+                                                        onChange={(e) => {
+                                                            fetchcourseCohortsByTrainerId(e.target.value as number);
+                                                        }}
+                                                    >
+                                                        {trainersData.map((tr) => {
+                                                            return (
+                                                                <MenuItem key={tr.tr_id} value={tr.tr_id}>
+                                                                    {tr.tr_id}
+                                                                </MenuItem>
+                                                            );
+                                                        })}
+                                                    </Select>
 
-                                            <InputLabel id="demo-simple-select-label">Semester</InputLabel>
-                                            <Select
-                                                labelId="demo-simple-select-label"
-                                                id="demo-simple-select"
-                                                style={{ width: 150, textAlign: 'center' }}
-                                                onChange={(e) => {
-                                                    fetchcourseCohortsBySemesterId(e.target.value as number);
-                                                }}
-                                            >
-                                                {semesters.map((sem) => {
-                                                    return (
-                                                        <MenuItem key={sem.id} value={sem.id}>
-                                                            {sem.name}
-                                                        </MenuItem>
-                                                    );
-                                                })}
-                                            </Select>
-                                        </div>
-                                    </div>
-                                )
-                            }}
-                        />
-                    </Card>
-                </Col>
-            </Row>
+                                                    <InputLabel id="demo-simple-select-label">Semester</InputLabel>
+                                                    <Select
+                                                        labelId="demo-simple-select-label"
+                                                        id="demo-simple-select"
+                                                        style={{ width: 150, textAlign: 'center' }}
+                                                        onChange={(e) => {
+                                                            fetchcourseCohortsBySemesterId(e.target.value as number);
+                                                        }}
+                                                    >
+                                                        {semesters.map((sem) => {
+                                                            return (
+                                                                <MenuItem key={sem.id} value={sem.id}>
+                                                                    {sem.name}
+                                                                </MenuItem>
+                                                            );
+                                                        })}
+                                                    </Select>
+                                                </div>
+                                            </div>
+                                        )
+                                    }}
+                                />
+                            </Card>
+                        </Col>
+                    </Row>
+                </>
+            )}
         </>
     );
 };
