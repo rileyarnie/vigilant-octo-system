@@ -41,7 +41,7 @@ export const AddActionsModal = (props: IProps): JSX.Element => {
     }, []);
 
     actions.map((action) => {
-        return options.push({ value: action.id, label: action.ActionName });
+        return options.push({ value: action.id, label: action.name });
     });
 
     const handleChange = (selectedOptions) => {
