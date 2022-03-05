@@ -28,7 +28,7 @@ import { Switch } from '@material-ui/core';
 import { Alerts, ToastifyAlerts } from '../lib/Alert';
 import LinearProgress from '@mui/material/LinearProgress';
 import { canPerformActions } from '../../services/ActionChecker';
-import { ACTION_CREATE_DEPARTMENT, ACTION_GET_DEPARTMENTS } from '../../authnz-library/timetabling-actions';
+import { ACTION_CREATE_DEPARTMENT, ACTION_GET_DEPARTMENTS, ACTION_UPDATE_DEPARTMENT } from '../../authnz-library/timetabling-actions';
 
 const alerts: Alerts = new ToastifyAlerts();
 const tableIcons: Icons = {
@@ -244,18 +244,23 @@ const Department = (): JSX.Element => {
                                     columns={columns}
                                     data={data}
                                     icons={tableIcons}
-                                    actions={[
-                                        {
-                                            icon: Edit,
-                                            tooltip: 'Edit Row',
-                                            onClick: (event, rowData) => {
-                                                setDeptId(rowData.id);
-                                                setSelectedDeptName(rowData.name);
-                                                setSelectedStatus(rowData.isActive);
-                                                toggleCreateModal();
-                                            }
-                                        }
-                                    ]}
+                                    options={{ actionsColumnIndex: -1 }}
+                                    actions={
+                                        canPerformActions(ACTION_UPDATE_DEPARTMENT.name)
+                                            ? [
+                                                {
+                                                    icon: Edit,
+                                                    tooltip: 'Edit Row',
+                                                    onClick: (event, rowData) => {
+                                                        setDeptId(rowData.id);
+                                                        setSelectedDeptName(rowData.name);
+                                                        setSelectedStatus(rowData.isActive);
+                                                        toggleCreateModal();
+                                                    }
+                                                }
+                                            ]
+                                            : []
+                                    }
                                 />
                             </Card>
                         </Col>

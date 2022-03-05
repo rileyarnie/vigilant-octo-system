@@ -29,7 +29,7 @@ import EditVenue from './EditVenue';
 import { Alerts, ToastifyAlerts } from '../lib/Alert';
 import { LinearProgress } from '@mui/material';
 import { canPerformActions } from '../../services/ActionChecker';
-import { ACTION_CREATE_VENUE, ACTION_GET_VENUE } from '../../authnz-library/timetabling-actions';
+import { ACTION_CREATE_VENUE, ACTION_GET_VENUE, ACTION_UPDATE_VENUE } from '../../authnz-library/timetabling-actions';
 const alerts: Alerts = new ToastifyAlerts();
 const tableIcons: Icons = {
     Add: forwardRef((props, ref) => <AddBox {...props} ref={ref} />),
@@ -130,16 +130,18 @@ const VenueList = (props): JSX.Element => {
                                     data={data}
                                     icons={tableIcons}
                                     options={{ actionsColumnIndex: -1 }}
-                                    actions={[
-                                        {
-                                            icon: Edit,
-                                            tooltip: 'Edit Row',
-                                            onClick: (event, rowData) => {
-                                                setSelectedVenue(rowData);
-                                                toggleEditModal();
+                                    actions={
+                                        canPerformActions(ACTION_UPDATE_VENUE.name)?[
+                                            {
+                                                icon: Edit,
+                                                tooltip: 'Edit Row',
+                                                onClick: (event, rowData) => {
+                                                    setSelectedVenue(rowData);
+                                                    toggleEditModal();
+                                                }
                                             }
-                                        }
-                                    ]}
+                                        ]:[]
+                                    }
                                 />
                             </Card>
                         </Col>

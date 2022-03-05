@@ -27,7 +27,7 @@ import { ValidationForm, TextInput } from 'react-bootstrap4-form-validation';
 import { Icons } from 'material-table';
 import { Alerts, ToastifyAlerts } from '../lib/Alert';
 import { canPerformActions } from '../../services/ActionChecker';
-import { ACTION_CREATE_SEMESTERS, ACTION_GET_SEMESTERS } from '../../authnz-library/timetabling-actions';
+import { ACTION_CREATE_SEMESTERS, ACTION_GET_SEMESTERS, ACTION_UPDATE_SEMESTERS } from '../../authnz-library/timetabling-actions';
 const alerts: Alerts = new ToastifyAlerts();
 const tableIcons: Icons = {
     Add: forwardRef((props, ref) => <AddBox {...props} ref={ref} />),
@@ -96,13 +96,14 @@ const SemesterList = (): JSX.Element => {
         {
             title: 'Activation Status',
             field: 'internal_action',
-            render: (row: Semester) => (
-                <Switch
-                    onChange={(event) => handleActivationStatusToggle(event, row)}
-                    inputProps={{ 'aria-label': 'controlled' }}
-                    defaultChecked={row.activation_status === true}
-                />
-            )
+            render: (row: Semester) =>
+                canPerformActions(ACTION_UPDATE_SEMESTERS.name) && (
+                    <Switch
+                        onChange={(event) => handleActivationStatusToggle(event, row)}
+                        inputProps={{ 'aria-label': 'controlled' }}
+                        defaultChecked={row.activation_status === true}
+                    />
+                )
         }
     ];
     const [, setDisabled] = useState(false);
@@ -248,20 +249,24 @@ const SemesterList = (): JSX.Element => {
                                     data={data}
                                     options={{ actionsColumnIndex: -1 }}
                                     icons={tableIcons}
-                                    actions={[
-                                        {
-                                            icon: Edit,
-                                            tooltip: 'Edit Row',
-                                            onClick: (event, rowData) => {
-                                                setSemesterId(rowData.id);
-                                                setSelectedSemesterName(rowData.name);
-                                                setSelectedStartDate(rowData.startDate);
-                                                setSelectedEndDate(rowData.endDate);
-                                                setSelectedSemester(rowData);
-                                                toggleCreateModal();
-                                            }
-                                        }
-                                    ]}
+                                    actions={
+                                        canPerformActions(ACTION_UPDATE_SEMESTERS.name)
+                                            ? [
+                                                {
+                                                    icon: Edit,
+                                                    tooltip: 'Edit Row',
+                                                    onClick: (event, rowData) => {
+                                                        setSemesterId(rowData.id);
+                                                        setSelectedSemesterName(rowData.name);
+                                                        setSelectedStartDate(rowData.startDate);
+                                                        setSelectedEndDate(rowData.endDate);
+                                                        setSelectedSemester(rowData);
+                                                        toggleCreateModal();
+                                                    }
+                                                }
+                                            ]
+                                            : []
+                                    }
                                 />
                             </Card>
                         </Col>

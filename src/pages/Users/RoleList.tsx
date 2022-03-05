@@ -32,7 +32,7 @@ import { MenuItem, Select } from '@material-ui/core';
 import { VerticalModal } from './ActionsByRole/VerticalModal';
 import { AddActionsModal } from './AddActionsModal/AddActionsModal';
 import { canPerformActions } from '../../services/ActionChecker';
-import { ACTION_GET_ROLES } from '../../authnz-library/authnz-actions';
+import { ACTION_ADD_ACTIONS_TO_ROLE, ACTION_DEACTIVATE_ROLE, ACTION_GET_ACTIONS, ACTION_GET_ROLES } from '../../authnz-library/authnz-actions';
 
 const alerts: Alerts = new ToastifyAlerts();
 const tableIcons: Icons = {
@@ -90,15 +90,21 @@ function roleList(): JSX.Element {
             title: ' Actions',
             render: (row: Role) => (
                 <Select>
-                    <div className="" onClick={() => setVerticalModal(true)}>
-                        <MenuItem value="View courses">View Role Actions</MenuItem>
-                    </div>
-                    <div className="" onClick={() => setActionModal(true)}>
-                        <MenuItem value="View courses">Add Actions</MenuItem>
-                    </div>
-                    <div className="" onClick={() => handleRowDelete(row.id)}>
-                        <MenuItem value="View courses">Delete Role</MenuItem>
-                    </div>
+                    {canPerformActions(ACTION_GET_ACTIONS.name) && (
+                        <div className="" onClick={() => setVerticalModal(true)}>
+                            <MenuItem value="View courses">View Role Actions</MenuItem>
+                        </div>
+                    )}
+                    {canPerformActions(ACTION_ADD_ACTIONS_TO_ROLE.name) && (
+                        <div className="" onClick={() => setActionModal(true)}>
+                            <MenuItem value="View courses">Add Actions</MenuItem>
+                        </div>
+                    )}
+                    {canPerformActions(ACTION_DEACTIVATE_ROLE.name) && (
+                        <div className="" onClick={() => handleRowDelete(row.id)}>
+                            <MenuItem value="View courses">Delete Role</MenuItem>
+                        </div>
+                    )}
                 </Select>
             )
         }

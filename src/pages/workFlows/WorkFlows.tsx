@@ -23,7 +23,7 @@ import Breadcrumb from '../../App/components/Breadcrumb';
 import { ValidationForm } from 'react-bootstrap4-form-validation';
 import { Icons } from 'material-table';
 import { Alerts, ToastifyAlerts } from '../lib/Alert';
-import { ACTION_GET_ROLES, getAuthnzServiceActions } from '../../authnz-library/authnz-actions';
+import { ACTION_GET_ACTIONS_BY_ROLE_ID, ACTION_GET_ROLES, getAuthnzServiceActions } from '../../authnz-library/authnz-actions';
 import { getSimServiceActions } from '../../authnz-library/sim-actions';
 import { getFinanceServiceActions } from '../../authnz-library/finance-actions';
 import { getTimetablingServiceActions } from '../../authnz-library/timetabling-actions';
@@ -61,21 +61,22 @@ const WorkFlows = (): JSX.Element => {
         { title: 'Method', field: 'verb' },
         {
             title: 'Actions',
-            render: (row) => (
-                <>
-                    <Button
-                        className="btn btn-info"
-                        size="sm"
-                        onClick={() => {
-                            toggleCreateModal();
-                            setActionName(row.name);
-                            console.log(row);
-                        }}
-                    >
-                        Create Workflow
-                    </Button>
-                </>
-            )
+            render: (row) =>
+                !canPerformActions(ACTION_GET_ACTIONS_BY_ROLE_ID.name) && (
+                    <>
+                        <Button
+                            className="btn btn-info"
+                            size="sm"
+                            onClick={() => {
+                                toggleCreateModal();
+                                setActionName(row.name);
+                                console.log(row);
+                            }}
+                        >
+                            Create Workflow
+                        </Button>
+                    </>
+                )
         }
     ];
     const options = [];

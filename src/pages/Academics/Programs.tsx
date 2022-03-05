@@ -29,7 +29,7 @@ import { Link } from 'react-router-dom';
 import { ValidationForm, SelectGroup, TextInput } from 'react-bootstrap4-form-validation';
 import { LinearProgress } from '@mui/material';
 import { canPerformActions } from '../../services/ActionChecker';
-import { ACTION_CREATE_PROGRAM, ACTION_GET_PROGRAMS } from '../../authnz-library/timetabling-actions';
+import { ACTION_ASSIGN_COURSE_TO_PROGRAM, ACTION_CREATE_PROGRAM, ACTION_GET_PROGRAMS } from '../../authnz-library/timetabling-actions';
 
 const alerts: Alerts = new ToastifyAlerts();
 
@@ -132,20 +132,22 @@ const Programs = (): JSX.Element => {
         {
             title: 'Assign courses',
             field: 'internal_action',
-            render: (row) => (
-                <Link to={'/assigncourses'} onClick={() => localStorage.setItem('programId', row.id)}>
-                    <button className="btn btn btn-link">Assign courses</button>
-                </Link>
-            )
+            render: (row) =>
+                canPerformActions(ACTION_ASSIGN_COURSE_TO_PROGRAM.name) && (
+                    <Link to={'/assigncourses'} onClick={() => localStorage.setItem('programId', row.id)}>
+                        <button className="btn btn btn-link">Assign courses</button>
+                    </Link>
+                )
         },
         {
             title: 'View courses',
             field: 'internal_action',
-            render: (row) => (
-                <Link to={'/programcourses'} onClick={() => localStorage.setItem('programId', row.id)}>
-                    <button className="btn btn btn-link">View courses</button>
-                </Link>
-            )
+            render: (row) =>
+                canPerformActions(ACTION_GET_PROGRAMS.name) && (
+                    <Link to={'/programcourses'} onClick={() => localStorage.setItem('programId', row.id)}>
+                        <button className="btn btn btn-link">View courses</button>
+                    </Link>
+                )
         }
     ];
     const [errorMessages] = useState([]);

@@ -27,7 +27,7 @@ import CourseCreation from './CreateCourse';
 import { Alerts, ToastifyAlerts } from '../lib/Alert';
 import LinearProgress from '@mui/material/LinearProgress';
 import { canPerformActions } from '../../services/ActionChecker';
-import { ACTION_CREATE_COURSE, ACTION_GET_COURSES } from '../../authnz-library/timetabling-actions';
+import { ACTION_CREATE_COURSE, ACTION_GET_COURSES, ACTION_UPDATE_COURSE } from '../../authnz-library/timetabling-actions';
 const alerts: Alerts = new ToastifyAlerts();
 const tableIcons: Icons = {
     Add: forwardRef((props, ref) => <AddBox {...props} ref={ref} />),
@@ -150,24 +150,26 @@ const CoursesList = (): JSX.Element => {
         {
             title: 'Toggle Activation Status',
             field: 'internal_action',
-            render: (row: Course) => (
-                <Switch
-                    onChange={(event) => handleActivationStatusToggle(event, row)}
-                    inputProps={{ 'aria-label': 'controlled' }}
-                    defaultChecked={row.activation_status === true}
-                />
-            )
+            render: (row: Course) =>
+                canPerformActions(ACTION_UPDATE_COURSE.name) && (
+                    <Switch
+                        onChange={(event) => handleActivationStatusToggle(event, row)}
+                        inputProps={{ 'aria-label': 'controlled' }}
+                        defaultChecked={row.activation_status === true}
+                    />
+                )
         },
         {
             title: 'Toggle Approval Status',
             field: 'internal_action',
-            render: (row: Course) => (
-                <Switch
-                    onChange={(event) => handleApprovalStatusToggle(event, row)}
-                    inputProps={{ 'aria-label': 'controlled' }}
-                    defaultChecked={row.approval_status === true}
-                />
-            )
+            render: (row: Course) =>
+                canPerformActions(ACTION_UPDATE_COURSE.name) && (
+                    <Switch
+                        onChange={(event) => handleApprovalStatusToggle(event, row)}
+                        inputProps={{ 'aria-label': 'controlled' }}
+                        defaultChecked={row.approval_status === true}
+                    />
+                )
         }
     ];
 
