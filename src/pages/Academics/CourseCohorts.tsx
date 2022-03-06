@@ -19,18 +19,17 @@ import Remove from '@material-ui/icons/Remove';
 import SaveAlt from '@material-ui/icons/SaveAlt';
 import Search from '@material-ui/icons/Search';
 import ViewColumn from '@material-ui/icons/ViewColumn';
-import axios from 'axios';
 import Card from '@material-ui/core/Card';
 import Alert from '@material-ui/lab/Alert';
 import Breadcrumb from '../../App/components/Breadcrumb';
 import { Row, Col } from 'react-bootstrap';
-import Config from '../../config';
 import { MenuItem, Select, InputLabel } from '@material-ui/core';
 
 import { Link } from 'react-router-dom';
 import { LinearProgress } from '@mui/material';
 import { canPerformActions } from '../../services/ActionChecker';
 import { ACTION_GET_COURSE_COHORTS } from '../../authnz-library/timetabling-actions';
+import { timetablingAxiosInstance } from '../../utlis/interceptors/timetabling-interceptor';
 
 const tableIcons: Icons = {
     Add: forwardRef((props, ref) => <AddBox {...props} ref={ref} />),
@@ -58,7 +57,6 @@ const CourseCohorts = (): JSX.Element => {
     const [isError] = useState(false);
     const [errorMessages] = useState([]);
     const [linearDisplay, setLinearDisplay] = useState('none');
-    const timetablingSrv = Config.baseUrl.timetablingSrv;
 
     const columns = [
         { title: 'Course cohort ID', field: 'id', hidden: false },
@@ -83,7 +81,7 @@ const CourseCohorts = (): JSX.Element => {
         fetchSemesters();
     }, []);
     const fetchcourseCohorts = (): void => {
-        axios.get(`${timetablingSrv}/course-cohorts`, { params: { loadExtras: 'trainer' } }).then((res) => {
+        timetablingAxiosInstance.get('/course-cohorts', { params: { loadExtras: 'trainer' } }).then((res) => {
             const ccData = res.data;
             setData(ccData);
             setLinearDisplay('none');
@@ -91,7 +89,7 @@ const CourseCohorts = (): JSX.Element => {
     };
 
     const fetchcourseCohortsByTrainerId = (trainerId: number): void => {
-        axios.get(`${timetablingSrv}/course-cohorts`, { params: { trainerId: trainerId } }).then((res) => {
+        timetablingAxiosInstance.get('/course-cohorts', { params: { trainerId: trainerId } }).then((res) => {
             const ccData = res.data;
             setData(ccData);
             setLinearDisplay('none');
@@ -99,7 +97,7 @@ const CourseCohorts = (): JSX.Element => {
     };
 
     const fetchcourseCohortsBySemesterId = (semesterId: number): void => {
-        axios.get(`${timetablingSrv}/course-cohorts`, { params: { semesterId: semesterId } }).then((res) => {
+        timetablingAxiosInstance.get('/course-cohorts', { params: { semesterId: semesterId } }).then((res) => {
             const ccData = res.data;
             setData(ccData);
             setLinearDisplay('none');
@@ -107,14 +105,14 @@ const CourseCohorts = (): JSX.Element => {
     };
 
     const fetchTrainers = (): void => {
-        axios.get(`${timetablingSrv}/trainers`).then((res) => {
+        timetablingAxiosInstance.get('/trainers').then((res) => {
             const trData = res.data;
             setTrainers(trData);
         });
     };
 
     const fetchSemesters = (): void => {
-        axios.get(`${timetablingSrv}/semesters`).then((res) => {
+        timetablingAxiosInstance.get('/semesters').then((res) => {
             const semData = res.data;
             setSemesters(semData);
         });

@@ -1,7 +1,6 @@
 /* eslint-disable react/display-name */
 import React, { useState, useEffect } from 'react';
 import { forwardRef } from 'react';
-import Config from '../../config';
 import MaterialTable from 'material-table';
 import AddBox from '@material-ui/icons/AddBox';
 import ArrowDownward from '@material-ui/icons/ArrowDownward';
@@ -18,13 +17,13 @@ import Remove from '@material-ui/icons/Remove';
 import SaveAlt from '@material-ui/icons/SaveAlt';
 import Search from '@material-ui/icons/Search';
 import ViewColumn from '@material-ui/icons/ViewColumn';
-import axios from 'axios';
 import Alert from '@material-ui/lab/Alert';
 import { Card, Col, Row } from 'react-bootstrap';
 import Breadcrumb from '../../App/components/Breadcrumb';
 import { Icons } from 'material-table';
 import { Assign } from './Role/Assign';
 import { Alerts, ToastifyAlerts } from '../lib/Alert';
+import { authnzAxiosInstance } from '../../utlis/interceptors/authnz-interceptor';
 
 const alerts: Alerts = new ToastifyAlerts();
 const tableIcons: Icons = {
@@ -59,9 +58,8 @@ const AssignRole = (): JSX.Element => {
     const [errorMessages] = useState([]);
 
     useEffect(() => {
-        const authnzSrv = Config.baseUrl.authnzSrv;
-        axios
-            .get(`${authnzSrv}/users`)
+        authnzAxiosInstance
+            .get('/users')
             .then((res) => {
                 setData(res.data);
             })

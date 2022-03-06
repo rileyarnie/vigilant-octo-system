@@ -1,9 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import React, { Component } from 'react';
-import axios from 'axios';
 import { Row, Col, Card } from 'react-bootstrap';
 import { ValidationForm, SelectGroup, TextInput } from 'react-bootstrap4-form-validation';
-import Config from '../../config';
 import Select from 'react-select';
 import { Alerts, ToastifyAlerts } from '../lib/Alert';
 import { customSelectTheme } from '../lib/SelectThemes';
@@ -12,6 +10,7 @@ import { Editor } from 'react-draft-wysiwyg';
 import 'react-draft-wysiwyg/dist/react-draft-wysiwyg.css';
 import { EditorState, convertToRaw } from 'draft-js';
 import draftToHtml from 'draftjs-to-html';
+import { timetablingAxiosInstance } from '../../utlis/interceptors/timetabling-interceptor';
 const alerts: Alerts = new ToastifyAlerts();
 interface Props extends React.HTMLAttributes<Element> {
     setModal: any;
@@ -19,7 +18,6 @@ interface Props extends React.HTMLAttributes<Element> {
     fetchCourses: any;
     linearDisplay: any;
 }
-const timetablingSrv = Config.baseUrl.timetablingSrv;
 class CourseCreation extends Component<Props> {
     options = [] as any;
     coursesArr = [];
@@ -63,8 +61,8 @@ class CourseCreation extends Component<Props> {
             courseOutline: draftToHtml(convertToRaw(this.state.editorState.getCurrentContent()))
         };
         this.props.setLinearDisplay('block');
-        axios
-            .post(`${timetablingSrv}/courses`, course)
+        timetablingAxiosInstance
+            .post('/courses', course)
             .then((res) => {
                 //handle success
                 console.log(res);
@@ -97,8 +95,8 @@ class CourseCreation extends Component<Props> {
         height: '30px'
     };
     fetchCoursesAndInitSelect = () => {
-        axios
-            .get(`${timetablingSrv}/courses`)
+        timetablingAxiosInstance
+            .get('/courses')
             .then((res) => {
                 this.setState({
                     courses: res.data

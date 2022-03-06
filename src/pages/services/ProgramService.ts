@@ -1,13 +1,11 @@
-import axios from 'axios';
 import { Program } from './Program';
-import Config from '../../config';
-const timetablingSrv = Config.baseUrl.timetablingSrv;
+import { timetablingAxiosInstance } from '../../utlis/interceptors/timetabling-interceptor';
 
 export class ProgramsService {
     static async getProgramByCourseCohortId(courseCohortId:number):Promise<Program[]> {
-        return await axios.get(`${timetablingSrv}/programs`,{
-            params:{
-                courseCohortId:courseCohortId,
+        return await timetablingAxiosInstance.get('/programs', {
+            params: {
+                courseCohortId: courseCohortId,
                 loadExtras: 'program'
             }
         });

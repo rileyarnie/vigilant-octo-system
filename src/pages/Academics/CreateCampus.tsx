@@ -1,10 +1,9 @@
 import React, { Component } from 'react';
-import axios from 'axios';
 import { Row, Col, Card } from 'react-bootstrap';
-import Config from '../../config';
 import { ValidationForm, TextInput } from 'react-bootstrap4-form-validation';
 import Breadcrumb from '../../App/components/Breadcrumb';
 import { Alerts, ToastifyAlerts } from '../lib/Alert';
+import { timetablingAxiosInstance } from '../../utlis/interceptors/timetabling-interceptor';
 const alerts: Alerts = new ToastifyAlerts();
 class CreateCampus extends Component {
     state = {
@@ -24,10 +23,9 @@ class CreateCampus extends Component {
             name: this.state.name,
             description: this.state.description
         };
-        const timetablingSrv = Config.baseUrl.timetablingSrv;
         console.log(campus);
-        axios
-            .put(`${timetablingSrv}/campuses`)
+        timetablingAxiosInstance
+            .put('/campuses')
             .then((res) => {
                 alerts.showSuccess('Campus created successfully');
                 this.setState({

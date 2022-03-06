@@ -1,13 +1,13 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import React, { useEffect, useState } from 'react';
-import axios from 'axios';
 import { Row, Col, Card, Modal, Button } from 'react-bootstrap';
 import { ValidationForm, TextInput } from 'react-bootstrap4-form-validation';
-import Config from '../../config';
 import { Alerts, ToastifyAlerts } from '../lib/Alert';
 import Select from 'react-select';
 import {  FileInput } from 'react-bootstrap4-form-validation';
 import CertificationType from './enums/CertificationType';
+import { simsAxiosInstance } from '../../utlis/interceptors/sims-interceptor';
+import { timetablingAxiosInstance } from '../../utlis/interceptors/timetabling-interceptor';
 const alerts: Alerts = new ToastifyAlerts();
 interface Props extends React.HTMLAttributes<Element> {
     setLinearDisplay: (string) => void;
@@ -23,8 +23,6 @@ const CreateMarksModal = (props:Props) => {
     const [ccRegistrations,setCCRegistrations] = useState([]);
     const [modalShow,setModalShow] = useState(false);
     const options= [];
-    const simSrv = Config.baseUrl.simsSrv;
-    const timetablingSrv = Config.baseUrl.timetablingSrv;
     const [imageUploaded, setImageUploaded] = useState('');
     const [showUploadModal, setShowUploadModal] = useState(false);
     let selectedMarks;
@@ -139,17 +137,18 @@ const CreateMarksModal = (props:Props) => {
         }
     }
     function fetchcourseCohortRegistrations() {
-        axios
-            .get(`${simSrv}/course-cohort-registrations`, {
+        simsAxiosInstance
+            .get('/course-cohort-registrations', {
                 params: {
-                    courseCohortIds:props.courseCohortId
-                }})
+                    courseCohortIds: props.courseCohortId
+                }
+            })
             .then((res) => {
                 const ccRegs = res.data;
                 setCCRegistrations(ccRegs);
             })
             .catch((error) => {
-            //handle error using logging library
+                //handle error using logging library
                 console.error(error);
                 alerts.showError(error.message);
             });
@@ -174,12 +173,12 @@ const CreateMarksModal = (props:Props) => {
     const handleSubmit = (e) => {
         e.preventDefault();
         props.setLinearDisplay('block');
-        axios
-            .post(`${simSrv}/course-cohort-registration-marks`, { 
+        simsAxiosInstance
+            .post('/course-cohort-registration-marks', {
                 courseCohortRegistrationId: courseCohortRegistrationId,
                 typeOfMarks: typeOfMarks,
                 marks: marks | selectedMarks,
-                programCohortSemesterId:programCohortSemesterId
+                programCohortSemesterId: programCohortSemesterId
             })
             .then(() => {
                 alerts.showSuccess('Marks Created Successfully');
@@ -209,8 +208,8 @@ const CreateMarksModal = (props:Props) => {
             headers: { 'content-type': 'multipart/form-data' }
         };
         props.setLinearDisplay('block');
-        axios
-            .post(`${timetablingSrv}/files`, form, config)
+        timetablingAxiosInstance
+            .post('/files', form, config)
             .then((res) => {
                 console.log(res.data);
                 alerts.showSuccess('successfully uploaded');

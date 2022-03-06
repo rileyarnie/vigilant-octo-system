@@ -17,14 +17,13 @@ import Remove from '@material-ui/icons/Remove';
 import SaveAlt from '@material-ui/icons/SaveAlt';
 import Search from '@material-ui/icons/Search';
 import ViewColumn from '@material-ui/icons/ViewColumn';
-import axios from 'axios';
 import { LinearProgress } from '@material-ui/core';
 import Alert from '@material-ui/lab/Alert';
 import Breadcrumb from '../../../App/components/Breadcrumb';
 import { Row, Col, Card, Button } from 'react-bootstrap';
-import Config from '../../../config';
 import { Icons } from 'material-table';
 import { Alerts, ToastifyAlerts } from '../../lib/Alert';
+import { timetablingAxiosInstance } from '../../../utlis/interceptors/timetabling-interceptor';
 const alerts: Alerts = new ToastifyAlerts();
 const tableIcons: Icons = {
     Add: forwardRef((props, ref) => <AddBox {...props} ref={ref} />),
@@ -46,7 +45,6 @@ const tableIcons: Icons = {
     ViewColumn: forwardRef((props, ref) => <ViewColumn {...props} ref={ref} />)
 };
 const PublishedSemester = (): JSX.Element => {
-    const timetablingSrv = Config.baseUrl.timetablingSrv;
     const columns = [
         { title: 'ID', render: (row) => row.id },
         { title: 'Semester name', field: 'name' },
@@ -65,8 +63,8 @@ const PublishedSemester = (): JSX.Element => {
     const [courses, setCourses] = useState([]);
     const [linearDisplay, setLinearDisplay] = useState('none');
     useEffect(() => {
-        axios
-            .get(`${timetablingSrv}/semesters`)
+        timetablingAxiosInstance
+            .get('/semesters')
             .then((res) => {
                 setLinearDisplay('none');
                 setData(res.data);
@@ -75,8 +73,8 @@ const PublishedSemester = (): JSX.Element => {
                 console.error(error);
                 alerts.showError(error.message);
             });
-        axios
-            .get(`${timetablingSrv}/course-cohorts`, { params: { semesterId: semesterId } })
+        timetablingAxiosInstance
+            .get('/course-cohorts', { params: { semesterId: semesterId } })
             .then((res) => {
                 setCourses(res.data);
                 console.log(res.data);

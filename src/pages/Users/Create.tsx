@@ -1,11 +1,10 @@
 import React, { useState } from 'react';
-import axios from 'axios';
 import { Row, Col, Card } from 'react-bootstrap';
 import { ValidationForm, TextInput } from 'react-bootstrap4-form-validation';
 import validator from 'validator';
 import Breadcrumb from '../../App/components/Breadcrumb';
-import Config from '../../config';
 import { Alerts, ToastifyAlerts } from '../lib/Alert';
+import { authnzAxiosInstance } from '../../utlis/interceptors/authnz-interceptor';
 const alerts: Alerts = new ToastifyAlerts();
 const CreateUser = (): JSX.Element => {
     const [email, setEmail] = useState('');
@@ -16,10 +15,9 @@ const CreateUser = (): JSX.Element => {
     const handleSubmit = (e) => {
         e.preventDefault();
         const params = new URLSearchParams();
-        const authnzSrv = Config.baseUrl.authnzSrv;
         params.append('AADAlias', email);
-        axios
-            .post(`${authnzSrv}/users`, params)
+        authnzAxiosInstance
+            .post('/users', params)
             .then((res) => {
                 console.log(res);
                 alerts.showSuccess('User created successfully');

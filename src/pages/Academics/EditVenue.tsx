@@ -1,15 +1,13 @@
 /* eslint-disable react/prop-types */
 import React, { useState } from 'react';
-import axios from 'axios';
 import { Row, Col, Card } from 'react-bootstrap';
 import { ValidationForm, TextInput } from 'react-bootstrap4-form-validation';
-import Config from '../../config';
 import { Alerts, ToastifyAlerts } from '../lib/Alert';
 import { regxAlphaNumericWithSpacesAndUnderscores } from '../lib/validation';
+import { timetablingAxiosInstance } from '../../utlis/interceptors/timetabling-interceptor';
 const alerts: Alerts = new ToastifyAlerts();
 const EditVenue = (props): JSX.Element => {
     const [venueName, setVenueName] = useState('');
-    const timetableSrv = Config.baseUrl.timetablingSrv;
     const venueChangeHandler = (event) => {
         setVenueName(event.target.value);
     };
@@ -19,8 +17,8 @@ const EditVenue = (props): JSX.Element => {
             name: venueName
         };
         props.setLinearDisplay('block');
-        axios
-            .put(`${timetableSrv}/venues/${props.venue_id}`, { Venue: modifiedVenue })
+        timetablingAxiosInstance
+            .put(`/venues/${props.venue_id}`, { Venue: modifiedVenue })
             .then(() => {
                 alerts.showSuccess('successfully updated Venue details');
                 props.setEditModal(false);

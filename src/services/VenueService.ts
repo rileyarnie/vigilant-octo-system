@@ -1,9 +1,8 @@
-import axios from 'axios';
-import Config from '../../src/config';
+import { timetablingAxiosInstance } from '../utlis/interceptors/timetabling-interceptor';
 import Venue from './Trainer';
-const timetablingSrv = Config.baseUrl.timetablingSrv;
+
 export class VenueService {
     static async fetchVenues(): Promise<Venue[]> {
-        return await axios.get(`${timetablingSrv}/venues`);
+        return await timetablingAxiosInstance.get('/venues');
     }
 }

@@ -38,6 +38,7 @@ import {
     ACTION_GET_ACTIONS,
     ACTION_GET_ROLES
 } from '../../authnz-library/authnz-actions';
+import { authnzAxiosInstance } from '../../utlis/interceptors/authnz-interceptor';
 
 const alerts: Alerts = new ToastifyAlerts();
 const tableIcons: Icons = {
@@ -131,7 +132,6 @@ function roleList(): JSX.Element {
     const [errorMessages] = useState([]);
     const [actions, setActions] = useState([]);
     const [linearDisplay, setLinearDisplay] = useState('none');
-    const authnzSrv = Config.baseUrl.authnzSrv;
     //modal functions
     const [verticalModal, setVerticalModal] = React.useState(false);
     const [actionModal, setActionModal] = React.useState(false);
@@ -140,8 +140,8 @@ function roleList(): JSX.Element {
     }, []);
     function fetchRoles(): void {
         setLinearDisplay('block');
-        axios
-            .get(`${authnzSrv}/roles`)
+        authnzAxiosInstance
+            .get('/roles')
             .then((res: { data: [] }) => {
                 setData(res.data);
                 setLinearDisplay('none');
@@ -153,8 +153,8 @@ function roleList(): JSX.Element {
     }
     function roleActions(roleId: number) {
         setLinearDisplay('block');
-        axios
-            .get(`${authnzSrv}/actions`, { params: { roleId: roleId } })
+        authnzAxiosInstance
+            .get('/actions', { params: { roleId: roleId } })
             .then((res) => {
                 const myData = res.data;
                 setActions(myData);
@@ -167,8 +167,8 @@ function roleList(): JSX.Element {
     }
     function handleRowDelete(id: number): void {
         setLinearDisplay('block');
-        axios
-            .delete(`${authnzSrv}/roles/${id}`)
+        authnzAxiosInstance
+            .delete('/roles/${id}')
             .then(() => {
                 fetchRoles();
                 setLinearDisplay('none');

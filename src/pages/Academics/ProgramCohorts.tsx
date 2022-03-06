@@ -18,12 +18,10 @@ import Remove from '@material-ui/icons/Remove';
 import SaveAlt from '@material-ui/icons/SaveAlt';
 import Search from '@material-ui/icons/Search';
 import ViewColumn from '@material-ui/icons/ViewColumn';
-import axios from 'axios';
 import Card from '@material-ui/core/Card';
 import Alert from '@material-ui/lab/Alert';
 import Breadcrumb from '../../App/components/Breadcrumb';
 import { Row, Col, Modal, Button } from 'react-bootstrap';
-import Config from '../../config';
 import { MenuItem, Select, Switch } from '@material-ui/core';
 import { ValidationForm, SelectGroup, FileInput, TextInput } from 'react-bootstrap4-form-validation';
 import CardPreview from './CardPreview';
@@ -33,6 +31,7 @@ import { LinearProgress } from '@mui/material';
 import { ProgramCohortService } from '../services/ProgramCohortService';
 import { canPerformActions } from '../../services/ActionChecker';
 import { ACTION_CREATE_PROGRAM_COHORT, ACTION_GET_PROGRAM_COHORTS } from '../../authnz-library/timetabling-actions';
+import { timetablingAxiosInstance } from '../../utlis/interceptors/timetabling-interceptor';
 const alerts: Alerts = new ToastifyAlerts();
 const tableIcons: Icons = {
     Add: forwardRef((props, ref) => <AddBox {...props} ref={ref} />),
@@ -95,7 +94,6 @@ const ProgramCohorts = (): JSX.Element => {
     const [selectedProgramCohort, setSelectedProgramCohort] = useState<programCohort>();
     const [linearDisplay, setLinearDisplay] = useState('none');
     const [activationStatus, setStatus] = useState('');
-    const timetablingSrv = Config.baseUrl.timetablingSrv;
     const year = graduationDate.split('').slice(0, 4).join('');
     const month = graduationDate.slice(5, 7);
 
@@ -115,8 +113,8 @@ const ProgramCohorts = (): JSX.Element => {
             status: activationStatus
         };
         setLinearDisplay('block');
-        axios
-            .put(`${timetablingSrv}/program-cohorts/${row.program_cohorts_id}`, cohortStatus)
+        timetablingAxiosInstance
+            .put(`/program-cohorts/${row.program_cohorts_id}`, cohortStatus)
             .then(() => {
                 const msg =
                     activationStatus === 'canceled' ? 'Successfully Deactivated Program Cohorts' : 'Successfully activated Program Cohort';
@@ -223,8 +221,8 @@ const ProgramCohorts = (): JSX.Element => {
     ];
     useEffect(() => {
         setLinearDisplay('block');
-        axios
-            .get(`${timetablingSrv}/program-cohorts`, { params: { loadExtras: 'programs' } })
+        timetablingAxiosInstance
+            .get('/program-cohorts', { params: { loadExtras: 'programs' } })
             .then((res) => {
                 setLinearDisplay('none');
                 setData(res.data);
@@ -233,8 +231,8 @@ const ProgramCohorts = (): JSX.Element => {
                 console.error(error);
                 alerts.showError(error.message);
             });
-        axios
-            .get(`${timetablingSrv}/programs`)
+        timetablingAxiosInstance
+            .get('/programs')
             .then((res) => {
                 setPrograms(res.data);
             })
@@ -242,8 +240,8 @@ const ProgramCohorts = (): JSX.Element => {
                 console.error(error);
                 alerts.showError(error.message);
             });
-        axios
-            .get(`${timetablingSrv}/campuses`)
+        timetablingAxiosInstance
+            .get('/campuses')
             .then((res) => {
                 setCampus(res.data);
             })
@@ -254,8 +252,8 @@ const ProgramCohorts = (): JSX.Element => {
     }, []);
     const fetchProgramCohorts = (): void => {
         setLinearDisplay('block');
-        axios
-            .get(`${timetablingSrv}/program-cohorts`, { params: { loadExtras: 'programs' } })
+        timetablingAxiosInstance
+            .get('/program-cohorts', { params: { loadExtras: 'programs' } })
             .then((res) => {
                 res.data.forEach((program) => {
                     program.name = getProgramName(res.data[0].programId);
@@ -275,8 +273,8 @@ const ProgramCohorts = (): JSX.Element => {
             headers: { 'content-type': 'multipart/form-data' }
         };
         setLinearDisplay('block');
-        axios
-            .post(`${timetablingSrv}/files`, form, config)
+        timetablingAxiosInstance
+            .post('/files', form, config)
             .then((res) => {
                 console.log(res.data);
                 alerts.showSuccess('successfully uploaded');
@@ -292,8 +290,8 @@ const ProgramCohorts = (): JSX.Element => {
 
     const updateProgramCohort = (cohortId, updates): void => {
         setLinearDisplay('block');
-        axios
-            .put(`${timetablingSrv}/program-cohorts/${cohortId}/`, updates)
+        timetablingAxiosInstance
+            .put(`/program-cohorts/${cohortId}/`, updates)
             .then(() => {
                 setLinearDisplay('none');
                 alerts.showSuccess('Successfully updated Cohort');
@@ -359,8 +357,8 @@ const ProgramCohorts = (): JSX.Element => {
     const createCohort = (cohortData): void => {
         console.log(cohortData);
         setLinearDisplay('block');
-        axios
-            .post(`${timetablingSrv}/program-cohorts`, cohortData)
+        timetablingAxiosInstance
+            .post('/program-cohorts', cohortData)
             .then(() => {
                 setLinearDisplay('none');
                 alerts.showSuccess('Successfully created Program Cohort');

@@ -1,7 +1,6 @@
-import axios from 'axios';
 import React, { useState } from 'react';
 import { Modal, Button, Col } from 'react-bootstrap';
-import Config from '../../config';
+import { timetablingAxiosInstance } from '../../utlis/interceptors/timetabling-interceptor';
 import { Alerts, ToastifyAlerts } from '../lib/Alert';
 const alerts: Alerts = new ToastifyAlerts();
 interface ICourseCohort {
@@ -17,7 +16,6 @@ interface IProps {
     programName: string;
 }
 export const DeactivateCourseCohort = (props: IProps): JSX.Element => {
-    const timetablingSrv = Config.baseUrl.timetablingSrv;
     const [showModal, setShowModal] = useState(false);
     let activationStatus: boolean;
     let className: string;
@@ -43,8 +41,8 @@ export const DeactivateCourseCohort = (props: IProps): JSX.Element => {
         const courseCohort = {
             isActive: activationStatus
         };
-        axios
-            .patch(`${timetablingSrv}/course-cohorts/${props.selectedRow.course_cohorts_id}`, courseCohort)
+        timetablingAxiosInstance
+            .patch(`/course-cohorts/${props.selectedRow.course_cohorts_id}`, courseCohort)
             .then(() => {
                 const msg = activationStatus ? 'Successfully activated course cohort' : 'Successfully Deactivated course cohort';
                 alerts.showSuccess(msg);

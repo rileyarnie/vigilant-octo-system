@@ -18,12 +18,10 @@ import Remove from '@material-ui/icons/Remove';
 import SaveAlt from '@material-ui/icons/SaveAlt';
 import Search from '@material-ui/icons/Search';
 import ViewColumn from '@material-ui/icons/ViewColumn';
-import axios from 'axios';
 import Alert from '@material-ui/lab/Alert';
 import Breadcrumb from '../../App/components/Breadcrumb';
 import { Row, Col, Card } from 'react-bootstrap';
 import DeleteIcon from '@material-ui/icons/Delete';
-import Config from '../../config';
 import { Alerts, ToastifyAlerts } from '../lib/Alert';
 import LoadingBar from 'react-top-loading-bar';
 import LinearProgress from '@material-ui/core/LinearProgress';
@@ -32,6 +30,7 @@ import { createStyles, Theme, makeStyles } from '@material-ui/core/styles';
 import Button from '@material-ui/core/Button';
 import IconButton from '@material-ui/core/IconButton';
 import ArrowBackIcon from '@material-ui/icons/ArrowBack';
+import { timetablingAxiosInstance } from '../../utlis/interceptors/timetabling-interceptor';
 const alerts: Alerts = new ToastifyAlerts();
 const tableIcons: Icons = {
     Add: forwardRef((props, ref) => <AddBox {...props} ref={ref} />),
@@ -80,16 +79,15 @@ const ProgramCoursesList = (props): JSX.Element => {
     const [linearDisplay, setLinearDisplay] = useState('none');
     const [, setSelectedRows] = useState();
     const [errorMessages, setErrorMessages] = useState([]);
-    const timetablingSrv = Config.baseUrl.timetablingSrv;
     const progId = JSON.parse(localStorage.getItem('programId'));
 
     useEffect(() => {
         setLinearDisplay('block');
-        axios
-            .get(`${timetablingSrv}/programs/${progId}/courses`)
+        timetablingAxiosInstance
+            .get(`/programs/${progId}/courses`)
             .then((res) => {
                 setData(res.data);
-                console.log('Program Courses',res.data);
+                console.log('Program Courses', res.data);
                 setLinearDisplay('none');
                 setProgramId(progId);
             })
@@ -100,8 +98,8 @@ const ProgramCoursesList = (props): JSX.Element => {
 
     const fetchCoursesAssignedToProgram = (progId: number) => {
         setLinearDisplay('block');
-        axios
-            .get(`${timetablingSrv}/programs/${progId}/courses`)
+        timetablingAxiosInstance
+            .get(`/programs/${progId}/courses`)
             .then((res) => {
                 setLinearDisplay('none');
                 setData(res.data);
@@ -114,8 +112,8 @@ const ProgramCoursesList = (props): JSX.Element => {
     };
 
     const unassignSelectedCoursesFromTrainer = (selectedCourseId: number) => {
-        axios
-            .put(`${timetablingSrv}/programs/${programId}/courses/${selectedCourseId}`)
+        timetablingAxiosInstance
+            .put(`/programs/${programId}/courses/${selectedCourseId}`)
             .then((res) => {
                 alerts.showSuccess('Succesfully removed course');
 

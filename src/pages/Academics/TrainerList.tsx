@@ -17,16 +17,16 @@ import Remove from '@material-ui/icons/Remove';
 import SaveAlt from '@material-ui/icons/SaveAlt';
 import Search from '@material-ui/icons/Search';
 import ViewColumn from '@material-ui/icons/ViewColumn';
-import axios from 'axios';
 import Alert from '@material-ui/lab/Alert';
 import Breadcrumb from '../../App/components/Breadcrumb';
 import { Row, Col, Card, Modal, Button } from 'react-bootstrap';
-import Config from '../../config';
 import { ValidationForm, SelectGroup } from 'react-bootstrap4-form-validation';
 import { Alerts, ToastifyAlerts } from '../lib/Alert';
 import LinearProgress from '@mui/material/LinearProgress';
 import { canPerformActions } from '../../services/ActionChecker';
 import { ACTION_CREATE_TRAINER } from '../../authnz-library/timetabling-actions';
+import { authnzAxiosInstance } from '../../utlis/interceptors/authnz-interceptor';
+import { timetablingAxiosInstance } from '../../utlis/interceptors/timetabling-interceptor';
 
 const alerts: Alerts = new ToastifyAlerts();
 const tableIcons: Icons = {
@@ -61,8 +61,6 @@ const TrainerList = (): JSX.Element => {
         { title: 'Department ID', field: 'tr_departmentId' }
     ];
     const [data, setData] = useState([]);
-    const baseUrl = Config.baseUrl.timetablingSrv;
-    const baseUrlAuth = Config.baseUrl.authnzSrv;
     const [isError] = useState(false);
     const [users, setUsers] = useState([]);
     const [departments, setDepartments] = useState([]);
@@ -76,8 +74,8 @@ const TrainerList = (): JSX.Element => {
     const [linearDisplay, setLinearDisplay] = useState('none');
     useEffect(() => {
         setLinearDisplay('block');
-        axios
-            .get(`${baseUrl}/trainers`)
+        timetablingAxiosInstance
+            .get('/trainers')
             .then((res) => {
                 setLinearDisplay('none');
                 console.log(res.data);
@@ -89,10 +87,9 @@ const TrainerList = (): JSX.Element => {
                 alerts.showError(error.message);
             });
 
-        axios
-            .get(`${baseUrlAuth}/users`)
+        authnzAxiosInstance
+            .get('/users')
             .then((res) => {
-                console.log(res.data);
                 setUsers(res.data);
             })
             .catch((error) => {
@@ -101,8 +98,8 @@ const TrainerList = (): JSX.Element => {
                 alerts.showError(error.message);
             });
 
-        axios
-            .get(`${baseUrl}/departments`)
+        timetablingAxiosInstance
+            .get('/departments')
             .then((res) => {
                 setDepartments(res.data);
             })
@@ -115,8 +112,8 @@ const TrainerList = (): JSX.Element => {
 
     const fetchTrainers = () => {
         setLinearDisplay('block');
-        axios
-            .get(`${baseUrl}/trainers`)
+        timetablingAxiosInstance
+            .get('/trainers')
             .then((res) => {
                 setLinearDisplay('none');
                 setData(res.data);
@@ -142,8 +139,8 @@ const TrainerList = (): JSX.Element => {
     const createTrainer = (trainerData) => {
         console.log(trainerData);
         setLinearDisplay('block');
-        axios
-            .post(`${baseUrl}/trainers`, trainerData)
+        timetablingAxiosInstance
+            .post('/trainers', trainerData)
             .then(() => {
                 alerts.showSuccess('Trainer created successfully');
                 fetchTrainers();

@@ -17,13 +17,12 @@ import Remove from '@material-ui/icons/Remove';
 import SaveAlt from '@material-ui/icons/SaveAlt';
 import Search from '@material-ui/icons/Search';
 import ViewColumn from '@material-ui/icons/ViewColumn';
-import axios from 'axios';
 import Alert from '@material-ui/lab/Alert';
 import Breadcrumb from '../../App/components/Breadcrumb';
 import { Row, Col, Card } from 'react-bootstrap';
 import { Button, LinearProgress } from '@material-ui/core';
-import Config from '../../config';
 import { Alerts, ToastifyAlerts } from '../lib/Alert';
+import { timetablingAxiosInstance } from '../../utlis/interceptors/timetabling-interceptor';
 
 const tableIcons: Icons = {
     Add: forwardRef((props, ref) => <AddBox {...props} ref={ref} />),
@@ -47,7 +46,6 @@ const tableIcons: Icons = {
 
 const alerts: Alerts = new ToastifyAlerts();
 const AssignCourse = (): JSX.Element => {
-    const timetablingSrv = Config.baseUrl.timetablingSrv;
     const columns = [
         { title: 'ID', field: 'id', hidden: false },
         { title: 'Name', field: 'name' },
@@ -66,8 +64,8 @@ const AssignCourse = (): JSX.Element => {
     const [errorMessages] = useState([]);
     const progId = JSON.parse(localStorage.getItem('programId'));
     useEffect(() => {
-        axios
-            .get(`${timetablingSrv}/courses`)
+        timetablingAxiosInstance
+            .get('$/courses')
             .then((res) => {
                 setData(res.data);
                 setLinearDisplay('none');
@@ -82,8 +80,8 @@ const AssignCourse = (): JSX.Element => {
     }, []);
 
     const fetchCourses = () => {
-        axios
-            .get(`${timetablingSrv}/courses`)
+        timetablingAxiosInstance
+            .get('/courses')
             .then((res) => {
                 setData(res.data);
             })
@@ -105,8 +103,8 @@ const AssignCourse = (): JSX.Element => {
 
     const assignSelectedCoursesToProgram = (selectedCourses: Array<number>) => {
         setLinearDisplay('block');
-        axios
-            .put(`${timetablingSrv}/programs/${programId}/courses`, { courses: selectedCourses })
+        timetablingAxiosInstance
+            .put(`/programs/${programId}/courses`, { courses: selectedCourses })
             .then((res) => {
                 setLinearDisplay('block');
                 alerts.showSuccess('Course assignment successful');

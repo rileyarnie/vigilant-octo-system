@@ -1,15 +1,13 @@
-import axios from 'axios';
-import Config from '../../config';
+import { financeAxiosInstance } from '../../utlis/interceptors/finance-interceptor';
 import FeeItem from './FeeItem';
-const financeSrv = Config.baseUrl.financeSrv;
 export class FeesManagementService {
     static async createFeesItems(createFeeItemRequest: object): Promise<FeeItem[]> {
-        return axios.post(`${financeSrv}/fee-items`, { createFeeItemRequest });
+        return financeAxiosInstance.post('/fee-items', { createFeeItemRequest });
     }
     static async updateFeesItems(update: object): Promise<FeeItem[]> {
-        return axios.put(`${financeSrv}/fee-items`, update);
+        return financeAxiosInstance.put('/fee-items', update);
     }
     static async getFeesItems(programCohortSemesterId: string): Promise<FeeItem[]> {
-        return axios.get(`${financeSrv}/fee-items`, { params: { programCohortSemesterId: programCohortSemesterId } });
+        return financeAxiosInstance.get('/fee-items', { params: { programCohortSemesterId: programCohortSemesterId } });
     }
 }

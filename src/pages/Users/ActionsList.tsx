@@ -1,8 +1,6 @@
 /* eslint-disable react/prop-types */
 /* eslint-disable react/display-name */
 import React, { useEffect, useState } from 'react';
-import Config from '../../config';
-import axios from 'axios';
 import { forwardRef } from 'react';
 import MaterialTable from 'material-table';
 import AddBox from '@material-ui/icons/AddBox';
@@ -23,6 +21,7 @@ import Search from '@material-ui/icons/Search';
 import ViewColumn from '@material-ui/icons/ViewColumn';
 import { Alerts, ToastifyAlerts } from '../lib/Alert';
 import LinearProgress from '@material-ui/core/LinearProgress';
+import { authnzAxiosInstance } from '../../utlis/interceptors/authnz-interceptor';
 const alerts: Alerts = new ToastifyAlerts();
 
 const tableIcons: Icons = {
@@ -48,10 +47,9 @@ export const ActionsList = (props): JSX.Element => {
     const [actions, setActions] = useState([]);
     const [linearDisplay, setLinearDisplay] = useState('none');
     useEffect(() => {
-        const authnzSrv = Config.baseUrl.authnzSrv;
         setLinearDisplay('block');
-        axios
-            .get(`${authnzSrv}/actions/${props.selectedrowprops.selectedrowprops.id}`)
+        authnzAxiosInstance
+            .get(`/actions/${props.selectedrowprops.selectedrowprops.id}`)
             .then((res) => {
                 setActions(res.data);
                 setLinearDisplay('none');
