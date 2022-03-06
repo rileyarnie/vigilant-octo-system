@@ -26,6 +26,8 @@ import { Switch } from '@material-ui/core';
 import CourseCreation from './CreateCourse';
 import { Alerts, ToastifyAlerts } from '../lib/Alert';
 import LinearProgress from '@mui/material/LinearProgress';
+import { canPerformActions } from '../../services/ActionChecker';
+import { ACTION_CREATE_COURSE, ACTION_GET_COURSES, ACTION_UPDATE_COURSE } from '../../authnz-library/timetabling-actions';
 const alerts: Alerts = new ToastifyAlerts();
 const tableIcons: Icons = {
     Add: forwardRef((props, ref) => <AddBox {...props} ref={ref} />),
@@ -148,24 +150,26 @@ const CoursesList = (): JSX.Element => {
         {
             title: 'Toggle Activation Status',
             field: 'internal_action',
-            render: (row: Course) => (
-                <Switch
-                    onChange={(event) => handleActivationStatusToggle(event, row)}
-                    inputProps={{ 'aria-label': 'controlled' }}
-                    defaultChecked={row.activation_status === true}
-                />
-            )
+            render: (row: Course) =>
+                canPerformActions(ACTION_UPDATE_COURSE.name) && (
+                    <Switch
+                        onChange={(event) => handleActivationStatusToggle(event, row)}
+                        inputProps={{ 'aria-label': 'controlled' }}
+                        defaultChecked={row.activation_status === true}
+                    />
+                )
         },
         {
             title: 'Toggle Approval Status',
             field: 'internal_action',
-            render: (row: Course) => (
-                <Switch
-                    onChange={(event) => handleApprovalStatusToggle(event, row)}
-                    inputProps={{ 'aria-label': 'controlled' }}
-                    defaultChecked={row.approval_status === true}
-                />
-            )
+            render: (row: Course) =>
+                canPerformActions(ACTION_UPDATE_COURSE.name) && (
+                    <Switch
+                        onChange={(event) => handleApprovalStatusToggle(event, row)}
+                        inputProps={{ 'aria-label': 'controlled' }}
+                        defaultChecked={row.approval_status === true}
+                    />
+                )
         }
     ];
 
@@ -179,28 +183,34 @@ const CoursesList = (): JSX.Element => {
                     <Breadcrumb />
                 </Col>
                 <Col>
-                    <Button className="float-right" variant="danger" onClick={() => toggleCreateModal()}>
-                        Create Course
-                    </Button>
+                    {canPerformActions(ACTION_CREATE_COURSE.name) && (
+                        <Button className="float-right" variant="danger" onClick={() => toggleCreateModal()}>
+                            Create Course
+                        </Button>
+                    )}
                 </Col>
             </Row>
-            <LinearProgress style={{ display: linearDisplay }} />
-            <Row>
-                <Col>
-                    <Card>
-                        <div>
-                            {iserror && (
-                                <Alert severity="error">
-                                    {errorMessages.map((msg, i) => {
-                                        return <div key={i}>{msg}</div>;
-                                    })}
-                                </Alert>
-                            )}
-                        </div>
-                        <MaterialTable title="Courses" columns={columns} data={data} icons={tableIcons} />
-                    </Card>
-                </Col>
-            </Row>
+            {canPerformActions(ACTION_GET_COURSES.name) && (
+                <>
+                    <LinearProgress style={{ display: linearDisplay }} />
+                    <Row>
+                        <Col>
+                            <Card>
+                                <div>
+                                    {iserror && (
+                                        <Alert severity="error">
+                                            {errorMessages.map((msg, i) => {
+                                                return <div key={i}>{msg}</div>;
+                                            })}
+                                        </Alert>
+                                    )}
+                                </div>
+                                <MaterialTable title="Courses" columns={columns} data={data} icons={tableIcons} />
+                            </Card>
+                        </Col>
+                    </Row>
+                </>
+            )}
             <Modal size="lg" aria-labelledby="contained-modal-title-vcenter" centered show={showModal} backdrop="static">
                 <Modal.Header>
                     <Modal.Title id="contained-modal-title-vcenter">Create Course</Modal.Title>

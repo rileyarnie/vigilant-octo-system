@@ -21,7 +21,7 @@ import Search from '@material-ui/icons/Search';
 import ViewColumn from '@material-ui/icons/ViewColumn';
 import axios from 'axios';
 import Alert from '@material-ui/lab/Alert';
-import {Button, Card, Col, Modal, Row} from 'react-bootstrap';
+import { Button, Card, Col, Modal, Row } from 'react-bootstrap';
 import Breadcrumb from '../../App/components/Breadcrumb';
 import { Actions } from './ActionsByRole/Actions';
 import { AddActions } from './AddActionsModal/AddActions';
@@ -31,6 +31,13 @@ import { LinearProgress } from '@mui/material';
 import { MenuItem, Select } from '@material-ui/core';
 import { VerticalModal } from './ActionsByRole/VerticalModal';
 import { AddActionsModal } from './AddActionsModal/AddActionsModal';
+import { canPerformActions } from '../../services/ActionChecker';
+import {
+    ACTION_ADD_ACTIONS_TO_ROLE,
+    ACTION_DEACTIVATE_ROLE,
+    ACTION_GET_ACTIONS,
+    ACTION_GET_ROLES
+} from '../../authnz-library/authnz-actions';
 
 const alerts: Alerts = new ToastifyAlerts();
 const tableIcons: Icons = {
@@ -86,15 +93,28 @@ function roleList(): JSX.Element {
             title: ' Actions',
             render: (row: Role) => (
                 <Select>
-                    <div className="" onClick={() =>{ roleActions(row.id); setRoleName(row.name); toggleActionsModal();}}>
-                        <MenuItem value="View courses">View Role Actions</MenuItem>
-                    </div>
-                    <div className="" onClick={() => setActionModal(true)}>
-                        <MenuItem value="View courses">Add Actions</MenuItem>
-                    </div>
-                    <div className="" onClick={() => handleRowDelete(row.id)}>
-                        <MenuItem value="View courses">Delete Role</MenuItem>
-                    </div>
+                    {canPerformActions(ACTION_GET_ACTIONS.name) && (
+                        <div
+                            className=""
+                            onClick={() => {
+                                roleActions(row.id);
+                                setRoleName(row.name);
+                                toggleActionsModal();
+                            }}
+                        >
+                            <MenuItem value="View courses">View Role Actions</MenuItem>
+                        </div>
+                    )}
+                    {canPerformActions(ACTION_ADD_ACTIONS_TO_ROLE.name) && (
+                        <div className="" onClick={() => setActionModal(true)}>
+                            <MenuItem value="View courses">Add Actions</MenuItem>
+                        </div>
+                    )}
+                    {canPerformActions(ACTION_DEACTIVATE_ROLE.name) && (
+                        <div className="" onClick={() => handleRowDelete(row.id)}>
+                            <MenuItem value="View courses">Delete Role</MenuItem>
+                        </div>
+                    )}
                 </Select>
             )
         }
@@ -131,10 +151,10 @@ function roleList(): JSX.Element {
                 alerts.showError((error as Error).message);
             });
     }
-    function roleActions(roleId:number) {
+    function roleActions(roleId: number) {
         setLinearDisplay('block');
         axios
-            .get(`${authnzSrv}/actions`,{params : {roleId: roleId}})
+            .get(`${authnzSrv}/actions`, { params: { roleId: roleId } })
             .then((res) => {
                 const myData = res.data;
                 setActions(myData);
@@ -186,22 +206,24 @@ function roleList(): JSX.Element {
                     </Col>
                 </Row>
                 <LinearProgress style={{ display: linearDisplay }} />
-                <Row>
-                    <Col>
-                        <Card>
-                            <div>
-                                {isError && (
-                                    <Alert severity="error">
-                                        {errorMessages.map((msg, i) => {
-                                            return <div key={i}>{msg}</div>;
-                                        })}
-                                    </Alert>
-                                )}
-                            </div>
-                            <MaterialTable title="Role List" columns={columns} data={data} icons={tableIcons} />
-                        </Card>
-                    </Col>
-                </Row>
+                {canPerformActions(ACTION_GET_ROLES.name) && (
+                    <Row>
+                        <Col>
+                            <Card>
+                                <div>
+                                    {isError && (
+                                        <Alert severity="error">
+                                            {errorMessages.map((msg, i) => {
+                                                return <div key={i}>{msg}</div>;
+                                            })}
+                                        </Alert>
+                                    )}
+                                </div>
+                                <MaterialTable title="Role List" columns={columns} data={data} icons={tableIcons} />
+                            </Card>
+                        </Col>
+                    </Row>
+                )}
                 <Actions {...selectedRowProps}> </Actions>
                 &nbsp;&nbsp;&nbsp;
                 <AddActions {...selectedRowProps}> </AddActions>
@@ -228,7 +250,7 @@ function roleList(): JSX.Element {
                     <MaterialTable title="Action List" columns={actionColumns} data={actions} icons={tableIcons} />
                 </Modal.Body>
                 <Modal.Footer style={{ display: 'flex', justifyContent: 'flex-start' }}>
-                    <Button variant="danger float-left" onClick={handleClose} >
+                    <Button variant="danger float-left" onClick={handleClose}>
                         Close
                     </Button>
                 </Modal.Footer>

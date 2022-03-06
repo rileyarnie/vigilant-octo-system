@@ -30,6 +30,8 @@ import { Icons } from 'material-table';
 import { Alerts, ToastifyAlerts } from '../lib/Alert';
 import LinearProgress from '@mui/material/LinearProgress';
 import { TimetableService } from '../../services/TimetableService';
+import { canPerformActions } from '../../services/ActionChecker';
+import { ACTION_GET_PROGRAM_COHORT_APPLICATIONS } from '../../authnz-library/sim-actions';
 
 const alerts: Alerts = new ToastifyAlerts();
 const tableIcons: Icons = {
@@ -244,104 +246,108 @@ const ApplicationsList = (): JSX.Element => {
                     <Breadcrumb />
                 </Col>
             </Row>
-            <LinearProgress style={{ display: linearDisplay }} />
-            <Row>
-                <Col>
-                    <Card>
-                        <div>
-                            {isError && (
-                                <Alert severity="error">
-                                    {errorMessages.map((msg, i) => {
-                                        return <div key={i}>{msg}</div>;
-                                    })}
-                                </Alert>
-                            )}
-                        </div>
-                        <MaterialTable
-                            title="Applications"
-                            columns={columns}
-                            onRowClick={(event, row) => {
-                                toggleCreateModal();
+            {canPerformActions(ACTION_GET_PROGRAM_COHORT_APPLICATIONS.name) && (
+                <>
+                    <LinearProgress style={{ display: linearDisplay }} />
+                    <Row>
+                        <Col>
+                            <Card>
+                                <div>
+                                    {isError && (
+                                        <Alert severity="error">
+                                            {errorMessages.map((msg, i) => {
+                                                return <div key={i}>{msg}</div>;
+                                            })}
+                                        </Alert>
+                                    )}
+                                </div>
+                                <MaterialTable
+                                    title="Applications"
+                                    columns={columns}
+                                    onRowClick={(event, row) => {
+                                        toggleCreateModal();
 
-                                setFirstName(row.applications_firstName);
+                                        setFirstName(row.applications_firstName);
 
-                                setLastName(row.applications_lastName);
+                                        setLastName(row.applications_lastName);
 
-                                setOtherName(row.applications_otherName);
+                                        setOtherName(row.applications_otherName);
 
-                                setIdentification(row.applications_identification);
+                                        setIdentification(row.applications_identification);
 
-                                setGender(row.applications_gender);
+                                        setGender(row.applications_gender);
 
-                                setMaritalStatus(row.applications_maritalStatus);
+                                        setMaritalStatus(row.applications_maritalStatus);
 
-                                setReligion(row.applications_religion);
+                                        setReligion(row.applications_religion);
 
-                                setDateOfBirth(row.applications_dateOfBirth.slice(0, 10));
+                                        setDateOfBirth(row.applications_dateOfBirth.slice(0, 10));
 
-                                setPlaceOfBirth(row.applications_placeofBirth);
+                                        setPlaceOfBirth(row.applications_placeofBirth);
 
-                                setPhoneNumber(row.applications_phoneNumber);
+                                        setPhoneNumber(row.applications_phoneNumber);
 
-                                setEmailAddress(row.applications_emailAddress);
+                                        setEmailAddress(row.applications_emailAddress);
 
-                                setNationality(row.applications_nationality);
+                                        setNationality(row.applications_nationality);
 
-                                setPhysicalChallenges(row.applications_physicalChallenges);
+                                        setPhysicalChallenges(row.applications_physicalChallenges);
 
-                                setCourseStartDate(row.applications_courseStartDate.slice(0, 10));
+                                        setCourseStartDate(row.applications_courseStartDate.slice(0, 10));
 
-                                setCampus(row.applications_campus);
+                                        setCampus(row.applications_campus);
 
-                                setSponsor(row.applications_sponsor);
+                                        setSponsor(row.applications_sponsor);
 
-                                setCountryOfResidence(row.applications_countryOfResidence);
+                                        setCountryOfResidence(row.applications_countryOfResidence);
 
-                                setProgramCohortId(row.applications_programCohortId);
+                                        setProgramCohortId(row.applications_programCohortId);
 
-                                setIsAdmitted(row.applications_status);
+                                        setIsAdmitted(row.applications_status);
 
-                                setNextOfKinName(row.nkd_name);
+                                        setNextOfKinName(row.nkd_name);
 
-                                setNextOfKinPhoneNumber(row.nkd_nextOfKinPhoneNumber);
+                                        setNextOfKinPhoneNumber(row.nkd_nextOfKinPhoneNumber);
 
-                                setNextOfKinRelation(row.nkd_relation);
+                                        setNextOfKinRelation(row.nkd_relation);
 
-                                setApplicationId(row.applications_id);
+                                        setApplicationId(row.applications_id);
 
-                                setDocumentsUrl(row.sdocs_documentUrl);
-                            }}
-                            data={data}
-                            icons={tableIcons}
-                            options={{
-                                rowStyle: (rowData) => ({
-                                    backgroundColor: selectedRow === rowData.tableData.id ? '#EEE' : '#FFF'
-                                })
-                            }}
-                            components={{
-                                Toolbar: (props) => (
-                                    <div>
-                                        <MTableToolbar {...props} />
-                                        <div style={{ padding: '0px 10px' }}>
-                                            <Select
-                                                labelId="demo-simple-select-label"
-                                                id="demo-simple-select"
-                                                style={{ width: 150 }}
-                                                value={isAdmitted}
-                                                onChange={(e) => setIsAdmitted(e.target.value as string)}
-                                            >
-                                                <MenuItem value={'ADMITTED'}>Admitted</MenuItem>
-                                                <MenuItem value={'PENDING'}>Pending</MenuItem>
-                                                <MenuItem value={'REJECTED'}>Rejected</MenuItem>
-                                            </Select>
-                                        </div>
-                                    </div>
-                                )
-                            }}
-                        />
-                    </Card>
-                </Col>
-            </Row>
+                                        setDocumentsUrl(row.sdocs_documentUrl);
+                                    }}
+                                    data={data}
+                                    icons={tableIcons}
+                                    options={{
+                                        rowStyle: (rowData) => ({
+                                            backgroundColor: selectedRow === rowData.tableData.id ? '#EEE' : '#FFF'
+                                        })
+                                    }}
+                                    components={{
+                                        Toolbar: (props) => (
+                                            <div>
+                                                <MTableToolbar {...props} />
+                                                <div style={{ padding: '0px 10px' }}>
+                                                    <Select
+                                                        labelId="demo-simple-select-label"
+                                                        id="demo-simple-select"
+                                                        style={{ width: 150 }}
+                                                        value={isAdmitted}
+                                                        onChange={(e) => setIsAdmitted(e.target.value as string)}
+                                                    >
+                                                        <MenuItem value={'ADMITTED'}>Admitted</MenuItem>
+                                                        <MenuItem value={'PENDING'}>Pending</MenuItem>
+                                                        <MenuItem value={'REJECTED'}>Rejected</MenuItem>
+                                                    </Select>
+                                                </div>
+                                            </div>
+                                        )
+                                    }}
+                                />
+                            </Card>
+                        </Col>
+                    </Row>
+                </>
+            )}
             <Modal
                 backdrop="static"
                 show={showModal}
