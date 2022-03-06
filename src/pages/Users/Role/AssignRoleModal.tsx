@@ -40,17 +40,10 @@ export const AssignRoleModal = (props: IProps): JSX.Element => {
     };
 
     const handlePostRoles = async () => {
-        const roleIds: number[] = [];
-        const userId = props.selectedrowprops.id;
-        selectedOptions.map((option) => {
-            return roleIds.push(option.value);
-        });
-        const params = new URLSearchParams();
-        roleIds.forEach((roleId) => {
-            params.append('roleIds', roleId.toString());
-        });
+        const roleIds: number[] = selectedOptions.map((option) => option.value);
+
         authnzAxiosInstance
-            .post(`/users/${userId}/roles`, params)
+            .post('/users/${userId}/roles', { roleIds: roleIds })
             .then((res) => {
                 if (res.status == 200) {
                     alerts.showSuccess('Successfully assigned role to user');
