@@ -1,5 +1,7 @@
 import React from 'react';
 import { Button } from 'react-bootstrap';
+import { ACTION_CREATE_USERS } from '../../../authnz-library/authnz-actions';
+import { canPerformActions } from '../../../services/ActionChecker';
 import CreateUserModal from './CreateUserModal';
 
 interface IProps {
@@ -9,9 +11,11 @@ const CreateUser = (props: IProps): JSX.Element => {
     const [modalShow, setModalShow] = React.useState(false);
     return (
         <>
-            <Button variant="danger" className="float-right" onClick={() => setModalShow(true)}>
-                Create User
-            </Button>
+            {canPerformActions(ACTION_CREATE_USERS.name) && (
+                <Button variant="danger" className="float-right" onClick={() => setModalShow(true)}>
+                    Create User
+                </Button>
+            )}
 
             <CreateUserModal
                 show={modalShow}

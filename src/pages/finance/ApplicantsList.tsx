@@ -25,6 +25,8 @@ import Config from '../../config';
 import { Icons } from 'material-table';
 import { Alerts, ToastifyAlerts } from '../lib/Alert';
 import LinearProgress from '@mui/material/LinearProgress';
+import { canPerformActions } from '../../services/ActionChecker';
+import { ACTION_GET_PROGRAM_COHORT_APPLICATIONS } from '../../authnz-library/sim-actions';
 
 const alerts: Alerts = new ToastifyAlerts();
 const tableIcons: Icons = {
@@ -59,7 +61,7 @@ const StudentFeesManagement = (): JSX.Element => {
     const [isError] = useState(false);
     const [errorMessages] = useState([]);
     const [linearDisplay, setLinearDisplay] = useState('none');
-    const [isAdmitted, ] = useState('PENDING');
+    const [isAdmitted] = useState('PENDING');
     const [selectedRow] = useState(null);
 
     useEffect(() => {
@@ -85,38 +87,43 @@ const StudentFeesManagement = (): JSX.Element => {
                     <Breadcrumb />
                 </Col>
             </Row>
-            <LinearProgress style={{ display: linearDisplay }} />
-            <Row>
-                <Col>
-                    <Card>
-                        <div>
-                            {isError && (
-                                <Alert severity="error">
-                                    {errorMessages.map((msg, i) => {
-                                        return <div key={i}>{msg}</div>;
-                                    })}
-                                </Alert>
-                            )}
-                        </div>
-                        <MaterialTable
-                            title="Applications"
-                            columns={columns}
-                            data={data}
-                            icons={tableIcons}
-                            onRowClick={(event, row) => {
-                                window.location.href = `/studentfeesreport?studentId=${row.applications_studentId}&studentName=${row.applications_firstName+' '+ row.applications_lastName}`;
-                                event.stopPropagation();
-                            }}
-                            options={{
-                                rowStyle: (rowData) => ({
-                                    backgroundColor: selectedRow === rowData.tableData.id ? '#EEE' : '#FFF'
-                                })
-                            }}
-                
-                        />
-                    </Card>
-                </Col>
-            </Row>
+            {canPerformActions(ACTION_GET_PROGRAM_COHORT_APPLICATIONS.name) && (
+                <>
+                    <LinearProgress style={{ display: linearDisplay }} />
+                    <Row>
+                        <Col>
+                            <Card>
+                                <div>
+                                    {isError && (
+                                        <Alert severity="error">
+                                            {errorMessages.map((msg, i) => {
+                                                return <div key={i}>{msg}</div>;
+                                            })}
+                                        </Alert>
+                                    )}
+                                </div>
+                                <MaterialTable
+                                    title="Applications"
+                                    columns={columns}
+                                    data={data}
+                                    icons={tableIcons}
+                                    onRowClick={(event, row) => {
+                                        window.location.href = `/studentfeesreport?studentId=${row.applications_studentId}&studentName=${
+                                            row.applications_firstName + ' ' + row.applications_lastName
+                                        }`;
+                                        event.stopPropagation();
+                                    }}
+                                    options={{
+                                        rowStyle: (rowData) => ({
+                                            backgroundColor: selectedRow === rowData.tableData.id ? '#EEE' : '#FFF'
+                                        })
+                                    }}
+                                />
+                            </Card>
+                        </Col>
+                    </Row>
+                </>
+            )}
         </>
     );
 };

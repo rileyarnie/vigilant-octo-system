@@ -28,6 +28,8 @@ import Config from '../../config';
 import { Link } from 'react-router-dom';
 import { ValidationForm, SelectGroup, TextInput } from 'react-bootstrap4-form-validation';
 import { LinearProgress } from '@mui/material';
+import { canPerformActions } from '../../services/ActionChecker';
+import { ACTION_ASSIGN_COURSE_TO_PROGRAM, ACTION_CREATE_PROGRAM, ACTION_GET_PROGRAMS } from '../../authnz-library/timetabling-actions';
 
 const alerts: Alerts = new ToastifyAlerts();
 
@@ -130,20 +132,22 @@ const Programs = (): JSX.Element => {
         {
             title: 'Assign courses',
             field: 'internal_action',
-            render: (row) => (
-                <Link to={'/assigncourses'} onClick={() => localStorage.setItem('programId', row.id)}>
-                    <button className="btn btn btn-link">Assign courses</button>
-                </Link>
-            )
+            render: (row) =>
+                canPerformActions(ACTION_ASSIGN_COURSE_TO_PROGRAM.name) && (
+                    <Link to={'/assigncourses'} onClick={() => localStorage.setItem('programId', row.id)}>
+                        <button className="btn btn btn-link">Assign courses</button>
+                    </Link>
+                )
         },
         {
             title: 'View courses',
             field: 'internal_action',
-            render: (row) => (
-                <Link to={'/programcourses'} onClick={() => localStorage.setItem('programId', row.id)}>
-                    <button className="btn btn btn-link">View courses</button>
-                </Link>
-            )
+            render: (row) =>
+                canPerformActions(ACTION_GET_PROGRAMS.name) && (
+                    <Link to={'/programcourses'} onClick={() => localStorage.setItem('programId', row.id)}>
+                        <button className="btn btn btn-link">View courses</button>
+                    </Link>
+                )
         }
     ];
     const [errorMessages] = useState([]);
@@ -222,36 +226,42 @@ const Programs = (): JSX.Element => {
                     <Breadcrumb />
                 </Col>
                 <Col>
-                    <Button className="float-right" variant="danger" onClick={() => toggleCreateModal()}>
-                        Create Program
-                    </Button>
+                    {canPerformActions(ACTION_CREATE_PROGRAM.name) && (
+                        <Button className="float-right" variant="danger" onClick={() => toggleCreateModal()}>
+                            Create Program
+                        </Button>
+                    )}
                 </Col>
             </Row>
 
-            <LinearProgress style={{ display: linearDisplay }} />
-            <Row>
-                <Col>
-                    <Card>
-                        <div>
-                            {iserror && (
-                                <Alert severity="error">
-                                    {errorMessages.map((msg, i) => {
-                                        return <div key={i}>{msg}</div>;
-                                    })}
-                                </Alert>
-                            )}
-                        </div>
-                        <MaterialTable
-                            title="Programs"
-                            columns={columns}
-                            data={data}
-                            // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-                            // @ts-ignore
-                            icons={tableIcons}
-                        />
-                    </Card>
-                </Col>
-            </Row>
+            {canPerformActions(ACTION_GET_PROGRAMS.name) && (
+                <>
+                    <LinearProgress style={{ display: linearDisplay }} />
+                    <Row>
+                        <Col>
+                            <Card>
+                                <div>
+                                    {iserror && (
+                                        <Alert severity="error">
+                                            {errorMessages.map((msg, i) => {
+                                                return <div key={i}>{msg}</div>;
+                                            })}
+                                        </Alert>
+                                    )}
+                                </div>
+                                <MaterialTable
+                                    title="Programs"
+                                    columns={columns}
+                                    data={data}
+                                    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+                                    // @ts-ignore
+                                    icons={tableIcons}
+                                />
+                            </Card>
+                        </Col>
+                    </Row>
+                </>
+            )}
             <Modal
                 show={showModal}
                 onHide={toggleCreateModal}

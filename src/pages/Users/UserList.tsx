@@ -23,6 +23,8 @@ import CreateUser from './CreateUserModal/CreateUser';
 import { Icons } from 'material-table';
 import { Alerts, ToastifyAlerts } from '../lib/Alert';
 import { LinearProgress } from '@mui/material';
+import { canPerformActions } from '../../services/ActionChecker';
+import { ACTION_ASSIGN_ROLES, ACTION_GET_USERS } from '../../authnz-library/authnz-actions';
 const alerts: Alerts = new ToastifyAlerts();
 
 const tableIcons: Icons = {
@@ -89,21 +91,25 @@ const UserList = (props: IProps): JSX.Element => {
                 <Col>
                     <CreateUser fetchUsers={fetchUsers}></CreateUser>
                 </Col>
-                <Button variant="danger" onClick={() => handleRouteChange()}>
-                    Assign Role
-                </Button>
+                {canPerformActions(ACTION_ASSIGN_ROLES.name) && (
+                    <Button variant="danger" onClick={() => handleRouteChange()}>
+                        Assign Role
+                    </Button>
+                )}
             </Row>
             <LinearProgress style={{ display: linearDisplay }} />
-            <Row>
-                <Col>
-                    <Card>
-                        <Card.Header>
-                            <h5>Users</h5>
-                        </Card.Header>
-                        <MaterialTable title="" columns={columns} data={data} icons={tableIcons} />
-                    </Card>
-                </Col>
-            </Row>
+            {canPerformActions(ACTION_GET_USERS.name) && (
+                <Row>
+                    <Col>
+                        <Card>
+                            <Card.Header>
+                                <h5>Users</h5>
+                            </Card.Header>
+                            <MaterialTable title="" columns={columns} data={data} icons={tableIcons} />
+                        </Card>
+                    </Col>
+                </Row>
+            )}
         </>
     );
 };
