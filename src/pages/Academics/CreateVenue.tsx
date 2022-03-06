@@ -1,13 +1,12 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import React, { Component } from 'react';
-import axios from 'axios';
 import { Row, Col, Card } from 'react-bootstrap';
 import { ValidationForm, TextInput } from 'react-bootstrap4-form-validation';
-import Config from '../../config';
 import { Alerts, ToastifyAlerts } from '../lib/Alert';
 import validator from 'validator';
 import Select from 'react-select';
 import { customSelectTheme } from '../lib/SelectThemes';
+import { timetablingAxiosInstance } from '../../utlis/interceptors/timetabling-interceptor';
 const alerts: Alerts = new ToastifyAlerts();
 interface Props extends React.HTMLAttributes<Element> {
     setModal: (boolean) => void;
@@ -27,10 +26,9 @@ class CreateVenue extends Component<Props> {
         campuses: []
     };
     options = [] as any;
-    private timetableSrv = Config.baseUrl.timetablingSrv;
     componentDidMount() {
-        axios
-            .get(`${this.timetableSrv}/campuses`)
+        timetablingAxiosInstance
+            .get('/campuses')
             .then((res) => {
                 const campuses = res.data;
                 this.setState({ campuses: campuses });
@@ -66,8 +64,8 @@ class CreateVenue extends Component<Props> {
             campusId: this.state.campusId
         };
         this.props.setLinearDisplay('block');
-        axios
-            .post(`${this.timetableSrv}/venues`, { Venue: venue })
+        timetablingAxiosInstance
+            .post('/venues', { Venue: venue })
             .then(() => {
                 alerts.showSuccess('Venue Created Successfully');
                 this.props.fetchVenues();

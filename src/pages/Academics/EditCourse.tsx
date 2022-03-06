@@ -1,11 +1,10 @@
 /* eslint-disable react/no-direct-mutation-state */
 import React, { Component } from 'react';
-import axios from 'axios';
 import { Row, Col, Card } from 'react-bootstrap';
 import { ValidationForm } from 'react-bootstrap4-form-validation';
-import Config from '../../config';
 import { Switch, FormGroup, FormControlLabel } from '@material-ui/core';
 import { Alerts, ToastifyAlerts } from '../lib/Alert';
+import { timetablingAxiosInstance } from '../../utlis/interceptors/timetabling-interceptor';
 const alerts: Alerts = new ToastifyAlerts();
 interface Props extends React.HTMLAttributes<Element> {
     setEditModal: (boolean) => void;
@@ -18,7 +17,6 @@ interface selectedCourse {
     approval_status: boolean;
 }
 
-const timetablingSrv = Config.baseUrl.timetablingSrv;
 class EditCourse extends Component<Props> {
     state = {
         activation_status: this.props.selectedCourse.activation_status,
@@ -44,8 +42,8 @@ class EditCourse extends Component<Props> {
             approval_status: this.state.approval_status
         };
 
-        axios
-            .put(`${timetablingSrv}/courses/${this.props.selectedCourse.id}`, course)
+        timetablingAxiosInstance
+            .put(`/courses/${this.props.selectedCourse.id}`, course)
             .then((res) => {
                 //handle success
                 console.log(res);

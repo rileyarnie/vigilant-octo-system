@@ -17,17 +17,16 @@ import Remove from '@material-ui/icons/Remove';
 import SaveAlt from '@material-ui/icons/SaveAlt';
 import Search from '@material-ui/icons/Search';
 import ViewColumn from '@material-ui/icons/ViewColumn';
-import axios from 'axios';
 import Alert from '@material-ui/lab/Alert';
 import Breadcrumb from '../../App/components/Breadcrumb';
 import { Row, Col, Card, Button, Modal } from 'react-bootstrap';
-import Config from '../../config';
 import { Switch } from '@material-ui/core';
 import CourseCreation from './CreateCourse';
 import { Alerts, ToastifyAlerts } from '../lib/Alert';
 import LinearProgress from '@mui/material/LinearProgress';
 import { canPerformActions } from '../../services/ActionChecker';
 import { ACTION_CREATE_COURSE, ACTION_GET_COURSES, ACTION_UPDATE_COURSE } from '../../authnz-library/timetabling-actions';
+import { timetablingAxiosInstance } from '../../utlis/interceptors/timetabling-interceptor';
 const alerts: Alerts = new ToastifyAlerts();
 const tableIcons: Icons = {
     Add: forwardRef((props, ref) => <AddBox {...props} ref={ref} />),
@@ -49,7 +48,6 @@ const tableIcons: Icons = {
     ViewColumn: forwardRef((props, ref) => <ViewColumn {...props} ref={ref} />)
 };
 const CoursesList = (): JSX.Element => {
-    const timetablingSrv = Config.baseUrl.timetablingSrv;
     interface Course {
         name: string;
         id: number;
@@ -68,8 +66,8 @@ const CoursesList = (): JSX.Element => {
 
     const fetchCourses = () => {
         setLinearDisplay('block');
-        axios
-            .get(`${timetablingSrv}/courses`)
+        timetablingAxiosInstance
+            .get('/courses')
             .then((res) => {
                 setLinearDisplay('none');
                 setData(res.data);
@@ -130,8 +128,8 @@ const CoursesList = (): JSX.Element => {
         };
 
         setLinearDisplay('block');
-        axios
-            .put(`${timetablingSrv}/courses/${row.id}`, course)
+        timetablingAxiosInstance
+            .put(`/courses/${row.id}`, course)
             .then(() => {
                 alerts.showSuccess(msg);
                 setLinearDisplay('none');

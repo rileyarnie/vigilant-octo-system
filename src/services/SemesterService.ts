@@ -1,13 +1,11 @@
-import axios from 'axios';
-import Config from '../../src/config';
+import { timetablingAxiosInstance } from '../utlis/interceptors/timetabling-interceptor';
 import Semester from './Semester';
-const timetablingSrv = Config.baseUrl.timetablingSrv;
 export class SemesterService {
     static async fetchSemesters(): Promise<Semester[]> {
-        return axios.get(`${timetablingSrv}/semesters`);
+        return timetablingAxiosInstance.get('/semesters');
     }
 
     static async publishTimetable(semesterId: number): Promise<void> {
-        return axios.put(`${Config.baseUrl.timetablingSrv}/semesters/${semesterId}`, { body: { isPublished: true } });
+        return timetablingAxiosInstance.put(`/semesters/${semesterId}`, { body: { isPublished: true } });
     }
 }

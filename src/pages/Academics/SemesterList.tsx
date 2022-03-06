@@ -17,17 +17,16 @@ import Remove from '@material-ui/icons/Remove';
 import SaveAlt from '@material-ui/icons/SaveAlt';
 import Search from '@material-ui/icons/Search';
 import ViewColumn from '@material-ui/icons/ViewColumn';
-import axios from 'axios';
 import { LinearProgress, Switch } from '@material-ui/core';
 import Alert from '@material-ui/lab/Alert';
 import Breadcrumb from '../../App/components/Breadcrumb';
 import { Row, Col, Card, Button, Modal } from 'react-bootstrap';
-import Config from '../../config';
 import { ValidationForm, TextInput } from 'react-bootstrap4-form-validation';
 import { Icons } from 'material-table';
 import { Alerts, ToastifyAlerts } from '../lib/Alert';
 import { canPerformActions } from '../../services/ActionChecker';
 import { ACTION_CREATE_SEMESTERS, ACTION_GET_SEMESTERS, ACTION_UPDATE_SEMESTERS } from '../../authnz-library/timetabling-actions';
+import { timetablingAxiosInstance } from '../../utlis/interceptors/timetabling-interceptor';
 const alerts: Alerts = new ToastifyAlerts();
 const tableIcons: Icons = {
     Add: forwardRef((props, ref) => <AddBox {...props} ref={ref} />),
@@ -49,7 +48,6 @@ const tableIcons: Icons = {
     ViewColumn: forwardRef((props, ref) => <ViewColumn {...props} ref={ref} />)
 };
 const SemesterList = (): JSX.Element => {
-    const timetablingSrv = Config.baseUrl.timetablingSrv;
     interface Semester {
         id: number;
         name: string;
@@ -74,8 +72,8 @@ const SemesterList = (): JSX.Element => {
         const semester = {
             activation_status: activationStatus
         };
-        axios
-            .put(`${timetablingSrv}/semesters/${row.id}`, { body: semester })
+        timetablingAxiosInstance
+            .put(`/semesters/${row.id}`, { body: semester })
             .then(() => {
                 const msg = activationStatus ? 'Successfully activated semester' : 'Successfully Deactivated semester';
                 alerts.showSuccess(msg);
@@ -122,8 +120,8 @@ const SemesterList = (): JSX.Element => {
     const [linearDisplay, setLinearDisplay] = useState('none');
     const today = new Date().toISOString().slice(0, 10);
     useEffect(() => {
-        axios
-            .get(`${timetablingSrv}/semesters`)
+        timetablingAxiosInstance
+            .get('/semesters')
             .then((res) => {
                 console.log(res.data);
                 setLinearDisplay('none');
@@ -135,8 +133,8 @@ const SemesterList = (): JSX.Element => {
             });
     }, []);
     const updateSemester = (semesterId, updates) => {
-        axios
-            .put(`${timetablingSrv}/semesters/${semesterId}`, { body: updates })
+        timetablingAxiosInstance
+            .put(`/semesters/${semesterId}`, { body: updates })
             .then(() => {
                 setLinearDisplay('none');
                 alerts.showSuccess('Successfully updated Semester');
@@ -149,8 +147,8 @@ const SemesterList = (): JSX.Element => {
             });
     };
     const fetchSemesters = () => {
-        axios
-            .get(`${timetablingSrv}/semesters`)
+        timetablingAxiosInstance
+            .get('/semesters')
             .then((res) => {
                 setData(res.data);
             })
@@ -179,8 +177,8 @@ const SemesterList = (): JSX.Element => {
     };
     const createSemester = (semesterData) => {
         console.log(semesterData);
-        axios
-            .post(`${timetablingSrv}/semesters`, semesterData)
+        timetablingAxiosInstance
+            .post('/semesters', semesterData)
             .then(() => {
                 setLinearDisplay('none');
                 alerts.showSuccess('Successfully created semesters');

@@ -1,19 +1,18 @@
-import axios, { AxiosResponse } from 'axios';
-import Config from '../../config';
-const financeSrv = Config.baseUrl.financeSrv;
-const timetablingSrv = Config.baseUrl.timetablingSrv;
-const simsSrv = Config.baseUrl.simsSrv;
+import { AxiosResponse } from 'axios';
+import { financeAxiosInstance } from '../../utlis/interceptors/finance-interceptor';
+import { simsAxiosInstance } from '../../utlis/interceptors/sims-interceptor';
+import { timetablingAxiosInstance } from '../../utlis/interceptors/timetabling-interceptor';
 export class ProgramCohortService {
     static async publishProgramCohortSemester(programCohortSemesterId: string, programCohortSemester: object): Promise<void> {
-        return axios.put(`${financeSrv}/program-cohort-semesters/${programCohortSemesterId}`, {
+        return financeAxiosInstance.put(`/program-cohort-semesters/${programCohortSemesterId}`, {
             ModifyProgramCohortSemesterRequest: programCohortSemester
         });
     }
     static async cancelProgramCohort(cohortId: number, cancelletionData: object): Promise<void> {
-        return axios.put(`${timetablingSrv}/program-cohorts/${cohortId}`, cancelletionData);
+        return timetablingAxiosInstance.put(`/program-cohorts/${cohortId}`, cancelletionData);
     }
     static async getGraduands(options: { programCohortId: number; studentId?: number }): Promise<AxiosResponse<[]>> {
-        return axios.get(`${simsSrv}/program-cohort-applications/graduates`, {
+        return simsAxiosInstance.get('/program-cohort-applications/graduates', {
             params: { loadExtras: 'marks', ...options }
         });
     }

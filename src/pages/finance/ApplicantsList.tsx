@@ -17,16 +17,15 @@ import Remove from '@material-ui/icons/Remove';
 import SaveAlt from '@material-ui/icons/SaveAlt';
 import Search from '@material-ui/icons/Search';
 import ViewColumn from '@material-ui/icons/ViewColumn';
-import axios from 'axios';
 import Alert from '@material-ui/lab/Alert';
 import Breadcrumb from '../../App/components/Breadcrumb';
 import { Row, Col, Card } from 'react-bootstrap';
-import Config from '../../config';
 import { Icons } from 'material-table';
 import { Alerts, ToastifyAlerts } from '../lib/Alert';
 import LinearProgress from '@mui/material/LinearProgress';
 import { canPerformActions } from '../../services/ActionChecker';
 import { ACTION_GET_PROGRAM_COHORT_APPLICATIONS } from '../../authnz-library/sim-actions';
+import { simsAxiosInstance } from '../../utlis/interceptors/sims-interceptor';
 
 const alerts: Alerts = new ToastifyAlerts();
 const tableIcons: Icons = {
@@ -49,7 +48,6 @@ const tableIcons: Icons = {
     ViewColumn: forwardRef((props, ref) => <ViewColumn {...props} ref={ref} />)
 };
 const StudentFeesManagement = (): JSX.Element => {
-    const simsSrv = Config.baseUrl.simsSrv;
     const columns = [
         { title: 'ID', field: 'applications_id' },
         { title: 'Name', render: (rowData) => rowData.applications_firstName + ' ' + rowData.applications_lastName },
@@ -69,8 +67,8 @@ const StudentFeesManagement = (): JSX.Element => {
     }, [isAdmitted]);
 
     const fetchProgramCohortApplications = () => {
-        axios
-            .get(`${simsSrv}/program-cohort-applications`, { params: { status: 'ADMITTED' } })
+        simsAxiosInstance
+            .get('/program-cohort-applications', { params: { status: 'ADMITTED' } })
             .then((res) => {
                 setLinearDisplay('none');
                 setData(res.data);

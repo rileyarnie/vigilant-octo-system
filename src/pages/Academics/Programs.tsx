@@ -18,18 +18,17 @@ import Remove from '@material-ui/icons/Remove';
 import SaveAlt from '@material-ui/icons/SaveAlt';
 import Search from '@material-ui/icons/Search';
 import ViewColumn from '@material-ui/icons/ViewColumn';
-import axios from 'axios';
 import { Icons } from 'material-table';
 import { Switch } from '@material-ui/core';
 import Alert from '@material-ui/lab/Alert';
 import Breadcrumb from '../../App/components/Breadcrumb';
 import { Row, Col, Card, Button, Modal } from 'react-bootstrap';
-import Config from '../../config';
 import { Link } from 'react-router-dom';
 import { ValidationForm, SelectGroup, TextInput } from 'react-bootstrap4-form-validation';
 import { LinearProgress } from '@mui/material';
 import { canPerformActions } from '../../services/ActionChecker';
 import { ACTION_ASSIGN_COURSE_TO_PROGRAM, ACTION_CREATE_PROGRAM, ACTION_GET_PROGRAMS } from '../../authnz-library/timetabling-actions';
+import { timetablingAxiosInstance } from '../../utlis/interceptors/timetabling-interceptor';
 
 const alerts: Alerts = new ToastifyAlerts();
 
@@ -53,8 +52,6 @@ const tableIcons: Icons = {
     ViewColumn: forwardRef((props, ref) => <ViewColumn {...props} ref={ref} />)
 };
 const Programs = (): JSX.Element => {
-    const timetablingSrv = Config.baseUrl.timetablingSrv;
-
     interface Program {
         name: string;
         id: number;
@@ -97,8 +94,8 @@ const Programs = (): JSX.Element => {
             activation_status: activationStatus
         };
         setLinearDisplay('block');
-        axios
-            .put(`${timetablingSrv}/programs/${row.id}`, program)
+        timetablingAxiosInstance
+            .put(`/programs/${row.id}`, program)
             .then(() => {
                 const msg = activationStatus ? 'Successfully activated program' : 'Successfully Deactivated program';
                 setLinearDisplay('none');
@@ -153,8 +150,8 @@ const Programs = (): JSX.Element => {
     const [errorMessages] = useState([]);
     useEffect(() => {
         setLinearDisplay('block');
-        axios
-            .get(`${timetablingSrv}/programs`)
+        timetablingAxiosInstance
+            .get('/programs')
             .then((res) => {
                 setLinearDisplay('none');
                 setData(res.data);
@@ -167,8 +164,8 @@ const Programs = (): JSX.Element => {
 
     const fetchPrograms = () => {
         setLinearDisplay('block');
-        axios
-            .get(`${timetablingSrv}/programs`)
+        timetablingAxiosInstance
+            .get('/programs')
             .then((res) => {
                 setLinearDisplay('none');
                 setData(res.data);
@@ -193,8 +190,8 @@ const Programs = (): JSX.Element => {
     };
     const createProgram = (programData) => {
         setLinearDisplay('block');
-        axios
-            .post(`${timetablingSrv}/programs`, programData)
+        timetablingAxiosInstance
+            .post('/programs', programData)
             .then(() => {
                 setLinearDisplay('none');
                 alerts.showSuccess('Program created succesfully');

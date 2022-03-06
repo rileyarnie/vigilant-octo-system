@@ -18,11 +18,9 @@ import Remove from '@material-ui/icons/Remove';
 import SaveAlt from '@material-ui/icons/SaveAlt';
 import Search from '@material-ui/icons/Search';
 import ViewColumn from '@material-ui/icons/ViewColumn';
-import axios from 'axios';
 import Alert from '@material-ui/lab/Alert';
 import Breadcrumb from '../../App/components/Breadcrumb';
 import { Row, Col, Card, Button } from 'react-bootstrap';
-import Config from '../../config';
 import { Modal } from 'react-bootstrap';
 import CreateVenue from './CreateVenue';
 import EditVenue from './EditVenue';
@@ -30,6 +28,7 @@ import { Alerts, ToastifyAlerts } from '../lib/Alert';
 import { LinearProgress } from '@mui/material';
 import { canPerformActions } from '../../services/ActionChecker';
 import { ACTION_CREATE_VENUE, ACTION_GET_VENUE, ACTION_UPDATE_VENUE } from '../../authnz-library/timetabling-actions';
+import { timetablingAxiosInstance } from '../../utlis/interceptors/timetabling-interceptor';
 const alerts: Alerts = new ToastifyAlerts();
 const tableIcons: Icons = {
     Add: forwardRef((props, ref) => <AddBox {...props} ref={ref} />),
@@ -62,7 +61,6 @@ const VenueList = (props): JSX.Element => {
         venue_id: number;
     }
     const [data, setData] = useState([]);
-    const timetablingSrv = Config.baseUrl.timetablingSrv;
     const [iserror] = useState(false);
     const [errorMessages] = useState([]);
     const [showModal, setModal] = useState(false);
@@ -76,8 +74,8 @@ const VenueList = (props): JSX.Element => {
 
     const fetchVenues = () => {
         setLinearDisplay('block');
-        axios
-            .get(`${timetablingSrv}/venues`)
+        timetablingAxiosInstance
+            .get('/venues')
             .then((res) => {
                 console.log(res);
                 setData(res.data);
@@ -131,16 +129,18 @@ const VenueList = (props): JSX.Element => {
                                     icons={tableIcons}
                                     options={{ actionsColumnIndex: -1 }}
                                     actions={
-                                        canPerformActions(ACTION_UPDATE_VENUE.name)?[
-                                            {
-                                                icon: Edit,
-                                                tooltip: 'Edit Row',
-                                                onClick: (event, rowData) => {
-                                                    setSelectedVenue(rowData);
-                                                    toggleEditModal();
+                                        canPerformActions(ACTION_UPDATE_VENUE.name)
+                                            ? [
+                                                {
+                                                    icon: Edit,
+                                                    tooltip: 'Edit Row',
+                                                    onClick: (event, rowData) => {
+                                                        setSelectedVenue(rowData);
+                                                        toggleEditModal();
+                                                    }
                                                 }
-                                            }
-                                        ]:[]
+                                            ]
+                                            : []
                                     }
                                 />
                             </Card>

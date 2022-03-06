@@ -19,19 +19,19 @@ import SaveAlt from '@material-ui/icons/SaveAlt';
 import Search from '@material-ui/icons/Search';
 import ViewColumn from '@material-ui/icons/ViewColumn';
 import { CountryDropdown } from 'react-country-region-selector';
-import axios from 'axios';
 import { Link } from 'react-router-dom';
 import Alert from '@material-ui/lab/Alert';
 import Breadcrumb from '../../App/components/Breadcrumb';
 import { Row, Col, Card, Button, Modal, ListGroup } from 'react-bootstrap';
 import { SelectGroup, TextInput, FileInput, ValidationForm } from 'react-bootstrap4-form-validation';
-import Config from '../../config';
 import { Icons } from 'material-table';
 import { Alerts, ToastifyAlerts } from '../lib/Alert';
 import LinearProgress from '@mui/material/LinearProgress';
 import { TimetableService } from '../../services/TimetableService';
 import { canPerformActions } from '../../services/ActionChecker';
 import { ACTION_GET_PROGRAM_COHORT_APPLICATIONS } from '../../authnz-library/sim-actions';
+import { simsAxiosInstance } from '../../utlis/interceptors/sims-interceptor';
+import { timetablingAxiosInstance } from '../../utlis/interceptors/timetabling-interceptor';
 
 const alerts: Alerts = new ToastifyAlerts();
 const tableIcons: Icons = {
@@ -54,8 +54,6 @@ const tableIcons: Icons = {
     ViewColumn: forwardRef((props, ref) => <ViewColumn {...props} ref={ref} />)
 };
 const ApplicationsList = (): JSX.Element => {
-    const simsSrv = Config.baseUrl.simsSrv;
-    const timetablingSrv = Config.baseUrl.timetablingSrv;
     const columns = [
         { title: 'ID', field: 'applications_id' },
         { title: 'Name', render: (rowData) => rowData.applications_firstName + ' ' + rowData.applications_lastName },
@@ -106,8 +104,8 @@ const ApplicationsList = (): JSX.Element => {
 
     useEffect(() => {
         fetchProgramCohortApplications();
-        axios
-            .get(`${timetablingSrv}/campuses`)
+        timetablingAxiosInstance
+            .get('/campuses')
             .then((res) => {
                 setCampuses(res.data);
             })
@@ -118,8 +116,8 @@ const ApplicationsList = (): JSX.Element => {
     }, [isAdmitted]);
 
     const fetchProgramCohortApplications = () => {
-        axios
-            .get(`${simsSrv}/program-cohort-applications`, { params: { status: isAdmitted } })
+        simsAxiosInstance
+            .get('/program-cohort-applications', { params: { status: isAdmitted } })
             .then((res) => {
                 setLinearDisplay('none');
                 setData(res.data);
@@ -136,8 +134,8 @@ const ApplicationsList = (): JSX.Element => {
             headers: { 'content-type': 'multipart/form-data' }
         };
         TimetableService.handleFileUpload(form, config);
-        axios
-            .post(`${timetablingSrv}/files`, form, config)
+        timetablingAxiosInstance
+            .post('/files', form, config)
             .then((res) => {
                 toggleUploadModal();
                 alerts.showSuccess('File uploaded successfully');
@@ -183,8 +181,8 @@ const ApplicationsList = (): JSX.Element => {
         updateApplication(updates);
     };
     const updateApplication = (updates) => {
-        axios
-            .put(`${simsSrv}/program-cohort-applications/${applicationId}`, { modifiedProgramCohortApplication: updates })
+        simsAxiosInstance
+            .put(`/program-cohort-applications/${applicationId}`, { modifiedProgramCohortApplication: updates })
             .then(() => {
                 setLinearDisplay('none');
                 alerts.showSuccess('Successfully updated application details');
@@ -205,8 +203,8 @@ const ApplicationsList = (): JSX.Element => {
                 }
             }
         };
-        axios
-            .put(`${simsSrv}/program-cohort-applications/${applicationId}`, admissionsPayload)
+        simsAxiosInstance
+            .put(`/program-cohort-applications/${applicationId}`, admissionsPayload)
             .then(() => {
                 setLinearDisplay('none');
                 alerts.showSuccess('Successfully updated application details');

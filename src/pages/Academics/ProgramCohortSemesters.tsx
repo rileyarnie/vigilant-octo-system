@@ -20,18 +20,17 @@ import Remove from '@material-ui/icons/Remove';
 import SaveAlt from '@material-ui/icons/SaveAlt';
 import Search from '@material-ui/icons/Search';
 import ViewColumn from '@material-ui/icons/ViewColumn';
-import axios from 'axios';
 import { Icons } from 'material-table';
 import Alert from '@material-ui/lab/Alert';
 import Breadcrumb from '../../App/components/Breadcrumb';
-import { Row, Col, Card, } from 'react-bootstrap';
-import Config from '../../config';
+import { Row, Col, Card } from 'react-bootstrap';
 import { LinearProgress } from '@mui/material';
 import CourseCohort from '../services/CourseCohort';
 import { CourseCohortService } from '../services/CourseCohortsService';
 import { createStyles, Theme, makeStyles } from '@material-ui/core/styles';
 import IconButton from '@material-ui/core/IconButton';
 import ArrowBackIcon from '@material-ui/icons/ArrowBack';
+import { simsAxiosInstance } from '../../utlis/interceptors/sims-interceptor';
 const alerts: Alerts = new ToastifyAlerts();
 const tableIcons: Icons = {
     Add: forwardRef((props, ref) => <AddBox {...props} ref={ref} />),
@@ -55,27 +54,34 @@ const tableIcons: Icons = {
 const useStyles = makeStyles((theme: Theme) =>
     createStyles({
         margin: {
-            margin: theme.spacing(1),
+            margin: theme.spacing(1)
         },
         extendedIcon: {
-            marginRight: theme.spacing(1),
-        },
-    }),
+            marginRight: theme.spacing(1)
+        }
+    })
 );
-function ProgramCohortSemesters(props: { history: { goBack: () => void; }; }) {
+function ProgramCohortSemesters(props: { history: { goBack: () => void } }) {
     const classes = useStyles();
     const columns = [
         { title: 'ID', field: 'id', editable: 'never' as const },
         { title: 'Name', field: 'name' },
-        { title: 'Start Date', render: (rowData: { startDate: string | unknown[]; }) => rowData?.startDate?.slice(0, 10) },
-        { title: 'End Date', render: (rowData: { endDate: string | unknown[]; }) => rowData?.endDate?.slice(0, 10) },
-        {title: 'Transcripts', render: () => (
-            <a href='#'
-                onClick={e => {fetchTranscript(parseInt(programCohortId)); e.stopPropagation();}}
-            >
-            Download Transcript
-            </a>
-        )}
+        { title: 'Start Date', render: (rowData: { startDate: string | unknown[] }) => rowData?.startDate?.slice(0, 10) },
+        { title: 'End Date', render: (rowData: { endDate: string | unknown[] }) => rowData?.endDate?.slice(0, 10) },
+        {
+            title: 'Transcripts',
+            render: () => (
+                <a
+                    href="#"
+                    onClick={(e) => {
+                        fetchTranscript(parseInt(programCohortId));
+                        e.stopPropagation();
+                    }}
+                >
+                    Download Transcript
+                </a>
+            )
+        }
     ];
     const [errorMessages] = useState([]);
     const programName = localStorage.getItem('programName');
@@ -85,7 +91,6 @@ function ProgramCohortSemesters(props: { history: { goBack: () => void; }; }) {
     const [data, setData] = useState([]);
     const [linearDisplay, setLinearDisplay] = useState('none');
     const [isError] = useState(false);
-    const simSrv = Config.baseUrl.simsSrv;
     useEffect(() => {
         fetchProgramCohortSemester('semester', programCohortId);
     }, []);
@@ -117,12 +122,13 @@ function ProgramCohortSemesters(props: { history: { goBack: () => void; }; }) {
             });
     }
 
-    function fetchTranscript(programCohortId:number){
-        axios.get(`${simSrv}/transcripts`, {
-            params: {
-                programCohortId:programCohortId
-            }
-        })
+    function fetchTranscript(programCohortId: number) {
+        simsAxiosInstance
+            .get('/transcripts', {
+                params: {
+                    programCohortId: programCohortId
+                }
+            })
             .then(() => {
                 alerts.showSuccess('Downloading transcript');
             })
@@ -130,7 +136,7 @@ function ProgramCohortSemesters(props: { history: { goBack: () => void; }; }) {
                 alerts.showError(error.message);
             });
     }
-    const  handleBack = () => {
+    const handleBack = () => {
         props.history.goBack();
     };
     return (
@@ -165,8 +171,8 @@ function ProgramCohortSemesters(props: { history: { goBack: () => void; }; }) {
                             columns={columns}
                             data={data}
                             icons={tableIcons}
-                            onRowClick={(event:any, row) => {
-                                if(event.target.innerHTML === 'Download Transcript'){
+                            onRowClick={(event: any, row) => {
+                                if (event.target.innerHTML === 'Download Transcript') {
                                     event.stopPropagation();
                                 }
                                 window.location.href = '/pcsdetails';

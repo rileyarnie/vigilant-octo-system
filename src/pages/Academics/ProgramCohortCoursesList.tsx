@@ -36,6 +36,8 @@ const alerts: Alerts = new ToastifyAlerts();
 import { createStyles, Theme, makeStyles } from '@material-ui/core/styles';
 import IconButton from '@material-ui/core/IconButton';
 import ArrowBackIcon from '@material-ui/icons/ArrowBack';
+import { financeAxiosInstance } from '../../utlis/interceptors/finance-interceptor';
+import { timetablingAxiosInstance } from '../../utlis/interceptors/timetabling-interceptor';
 const tableIcons: Icons = {
     Add: forwardRef((props, ref) => <AddBox {...props} ref={ref} />),
     Check: forwardRef((props, ref) => <Check {...props} ref={ref} />),
@@ -58,15 +60,15 @@ const tableIcons: Icons = {
 const useStyles = makeStyles((theme: Theme) =>
     createStyles({
         margin: {
-            margin: theme.spacing(1),
+            margin: theme.spacing(1)
         },
         extendedIcon: {
-            marginRight: theme.spacing(1),
+            marginRight: theme.spacing(1)
         },
         root: {
             width: '100%'
         }
-    }),
+    })
 );
 const CourseCohortsList = (props): JSX.Element => {
     const classes = useStyles();
@@ -86,9 +88,8 @@ const CourseCohortsList = (props): JSX.Element => {
         semesterId: number;
         programCohortId: number;
         published: boolean;
-        programCohortSemester?:{semester:semester,id:number}
+        programCohortSemester?: { semester: semester; id: number };
     }
-
 
     const [selectedRow, setSelectedRow] = useState<CourseCohort>();
     const columns = [
@@ -115,13 +116,12 @@ const CourseCohortsList = (props): JSX.Element => {
                     }}
                 >
                     {row.programCohortSemester ? (
-                       
-                        <>                        
+                        <>
                             Change Semester
                             <AssignmentTurnedIn fontSize="inherit" style={{ fontSize: '20px', color: 'black' }} />
                         </>
                     ) : (
-                        <>                            
+                        <>
                             Assign Semester
                             <AssignmentTurnedIn fontSize="inherit" style={{ fontSize: '20px', color: 'black' }} />
                         </>
@@ -143,15 +143,12 @@ const CourseCohortsList = (props): JSX.Element => {
     const [, setDisabled] = useState(false);
     const [, setSelectedRows] = useState();
     const [errorMessages, setErrorMessages] = useState([]);
-    const timetablingSrv = Config.baseUrl.timetablingSrv;
-    const financeSrv = Config.baseUrl.financeSrv;
     const programName = localStorage.getItem('programName');
     const anticipatedGraduation = localStorage.getItem('anticipatedGraduation');
     const progId = parseInt(localStorage.getItem('programId'));
     const programCohortCode = localStorage.getItem('program_cohort_code');
     const [showPublishModal, setShowPublish] = useState(false);
     const [showDialog, setDialog] = useState(false);
-    //const [selectedSemester, setSelectedemester] = useState(0);
     const [narrative, setNarrative] = useState('');
     const [amount, setAmount] = useState(0);
     const [currency, setCurrency] = useState('KES');
@@ -163,8 +160,8 @@ const CourseCohortsList = (props): JSX.Element => {
         setLinearDisplay('block');
         console.log(programCohortId);
         fetchCourseCohortsByProgramCohortId();
-        axios
-            .get(`${timetablingSrv}/semesters`)
+        timetablingAxiosInstance
+            .get('/semesters')
             .then((res) => {
                 setSemester(res.data);
             })
@@ -174,8 +171,8 @@ const CourseCohortsList = (props): JSX.Element => {
             });
     }, []);
     function fetchCourseCohortsByProgramCohortId() {
-        axios
-            .get(`${timetablingSrv}/course-cohorts`, { params: { programCohortId: programCohortId, loadExtras: 'course,semester' } })
+        timetablingAxiosInstance
+            .get('/course-cohorts', { params: { programCohortId: programCohortId, loadExtras: 'course,semester' } })
             .then((res) => {
                 const ccData = res.data;
                 console.log(ccData);
@@ -185,8 +182,8 @@ const CourseCohortsList = (props): JSX.Element => {
     }
     const fetchCoursesAssignedToProgram = (progId: number): void => {
         setLinearDisplay('block');
-        axios
-            .get(`${timetablingSrv}/programs/${progId}courses`)
+        timetablingAxiosInstance
+            .get(`/programs/${progId}courses`)
             .then((res) => {
                 setLinearDisplay('none');
                 setData(res.data);
@@ -199,8 +196,8 @@ const CourseCohortsList = (props): JSX.Element => {
 
     const fetchSemesters = () => {
         setLinearDisplay('block');
-        axios
-            .get(`${timetablingSrv}/semesters`)
+        timetablingAxiosInstance
+            .get('/semesters')
             .then((res) => {
                 setLinearDisplay('none');
                 console.log(res.data);
@@ -222,8 +219,8 @@ const CourseCohortsList = (props): JSX.Element => {
 
     const handleAssignSemesterSubmit = (e) => {
         setLinearDisplay('block');
-        axios
-            .patch(`${timetablingSrv}/course-cohorts/${selectedRow.id}`, {
+        timetablingAxiosInstance
+            .patch(`/course-cohorts/${selectedRow.id}`, {
                 semesterId: selectedSemesterId,
                 programCohortId: selectedRow.programCohortId,
                 isActive: true
@@ -241,8 +238,8 @@ const CourseCohortsList = (props): JSX.Element => {
     };
     const unassignSelectedCourseFromProgram = (selectedCourseId: number): void => {
         setLinearDisplay('block');
-        axios
-            .put(`${timetablingSrv}/programs/${programId}/courses/${selectedCourseId}`)
+        timetablingAxiosInstance
+            .put(`/programs/${programId}/courses/${selectedCourseId}`)
             .then((res) => {
                 setLinearDisplay('none');
                 alerts.showSuccess('Succesfully removed course');
@@ -255,13 +252,13 @@ const CourseCohortsList = (props): JSX.Element => {
     };
     const handleSemesterUpdate = () => {
         const courseSemester = {
-            'ModifyProgramCohortSemesterRequest': {
+            ModifyProgramCohortSemesterRequest: {
                 semesterId: semesterId
             }
         };
         setLinearDisplay('block');
-        axios
-            .put(`${timetablingSrv}/program-cohort-semesters/${selectedRow.programCohortSemester.id}`, courseSemester)
+        timetablingAxiosInstance
+            .put(`/program-cohort-semesters/${selectedRow.programCohortSemester.id}`, courseSemester)
             .then(() => {
                 alerts.showSuccess('Successfully changed semester');
                 setLinearDisplay('none');
@@ -276,8 +273,8 @@ const CourseCohortsList = (props): JSX.Element => {
     };
 
     const handleFeeItemsPost = async () => {
-        axios
-            .post(financeSrv, {
+        financeAxiosInstance
+            .post('/',{
                 createFeeItemRequest: {
                     narrative: narrative,
                     amount: amount,
@@ -307,7 +304,7 @@ const CourseCohortsList = (props): JSX.Element => {
     const toggleDialog = () => {
         showDialog ? setDialog(false) : setDialog(true);
     };
-    const  handleBack = () => {
+    const handleBack = () => {
         props.history.goBack();
     };
     const onSelectedCurrency = (currencyAbbrev) => {
@@ -504,7 +501,7 @@ const CourseCohortsList = (props): JSX.Element => {
                 <Modal.Header closeButton>
                     <Modal.Title id="contained-modal-title-vcenter">
                         {' '}
-                        {selectedRow?.programCohortSemester?.semester ? 'Change semester' : 'Assign a semester' }{' '}
+                        {selectedRow?.programCohortSemester?.semester ? 'Change semester' : 'Assign a semester'}{' '}
                     </Modal.Title>
                 </Modal.Header>
                 <Modal.Body>
@@ -528,20 +525,15 @@ const CourseCohortsList = (props): JSX.Element => {
                             })}
                         </SelectGroup>
                         <br></br>
-                        {
-                            selectedRow?.programCohortSemester?.semester ?
-
-                                <Button className="btn btn-info float-right" onClick={(e) => handleSemesterUpdate()}>
+                        {selectedRow?.programCohortSemester?.semester ? (
+                            <Button className="btn btn-info float-right" onClick={(e) => handleSemesterUpdate()}>
                                 Submit
-                                </Button>
-                                :
-                                <Button className="btn btn-info float-right" onClick={(e) => handleAssignSemesterSubmit(e)}>
+                            </Button>
+                        ) : (
+                            <Button className="btn btn-info float-right" onClick={(e) => handleAssignSemesterSubmit(e)}>
                                 Submit
-                                </Button>
-                        
-
-                        }   
-
+                            </Button>
+                        )}
 
                         <Button className="btn btn-danger float-left" onClick={handleClose}>
                             Close

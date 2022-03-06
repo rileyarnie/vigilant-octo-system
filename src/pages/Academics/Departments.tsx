@@ -17,11 +17,9 @@ import Remove from '@material-ui/icons/Remove';
 import SaveAlt from '@material-ui/icons/SaveAlt';
 import Search from '@material-ui/icons/Search';
 import ViewColumn from '@material-ui/icons/ViewColumn';
-import axios from 'axios';
 import Alert from '@material-ui/lab/Alert';
 import Breadcrumb from '../../App/components/Breadcrumb';
 import { Row, Col, Card, Button, Modal } from 'react-bootstrap';
-import Config from '../../config';
 import { Icons } from 'material-table';
 import { ValidationForm, TextInput } from 'react-bootstrap4-form-validation';
 import { Switch } from '@material-ui/core';
@@ -29,6 +27,7 @@ import { Alerts, ToastifyAlerts } from '../lib/Alert';
 import LinearProgress from '@mui/material/LinearProgress';
 import { canPerformActions } from '../../services/ActionChecker';
 import { ACTION_CREATE_DEPARTMENT, ACTION_GET_DEPARTMENTS, ACTION_UPDATE_DEPARTMENT } from '../../authnz-library/timetabling-actions';
+import { timetablingAxiosInstance } from '../../utlis/interceptors/timetabling-interceptor';
 
 const alerts: Alerts = new ToastifyAlerts();
 const tableIcons: Icons = {
@@ -51,7 +50,6 @@ const tableIcons: Icons = {
     ViewColumn: forwardRef((props, ref) => <ViewColumn {...props} ref={ref} />)
 };
 const Department = (): JSX.Element => {
-    const timetablingSrv = Config.baseUrl.timetablingSrv;
     interface department {
         name: string;
         id: number;
@@ -99,8 +97,8 @@ const Department = (): JSX.Element => {
             name: row.name,
             isActive: activationStatus
         };
-        axios
-            .put(`${timetablingSrv}/departments/${row.id}`, departmentStatus)
+        timetablingAxiosInstance
+            .put(`/departments/${row.id}`, departmentStatus)
             .then(() => {
                 const msg = activationStatus ? 'Department activated successfully' : 'Department deactivated successfully';
                 alerts.showSuccess(msg);
@@ -116,8 +114,8 @@ const Department = (): JSX.Element => {
 
     useEffect(() => {
         setLinearDisplay('block');
-        axios
-            .get(`${timetablingSrv}/departments`)
+        timetablingAxiosInstance
+            .get('/departments')
             .then((res) => {
                 setLinearDisplay('none');
                 setData(res.data);
@@ -131,8 +129,8 @@ const Department = (): JSX.Element => {
 
     const updateDepartment = (deptId, updates) => {
         setLinearDisplay('block');
-        axios
-            .put(`${timetablingSrv}/departments/${deptId}`, updates)
+        timetablingAxiosInstance
+            .put(`/departments/${deptId}`, updates)
             .then(() => {
                 setLinearDisplay('none');
                 alerts.showSuccess('Successfully updated department');
@@ -148,8 +146,8 @@ const Department = (): JSX.Element => {
 
     const fetchDepartments = () => {
         setLinearDisplay('block');
-        axios
-            .get(`${timetablingSrv}/departments`)
+        timetablingAxiosInstance
+            .get('/departments')
             .then((res) => {
                 setData(res.data);
                 setLinearDisplay('none');
@@ -187,8 +185,8 @@ const Department = (): JSX.Element => {
     const createDepartment = (departmentData) => {
         console.log(departmentData);
         setLinearDisplay('block');
-        axios
-            .post(`${timetablingSrv}/departments`, departmentData)
+        timetablingAxiosInstance
+            .post('/departments', departmentData)
             .then(() => {
                 setLinearDisplay('block');
                 fetchDepartments();

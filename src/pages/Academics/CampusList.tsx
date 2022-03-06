@@ -17,16 +17,15 @@ import Remove from '@material-ui/icons/Remove';
 import SaveAlt from '@material-ui/icons/SaveAlt';
 import Search from '@material-ui/icons/Search';
 import ViewColumn from '@material-ui/icons/ViewColumn';
-import axios from 'axios';
 import { LinearProgress, Switch } from '@material-ui/core';
 import Alert from '@material-ui/lab/Alert';
 import Breadcrumb from '../../App/components/Breadcrumb';
 import { Row, Col, Card, Button, Modal } from 'react-bootstrap';
-import Config from '../../config';
 import { ValidationForm, TextInput } from 'react-bootstrap4-form-validation';
 import { Alerts, ToastifyAlerts } from '../lib/Alert';
 import { canPerformActions } from '../../services/ActionChecker';
 import { ACTION_CREATE_CAMPUS, ACTION_GET_CAMPUSES, ACTION_UPDATE_CAMPUS } from '../../authnz-library/timetabling-actions';
+import { timetablingAxiosInstance } from '../../utlis/interceptors/timetabling-interceptor';
 
 const tableIcons: Icons = {
     Add: forwardRef((props, ref) => <AddBox {...props} ref={ref} />),
@@ -56,7 +55,6 @@ const CampusList = (): JSX.Element => {
         activation_status: boolean;
         approval_status: boolean;
     }
-    const timetablingSrv = Config.baseUrl.timetablingSrv;
     const [data, setData] = useState([]);
     const [iserror] = useState(false);
     const [campusName, setCampusName] = useState('');
@@ -83,8 +81,8 @@ const CampusList = (): JSX.Element => {
         const campus = {
             activation_status: activationStatus
         };
-        axios
-            .put(`${timetablingSrv}/campuses/${row.id}`, campus)
+        timetablingAxiosInstance
+            .put(`/campuses/${row.id}`, campus)
             .then(() => {
                 const msg = activationStatus ? 'Successfully activated campus' : 'Successfully Deactivated campus';
                 alerts.showSuccess(msg);
@@ -120,8 +118,8 @@ const CampusList = (): JSX.Element => {
     const [errorMessages] = useState([]);
     useEffect(() => {
         setLinearDisplay('block');
-        axios
-            .get(`${timetablingSrv}/campuses`)
+        timetablingAxiosInstance
+            .get('/campuses')
             .then((res) => {
                 setData(res.data);
                 setLinearDisplay('none');
@@ -134,8 +132,8 @@ const CampusList = (): JSX.Element => {
 
     const updateCampus = (deptId, updates) => {
         setLinearDisplay('block');
-        axios
-            .put(`${timetablingSrv}/campuses/${campusId}`, updates)
+        timetablingAxiosInstance
+            .put(`/campuses/${campusId}`, updates)
             .then(() => {
                 alerts.showSuccess('Successfully updated Campus');
                 fetchCampuses();
@@ -149,8 +147,8 @@ const CampusList = (): JSX.Element => {
     };
     const fetchCampuses = () => {
         setLinearDisplay('block');
-        axios
-            .get(`${timetablingSrv}/campuses`)
+        timetablingAxiosInstance
+            .get('/campuses')
             .then((res) => {
                 setData(res.data);
                 setLinearDisplay('none');
@@ -180,8 +178,8 @@ const CampusList = (): JSX.Element => {
     const createCampus = (campusData) => {
         console.log(campusData);
         setLinearDisplay('block');
-        axios
-            .post(`${timetablingSrv}/campuses`, campusData)
+        timetablingAxiosInstance
+            .post('/campuses', campusData)
             .then(() => {
                 alerts.showSuccess('Successfully created Campus');
                 fetchCampuses();
