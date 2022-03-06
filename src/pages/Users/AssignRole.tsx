@@ -1,7 +1,6 @@
 /* eslint-disable react/display-name */
 import React, { useState, useEffect } from 'react';
 import { forwardRef } from 'react';
-import Config from '../../config';
 import MaterialTable from 'material-table';
 import AddBox from '@material-ui/icons/AddBox';
 import ArrowDownward from '@material-ui/icons/ArrowDownward';

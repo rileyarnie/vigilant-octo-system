@@ -18,12 +18,10 @@ import Remove from '@material-ui/icons/Remove';
 import SaveAlt from '@material-ui/icons/SaveAlt';
 import Search from '@material-ui/icons/Search';
 import ViewColumn from '@material-ui/icons/ViewColumn';
-import axios from 'axios';
 import Card from '@material-ui/core/Card';
 import Alert from '@material-ui/lab/Alert';
 import Breadcrumb from '../../App/components/Breadcrumb';
 import { Row, Col, Modal, Button } from 'react-bootstrap';
-import Config from '../../config';
 import { MenuItem, Select, Switch } from '@material-ui/core';
 import { ValidationForm, SelectGroup, FileInput, TextInput } from 'react-bootstrap4-form-validation';
 import CardPreview from './CardPreview';
@@ -553,9 +551,9 @@ const ProgramCohorts = (): JSX.Element => {
                                         defaultValue={
                                             cohortId
                                                 ? getMonthYear(
-                                                    selectedProgramCohort.program_cohorts_anticipatedGraduationMonth,
-                                                    selectedProgramCohort.program_cohorts_anticipatedGraduationYear
-                                                )
+                                                      selectedProgramCohort.program_cohorts_anticipatedGraduationMonth,
+                                                      selectedProgramCohort.program_cohorts_anticipatedGraduationYear
+                                                  )
                                                 : selectedGraduationDate
                                         }
                                         onChange={(e) => {
