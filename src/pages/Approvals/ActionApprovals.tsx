@@ -52,23 +52,23 @@ const ActionApprovals = () => {
     const alerts: Alerts = new ToastifyAlerts();
     const columns = [
         { title: 'Id', field: 'id' },
-        { title: 'Action Name', field: 'action_name' },
+        { title: 'Action Name', field: 'approvingRole.action.name' },
         { title: 'Requester', field: 'requester' },
-        { title: 'Payload', field: 'payload' },
+        { title: 'Payload', field: 'bodyPayload' },
         {
             title: 'Actions',
-            render: (rowData) => (
+            render: (row) => (
                 <div>
                     <Button className="mr-2 btn-info" variant="sm"
                         onClick={() =>{ 
                             handleApprove();
-                            setActionApprovalId(rowData.id);}}>
+                            setActionApprovalId(row.id);}}>
                         Approve
                     </Button>
                     <Button className="mr-2 btn-danger" variant="sm"
                         onClick={() =>{
                             handleReject();
-                            setActionApprovalId(rowData.id);
+                            setActionApprovalId(row.id);
                         }}>
                         Reject
                     </Button>
@@ -130,6 +130,7 @@ const ActionApprovals = () => {
                 alerts.showError(err.message);
             });
     };
+    console.log(approvals);
     return (
         <>
             <Row className="align-items-center page-header">
