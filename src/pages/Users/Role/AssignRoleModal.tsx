@@ -1,10 +1,9 @@
 import React, { useEffect, useState } from 'react';
 import { Modal, Button } from 'react-bootstrap';
 import Select from 'react-select';
-import Config from '../../../config';
-import axios from 'axios';
 import { Alerts, ToastifyAlerts } from '../../lib/Alert';
 import { customSelectTheme } from '../../lib/SelectThemes';
+import { authnzAxiosInstance } from '../../../utlis/interceptors/authnz-interceptor';
 const alerts: Alerts = new ToastifyAlerts();
 interface ISelectedRow {
     aadAlias: string;
@@ -16,14 +15,13 @@ interface IProps {
     selectedrowprops: ISelectedRow;
 }
 export const AssignRoleModal = (props: IProps): JSX.Element => {
-    const authnzSrv = Config.baseUrl.authnzSrv;
     const [roles, setRoles] = useState([]);
     const [isMulti] = useState(true);
     const [selectedOptions, setSelectedOptions] = useState([]);
     const options = [];
     useEffect(() => {
-        axios
-            .get(`${authnzSrv}/roles`)
+        authnzAxiosInstance
+            .get('/roles')
             .then((res) => {
                 setRoles(res.data);
             })
@@ -51,8 +49,8 @@ export const AssignRoleModal = (props: IProps): JSX.Element => {
         roleIds.forEach((roleId) => {
             params.append('roleIds', roleId.toString());
         });
-        axios
-            .post(`${authnzSrv}/users/${userId}/roles`, params)
+        authnzAxiosInstance
+            .post(`/users/${userId}/roles`, params)
             .then((res) => {
                 if (res.status == 200) {
                     alerts.showSuccess('Successfully assigned role to user');

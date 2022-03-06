@@ -3,12 +3,12 @@
 // eslint-disable-next-line no-use-before-define
 import React, { useContext, useState, useEffect } from 'react';
 import { PublicClientApplication } from '@azure/msal-browser';
-import axios from 'axios';
 import { Alerts, ToastifyAlerts } from '../lib/Alert';
 import { getUserDetails } from '../lib/GraphService';
 import Config from '../../config';
 import { AuthContext } from '../../App/context/AuthContext';
 import { Button } from 'react-bootstrap';
+import { authnzAxiosInstance } from '../../utlis/interceptors/authnz-interceptor';
 
 const alerts: Alerts = new ToastifyAlerts();
 const Login = () => {
@@ -110,13 +110,8 @@ const Login = () => {
     };
 
     const fetchUserDetails: any = async () => {
-        const token = localStorage.getItem('idToken');
-        const config = {
-            headers: { Authorization: `Bearer ${token}` }
-        };
-        const authnzSrv = Config.baseUrl.authnzSrv;
-        axios
-            .get(`${authnzSrv}/users/me`, config)
+        authnzAxiosInstance
+            .get('/users/me')
             .then((res) => {
                 localStorage.setItem('userInfo', JSON.stringify(res.data));
                 setUserInfo(res.data);

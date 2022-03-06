@@ -27,6 +27,7 @@ import { Alerts, ToastifyAlerts } from '../lib/Alert';
 import LinearProgress from '@mui/material/LinearProgress';
 import { canPerformActions } from '../../services/ActionChecker';
 import { ACTION_CREATE_TRAINER } from '../../authnz-library/timetabling-actions';
+import { authnzAxiosInstance } from '../../utlis/interceptors/authnz-interceptor';
 
 const alerts: Alerts = new ToastifyAlerts();
 const tableIcons: Icons = {
@@ -62,7 +63,6 @@ const TrainerList = (): JSX.Element => {
     ];
     const [data, setData] = useState([]);
     const baseUrl = Config.baseUrl.timetablingSrv;
-    const baseUrlAuth = Config.baseUrl.authnzSrv;
     const [isError] = useState(false);
     const [users, setUsers] = useState([]);
     const [departments, setDepartments] = useState([]);
@@ -89,10 +89,9 @@ const TrainerList = (): JSX.Element => {
                 alerts.showError(error.message);
             });
 
-        axios
-            .get(`${baseUrlAuth}/users`)
+        authnzAxiosInstance
+            .get('/users')
             .then((res) => {
-                console.log(res.data);
                 setUsers(res.data);
             })
             .catch((error) => {

@@ -4,9 +4,9 @@ import { Modal } from 'react-bootstrap';
 import { Row, Col } from 'react-bootstrap';
 import { ValidationForm, TextInput } from 'react-bootstrap4-form-validation';
 import validator from 'validator';
-import axios from 'axios';
-import Config from '../../../config';
+
 import { Alerts, ToastifyAlerts } from '../../lib/Alert';
+import { authnzAxiosInstance } from '../../../utlis/interceptors/authnz-interceptor';
 
 const alerts: Alerts = new ToastifyAlerts();
 const CreateUserModal = (props): JSX.Element => {
@@ -17,10 +17,9 @@ const CreateUserModal = (props): JSX.Element => {
     const handleSubmit = (e) => {
         e.preventDefault();
         const params = new URLSearchParams();
-        const authnzSrv = Config.baseUrl.authnzSrv;
         params.append('AADAlias', email);
-        axios
-            .post(`${authnzSrv}/users`, { AADAlias: email, isStaff: true })
+        authnzAxiosInstance
+            .post('/users', { AADAlias: email, isStaff: true })
             .then(() => {
                 alerts.showSuccess('successfully created user');
                 props.fetchUsers();

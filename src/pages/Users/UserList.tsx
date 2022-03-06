@@ -15,16 +15,15 @@ import LastPage from '@material-ui/icons/LastPage';
 import Remove from '@material-ui/icons/Remove';
 import Search from '@material-ui/icons/Search';
 import ViewColumn from '@material-ui/icons/ViewColumn';
-import axios from 'axios';
 import Breadcrumb from '../../App/components/Breadcrumb';
 import { Row, Col, Card, Button } from 'react-bootstrap';
-import Config from '../../config';
 import CreateUser from './CreateUserModal/CreateUser';
 import { Icons } from 'material-table';
 import { Alerts, ToastifyAlerts } from '../lib/Alert';
 import { LinearProgress } from '@mui/material';
 import { canPerformActions } from '../../services/ActionChecker';
 import { ACTION_ASSIGN_ROLES, ACTION_GET_USERS } from '../../authnz-library/authnz-actions';
+import { authnzAxiosInstance } from '../../utlis/interceptors/authnz-interceptor';
 const alerts: Alerts = new ToastifyAlerts();
 
 const tableIcons: Icons = {
@@ -57,7 +56,6 @@ const UserList = (props: IProps): JSX.Element => {
     ];
     const [data, setData] = useState([]);
     const [linearDisplay, setLinearDisplay] = useState('none');
-    const baseUrl = Config.baseUrl.authnzSrv;
 
     useEffect(() => {
         fetchUsers();
@@ -65,8 +63,8 @@ const UserList = (props: IProps): JSX.Element => {
 
     const fetchUsers = () => {
         setLinearDisplay('block');
-        axios
-            .get(`${baseUrl}/users`)
+        authnzAxiosInstance
+            .get('/users')
             .then((res) => {
                 setData(res.data);
                 setLinearDisplay('none');

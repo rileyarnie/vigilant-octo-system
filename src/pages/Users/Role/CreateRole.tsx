@@ -3,17 +3,15 @@ import { Modal, Button } from 'react-bootstrap';
 import { Row, Col } from 'react-bootstrap';
 import { ValidationForm, TextInput } from 'react-bootstrap4-form-validation';
 import validator from 'validator';
-import Config from '../../../config';
-import axios from 'axios';
 import { Alerts, ToastifyAlerts } from '../../lib/Alert';
 import { canPerformActions } from '../../../services/ActionChecker';
 import { ACTION_CREATE_ROLE } from '../../../authnz-library/authnz-actions';
+import { authnzAxiosInstance } from '../../../utlis/interceptors/authnz-interceptor';
 const alerts: Alerts = new ToastifyAlerts();
 interface IProps {
     fetchRoles: () => void;
 }
 const CreateRole = (props: IProps): JSX.Element => {
-    const authnzSrv = Config.baseUrl.authnzSrv;
     const [roleName, setRoleName] = useState('');
     const [showCreateModal, setShowCreateModal] = useState(false);
     const [roleDescription, setRoleDescription] = useState('');
@@ -22,8 +20,8 @@ const CreateRole = (props: IProps): JSX.Element => {
     };
 
     const handleRoleSubmit = () => {
-        axios
-            .put(`${authnzSrv}/roles`, { roleName: roleName, description: roleDescription })
+        authnzAxiosInstance
+            .put('/roles', { roleName: roleName, description: roleDescription })
             .then(() => {
                 alerts.showSuccess('Success created role');
                 props.fetchRoles();
