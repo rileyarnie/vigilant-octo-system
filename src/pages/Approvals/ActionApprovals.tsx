@@ -59,17 +59,24 @@ const ActionApprovals = () => {
             title: 'Actions',
             render: (row) => (
                 <div>
-                    <Button className="mr-2 btn-info" variant="sm"
-                        onClick={() =>{ 
+                    <Button
+                        className="mr-2 btn-info"
+                        variant="sm"
+                        onClick={() => {
                             handleApprove();
-                            setActionApprovalId(row.id);}}>
+                            setActionApprovalId(row.id);
+                        }}
+                    >
                         Approve
                     </Button>
-                    <Button className="mr-2 btn-danger" variant="sm"
-                        onClick={() =>{
+                    <Button
+                        className="mr-2 btn-danger"
+                        variant="sm"
+                        onClick={() => {
                             handleReject();
                             setActionApprovalId(row.id);
-                        }}>
+                        }}
+                    >
                         Reject
                     </Button>
                 </div>
@@ -80,11 +87,7 @@ const ActionApprovals = () => {
         fetchApprovals();
     }, []);
     function fetchApprovals() {
-        const token = localStorage.getItem('idToken');
-        const config = {
-            headers: { Authorization: `Bearer ${token}` }
-        };
-        WorkFlowService.fetchActionApprovals(config)
+        WorkFlowService.fetchActionApprovals()
             .then((res) => {
                 const myData = res['data'];
                 setApprovals(myData);
@@ -96,14 +99,10 @@ const ActionApprovals = () => {
     }
     const handleApprove = () => {
         setLinearDisplay('none');
-        const token = localStorage.getItem('idToken');
-        const config = {
-            headers: { Authorization: `Bearer ${token}` }
-        };
         const approvalStatus = {
-            approvalStatus: 'approved',
+            approvalStatus: 'approved'
         };
-        WorkFlowService.handleApprovals(actionApprovalId, config, approvalStatus)
+        WorkFlowService.handleApprovals(actionApprovalId, approvalStatus)
             .then(() => {
                 alerts.showSuccess('Action approved successfully');
             })
@@ -114,14 +113,10 @@ const ActionApprovals = () => {
     };
     const handleReject = () => {
         setLinearDisplay('none');
-        const token = localStorage.getItem('idToken');
-        const config = {
-            headers: { Authorization: `Bearer ${token}` }
-        };
         const approvalStatus = {
-            approvalStatus: 'rejected',
+            approvalStatus: 'rejected'
         };
-        WorkFlowService.handleApprovals(actionApprovalId, config, approvalStatus)
+        WorkFlowService.handleApprovals(actionApprovalId, approvalStatus)
             .then(() => {
                 alerts.showSuccess('Action rejected Successfully');
             })
@@ -142,12 +137,7 @@ const ActionApprovals = () => {
             <Row>
                 <Col>
                     <Card>
-                        <MaterialTable
-                            title="Approval Requests"
-                            columns={columns}
-                            data={approvals}
-                            icons={tableIcons}
-                        />
+                        <MaterialTable title="Approval Requests" columns={columns} data={approvals} icons={tableIcons} />
                     </Card>
                 </Col>
             </Row>

@@ -43,7 +43,7 @@ export const AssignRoleModal = (props: IProps): JSX.Element => {
         const roleIds: number[] = selectedOptions.map((option) => option.value);
 
         authnzAxiosInstance
-            .post('/users/${userId}/roles', { roleIds: roleIds })
+            .post(`/users/${props.selectedrowprops.id}/roles`, { roleIds: roleIds })
             .then((res) => {
                 if (res.status == 200) {
                     alerts.showSuccess('Successfully assigned role to user');
