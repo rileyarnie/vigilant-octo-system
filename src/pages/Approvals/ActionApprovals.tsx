@@ -47,13 +47,13 @@ const ActionApprovals = () => {
         ViewColumn: forwardRef((props, ref) => <ViewColumn {...props} ref={ref} />)
     };
     const [linearDisplay, setLinearDisplay] = useState('none');
-    const [actionApprovalId, setActionApprovalId] = useState(0);
+    const [actionApprovalId, setActionApprovalId] = useState(1);
     const [approvals, setApprovals] = useState<Approval[]>();
     const alerts: Alerts = new ToastifyAlerts();
     const columns = [
         { title: 'Id', field: 'id' },
         { title: 'Action Name', field: 'approvingRole.action.name' },
-        { title: 'Requester', field: 'requester' },
+        { title: 'Requester', field: 'requesterUserId' },
         { title: 'Payload', field: 'bodyPayload' },
         {
             title: 'Actions',
