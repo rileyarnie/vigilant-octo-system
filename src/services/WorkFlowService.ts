@@ -17,7 +17,7 @@ export class WorkFlowService {
     }
 
     static async fetchActionApprovals(): Promise<void> {
-        return await authnzAxiosInstance.get('/action-approvals/mine');
+        return await authnzAxiosInstance.get('/action-approvals/mine', {params:{approvalStatus: 'pending'}});
     }
 
     static async handleApprovals(actionApprovalId: number, approvalStatus: Approval): Promise<void> {
