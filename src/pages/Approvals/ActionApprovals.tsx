@@ -63,8 +63,8 @@ const ActionApprovals = () => {
                         className="mr-2 btn-info"
                         variant="sm"
                         onClick={() => {
-                            handleApprove();
                             setActionApprovalId(row.id);
+                            handleApprove();
                         }}
                     >
                         Approve
@@ -73,8 +73,9 @@ const ActionApprovals = () => {
                         className="mr-2 btn-danger"
                         variant="sm"
                         onClick={() => {
-                            handleReject();
+                            
                             setActionApprovalId(row.id);
+                            handleReject();
                         }}
                     >
                         Reject
