@@ -16,11 +16,11 @@ export class WorkFlowService {
         return await authnzAxiosInstance.post(`/actions/${actionName}/approving-roles`, approveringRoles);
     }
 
-    static async fetchActionApprovals(config: unknown): Promise<void> {
-        return await authnzAxiosInstance.get('/action-approvals/mine', config);
+    static async fetchActionApprovals(): Promise<void> {
+        return await authnzAxiosInstance.get('/action-approvals/mine');
     }
 
-    static async handleApprovals(actionApprovalId:number, config, approvalStatus:Approval): Promise<void> {
-        return await authnzAxiosInstance.put(`/action-approvals/${actionApprovalId}`, approvalStatus,{ headers: config });
+    static async handleApprovals(actionApprovalId: number, approvalStatus: Approval): Promise<void> {
+        return await authnzAxiosInstance.put(`/action-approvals/${actionApprovalId}`, approvalStatus);
     }
 }
