@@ -36,7 +36,6 @@ export const AddActionsModal = (props: IProps): JSX.Element => {
                 console.log(error);
                 alerts.showError(error.message);
             });
-
     }, []);
 
     actions.map((action) => {
