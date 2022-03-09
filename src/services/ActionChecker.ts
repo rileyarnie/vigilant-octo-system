@@ -21,8 +21,6 @@ interface User {
 function getCurrUserActions(): { string: Action } {
     const userDetails = JSON.parse(localStorage.getItem('userInfo')) as unknown as User;
     if (!userDetails) {
-        // debugger;
-        // logout();
         return;
     }
     return userDetails.actions;
@@ -34,13 +32,7 @@ function cannotPerformAllActions(...actionNames: string[]): boolean {
     if (Object.keys(actions).length < 1) {
         return false;
     }
-
-    actionNames.forEach((actionName) => {
-        if (actions.hasOwnProperty(actionName)) {
-            return false;
-        }
-    });
-    return true;
+    return actionNames.filter(actionName => actions.hasOwnProperty(actionName)).length == 0;
 }
 
 function canPerformActions(...actionNames: string[]): boolean {
@@ -49,12 +41,8 @@ function canPerformActions(...actionNames: string[]): boolean {
     if (Object.keys(actions).length < 1) {
         return false;
     }
-    actionNames.forEach((actionName) => {
-        if (!actions.hasOwnProperty(actionName)) {
-            return false;
-        }
-    });
-    return true;
+    return actionNames.filter(actionName => actions.hasOwnProperty(actionName)).length == actionNames.length;
+    
 }
 
 export { canPerformActions, cannotPerformAllActions };
