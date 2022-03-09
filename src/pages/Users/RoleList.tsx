@@ -99,6 +99,7 @@ function roleList(): JSX.Element {
                             className=""
                             onClick={() => {
                                 roleActions(row.id);
+                                setId(row.id);
                                 setRoleName(row.name);
                                 toggleActionsModal();
                             }}
@@ -107,12 +108,26 @@ function roleList(): JSX.Element {
                         </div>
                     )}
                     {canPerformActions(ACTION_ADD_ACTIONS_TO_ROLE.name) && (
-                        <div className="" onClick={() => setActionModal(true)}>
+                        <div
+                            className=""
+                            onClick={() => {
+                                setId(row.id);
+                                setRoleName(row.name);
+                                setActionModal(true);
+                            }}
+                        >
                             <MenuItem value="View courses">Add Actions</MenuItem>
                         </div>
                     )}
                     {canPerformActions(ACTION_DEACTIVATE_ROLE.name) && (
-                        <div className="" onClick={() => handleRowDelete(row.id)}>
+                        <div
+                            className=""
+                            onClick={() => {
+                                setId(row.id);
+                                setRoleName(row.name);
+                                handleRowDelete(row.id);
+                            }}
+                        >
                             <MenuItem value="View courses">Delete Role</MenuItem>
                         </div>
                     )}
@@ -125,7 +140,7 @@ function roleList(): JSX.Element {
         { title: 'Action Name', field: 'name' }
     ];
     const [data, setData] = useState([]);
-    const [id] = useState(0);
+    const [id, setId] = useState(0);
     const [showModal, setModal] = useState(false);
     const [roleName, setRoleName] = useState('');
     const [isError] = useState(false);
@@ -168,7 +183,7 @@ function roleList(): JSX.Element {
     function handleRowDelete(id: number): void {
         setLinearDisplay('block');
         authnzAxiosInstance
-            .delete('/roles/${id}')
+            .delete(`/roles/${id}`)
             .then(() => {
                 fetchRoles();
                 setLinearDisplay('none');
