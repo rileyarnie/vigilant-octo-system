@@ -230,11 +230,8 @@ const items = timeTabledUnits?.map(unit=>({
     async onAppointmentFormOpening(e) {
         const max = Math.max(20,40)
         const { form } = e
-        const t = e['appointmentData']
         this.state.openedCourseCohort = t
-        let  venueId  = e.appointmentData
         let  trainerId = 0
-        let timetablingUnitId = t.timetablingUnitId
         form.option('items', [
             {
                 label: {
@@ -249,6 +246,7 @@ const items = timeTabledUnits?.map(unit=>({
                     onValueChange(e) {
                         this.setState({trainerId: e.target.value})
                         trainerId = e.target.value
+                        console.log('TRAINER ID', trainerId)
                         alert(trainerId)
                     }
                 },
@@ -334,23 +332,18 @@ const items = timeTabledUnits?.map(unit=>({
 
 
         ])
-
     }
-
-
     handleEdit (e) {
-
         const updatedTimetablingUnit = {
             timetablingUnitId: e.appointmentData.timetablingUnitId,
-            venueId: this.state.venueId,
-            recurrenceStartDate: this.state.recurrenceStartDate,
-            recurrenceEndDate: this.state.recurrenceEndDate,
-            durationInMinutes: this.state.durationInMinutes,
-            startTime: this.state.startTime,
-            numSessions: this.state.numSessions,
-            trainerId: this.state.trainerId
+            venueId: e.appointmentData.venueId,
+            recurrenceStartDate: e.appointmentData.startDate,
+            recurrenceEndDate: e.appointmentData.endDate,
+            durationInMinutes: e.appointmentData.durationInMinutes,
+            startTime: e.appointmentData.startTime,
+            numSessions:e.appointmentData.numSessions,
+            trainerId: e.appointmentData.trainerId
         }
-        console.log(e);
         TimetableService.updateTimetableUnit(updatedTimetablingUnit)
             .then(() => {
                 alerts.showSuccess('Timetable updated successfully')
@@ -374,7 +367,7 @@ const items = timeTabledUnits?.map(unit=>({
     }
     async publishTimetable(){
         await SemesterService.publishTimetable(this.state.semesterId)
-            .then(res => {
+            .then(() => {
                 alerts.showSuccess('Timetable published successfully')
             })
             .catch((error) => {
@@ -392,19 +385,6 @@ const items = timeTabledUnits?.map(unit=>({
         alert(JSON.stringify(e.appointmentData))
     }
     render() {
-    const Content = (() => (
-      <AppointmentTooltip.Content appointmentData={appointmentData}>
-        <Grid container alignItems="center">
-          <StyledGrid item xs={2} className="textCenter">
-            <StyledRoom  />
-          </StyledGrid>
-          <Grid item xs={10}>
-            <span>Hello</span>
-          </Grid>
-        </Grid>
-      </AppointmentTooltip.Content>
-    ));
-
         return (
             <React.Fragment>
                 {this.state.semesterId? <Button  onClick={() =>  this.publishTimetable() } className="float-right" variant="danger" style={{transform: `translateX(${-40}px)`}} >Publish Timetable</Button>: '' }
