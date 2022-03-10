@@ -70,11 +70,11 @@ function ProgramCohortSemesters(props: { history: { goBack: () => void } }) {
         { title: 'End Date', render: (rowData: { endDate: string | unknown[] }) => rowData?.endDate?.slice(0, 10) },
         {
             title: 'Transcripts',
-            render: () => (
+            render: (rowData: {id: number}) => (
                 <a
                     href="#"
                     onClick={(e) => {
-                        fetchTranscript(parseInt(programCohortId));
+                        fetchTranscript(parseInt(programCohortId), rowData?.id);
                         e.stopPropagation();
                     }}
                 >
@@ -89,6 +89,7 @@ function ProgramCohortSemesters(props: { history: { goBack: () => void } }) {
     const programCohortId = localStorage.getItem('programCohortId');
     const programCohortCode = localStorage.getItem('programCohortCode');
     const [data, setData] = useState([]);
+    const [semesterId, setSemesterId] = useState();
     const [linearDisplay, setLinearDisplay] = useState('none');
     const [isError] = useState(false);
     useEffect(() => {
@@ -122,11 +123,12 @@ function ProgramCohortSemesters(props: { history: { goBack: () => void } }) {
             });
     }
 
-    function fetchTranscript(programCohortId: number) {
+    function fetchTranscript(programCohortId: number,semesterId: number) {
         simsAxiosInstance
             .get('/transcripts', {
                 params: {
-                    programCohortId: programCohortId
+                    programCohortId: programCohortId,
+                    semesterId: semesterId
                 }
             })
             .then(() => {
@@ -172,9 +174,14 @@ function ProgramCohortSemesters(props: { history: { goBack: () => void } }) {
                             data={data}
                             icons={tableIcons}
                             onRowClick={(event: any, row) => {
+                                console.log('semesterId called');
+                                console.log(row);
                                 if (event.target.innerHTML === 'Download Transcript') {
+                                    setSemesterId(row.id);
                                     event.stopPropagation();
                                 }
+                                setSemesterId(row.id);
+                                console.log(row.id);
                                 window.location.href = '/pcsdetails';
                                 localStorage.setItem('programName', programName);
                                 localStorage.setItem('programCohortCode', programCohortCode);
