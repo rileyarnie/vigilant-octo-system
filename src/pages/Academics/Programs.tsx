@@ -325,7 +325,7 @@ const Programs = (): JSX.Element => {
                                 errorMessage="Please select CertificationType."
                             >
                                 <option value="">--- Please select ---</option>
-                                <option value="Degree">Degree</option>
+                                <option value="Degree">Bachelors</option>
                                 <option value="Diploma">Diploma</option>
                                 <option value="Certificate">Certificate</option>
                             </SelectGroup>
