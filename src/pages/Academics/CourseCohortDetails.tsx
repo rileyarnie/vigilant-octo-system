@@ -101,10 +101,10 @@ const CourseCohortsDetails = (props: any): JSX.Element => {
         }
     }
     const columns = [
-        { title: 'Course Cohort ID', render: () => props.match.params.id, hidden: false, editable: 'never' as const },
+        { title: 'Course Cohort ID', render: () => props.match.params?.id, hidden: false, editable: 'never' as const },
         { title: 'Certification Type', field: 'certificationType', hidden: true },
         { title: 'Id', field: 'id', hidden: true },
-        { title: 'Marks', field: 'marks', editComponent: (tableData) => renderSwitch(tableData.rowData) },
+        { title: 'Marks', field: 'marks', editComponent: (tableData) => renderSwitch(tableData?.rowData) },
         { title: 'Grade', field: 'grade', editable: 'never' as const }
     ];
 
