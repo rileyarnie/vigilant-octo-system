@@ -16,6 +16,7 @@ interface IProps {
 }
 export const AssignRoleModal = (props: IProps): JSX.Element => {
     const [roles, setRoles] = useState([]);
+    const [assignedRoles, setAssignedRoles] = useState([]);
     const [isMulti] = useState(true);
     const [selectedOptions, setSelectedOptions] = useState([]);
     const options = [];
@@ -34,7 +35,16 @@ export const AssignRoleModal = (props: IProps): JSX.Element => {
     roles.map((role) => {
         return options.push({ value: role.id, label: role.name });
     });
-
+    function fetchActionApprovers(actionName: string) {
+        authnzAxiosInstance.get('/roles',{params: {userId:props.selectedrowprops.id}})
+            .then((res) => {
+                const assignedRoles = res['data'];
+                const roles = assignedRoles.map((it) => {
+                    return { value: it.role.id, label: it.role.name };
+                });
+                setAssignedRoles(roles);
+            });
+    }
     const handleChange = (selectedOptions) => {
         setSelectedOptions(selectedOptions);
     };
@@ -64,6 +74,7 @@ export const AssignRoleModal = (props: IProps): JSX.Element => {
             </Modal.Header>
             <Modal.Body>
                 <Select
+                    defaultValue={assignedRoles}
                     theme={customSelectTheme}
                     options={options}
                     isMulti={isMulti}
