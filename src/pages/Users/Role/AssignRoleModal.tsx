@@ -21,6 +21,7 @@ export const AssignRoleModal = (props: IProps): JSX.Element => {
     const [selectedOptions, setSelectedOptions] = useState([]);
     const options = [];
     useEffect(() => {
+        fetchUserRoles();
         authnzAxiosInstance
             .get('/roles')
             .then((res) => {
@@ -35,7 +36,7 @@ export const AssignRoleModal = (props: IProps): JSX.Element => {
     roles.map((role) => {
         return options.push({ value: role.id, label: role.name });
     });
-    function fetchActionApprovers(actionName: string) {
+    function fetchUserRoles() {
         authnzAxiosInstance.get('/roles',{params: {userId:props.selectedrowprops.id}})
             .then((res) => {
                 const assignedRoles = res['data'];
