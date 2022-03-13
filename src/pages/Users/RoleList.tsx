@@ -113,7 +113,7 @@ function roleList(): JSX.Element {
                             onClick={() => {
                                 setId(row.id);
                                 setRoleName(row.name);
-                                setActionModal(true);
+                                getActionsByRoleId(row.id);
                             }}
                         >
                             <MenuItem value="View courses">Add Actions</MenuItem>
@@ -147,6 +147,7 @@ function roleList(): JSX.Element {
     const [errorMessages] = useState([]);
     const [actions, setActions] = useState([]);
     const [linearDisplay, setLinearDisplay] = useState('none');
+    const [defaultRoleValues, setDefaultRoleValues] = useState([]);
     //modal functions
     const [verticalModal, setVerticalModal] = React.useState(false);
     const [actionModal, setActionModal] = React.useState(false);
@@ -196,6 +197,16 @@ function roleList(): JSX.Element {
             });
     }
 
+    const getActionsByRoleId = (roleId) => {
+        authnzAxiosInstance
+            .get(`/actions/${roleId}`)
+            .then((res) => {
+                setDefaultRoleValues(res.data.map((role: { id: number; name: string }) => ({ value: role.id, label: role.name })));
+                setActionModal(true);
+            })
+            .catch((err) => console.log('err', err));
+    };
+
     const selectedRowProps = {
         id: id,
         name: roleName
@@ -204,7 +215,7 @@ function roleList(): JSX.Element {
         setModal(false);
     };
     const toggleActionsModal = () => {
-        showModal ? resetStateCloseModal() : setModal(true);
+        setActionModal(!actionModal);
     };
     const handleClose = () => {
         showModal ? resetStateCloseModal() : setModal(false);
@@ -249,6 +260,7 @@ function roleList(): JSX.Element {
                 toggleModal={toggleActionsModal}
                 onHide={() => setActionModal(false)}
                 selectedRowProps={selectedRowProps}
+                defaultValues={defaultRoleValues}
             />
             <Modal
                 show={showModal}
@@ -262,7 +274,13 @@ function roleList(): JSX.Element {
                     <Modal.Title id="contained-modal-title-vcenter">{roleName} Actions</Modal.Title>
                 </Modal.Header>
                 <Modal.Body>
-                    <MaterialTable title="Action List" columns={actionColumns} data={actions} icons={tableIcons} />
+                    <MaterialTable
+                        title="Action List"
+                        onRowClick={(event, row) => getActionsByRoleId(row.id)}
+                        columns={actionColumns}
+                        data={actions}
+                        icons={tableIcons}
+                    />
                 </Modal.Body>
                 <Modal.Footer style={{ display: 'flex', justifyContent: 'flex-start' }}>
                     <Button variant="danger float-left" onClick={handleClose}>

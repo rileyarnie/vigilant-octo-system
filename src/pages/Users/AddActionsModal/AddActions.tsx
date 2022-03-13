@@ -13,7 +13,7 @@ export const AddActions = (props): JSX.Element => {
                 {props.children}
             </div>
 
-            <AddActionsModal show={modalShow} toggleModal={toggleModal} onHide={() => setModalShow(false)} selectedRowProps={props} />
+            <AddActionsModal show={modalShow} toggleModal={toggleModal} onHide={() => setModalShow(false)} selectedRowProps={props} defaultValues={[]} />
         </>
     );
 };

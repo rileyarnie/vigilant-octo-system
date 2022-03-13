@@ -5,12 +5,7 @@ import { Alerts, ToastifyAlerts } from '../../lib/Alert';
 import { customSelectTheme } from '../../lib/SelectThemes';
 import { authnzAxiosInstance } from '../../../utlis/interceptors/authnz-interceptor';
 const alerts: Alerts = new ToastifyAlerts();
-interface IProps {
-    onHide: () => void;
-    selectedRowProps: ISelectedRowProps;
-    show: boolean;
-    toggleModal: () => void;
-}
+
 
 interface ISelectedRowProps {
     name: string;
@@ -21,6 +16,15 @@ interface IOptions {
     value: number;
     label: string;
 }
+
+interface IProps {
+    onHide: () => void;
+    selectedRowProps: ISelectedRowProps;
+    show: boolean;
+    toggleModal: () => void;
+    defaultValues: IOptions[];
+}
+
 export const AddActionsModal = (props: IProps): JSX.Element => {
     const [actions, setActions] = useState([]);
     const [isMulti] = useState(true);
@@ -75,6 +79,7 @@ export const AddActionsModal = (props: IProps): JSX.Element => {
             </Modal.Header>
             <Modal.Body>
                 <Select
+                    defaultValue={props.defaultValues}
                     theme={customSelectTheme}
                     options={options}
                     isMulti={isMulti}
