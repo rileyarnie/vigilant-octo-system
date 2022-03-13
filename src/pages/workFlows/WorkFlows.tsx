@@ -94,6 +94,7 @@ const WorkFlows = (): JSX.Element => {
         fetchRoles();
     }, []);
     function fetchActionApprovers(actionName: string) {
+        setApprovers([]);
         WorkFlowService.fetchActionApprovers(actionName)
             .then((res) => {
                 const approvingroles = res['data'];
@@ -103,7 +104,11 @@ const WorkFlows = (): JSX.Element => {
                 setApprovers(roles);
                 toggleCreateModal();
             })
-            .catch((err) => console.log('err', err));
+            .catch((err) => {
+                console.log('err', err);
+                alerts.showError(`We couldn’t fetch the existing approving roles for ${actionName}, reopening the modal should fix this.`);
+                toggleCreateModal();
+            });
     }
     function fetchRoles() {
         setLinearDisplay('block');

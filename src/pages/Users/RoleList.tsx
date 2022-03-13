@@ -113,7 +113,7 @@ function roleList(): JSX.Element {
                             onClick={() => {
                                 setId(row.id);
                                 setRoleName(row.name);
-                                getActionsByRoleId(row.id);
+                                getActionsByRoleId(row.id,row.name);
                             }}
                         >
                             <MenuItem value="View courses">Add Actions</MenuItem>
@@ -197,14 +197,19 @@ function roleList(): JSX.Element {
             });
     }
 
-    const getActionsByRoleId = (roleId) => {
+    const getActionsByRoleId = (roleId:number,roleName?:string) => {
+        setDefaultRoleValues([]);
         authnzAxiosInstance
             .get(`/actions/${roleId}`)
             .then((res) => {
                 setDefaultRoleValues(res.data.map((role: { id: number; name: string }) => ({ value: role.id, label: role.name })));
                 setActionModal(true);
             })
-            .catch((err) => console.log('err', err));
+            .catch((err) => {
+                console.log('err', err);
+                alerts.showError(`We couldn’t fetch the existing actions for ${roleName}, reopening the dialog should resolve this`);
+                setActionModal(true);
+            });
     };
 
     const selectedRowProps = {
@@ -271,7 +276,7 @@ function roleList(): JSX.Element {
                 centered
             >
                 <Modal.Header closeButton>
-                    <Modal.Title id="contained-modal-title-vcenter">{roleName} Actions</Modal.Title>
+                    <Modal.Title id="contained-modal-title-vcenter"> Assign actions to {roleName} </Modal.Title>
                 </Modal.Header>
                 <Modal.Body>
                     <MaterialTable
