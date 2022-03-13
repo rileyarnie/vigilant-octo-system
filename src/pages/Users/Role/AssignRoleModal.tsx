@@ -13,15 +13,14 @@ interface IProps {
     onHide: () => void;
     show: boolean;
     selectedrowprops: ISelectedRow;
+    assignedroles?: Array<{value:number,label:string}>;
 }
 export const AssignRoleModal = (props: IProps): JSX.Element => {
     const [roles, setRoles] = useState([]);
-    const [assignedRoles, setAssignedRoles] = useState([]);
     const [isMulti] = useState(true);
     const [selectedOptions, setSelectedOptions] = useState([]);
     const options = [];
     useEffect(() => {
-        fetchUserRoles();
         authnzAxiosInstance
             .get('/roles')
             .then((res) => {
@@ -36,16 +35,7 @@ export const AssignRoleModal = (props: IProps): JSX.Element => {
     roles.map((role) => {
         return options.push({ value: role.id, label: role.name });
     });
-    function fetchUserRoles() {
-        authnzAxiosInstance.get('/roles',{params: {userId:props.selectedrowprops.id}})
-            .then((res) => {
-                const assignedRoles = res['data'];
-                const roles = assignedRoles.map((it) => {
-                    return { value: it.role.id, label: it.role.name };
-                });
-                setAssignedRoles(roles);
-            });
-    }
+
     const handleChange = (selectedOptions) => {
         setSelectedOptions(selectedOptions);
     };
@@ -71,11 +61,11 @@ export const AssignRoleModal = (props: IProps): JSX.Element => {
     return (
         <Modal {...props} size="lg" aria-labelledby="contained-modal-title-vcenter" centered>
             <Modal.Header closeButton>
-                <Modal.Title id="contained-modal-title-vcenter">{props.selectedrowprops.aadAlias}&apos;s Roles</Modal.Title>
+                <Modal.Title id="contained-modal-title-vcenter">Assign roles to {props.selectedrowprops.aadAlias}</Modal.Title>
             </Modal.Header>
             <Modal.Body>
                 <Select
-                    defaultValue={assignedRoles}
+                    defaultValue={props.assignedroles}
                     theme={customSelectTheme}
                     options={options}
                     isMulti={isMulti}

@@ -65,7 +65,6 @@ const WorkFlows = (): JSX.Element => {
                             className="btn btn-info"
                             size="sm"
                             onClick={() => {
-                                toggleCreateModal();
                                 setActionName(row.name);
                                 fetchActionApprovers(row.name);
                             }}
@@ -95,13 +94,21 @@ const WorkFlows = (): JSX.Element => {
         fetchRoles();
     }, []);
     function fetchActionApprovers(actionName: string) {
-        WorkFlowService.fetchActionApprovers(actionName).then((res) => {
-            const approvingroles = res['data'];
-            const roles = approvingroles.map((it) => {
-                return { value: it.role.id, label: it.role.name };
+        setApprovers([]);
+        WorkFlowService.fetchActionApprovers(actionName)
+            .then((res) => {
+                const approvingroles = res['data'];
+                const roles = approvingroles.map((it) => {
+                    return { value: it.role.id, label: it.role.name };
+                });
+                setApprovers(roles);
+                toggleCreateModal();
+            })
+            .catch((err) => {
+                console.log('err', err);
+                alerts.showError(`We couldn’t fetch the existing approving roles for ${actionName}, reopening the modal should fix this.`);
+                toggleCreateModal();
             });
-            setApprovers(roles);
-        });
     }
     function fetchRoles() {
         setLinearDisplay('block');
