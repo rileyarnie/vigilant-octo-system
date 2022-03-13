@@ -97,7 +97,7 @@ const Default = (): JSX.Element => {
                             >
                                 <Tab label="Director" {...a11yProps(0)} />
                                 <Tab label="Registrar" {...a11yProps(1)} />
-                                <Tab label="Finanace Officer" {...a11yProps(2)} />
+                                <Tab label="Finance Officer" {...a11yProps(2)} />
                                 <Tab label="HOD" {...a11yProps(3)} />
                                 <Tab label="Marketer" {...a11yProps(4)} />
                             </Tabs>
