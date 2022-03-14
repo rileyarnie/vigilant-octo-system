@@ -138,7 +138,13 @@ const ActionApprovals = () => {
             <Row>
                 <Col>
                     <Card>
-                        <MaterialTable title="Approval Requests" columns={columns} data={approvals} icons={tableIcons} />
+                        <MaterialTable
+                            title="Approval Requests"
+                            columns={columns}
+                            data={approvals}
+                            icons={tableIcons}
+                            options={{ pageSize: 50 }}
+                        />
                     </Card>
                 </Col>
             </Row>

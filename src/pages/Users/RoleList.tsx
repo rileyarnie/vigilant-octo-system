@@ -250,7 +250,13 @@ function roleList(): JSX.Element {
                                         </Alert>
                                     )}
                                 </div>
-                                <MaterialTable title="Role List" columns={columns} data={data} icons={tableIcons} />
+                                <MaterialTable
+                                    title="Role List"
+                                    columns={columns}
+                                    data={data}
+                                    icons={tableIcons}
+                                    options={{ pageSize: 50 }}
+                                />
                             </Card>
                         </Col>
                     </Row>
@@ -285,6 +291,7 @@ function roleList(): JSX.Element {
                         columns={actionColumns}
                         data={actions}
                         icons={tableIcons}
+                        options={{ pageSize: 50 }}
                     />
                 </Modal.Body>
                 <Modal.Footer style={{ display: 'flex', justifyContent: 'flex-start' }}>

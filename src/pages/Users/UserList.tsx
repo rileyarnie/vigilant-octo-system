@@ -103,7 +103,7 @@ const UserList = (props: IProps): JSX.Element => {
                             <Card.Header>
                                 <h5>Users</h5>
                             </Card.Header>
-                            <MaterialTable title="" columns={columns} data={data} icons={tableIcons} />
+                            <MaterialTable title="" columns={columns} data={data} icons={tableIcons} options={{ pageSize: 50 }} />
                         </Card>
                     </Col>
                 </Row>

@@ -219,7 +219,7 @@ const CourseCohortsDetails = (props: any): JSX.Element => {
                                     icons={tableIcons}
                                     columns={columns}
                                     data={data}
-                                    options={{ actionsColumnIndex: 0 }}
+                                    options={{ actionsColumnIndex: 0, pageSize: 50 }}
                                     editable={{
                                         onRowUpdate: (newData) => updateMarks(newData.id, enterredMarks || selectedMarks)
                                     }}

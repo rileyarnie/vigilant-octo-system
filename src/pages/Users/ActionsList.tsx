@@ -67,7 +67,7 @@ export const ActionsList = (props): JSX.Element => {
     return (
         <div>
             <LinearProgress style={{ display: linearDisplay }} />
-            <MaterialTable title="Action List" columns={columns} data={actions} icons={tableIcons} />
+            <MaterialTable title="Action List" columns={columns} data={actions} icons={tableIcons} options={{ pageSize: 50 }} />
         </div>
     );
 };

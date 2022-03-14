@@ -143,6 +143,7 @@ const AssignCourse = (): JSX.Element => {
                             columns={columns}
                             data={data}
                             options={{
+                                pageSize:50,
                                 selection: true,
                                 showSelectAllCheckbox: false,
                                 showTextRowsSelected: false

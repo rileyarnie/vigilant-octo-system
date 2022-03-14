@@ -334,6 +334,7 @@ function ProgramCohortSemesterDetails(props) {
                                     columns={columns}
                                     data={courseCohortData}
                                     icons={tableIcons}
+                                    options={{ pageSize: 50 }}
                                 />
                             </Card>
                         </Col>
@@ -366,7 +367,7 @@ function ProgramCohortSemesterDetails(props) {
                                     columns={feeItemColumns}
                                     data={feeItemsData}
                                     icons={tableIcons}
-                                    options={{ actionsColumnIndex: -1 }}
+                                    options={{ actionsColumnIndex: -1, pageSize: 50 }}
                                     actions={[
                                         {
                                             icon: Edit,

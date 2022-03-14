@@ -83,7 +83,14 @@ const CampusDetails = (): JSX.Element => {
                                 </Alert>
                             )}
                         </div>
-                        <MaterialTable title="Campuses" columns={columns} data={data} icons={tableIcons} editable={{}} />
+                        <MaterialTable
+                            title="Campuses"
+                            columns={columns}
+                            data={data}
+                            icons={tableIcons}
+                            editable={{}}
+                            options={{ pageSize: 50 }}
+                        />
                     </Card>
                 </Col>
             </Row>

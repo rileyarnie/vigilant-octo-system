@@ -318,7 +318,8 @@ const ApplicationsList = (): JSX.Element => {
                                     options={{
                                         rowStyle: (rowData) => ({
                                             backgroundColor: selectedRow === rowData.tableData.id ? '#EEE' : '#FFF'
-                                        })
+                                        }),
+                                        pageSize:50
                                     }}
                                     components={{
                                         Toolbar: (props) => (
