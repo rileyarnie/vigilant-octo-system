@@ -89,7 +89,13 @@ const AssignRole = (): JSX.Element => {
                                     </Alert>
                                 )}
                             </div>
-                            <MaterialTable icons={tableIcons} title="Select User to assign role" columns={columns} data={data} />
+                            <MaterialTable
+                                icons={tableIcons}
+                                title="Select User to assign role"
+                                columns={columns}
+                                data={data}
+                                options={{ pageSize: 50 }}
+                            />
                         </Card>
                     </Col>
                 </Row>

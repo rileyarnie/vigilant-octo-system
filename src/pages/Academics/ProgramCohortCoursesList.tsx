@@ -363,6 +363,7 @@ const CourseCohortsList = (props): JSX.Element => {
                                     }
                                 })
                             ]}
+                            options={{ pageSize: 50 }}
                             icons={tableIcons}
                         />
                     </Card>

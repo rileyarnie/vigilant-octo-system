@@ -234,7 +234,7 @@ const CampusList = (): JSX.Element => {
                                 <MaterialTable
                                     title="Campuses"
                                     columns={columns}
-                                    options={{ actionsColumnIndex: -1 }}
+                                    options={{ actionsColumnIndex: -1, pageSize: 50 }}
                                     data={data}
                                     icons={tableIcons}
                                     actions={

@@ -203,7 +203,13 @@ const CoursesList = (): JSX.Element => {
                                         </Alert>
                                     )}
                                 </div>
-                                <MaterialTable title="Courses" columns={columns} data={data} icons={tableIcons} />
+                                <MaterialTable
+                                    title="Courses"
+                                    columns={columns}
+                                    data={data}
+                                    icons={tableIcons}
+                                    options={{ pageSize: 50 }}
+                                />
                             </Card>
                         </Col>
                     </Row>

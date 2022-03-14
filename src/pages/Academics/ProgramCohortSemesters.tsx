@@ -192,6 +192,7 @@ function ProgramCohortSemesters(props: { history: { goBack: () => void } }) {
                                 localStorage.setItem('programCohortId', row.programCohortId);
                                 event.stopPropagation();
                             }}
+                            options={{ pageSize: 50 }}
                         />
                     </Card>
                 </Col>

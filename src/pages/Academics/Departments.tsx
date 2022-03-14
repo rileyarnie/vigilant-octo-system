@@ -242,7 +242,7 @@ const Department = (): JSX.Element => {
                                     columns={columns}
                                     data={data}
                                     icons={tableIcons}
-                                    options={{ actionsColumnIndex: -1 }}
+                                    options={{ actionsColumnIndex: -1, pageSize: 50 }}
                                     actions={
                                         canPerformActions(ACTION_UPDATE_DEPARTMENT.name)
                                             ? [

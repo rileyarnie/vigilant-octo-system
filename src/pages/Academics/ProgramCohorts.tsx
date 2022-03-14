@@ -445,7 +445,7 @@ const ProgramCohorts = (): JSX.Element => {
                                     icons={tableIcons}
                                     columns={columns}
                                     data={data}
-                                    options={{ actionsColumnIndex: -1 }}
+                                    options={{ actionsColumnIndex: -1, pageSize: 50 }}
                                 />
                             </Card>
                         </Col>

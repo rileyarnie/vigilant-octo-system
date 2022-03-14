@@ -169,6 +169,7 @@ const ProgramCoursesList = (props): JSX.Element => {
                                 })
                             ]}
                             icons={tableIcons}
+                            options={{ pageSize: 50 }}
                         />
                     </Card>
                 </Col>

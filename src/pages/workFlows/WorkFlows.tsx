@@ -177,7 +177,13 @@ const WorkFlows = (): JSX.Element => {
                                             </Alert>
                                         )}
                                     </div>
-                                    <MaterialTable icons={tableIcons} title="Work Flows" columns={columns} data={data} />
+                                    <MaterialTable
+                                        icons={tableIcons}
+                                        title="Work Flows"
+                                        columns={columns}
+                                        data={data}
+                                        options={{ pageSize: 50 }}
+                                    />
                                 </Card>
                             </Col>
                         </Row>

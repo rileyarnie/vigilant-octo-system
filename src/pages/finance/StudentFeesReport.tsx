@@ -187,6 +187,7 @@ const StudentFeeReport = (): JSX.Element => {
                                     </div>
                                 )
                             }}
+                            options={{ pageSize: 50 }}
                         />
                     </Card>
                 </Col>

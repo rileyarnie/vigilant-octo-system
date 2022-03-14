@@ -189,7 +189,14 @@ const TrainerList = (): JSX.Element => {
                                     </Alert>
                                 )}
                             </div>
-                            <MaterialTable title="Trainers" columns={columns} data={data} icons={tableIcons} editable={{}} />
+                            <MaterialTable
+                                title="Trainers"
+                                columns={columns}
+                                data={data}
+                                icons={tableIcons}
+                                editable={{}}
+                                options={{ pageSize: 50 }}
+                            />
                         </Card>
                     )}
                 </Col>

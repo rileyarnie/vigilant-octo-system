@@ -4,12 +4,12 @@ import Avatar1 from '../../../../../assets/images/user/avatar.png';
 import SYS from '../../../../../store/constant';
 
 const NavRight = () => {
-    const [displayName, setDisplayName] = useState('');
+    const [name, setName] = useState('');
 
     useEffect(() => {
         const details = localStorage.getItem('User');
         if (details) {
-            setDisplayName(JSON.parse(details).displayName);
+            setName(JSON.parse(details).givenName);
         }
     }, []);
 
@@ -28,7 +28,7 @@ const NavRight = () => {
                         <Dropdown.Menu className="profile-notification">
                             <div className="pro-head">
                                 <img src={Avatar1} className="img-radius" alt="User Profile" />
-                                <span>{displayName}</span>
+                                <span>{name}</span>
                                 <a href={SYS.BLANK_LINK} className="dud-logout" title="Logout" onClick={handleLogout}>
                                     <i className="feather icon-log-out" />
                                 </a>

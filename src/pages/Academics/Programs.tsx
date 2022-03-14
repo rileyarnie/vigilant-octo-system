@@ -253,6 +253,7 @@ const Programs = (): JSX.Element => {
                                     // eslint-disable-next-line @typescript-eslint/ban-ts-comment
                                     // @ts-ignore
                                     icons={tableIcons}
+                                    options={{ pageSize: 50 }}
                                 />
                             </Card>
                         </Col>

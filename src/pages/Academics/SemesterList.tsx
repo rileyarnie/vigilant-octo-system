@@ -245,7 +245,7 @@ const SemesterList = (): JSX.Element => {
                                     title="Semesters"
                                     columns={columns}
                                     data={data}
-                                    options={{ actionsColumnIndex: -1 }}
+                                    options={{ actionsColumnIndex: -1, pageSize: 50 }}
                                     icons={tableIcons}
                                     actions={
                                         canPerformActions(ACTION_UPDATE_SEMESTERS.name)
