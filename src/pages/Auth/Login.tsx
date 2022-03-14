@@ -63,6 +63,7 @@ const Login = () => {
 
     const loginAAD = async () => {
         // login via popup
+        await publicClientApplication.handleRedirectPromise();
         await publicClientApplication.loginPopup({
             scopes: Config.scopes,
             prompt: 'select_account'
