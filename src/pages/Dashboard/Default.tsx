@@ -34,9 +34,8 @@ function Default(): JSX.Element {
     interface TabPanelProps {
         children?: React.ReactNode;
         index: number;
-        value: any;
+        value: unknown;
     }
-
     const [value, setValue] = React.useState(0);
     const handleChange = (event: React.ChangeEvent<unknown>, newValue: number) => {
         setValue(newValue);
@@ -61,7 +60,7 @@ function Default(): JSX.Element {
         );
     }
 
-    function a11yProps(index: any) {
+    function a11yProps(index: unknown) {
         return {
             id: `scrollable-auto-tab-${index}`,
             'aria-controls': `scrollable-auto-tabpanel-${index}`
