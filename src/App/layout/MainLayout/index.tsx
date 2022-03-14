@@ -5,7 +5,6 @@ import { connect } from 'react-redux';
 import windowSize from 'react-window-size';
 import Navigation from './Navigation';
 import NavBar from './NavBar';
-import Configuration from './Configuration';
 import Loader from '../Loader';
 import routes from '../../../routes';
 
@@ -66,7 +65,6 @@ class MainLayout extends Component<IMainLayoutProps> {
                         </div>
                     </div>
                 </div>
-                <Configuration />
             </>
         );
     }
