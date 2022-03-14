@@ -551,9 +551,9 @@ const ProgramCohorts = (): JSX.Element => {
                                         defaultValue={
                                             cohortId
                                                 ? getMonthYear(
-                                                      selectedProgramCohort.program_cohorts_anticipatedGraduationMonth,
-                                                      selectedProgramCohort.program_cohorts_anticipatedGraduationYear
-                                                  )
+                                                    selectedProgramCohort.program_cohorts_anticipatedGraduationMonth,
+                                                    selectedProgramCohort.program_cohorts_anticipatedGraduationYear
+                                                )
                                                 : selectedGraduationDate
                                         }
                                         onChange={(e) => {
