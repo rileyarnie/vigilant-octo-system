@@ -5,11 +5,13 @@ import SYS from '../../../../../store/constant';
 
 const NavRight = () => {
     const [displayName, setDisplayName] = useState('');
+    const [AADAlias, setAADAlias] = useState('');
 
     useEffect(() => {
         const details = localStorage.getItem('User');
         if (details) {
             setDisplayName(JSON.parse(details).displayName);
+            setAADAlias(JSON.parse(details).userPrincipalName);
         }
     }, []);
 
@@ -28,7 +30,7 @@ const NavRight = () => {
                         <Dropdown.Menu className="profile-notification">
                             <div className="pro-head">
                                 <img src={Avatar1} className="img-radius" alt="User Profile" />
-                                <span>{displayName}</span>
+                                <span>{AADAlias}</span>
                                 <a href={SYS.BLANK_LINK} className="dud-logout" title="Logout" onClick={handleLogout}>
                                     <i className="feather icon-log-out" />
                                 </a>
