@@ -32,11 +32,22 @@ class CourseCreation extends Component<Props> {
         courses: [],
         selectedCourses: [],
         courseOutline: '',
-        editorState: EditorState.createEmpty()
+        editorState: EditorState.createEmpty(),
+        departments: []
     };
 
     componentDidMount() {
         this.fetchCoursesAndInitSelect();
+        timetablingAxiosInstance
+            .get('/departments')
+            .then(res => {
+                this.setState({
+                    departments: res.data
+                });
+            })
+            .catch(err => {
+                alerts.showError(err.message);
+            });
     }
     handleChange = (e) => {
         this.setState({
@@ -169,6 +180,21 @@ class CourseCreation extends Component<Props> {
                                                     onChange={this.handleChange}
                                                 />
                                                 <br />
+                                                <label htmlFor="tiimetablelable">
+                                                    <b>Department</b>
+                                                </label>
+                                                <br />
+                                                <SelectGroup name="department" id="department" required onChange={this.handleChange}>
+                                                    {
+                                                        this.state.departments.map((dpt:any) => {
+                                                            return (
+                                                                <>
+                                                                    <option key={dpt.id} value={dpt.id}>{dpt.id}</option>
+                                                                </>
+                                                            );
+                                                        })
+                                                    }
+                                                </SelectGroup>
                                                 <label htmlFor="trainingHours">
                                                     <b>Training Hours</b>
                                                 </label>
