@@ -192,6 +192,7 @@ const Programs = (): JSX.Element => {
         const program = {
             name: programName,
             description: description,
+            departments: selectedDepartment,
             prerequisiteDocumentation: prerequisiteDocumentation,
             requiresClearance: requiresClearance,
             certificationType: certificationType,
