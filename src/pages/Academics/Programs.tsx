@@ -79,6 +79,7 @@ const Programs = (): JSX.Element => {
     const [showModal, setModal] = useState(false);
     const [, setProgramId] = useState(null);
     const [, setDisabled] = useState(false);
+    const [selectedDepartment, setSelectedDepartment] = useState();
     let activationStatus: boolean;
     const handleActivationStatusToggle = (event, row: Program) => {
         setDisabled(true);
@@ -347,7 +348,7 @@ const Programs = (): JSX.Element => {
                                 <b>Department</b>
                             </label>
                             <br />
-                            <SelectGroup name="department" id="department" required onChange={this.handleChange}>
+                            <SelectGroup name="department" id="department" required onChange={(e) => setSelectedDepartment(e.target.value)}>
                                 {
                                     departments.map((dpt:any) => {
                                         return (
