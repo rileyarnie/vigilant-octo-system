@@ -1,5 +1,6 @@
+/* eslint-disable react/react-in-jsx-scope */
 /* eslint-disable react/display-name */
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { forwardRef } from 'react';
 import { Alerts, ToastifyAlerts } from '../lib/Alert';
 import MaterialTable from 'material-table';
@@ -73,10 +74,12 @@ const Programs = (): JSX.Element => {
     const [requiresClearance, setRequiresClearance] = useState('');
     const [certificationType, setCertificationType] = useState('');
     const [duration, setDuration] = useState('');
+    const [departments, setDepartments] = useState([]);
     const [linearDisplay, setLinearDisplay] = useState('none');
     const [showModal, setModal] = useState(false);
     const [, setProgramId] = useState(null);
     const [, setDisabled] = useState(false);
+    const [selectedDepartment, setSelectedDepartment] = useState();
     let activationStatus: boolean;
     const handleActivationStatusToggle = (event, row: Program) => {
         setDisabled(true);
@@ -160,6 +163,15 @@ const Programs = (): JSX.Element => {
                 console.error(error);
                 alerts.showError(error.message);
             });
+        
+        timetablingAxiosInstance
+            .get('/departments')
+            .then((res) => {
+                setDepartments(res.data);
+            })
+            .catch(error => {
+                alerts.showError(error.message);
+            });
     }, []);
 
     const fetchPrograms = () => {
@@ -180,6 +192,7 @@ const Programs = (): JSX.Element => {
         const program = {
             name: programName,
             description: description,
+            departments: selectedDepartment,
             prerequisiteDocumentation: prerequisiteDocumentation,
             requiresClearance: requiresClearance,
             certificationType: certificationType,
@@ -332,6 +345,21 @@ const Programs = (): JSX.Element => {
                             </SelectGroup>
                             <br />
                             <br />
+                            <label htmlFor="tiimetablelable">
+                                <b>Department</b>
+                            </label>
+                            <br />
+                            <SelectGroup name="department" id="department" required onChange={(e) => setSelectedDepartment(e.target.value)}>
+                                {
+                                    departments.map((dpt) => {
+                                        return (
+                                            <>
+                                                <option key={dpt.id} value={dpt.id}>{dpt.id}</option>
+                                            </>
+                                        );
+                                    })
+                                }
+                            </SelectGroup>
                             <label htmlFor="requiresClearance">
                                 <b>Requires Clearance</b>
                             </label>
