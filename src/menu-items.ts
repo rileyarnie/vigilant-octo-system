@@ -203,33 +203,19 @@ const chartData: { items: MenuItemType[] } = {
                     ]
                 },
                 {
-                    id: 'Finance',
+                    id: 'finanace',
                     title: 'Finance',
-                    type: 'collapse',
+                    type: 'item',
                     icon: 'feather icon-user',
-                    children: [
-                        {
-                            id: 'finanace',
-                            title: 'Finance',
-                            type: 'item',
-                            url: '/studentlist',
-                            hidden: !canPerformActions(ACTION_GET_FEE_REPORTS.name)
-                        }
-                    ]
+                    url: '/studentlist',
+                    hidden: !canPerformActions(ACTION_GET_FEE_REPORTS.name)
                 },
                 {
                     id: 'Approvals',
                     title: 'Approvals',
-                    type: 'collapse',
+                    type: 'item',
                     icon: 'feather icon-user',
-                    children: [
-                        {
-                            id: 'Approvals',
-                            title: 'Approvals',
-                            type: 'item',
-                            url: '/actionapprovals'
-                        }
-                    ]
+                    url: '/actionapprovals'
                 }
             ]
         }
