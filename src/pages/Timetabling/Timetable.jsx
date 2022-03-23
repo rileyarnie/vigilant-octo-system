@@ -131,7 +131,7 @@ class Timetable extends React.Component {
                             dayOfWeek: new Date(tu.recurrenceStartDate).toLocaleString('en-us', {  weekday: 'short' }),
                             numSessions: tu.numSessions,
                             venueId: tu.venueId,
-                            trainerId: tu.trainerId,
+                            trainerId: courseCohort.trainerId,
                             startDate: new Date(tu.recurrenceStartDate),
                             endDate: new Date(tu.recurrenceEndDate),
                         })
