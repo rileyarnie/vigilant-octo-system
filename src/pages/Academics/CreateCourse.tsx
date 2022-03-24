@@ -185,12 +185,11 @@ class CourseCreation extends Component<Props> {
                                                 </label>
                                                 <br />
                                                 <SelectGroup name="department" id="department" required onChange={this.handleChange}>
+                                                    <option value="">-- select a department --</option>
                                                     {
                                                         this.state.departments.map((dpt:any) => {
                                                             return (
-                                                                <>
-                                                                    <option key={dpt.id} value={dpt.id}>{dpt.id}</option>
-                                                                </>
+                                                                <option key={dpt.id} value={dpt.id}>{dpt.name}</option>
                                                             );
                                                         })
                                                     }

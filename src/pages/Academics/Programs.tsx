@@ -350,12 +350,11 @@ const Programs = (): JSX.Element => {
                             </label>
                             <br />
                             <SelectGroup name="department" id="department" required onChange={(e) => setSelectedDepartment(e.target.value)}>
+                                <option value="">-- select a department --</option>
                                 {
                                     departments.map((dpt) => {
                                         return (
-                                            <>
-                                                <option key={dpt.id} value={dpt.id}>{dpt.id}</option>
-                                            </>
+                                            <option key={dpt.id} value={dpt.id}>{dpt.name}</option>
                                         );
                                     })
                                 }
