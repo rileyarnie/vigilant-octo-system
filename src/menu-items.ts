@@ -46,7 +46,7 @@ const chartData: { items: MenuItemType[] } = {
             children: [
                 {
                     id: 'Default',
-                    title: 'Users',
+                    title: 'Access Control',
                     type: 'collapse',
                     icon: 'feather icon-user',
                     hidden: !canPerformActions(ACTION_GET_USERS.name, ACTION_GET_ROLES.name),
@@ -64,6 +64,12 @@ const chartData: { items: MenuItemType[] } = {
                             type: 'item',
                             url: '/roles',
                             hidden: !canPerformActions(ACTION_GET_ROLES.name)
+                        },
+                        {
+                            id: 'Work Flow',
+                            title: 'Workflows',
+                            type: 'item',
+                            url: '/workflows'
                         }
                     ]
                 },
@@ -86,6 +92,13 @@ const chartData: { items: MenuItemType[] } = {
                             type: 'item',
                             url: '/venues',
                             hidden: !canPerformActions(ACTION_GET_VENUE.name)
+                        },
+                        {
+                            id: 'department',
+                            title: 'Departments',
+                            type: 'item',
+                            url: '/departments',
+                            hidden: !canPerformActions(ACTION_GET_DEPARTMENTS.name)
                         }
                     ]
                 },
@@ -95,13 +108,6 @@ const chartData: { items: MenuItemType[] } = {
                     type: 'collapse',
                     icon: 'feather icon-book',
                     children: [
-                        {
-                            id: 'department',
-                            title: 'Departments',
-                            type: 'item',
-                            url: '/departments',
-                            hidden: !canPerformActions(ACTION_GET_DEPARTMENTS.name)
-                        },
                         {
                             id: 'trainers',
                             title: 'Trainers',
@@ -151,12 +157,34 @@ const chartData: { items: MenuItemType[] } = {
                                 }
                             ]
                         },
+                    ]
+                },
+                {
+                    id: 'Calendar',
+                    title: 'Calendar',
+                    type: 'collapse',
+                    icon: 'feather icon-calendar',
+                    children: [
                         {
                             id: 'semesters',
                             title: 'Semesters',
                             type: 'item',
                             url: '/semesters',
                             hidden: !canPerformActions(ACTION_GET_SEMESTERS.name)
+                        },
+                        {
+                            id: 'finanace',
+                            title: 'Program Cohorts',
+                            type: 'item',
+                            url: '/studentlist',
+                            hidden: !canPerformActions(ACTION_GET_FEE_REPORTS.name)
+                        },
+                        {
+                            id: 'finanace',
+                            title: 'Course Cohorts',
+                            type: 'item',
+                            url: '/studentlist',
+                            hidden: !canPerformActions(ACTION_GET_FEE_REPORTS.name)
                         },
                         {
                             id: 'applications',
@@ -168,54 +196,26 @@ const chartData: { items: MenuItemType[] } = {
                         {
                             id: 'timetable',
                             title: 'Timetable',
-                            type: 'collapse',
-                            icon: 'feather icon-calendar',
-                            children: [
-                                {
-                                    id: 'timetable',
-                                    title: 'Edit Timetable',
-                                    type: 'item',
-                                    url: '/timetable',
-                                    hidden: !canPerformActions(ACTION_GET_TIMETABLING_UNITS.name)
-                                }
-                            ]
+                            type: 'item',
+                            url: '/timetable',
+                            hidden: !canPerformActions(ACTION_GET_TIMETABLING_UNITS.name)
                         }
                     ]
                 },
                 {
-                    id: 'Finance',
+                    id: 'finanace',
                     title: 'Finance',
-                    type: 'collapse',
+                    type: 'item',
                     icon: 'feather icon-user',
-                    children: [
-                        {
-                            id: 'finanace',
-                            title: 'Finance',
-                            type: 'item',
-                            url: '/studentlist',
-                            hidden: !canPerformActions(ACTION_GET_FEE_REPORTS.name)
-                        }
-                    ]
+                    url: '/studentlist',
+                    hidden: !canPerformActions(ACTION_GET_FEE_REPORTS.name)
                 },
                 {
-                    id: 'workflow',
-                    title: 'Work Flow',
-                    type: 'collapse',
+                    id: 'Approvals',
+                    title: 'Approvals',
+                    type: 'item',
                     icon: 'feather icon-user',
-                    children: [
-                        {
-                            id: 'Work Flow',
-                            title: 'Work Flow',
-                            type: 'item',
-                            url: '/workflows'
-                        },
-                        {
-                            id: 'Approvals',
-                            title: 'Approvals',
-                            type: 'item',
-                            url: '/actionapprovals'
-                        }
-                    ]
+                    url: '/actionapprovals'
                 }
             ]
         }
