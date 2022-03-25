@@ -10,12 +10,12 @@ import { TrainerService } from '../../services/TrainerService'
 import { TimetableService } from '../../services/TimetableService'
 import { VenueService } from '../../services/VenueService'
 import { Button } from 'react-bootstrap'
-const alerts = new ToastifyAlerts()
-const currentDate = new Date()
-const draggingGroupName = 'appointmentsGroup'
 import { ToastifyAlerts } from '../lib/Alert'
 import AppointmentTooltip  from './AppointmentTooltip'
 import { SemesterService } from '../../services/SemesterService'
+const alerts = new ToastifyAlerts()
+const currentDate = new Date()
+const draggingGroupName = 'appointmentsGroup'
 const venueData = VenueService.fetchVenues().then((res) => {
     return res['data'].map((venue) => {
         return {id: venue.venue_id, text: venue.venue_name}
@@ -86,7 +86,7 @@ class Timetable extends React.Component {
         this.timeTabledUnitsWithErrors = this.timeTabledUnitsWithErrors.bind(this)
         //this.onVenueChanged = this.onVenueChanged.bind(this);
         //this.handleEdit()
-        this.courseCohortData
+        //this.courseCohortData
 
     }
     // selectedTimetablingUnit = {}
@@ -230,7 +230,6 @@ const items = timeTabledUnits?.map(unit=>({
     async onAppointmentFormOpening(e) {
         const max = Math.max(20,40)
         const { form } = e
-        this.state.openedCourseCohort = t
         let  trainerId = 0
         form.option('items', [
             {

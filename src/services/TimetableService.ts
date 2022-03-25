@@ -3,7 +3,7 @@ import TimetablingUnit from './TimetableUnit';
 
 export class TimetableService {
 
-    static async createTimetableUnit(timetableUnit: object): Promise<void> {
+    static async createTimetableUnit(timetableUnit: unknown): Promise<void> {
         return timetablingAxiosInstance.post('/timetabling-units', timetableUnit);
     }
     static async updateTimetableUnit(timetableUnitData): Promise<void> {
