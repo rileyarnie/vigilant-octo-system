@@ -1,6 +1,5 @@
 import React from 'react';
 import { Row, Col, Card } from 'react-bootstrap';
-import '../../assets/scss/dashboard.css';
 function Dashboard1() {
     return (
         <>

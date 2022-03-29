@@ -1171,7 +1171,6 @@ ul.list-inline li {
 }
 
 .widget-profile-card-3 {
-    //...
     background-size: cover;
     padding: 50px 0;
     text-align: center;
@@ -1199,6 +1198,7 @@ ul.list-inline li {
         color: #fff;
         position: absolute;
         bottom: 0;
+        text-align: center;
         width: 100%;
         background: linear-gradient(transparent, rgba(0, 0, 0, 0.72));
 
@@ -1237,7 +1237,6 @@ ul.list-inline li {
     color: #fff;
     text-align: center;
     padding-top: 45px;
-    //background-image: url("../");
     background-size: cover;
 
     h3 {
@@ -1451,5 +1450,5 @@ ul.list-inline li {
 }
 
 .samp-bg {
-    //background: gradient-x-three-colors();
+    background: gradient-x-three-colors();
 }
