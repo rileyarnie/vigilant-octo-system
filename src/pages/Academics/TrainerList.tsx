@@ -70,6 +70,7 @@ const TrainerList = (): JSX.Element => {
     const [selectedType, setType] = useState();
     const [departmentName, setDepartmentName] = useState('Please select a department');
     const [showModal, setModal] = useState(false);
+    const [showEditModal, setEditModal] = useState(false);
     const [errorMessages] = useState([]);
     const [linearDisplay, setLinearDisplay] = useState('none');
     useEffect(() => {
@@ -160,6 +161,10 @@ const TrainerList = (): JSX.Element => {
     const toggleCreateModal = () => {
         showModal ? setModal(false) : setModal(true);
     };
+
+    const toggleEditModal = () => {
+        showEditModal ? setEditModal(false) : setEditModal(true);
+    };
     return (
         <>
             <Row className="align-items-center page-header">
@@ -196,6 +201,15 @@ const TrainerList = (): JSX.Element => {
                                 icons={tableIcons}
                                 editable={{}}
                                 options={{ pageSize: 50 }}
+                                actions={[{
+                                    icon: Edit,
+                                    tooltip: 'Edit Row',
+                                    onClick: (event, rowData) => {
+                                        setDept(rowData.departmentId);
+                                        setTrainerType(rowData.trainerType);
+                                        toggleEditModal();
+                                    }
+                                }]}
                             />
                         </Card>
                     )}
@@ -289,6 +303,69 @@ const TrainerList = (): JSX.Element => {
                             Cancel
                         </button>
                     </ValidationForm>
+                </Modal.Body>
+            </Modal>
+            <Modal
+                show={showEditModal}
+                onHide={toggleEditModal}
+                size="lg"
+                backdrop="static"
+                aria-labelledby="contained-modal-title-vcenter"
+                centered
+            >
+                <Modal.Header closeButton>
+                    <Modal.Title id="contained-modal-title-vcenter">Edit Trainer</Modal.Title>
+                </Modal.Header>
+                <Modal.Body>
+                    <ValidationForm>
+                        <div className="form-group">
+                            <label htmlFor="department">Select a department</label>
+                            <SelectGroup
+                                name="department"
+                                id="department"
+                                value={departmentName}
+                                required
+                                errorMessage="Please select a department."
+                                onChange={(e) => {
+                                    setDept(e.target.value);
+                                    setDepartmentName(e.target.value);
+                                }}
+                            >
+                                <option value="">-{departmentName}</option>
+                                {departments.map((dept) => {
+                                    return (
+                                        <option key={dept.id} value={dept.id}>
+                                            {dept.name}
+                                        </option>
+                                    );
+                                })}
+                            </SelectGroup>
+                        </div>
+
+                        <div className="form-group">
+                            <label htmlFor="trainerType">Select a trainer type</label>
+                            <SelectGroup
+                                name="trainerType"
+                                id="trainerType"
+                                value={trainerType}
+                                required
+                                errorMessage="Please select a trainer type."
+                                onChange={(e) => {
+                                    setType(e.target.value);
+                                    setTrainerType(e.target.value);
+                                }}
+                            >
+                                <option value="">{trainerType}</option>
+                                <option value={TrainerType['Lecturer']}>Lecturer</option>;
+                                <option value={TrainerType['Trainer']}>Trainer</option>;
+                                <option value={TrainerType['Assistant']}>Assistant</option>;
+                            </SelectGroup>
+                        </div>
+
+                    </ValidationForm>
+                    <button className="btn btn-danger float-left" >
+                        Close
+                    </button>
                 </Modal.Body>
             </Modal>
         </>
