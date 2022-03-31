@@ -33,7 +33,8 @@ class CourseCreation extends Component<Props> {
         selectedCourses: [],
         courseOutline: '',
         editorState: EditorState.createEmpty(),
-        departments: []
+        departments: [],
+        departmentId: 0
     };
 
     componentDidMount() {
@@ -69,6 +70,7 @@ class CourseCreation extends Component<Props> {
             trainingHours: this.state.trainingHours,
             isTimetableable: this.state.isTimetablable,
             needsTechnicalAssistant: this.state.needsTechnicalAssistant,
+            departmentId: this.state.departmentId,
             courseOutline: draftToHtml(convertToRaw(this.state.editorState.getCurrentContent()))
         };
         this.props.setLinearDisplay('block');
@@ -87,6 +89,7 @@ class CourseCreation extends Component<Props> {
                     isTimetableable: '',
                     needsTechnicalAssistant: '',
                     isElective: '',
+                    departmentId:0,
                     courseOutline: ''
                 });
                 this.props.fetchCourses();
@@ -184,7 +187,7 @@ class CourseCreation extends Component<Props> {
                                                     <b>Department</b>
                                                 </label>
                                                 <br />
-                                                <SelectGroup name="department" id="department" required onChange={this.handleChange}>
+                                                <SelectGroup name="departmentId" id="department" required onChange={this.handleChange}>
                                                     <option value="">-- select a department --</option>
                                                     {
                                                         this.state.departments.map((dpt:any) => {
