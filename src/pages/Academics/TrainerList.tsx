@@ -28,7 +28,6 @@ import { canPerformActions } from '../../services/ActionChecker';
 import { ACTION_CREATE_TRAINER, ACTION_UPDATE_TRAINER } from '../../authnz-library/timetabling-actions';
 import { authnzAxiosInstance } from '../../utlis/interceptors/authnz-interceptor';
 import { timetablingAxiosInstance } from '../../utlis/interceptors/timetabling-interceptor';
-import { ACTION_GET_ACTIONS } from '../../authnz-library/authnz-actions';
 import { Select } from '@material-ui/core';
 import MenuItem from '@mui/material/MenuItem';
 import { DepartmentService } from '../services/DepartmentService';
@@ -66,7 +65,7 @@ const TrainerList = (): JSX.Element => {
         { title: 'Department ID', field: 'tr_departmentId' },
         {
             title: ' Actions',
-            render: (row:any) => (
+            render: (row:{tr_departmentId:number, tr_trainerType:string, tr_id:number}) => (
                 <Select>
                     {canPerformActions(ACTION_UPDATE_TRAINER.name) && (
                         <div
@@ -102,8 +101,8 @@ const TrainerList = (): JSX.Element => {
     const [departments, setDepartments] = useState([]);
     const [trainerType, setTrainerType] = useState('Please select a trainer');
     const [selectedUser, setSelectedUser] = useState(1);
-    const [selectedDept, setDept] = useState();
-    const [selectedType, setType] = useState();
+    const [selectedDept, setDept] = useState<number>();
+    const [selectedType, setType] = useState<string>();
     const [departmentName, setDepartmentName] = useState('Please select a department');
     const [showModal, setModal] = useState(false);
     const [showEditModal, setEditModal] = useState(false);
@@ -177,7 +176,6 @@ const TrainerList = (): JSX.Element => {
     };
 
     const createTrainer = (trainerData) => {
-        console.log(trainerData);
         setLinearDisplay('block');
         timetablingAxiosInstance
             .post('/trainers', trainerData)
@@ -206,11 +204,14 @@ const TrainerList = (): JSX.Element => {
     };
 
     const deleteTrainer = (trainerId:number) => {
+        setLinearDisplay('block');
         timetablingAxiosInstance
             .delete(`trainers/${trainerId}`)
             .then(() => {
                 alerts.showSuccess('Succesfully removed trainer');
                 toggleDeleteModal();
+                fetchTrainers();
+                setLinearDisplay('none');
             });
     };
 
