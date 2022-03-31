@@ -9,6 +9,7 @@ import Config from '../../config';
 import { AuthContext } from '../../App/context/AuthContext';
 import { Button } from 'react-bootstrap';
 import { authnzAxiosInstance } from '../../utlis/interceptors/authnz-interceptor';
+import LinearProgress from '@mui/material/LinearProgress';
 
 const alerts: Alerts = new ToastifyAlerts();
 const Login = () => {
@@ -17,6 +18,7 @@ const Login = () => {
         isStudent: boolean;
     }
     // const [, setError] = useState(null);
+    const [linearDisplay, setLinearDisplay] = useState('none');
     const { setAuthState } = useContext(AuthContext);
     const [, setUser] = useState({});
     // const ERR_USER_NOT_FOUND = 'Error, User not found';
@@ -45,10 +47,12 @@ const Login = () => {
     });
 
     const login = async () => {
+        setLinearDisplay('block');
         try {
             await loginAAD();
             await fetchUserDetails();
         } catch (err: any) {
+            setLinearDisplay('none');
             logout(err);
         }
     };
@@ -134,11 +138,14 @@ const Login = () => {
     };
 
     return (
-        <div className="login" style={{ display: 'grid', placeItems: 'center', height: '100vh' }}>
-            <Button onClick={login} size="lg">
-                Log In with your KPC E-mail Address
-            </Button>
-        </div>
+        <>
+            <LinearProgress style={{display: linearDisplay}}/>
+            <div className="login" style={{display: 'grid', placeItems: 'center', height: '100vh'}}>
+                <Button onClick={login} size="lg">
+                    Log In with your KPC E-mail Address
+                </Button>
+            </div>
+        </>
     );
 };
 

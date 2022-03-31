@@ -27,6 +27,7 @@
         "apexcharts": "^3.10.1",
         "aphrodite": "^2.4.0",
         "axios": "^0.25.0",
+        "authnz-library": "bitbucket:silms/authnz-library#semver:^0.5",
         "bootstrap": "^4.3.1",
         "chart.js": "^2.9.2",
         "chokidar": "^3.5.3",
