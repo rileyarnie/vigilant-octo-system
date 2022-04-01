@@ -18,15 +18,19 @@ import SaveAlt from '@material-ui/icons/SaveAlt';
 import Search from '@material-ui/icons/Search';
 import ViewColumn from '@material-ui/icons/ViewColumn';
 import Alert from '@material-ui/lab/Alert';
+import Department from '../services/Department';
 import Breadcrumb from '../../App/components/Breadcrumb';
 import { Row, Col, Card, Modal, Button } from 'react-bootstrap';
 import { ValidationForm, SelectGroup } from 'react-bootstrap4-form-validation';
 import { Alerts, ToastifyAlerts } from '../lib/Alert';
 import LinearProgress from '@mui/material/LinearProgress';
 import { canPerformActions } from '../../services/ActionChecker';
-import { ACTION_CREATE_TRAINER } from '../../authnz-library/timetabling-actions';
+import { ACTION_CREATE_TRAINER, ACTION_UPDATE_TRAINER } from '../../authnz-library/timetabling-actions';
 import { authnzAxiosInstance } from '../../utlis/interceptors/authnz-interceptor';
 import { timetablingAxiosInstance } from '../../utlis/interceptors/timetabling-interceptor';
+import { Select } from '@material-ui/core';
+import MenuItem from '@mui/material/MenuItem';
+import { DepartmentService } from '../services/DepartmentService';
 
 const alerts: Alerts = new ToastifyAlerts();
 const tableIcons: Icons = {
@@ -58,7 +62,38 @@ const TrainerList = (): JSX.Element => {
         { title: 'ID', field: 'tr_id', hidden: false },
         { title: 'Trainer AADAlias', render: (rowData) => getAADAlias(rowData.tr_userId) },
         { title: 'Trainer type', field: 'tr_trainerType' },
-        { title: 'Department ID', field: 'tr_departmentId' }
+        { title: 'Department ID', field: 'tr_departmentId' },
+        {
+            title: ' Actions',
+            render: (row:{tr_departmentId:number, tr_trainerType:string, tr_id:number}) => (
+                <Select>
+                    {canPerformActions(ACTION_UPDATE_TRAINER.name) && (
+                        <div
+                            className=""
+                            onClick={() => {
+                                console.log('trainer row',row);
+                                setDept(row.tr_departmentId);
+                                setTrainerType(row.tr_trainerType);
+                                toggleEditModal();
+                            }}
+                        >
+                            <MenuItem value="Edit trainer">Edit trainer</MenuItem>
+                        </div>
+                    )}
+                    {canPerformActions(ACTION_UPDATE_TRAINER.name) && (
+                        <div
+                            className=""
+                            onClick={() => {
+                                setTrainerId(row.tr_id);
+                                handleDelete(row.tr_id);
+                            }}
+                        >
+                            <MenuItem value="Delete trainer">Remove trainer</MenuItem>
+                        </div>
+                    )}
+                </Select>
+            )
+        }
     ];
     const [data, setData] = useState([]);
     const [isError] = useState(false);
@@ -66,13 +101,17 @@ const TrainerList = (): JSX.Element => {
     const [departments, setDepartments] = useState([]);
     const [trainerType, setTrainerType] = useState('Please select a trainer');
     const [selectedUser, setSelectedUser] = useState(1);
-    const [selectedDept, setDept] = useState();
-    const [selectedType, setType] = useState();
+    const [selectedDept, setDept] = useState<number>();
+    const [selectedType, setType] = useState<string>();
     const [departmentName, setDepartmentName] = useState('Please select a department');
     const [showModal, setModal] = useState(false);
     const [showEditModal, setEditModal] = useState(false);
     const [errorMessages] = useState([]);
+    const [trainerId, setTrainerId] = useState(0);
     const [linearDisplay, setLinearDisplay] = useState('none');
+    const [showDeleteModal, setDeleteModal] = useState(false);
+    const [showCantDeleteModal, setCantDeleteModal] = useState(false);
+    const [departmentsWithHoDTrainer, setDepartmentsWithHoDTrainer] = useState<Department>();
     useEffect(() => {
         setLinearDisplay('block');
         timetablingAxiosInstance
@@ -133,12 +172,10 @@ const TrainerList = (): JSX.Element => {
             departmentId: selectedDept,
             trainerType: selectedType
         };
-
         createTrainer(trainer);
     };
 
     const createTrainer = (trainerData) => {
-        console.log(trainerData);
         setLinearDisplay('block');
         timetablingAxiosInstance
             .post('/trainers', trainerData)
@@ -155,6 +192,29 @@ const TrainerList = (): JSX.Element => {
             });
     };
 
+    const handleDelete = async (trainerId:number) => {
+        const departmentsWithHoDTrainer = await DepartmentService.getDepartmentByHODTrainerId(trainerId);
+        console.log(departmentsWithHoDTrainer);
+        setDepartmentsWithHoDTrainer(departmentsWithHoDTrainer);
+        if (departmentsWithHoDTrainer) {
+            toggleCantDeleteModal();
+            return;
+        }
+        toggleDeleteModal();
+    };
+
+    const deleteTrainer = (trainerId:number) => {
+        setLinearDisplay('block');
+        timetablingAxiosInstance
+            .delete(`trainers/${trainerId}`)
+            .then(() => {
+                alerts.showSuccess('Succesfully removed trainer');
+                toggleDeleteModal();
+                fetchTrainers();
+                setLinearDisplay('none');
+            });
+    };
+
     const getAADAlias = (id: number) => {
         return users.filter((user) => user.id === id).map((user) => user.aadAlias)[0];
     };
@@ -164,6 +224,12 @@ const TrainerList = (): JSX.Element => {
 
     const toggleEditModal = () => {
         showEditModal ? setEditModal(false) : setEditModal(true);
+    };
+    const toggleCantDeleteModal = () => {
+        showCantDeleteModal ? setCantDeleteModal(false) : setCantDeleteModal(true);
+    };
+    const toggleDeleteModal = () => {
+        showDeleteModal ? setDeleteModal(false) : setDeleteModal(true);
     };
     return (
         <>
@@ -201,15 +267,6 @@ const TrainerList = (): JSX.Element => {
                                 icons={tableIcons}
                                 editable={{}}
                                 options={{ pageSize: 50 }}
-                                actions={[{
-                                    icon: Edit,
-                                    tooltip: 'Edit Row',
-                                    onClick: (event, rowData) => {
-                                        setDept(rowData.departmentId);
-                                        setTrainerType(rowData.trainerType);
-                                        toggleEditModal();
-                                    }
-                                }]}
                             />
                         </Card>
                     )}
@@ -366,6 +423,57 @@ const TrainerList = (): JSX.Element => {
                     <button className="btn btn-danger float-left" >
                         Close
                     </button>
+                </Modal.Body>
+            </Modal>
+            <Modal
+                show={showCantDeleteModal}
+                onHide={toggleCantDeleteModal}
+                size="lg"
+                backdrop="static"
+                onBackdropClick={toggleCantDeleteModal}
+                aria-labelledby="contained-modal-title-vcenter"
+                centered
+            >
+                <Modal.Header closeButton>
+                    <Modal.Title>Remove trainer</Modal.Title>
+                </Modal.Header>
+                <Modal.Body>
+                    <p>
+                          Please change the HoD for {departmentsWithHoDTrainer?.name} before attempting to remove this trainer
+                    </p>
+                    
+                    <Modal.Footer>
+                        <Button variant="primary" onClick={() => toggleCantDeleteModal()}>
+                            Close
+                        </Button>
+                    </Modal.Footer>
+                </Modal.Body>
+            </Modal>
+            <Modal
+                show={showDeleteModal}
+                onHide={toggleDeleteModal}
+                size="lg"
+                backdrop="static"
+                onBackdropClick={toggleDeleteModal}
+                aria-labelledby="contained-modal-title-vcenter"
+                centered
+            >
+                <Modal.Header closeButton>
+                    <Modal.Title>Remove trainer</Modal.Title>
+                </Modal.Header>
+                <Modal.Body>
+                    <p>
+                    Are you sure you want to remove this trainer? Removing the trainer will remove them from all courses and course-cohorts that they are assigned to
+                    </p>
+                    
+                    <Modal.Footer>
+                        <Button variant="primary" onClick={() => toggleDeleteModal()}>
+                            Close
+                        </Button>
+                        <Button variant="danger" onClick={() => deleteTrainer(trainerId)}>
+                            Delete
+                        </Button>
+                    </Modal.Footer>
                 </Modal.Body>
             </Modal>
         </>
