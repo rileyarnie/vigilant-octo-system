@@ -18,6 +18,7 @@ import SaveAlt from '@material-ui/icons/SaveAlt';
 import Search from '@material-ui/icons/Search';
 import ViewColumn from '@material-ui/icons/ViewColumn';
 import Alert from '@material-ui/lab/Alert';
+import { SelectGroup } from 'react-bootstrap4-form-validation';
 import Breadcrumb from '../../App/components/Breadcrumb';
 import { Row, Col, Card, Button, Modal } from 'react-bootstrap';
 import { Icons } from 'material-table';
@@ -58,6 +59,7 @@ const Department = (): JSX.Element => {
     const columns = [
         { title: 'ID', field: 'id', hidden: true },
         { title: 'Department name', field: 'name' },
+        { title: 'HOD Trainer Id', field: 'hodTrainerId' },
         {
             title: 'Activation Status',
             field: 'internal_action',
@@ -75,12 +77,16 @@ const Department = (): JSX.Element => {
     const [deptname, setDeptName] = useState('');
     const [showModal, setModal] = useState(false);
     const [deptId, setDeptId] = useState(null);
+    const [hod, setHoD] = useState(null);
     const [selectedDeptName, setSelectedDeptName] = useState('');
+    const [selectedHoD, setSelectedHoD] = useState(null);
+    const [users, setUsers] = useState([]);
     const [isActive, setSelectedStatus] = useState(false);
     const [errorMessages] = useState([]);
     const [, setDisabled] = useState(false);
     const [linearDisplay, setLinearDisplay] = useState('none');
     let activationStatus: boolean;
+
     const handleActivationStatusToggle = (event, row: department) => {
         setDisabled(true);
         if (row.isActive) {
@@ -125,10 +131,21 @@ const Department = (): JSX.Element => {
                 console.error(error);
                 alerts.showError(error.message);
             });
+        timetablingAxiosInstance
+            .get('/trainers')
+            .then((res) => {
+                setLinearDisplay('none');
+                console.log('trainers',res.data);
+                setUsers(res.data);
+            })
+            .catch((error) => {
+                alerts.showError(error.message);
+            });
     }, []);
 
     const updateDepartment = (deptId, updates) => {
         setLinearDisplay('block');
+        console.log('fucking updates object ', updates);
         timetablingAxiosInstance
             .put(`/departments/${deptId}`, updates)
             .then(() => {
@@ -165,10 +182,10 @@ const Department = (): JSX.Element => {
         e.preventDefault();
         const department = {
             name: deptname,
+            hodTrainerId: hod,
             activation_status: activationStatus,
             isActive: isActive
         };
-
         createDepartment(department);
     };
 
@@ -176,11 +193,12 @@ const Department = (): JSX.Element => {
         e.preventDefault();
         const updates = {
             name: deptname === '' ? selectedDeptName : deptname,
+            hodTrainerID: selectedHoD,
             isActive: isActive
         };
-
         updateDepartment(deptId, updates);
     };
+
 
     const createDepartment = (departmentData) => {
         console.log(departmentData);
@@ -203,6 +221,7 @@ const Department = (): JSX.Element => {
     const resetStateCloseModal = () => {
         setDeptId(null);
         setDeptName('');
+        setSelectedHoD(null);
         setModal(false);
     };
     const toggleCreateModal = () => {
@@ -252,6 +271,7 @@ const Department = (): JSX.Element => {
                                                     onClick: (event, rowData) => {
                                                         setDeptId(rowData.id);
                                                         setSelectedDeptName(rowData.name);
+                                                        setHoD(rowData.hodTrainerId);
                                                         setSelectedStatus(rowData.isActive);
                                                         toggleCreateModal();
                                                     }
@@ -290,6 +310,30 @@ const Department = (): JSX.Element => {
                                 required
                             />
                             <br />
+                        </div>
+                        <div className="form-group">
+                            <label htmlFor="trainerType">Select a HoD</label>
+                            <SelectGroup
+                                name="hod"
+                                id="hod"
+                                value={deptId ? selectedHoD : hod}
+                                required
+                                errorMessage="Please select a HOD."
+                                placeholder={deptId ? selectedHoD : 'Select a HoD'}
+                                onChange={(e) => {
+                                    console.log('TARGET ',e.target.value);
+                                    deptId ? setSelectedHoD(e.target.value) : setHoD(e.target.value);
+                                }}
+                            >
+                                <option value="">-- select a trainer --</option>
+                                {
+                                    users.map((user) => {
+                                        return (
+                                            <option key={user.tr_id} value={user.tr_id}>{user.tr_id}</option>
+                                        );
+                                    })   
+                                }
+                            </SelectGroup>
                         </div>
                         <div className="form-group" style={{ display: 'flex', justifyContent: 'space-between' }}>
                             <button className="btn btn-danger" onClick={() => toggleCreateModal()}>
