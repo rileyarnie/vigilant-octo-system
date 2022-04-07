@@ -63,9 +63,10 @@ const AssignCourse = (): JSX.Element => {
     const [selectedRows, setSelectedRows] = useState([]);
     const [errorMessages] = useState([]);
     const progId = JSON.parse(localStorage.getItem('programId'));
+    console.log('program id ', progId);
     useEffect(() => {
         timetablingAxiosInstance
-            .get('$/courses')
+            .get('/courses')
             .then((res) => {
                 setData(res.data);
                 setLinearDisplay('none');
