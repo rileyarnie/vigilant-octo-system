@@ -231,6 +231,8 @@ function ProgramCohortSemesterDetails(props) {
             .then((res) => {
                 console.log(res);
                 alerts.showSuccess('Successfully published program cohort semester');
+                togglePublishModalDialog();
+                showPublishSemesterModal();
             })
             .catch((error) => {
                 alerts.showError(error.message);
