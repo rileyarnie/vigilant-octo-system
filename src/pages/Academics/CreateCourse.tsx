@@ -183,7 +183,7 @@ class CourseCreation extends Component<Props> {
                                                     onChange={this.handleChange}
                                                 />
                                                 <br />
-                                                <label htmlFor="tiimetablelable">
+                                                <label htmlFor="department">
                                                     <b>Department</b>
                                                 </label>
                                                 <br />
@@ -220,17 +220,17 @@ class CourseCreation extends Component<Props> {
                                                     editorClassName="demo-editor"
                                                     onEditorStateChange={this.onEditorStateChange}
                                                 />
-                                                <label htmlFor="tiimetablelable">
+                                                <label htmlFor="timetablelable">
                                                     <b>Timetablable?</b>
                                                 </label>
                                                 <br />
-                                                <SelectGroup name="timetabelable" id="timetableable" required onChange={this.handleChange}>
+                                                <SelectGroup name="isTimetablable" id="timetableable" required onChange={this.handleChange}>
                                                     <option value="">--- Please select ---</option>
                                                     <option value="true">Yes</option>
                                                     <option value="false">No</option>
                                                 </SelectGroup>{' '}
                                                 <br />
-                                                <label htmlFor="technicalAssistant">
+                                                <label htmlFor="needsTechnicalAssistant">
                                                     <b>Needs Technical Assistant?</b>
                                                 </label>
                                                 <br />
