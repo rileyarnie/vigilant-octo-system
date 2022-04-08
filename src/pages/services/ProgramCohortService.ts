@@ -4,7 +4,7 @@ import { simsAxiosInstance } from '../../utlis/interceptors/sims-interceptor';
 import { timetablingAxiosInstance } from '../../utlis/interceptors/timetabling-interceptor';
 export class ProgramCohortService {
     static async publishProgramCohortSemester(programCohortSemesterId: string, programCohortSemester: unknown): Promise<void> {
-        return financeAxiosInstance.put(`/program-cohort-semesters/${programCohortSemesterId}`, {
+        return timetablingAxiosInstance.put(`/program-cohort-semesters/${programCohortSemesterId}`, {
             ModifyProgramCohortSemesterRequest: programCohortSemester
         });
     }
