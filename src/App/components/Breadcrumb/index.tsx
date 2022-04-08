@@ -72,7 +72,7 @@ class Breadcrumb extends Component<BreadcrumbState> {
                         <ul className="breadcrumb">
                             <li className="breadcrumb-item">
                                 <Link to="/">
-                                    <i className="feather icon-home" />
+                                    <i className="feather icon-home"/>
                                 </Link>
                             </li>
                             {main}
