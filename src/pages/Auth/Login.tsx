@@ -1,15 +1,17 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 /* eslint-disable camelcase */
 // eslint-disable-next-line no-use-before-define
-import React, { useContext, useState, useEffect } from 'react';
-import { PublicClientApplication } from '@azure/msal-browser';
-import { Alerts, ToastifyAlerts } from '../lib/Alert';
-import { getUserDetails } from '../lib/GraphService';
+import React, {useContext, useState, useEffect} from 'react';
+import {PublicClientApplication} from '@azure/msal-browser';
+import {Alerts, ToastifyAlerts} from '../lib/Alert';
+import {getUserDetails} from '../lib/GraphService';
 import Config from '../../config';
-import { AuthContext } from '../../App/context/AuthContext';
-import { Button } from 'react-bootstrap';
-import { authnzAxiosInstance } from '../../utlis/interceptors/authnz-interceptor';
+import {AuthContext} from '../../App/context/AuthContext';
+import {Button} from 'react-bootstrap';
+import {authnzAxiosInstance} from '../../utlis/interceptors/authnz-interceptor';
 import LinearProgress from '@mui/material/LinearProgress';
+import background from '../../assets/images/staffbg.jpg';
+import logo from '../../assets/images/logo-dark.png';
 
 const alerts: Alerts = new ToastifyAlerts();
 const Login = () => {
@@ -17,15 +19,17 @@ const Login = () => {
         isStaff: boolean;
         isStudent: boolean;
     }
+
     // const [, setError] = useState(null);
     const [linearDisplay, setLinearDisplay] = useState('none');
-    const { setAuthState } = useContext(AuthContext);
+    const {setAuthState} = useContext(AuthContext);
     const [, setUser] = useState({});
     // const ERR_USER_NOT_FOUND = 'Error, User not found';
     // let userInfo = {} as userInfoI
     const [userInfo, setUserInfo] = useState<userInfoI>();
 
     useEffect(() => {
+        login();
         if (userInfo && userInfo.isStaff) {
             loadPortal(userInfo);
             setAuthState(true);
@@ -132,18 +136,27 @@ const Login = () => {
             return;
         }
         if (userInfo) {
-            window.location.assign('http://localhost:3001');
+            window.location.assign('/staffportal');
             return;
         }
     };
-
     return (
         <>
-            <LinearProgress style={{display: linearDisplay}}/>
-            <div className="login" style={{display: 'grid', placeItems: 'center', height: '100vh'}}>
-                <Button onClick={login} size="lg">
-                    Log In with your KPC E-mail Address
-                </Button>
+            <div
+                style={{
+                    backgroundImage: `url(${background})`,
+                    backgroundPosition: 'center',
+                    backgroundSize: 'cover',
+                    backgroundRepeat: 'no-repeat'
+                }}>
+
+                <LinearProgress style={{display: linearDisplay}}/>
+                <div className="login" style={{display: 'grid', placeItems: 'center', height: '100vh'}}>
+                    <img src={logo} alt="miog"/>
+                    <Button variant="danger" onClick={login} size="lg">
+                        Log In with your KPC E-mail Address
+                    </Button>
+                </div>
             </div>
         </>
     );

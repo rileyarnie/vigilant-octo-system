@@ -1,15 +1,16 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import React from 'react';
 import { Button, Modal } from 'react-bootstrap';
 
 interface Props {
+    children: any;
     show: boolean;
     closeModal: () => void;
     title: string;
     modalSize: string;
     submitButton?: boolean;
-    submitFunction?: () => void;
+    submitFunction?: () => void
 }
-
 const ModalWrapper: React.FunctionComponent<Props> = (props) => {
     return (
         <Modal
