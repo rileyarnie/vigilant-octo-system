@@ -14,7 +14,8 @@
   .pcoded-inner-navbar {
     li {
       > a.active {
-        color: #e5efff;
+        color: #ff0000;
+        background-color: white;
         /*font-weight: 600;*/
       }
 
@@ -43,7 +44,7 @@
       &.pcoded-trigger {
         > a,
         > a.active {
-          color: #e5efff;
+          color: #030a19;
         }
       }
 

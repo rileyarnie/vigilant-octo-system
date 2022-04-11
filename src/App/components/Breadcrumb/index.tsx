@@ -1,5 +1,4 @@
 import React, {Component} from 'react';
-import {Link} from 'react-router-dom';
 import config from '../../../config';
 import navigation, {MenuItemType} from '../../../menu-items';
 import SYS from '../../../store/constant';
@@ -26,7 +25,6 @@ class Breadcrumb extends Component<BreadcrumbState> {
             return false;
         });
     }
-
     UNSAFE_componentWillReceiveProps = () => {
         navigation.items.map((item: MenuItemType) => {
             if (item.type && item.type === 'group') {
@@ -77,9 +75,9 @@ class Breadcrumb extends Component<BreadcrumbState> {
                             </div>
                             <ul className="breadcrumb">
                                 <li className="breadcrumb-item">
-                                    <Link to="/">
+                                    <a href="/" className="radius8 lightBg">
                                         <i className="feather icon-home"/>
-                                    </Link>
+                                    </a>
                                 </li>
                                 {main}
                                 {item}
