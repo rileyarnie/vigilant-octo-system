@@ -43,7 +43,7 @@ export const AddActionsModal = (props: IProps): JSX.Element => {
     }, []);
 
     actions.map((action) => {
-        return options.push({ value: action.id, label: action.name });
+        return options.push({ value: action.id, label: action.name+ ' - '+ action.description});
     });
     const handleChange = (selectedOptions) => {
         setSelectedOptions(selectedOptions);

@@ -192,7 +192,7 @@ const WorkFlows = (): JSX.Element => {
             </div>
             <Modal size="lg" show={showModal} aria-labelledby="contained-modal-title-vcenter" centered>
                 <Modal.Header closeButton>
-                    <Modal.Title id="contained-modal-title-vcenter">Administer Workflow</Modal.Title>
+                    <Modal.Title id="contained-modal-title-vcenter">Administer Workflow for action <i style={{fontWeight:'lighter'}}>{actionName}</i></Modal.Title>
                 </Modal.Header>
                 <Modal.Body>
                     <ValidationForm>

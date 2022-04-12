@@ -59,7 +59,7 @@ const Department = (): JSX.Element => {
     const columns = [
         { title: 'ID', field: 'id', hidden: true },
         { title: 'Department name', field: 'name' },
-        { title: 'HOD Trainer Id', field: 'hodTrainerId' },
+        { title: 'HOD', field: 'hodTrainerId' },
         {
             title: 'Activation Status',
             field: 'internal_action',
