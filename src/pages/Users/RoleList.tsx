@@ -101,24 +101,28 @@ function roleList(): JSX.Element {
                                 roleActions(row.id);
                                 setId(row.id);
                                 setRoleName(row.name);
-                                toggleActionsModal();
+                                viewRoleActions();
                             }}
                         >
-                            <MenuItem value="View courses">View Role Actions</MenuItem>
+                            <MenuItem value="View role actions">View Role Actions</MenuItem>
                         </div>
                     )}
+
                     {canPerformActions(ACTION_ADD_ACTIONS_TO_ROLE.name) && (
                         <div
                             className=""
                             onClick={() => {
                                 setId(row.id);
                                 setRoleName(row.name);
+                                toggleActionsModal();
                                 getActionsByRoleId(row.id,row.name);
                             }}
                         >
-                            <MenuItem value="View courses">Add Actions</MenuItem>
+                            <MenuItem value="Add actions">Add Actions</MenuItem>
                         </div>
                     )}
+
+
                     {canPerformActions(ACTION_DEACTIVATE_ROLE.name) && (
                         <div
                             className=""
@@ -128,7 +132,7 @@ function roleList(): JSX.Element {
                                 handleRowDelete(row.id);
                             }}
                         >
-                            <MenuItem value="View courses">Delete Role</MenuItem>
+                            <MenuItem value="delete role">Delete Role</MenuItem>
                         </div>
                     )}
                 </Select>
@@ -146,6 +150,7 @@ function roleList(): JSX.Element {
     const [isError] = useState(false);
     const [errorMessages] = useState([]);
     const [actions, setActions] = useState([]);
+    const [viewActions, setViewActions] = useState(false);
     const [linearDisplay, setLinearDisplay] = useState('none');
     const [defaultRoleValues, setDefaultRoleValues] = useState([]);
     //modal functions
@@ -170,7 +175,7 @@ function roleList(): JSX.Element {
     function roleActions(roleId: number) {
         setLinearDisplay('block');
         authnzAxiosInstance
-            .get('/actions', { params: { roleId: roleId } })
+            .get(`/actions/${roleId}`)
             .then((res) => {
                 const myData = res.data;
                 setActions(myData);
@@ -191,7 +196,6 @@ function roleList(): JSX.Element {
                 alerts.showSuccess('Successfully deleted role');
             })
             .catch((error) => {
-                //handle error using logging library
                 console.error(error);
                 alerts.showError((error as Error).message);
             });
@@ -202,6 +206,8 @@ function roleList(): JSX.Element {
         authnzAxiosInstance
             .get(`/actions/${roleId}`)
             .then((res) => {
+                const myData = res.data;
+                setActions(myData);
                 setDefaultRoleValues(res.data.map((role: { id: number; name: string }) => ({ value: role.id, label: role.name })));
                 setActionModal(true);
             })
@@ -221,6 +227,12 @@ function roleList(): JSX.Element {
     };
     const toggleActionsModal = () => {
         setActionModal(!actionModal);
+    };
+    const viewRoleActions = () => {
+        setViewActions(true);
+    };
+    const handleCloseViewActions = () => {
+        setViewActions(false);
     };
     const handleClose = () => {
         showModal ? resetStateCloseModal() : setModal(false);
@@ -274,14 +286,14 @@ function roleList(): JSX.Element {
                 defaultValues={defaultRoleValues}
             />
             <Modal
-                show={showModal}
-                onHide={toggleActionsModal}
+                show={viewActions}
+                onHide={viewRoleActions}
                 size="lg"
                 backdrop="static"
                 aria-labelledby="contained-modal-title-vcenter"
                 centered
             >
-                <Modal.Header closeButton>
+                <Modal.Header>
                     <Modal.Title id="contained-modal-title-vcenter"> Assign actions to {roleName} </Modal.Title>
                 </Modal.Header>
                 <Modal.Body>
@@ -291,11 +303,11 @@ function roleList(): JSX.Element {
                         columns={actionColumns}
                         data={actions}
                         icons={tableIcons}
-                        options={{ pageSize: 50 }}
+                        options={{ pageSize: 10 }}
                     />
                 </Modal.Body>
                 <Modal.Footer style={{ display: 'flex', justifyContent: 'flex-start' }}>
-                    <Button variant="danger float-left" onClick={handleClose}>
+                    <Button variant="danger float-left" onClick={handleCloseViewActions}>
                         Close
                     </Button>
                 </Modal.Footer>
