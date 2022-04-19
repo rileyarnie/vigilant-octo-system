@@ -56,36 +56,7 @@ const SemesterList = (): JSX.Element => {
         activation_status: boolean;
     }
 
-    let activationStatus: boolean;
-    const handleActivationStatusToggle = (event, row: Semester) => {
-        setDisabled(true);
-        if (row.activation_status) {
-            activationStatus = false;
-            handleToggleStatusSubmit(event, row);
-        }
-        if (!row.activation_status) {
-            activationStatus = true;
-            handleToggleStatusSubmit(event, row);
-        }
-    };
-    const handleToggleStatusSubmit = (e, row: Semester) => {
-        const semester = {
-            activation_status: activationStatus
-        };
-        timetablingAxiosInstance
-            .put(`/semesters/${row.id}`, { body: semester })
-            .then(() => {
-                const msg = activationStatus ? 'Successfully activated semester' : 'Successfully Deactivated semester';
-                alerts.showSuccess(msg);
-                fetchSemesters();
-                setDisabled(false);
-            })
-            .catch((error) => {
-                console.error(error);
-                alerts.showError(error.message);
-                setDisabled(false);
-            });
-    };
+
     const columns = [
         { title: 'ID', field: 'id' },
         { title: 'Semester name', field: 'name' },
@@ -118,7 +89,41 @@ const SemesterList = (): JSX.Element => {
     const [selectedEndDate, setSelectedEndDate] = useState('');
     const [selectedSemester, setSelectedSemester] = useState<Semester>();
     const [linearDisplay, setLinearDisplay] = useState('none');
+    const [activationModal, setActivationModal] = useState(false);
+    const [rowData, setRowData] = useState<Semester>();
     const today = new Date().toISOString().slice(0, 10);
+    let activationStatus: boolean;
+    const handleActivationStatusToggle = (event, row: Semester) => {
+        setDisabled(true);
+        if (row.activation_status) {
+            activationStatus = false;
+            toggleActivationModal();
+            setRowData(row);
+        }
+        if (!row.activation_status) {
+            activationStatus = true;
+            toggleActivationModal();
+            setRowData(row);
+        }
+    };
+    const handleToggleStatusSubmit = (row: Semester) => {
+        const semester = {
+            activation_status: activationStatus
+        };
+        timetablingAxiosInstance
+            .put(`/semesters/${row.id}`, { body: semester })
+            .then(() => {
+                const msg = activationStatus ? 'Successfully activated semester' : 'Successfully Deactivated semester';
+                alerts.showSuccess(msg);
+                fetchSemesters();
+                setDisabled(false);
+            })
+            .catch((error) => {
+                console.error(error);
+                alerts.showError(error.message);
+                setDisabled(false);
+            });
+    };
     useEffect(() => {
         timetablingAxiosInstance
             .get('/semesters')
@@ -211,6 +216,13 @@ const SemesterList = (): JSX.Element => {
     };
     const getStartDate = (date?: string, semesterId?: number) => {
         return semesterId ? date?.slice(0, 10) : selectedStartDate;
+    };
+    const toggleActivationModal = () => {
+        activationModal ? resetStateCloseModal() : setActivationModal(true);
+    };
+    const handleCloseModal = () => {
+        fetchSemesters();
+        setActivationModal(false);
     };
     return (
         <>
@@ -342,6 +354,31 @@ const SemesterList = (): JSX.Element => {
                     <button className="btn btn-danger float-left" onClick={handleClose}>
                         Close
                     </button>
+                </Modal.Body>
+            </Modal>
+            <Modal
+                backdrop="static"
+                show={activationModal}
+                onHide={toggleActivationModal}
+                size="sm"
+                aria-labelledby="contained-modal-title-vcenter"
+                centered
+            >
+                <Modal.Header>
+                    <Modal.Title id="contained-modal-title-vcenter">{}</Modal.Title>
+                </Modal.Header>
+                <Modal.Body>
+                    <ValidationForm>
+                        <p className="text-center">A you sure you want to change the status of {rowData?.name} ?</p>
+                        <Button className="btn btn-danger float-left" onClick={handleCloseModal}>
+                            Cancel
+                        </Button>
+                        <Button className="btn btn-primary float-right" onClick={() => {
+                            handleToggleStatusSubmit(rowData);
+                        }}>
+                            Confirm
+                        </Button>
+                    </ValidationForm>
                 </Modal.Body>
             </Modal>
         </>
