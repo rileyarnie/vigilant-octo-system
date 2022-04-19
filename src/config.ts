@@ -5,7 +5,7 @@ const Config = {
     authority: 'https://login.microsoftonline.com/poshit.onmicrosoft.com',
     scopes: ['user.read'],
     defaultPath: '/dashboard',
-    basename: '/sims',
+    basename: '/staff',
     layout: 'horizontal',
     collapseMenu: false,
     layoutType: 'menu-dark',
