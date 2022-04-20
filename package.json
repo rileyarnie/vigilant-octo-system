@@ -2,7 +2,7 @@
     "name": "elimisha",
     "version": "0.1.0",
     "private": true,
-    "homepage": "http://localhost:3000/",
+    "homepage": "/staff",
     "dependencies": {
         "@azure/msal-browser": "^2.22.0",
         "@ckeditor/ckeditor5-build-balloon": "^31.1.0",
