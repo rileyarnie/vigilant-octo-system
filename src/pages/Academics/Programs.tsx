@@ -1,25 +1,7 @@
 /* eslint-disable react/react-in-jsx-scope */
 /* eslint-disable react/display-name */
 import { useState, useEffect } from 'react';
-import { forwardRef } from 'react';
 import { Alerts, ToastifyAlerts } from '../lib/Alert';
-import MaterialTable from 'material-table';
-import AddBox from '@material-ui/icons/AddBox';
-import ArrowDownward from '@material-ui/icons/ArrowDownward';
-import Check from '@material-ui/icons/Check';
-import ChevronLeft from '@material-ui/icons/ChevronLeft';
-import ChevronRight from '@material-ui/icons/ChevronRight';
-import Clear from '@material-ui/icons/Clear';
-import DeleteOutline from '@material-ui/icons/DeleteOutline';
-import Edit from '@material-ui/icons/Edit';
-import FilterList from '@material-ui/icons/FilterList';
-import FirstPage from '@material-ui/icons/FirstPage';
-import LastPage from '@material-ui/icons/LastPage';
-import Remove from '@material-ui/icons/Remove';
-import SaveAlt from '@material-ui/icons/SaveAlt';
-import Search from '@material-ui/icons/Search';
-import ViewColumn from '@material-ui/icons/ViewColumn';
-import { Icons } from 'material-table';
 import { Switch } from '@material-ui/core';
 import Alert from '@material-ui/lab/Alert';
 import Breadcrumb from '../../App/components/Breadcrumb';
@@ -30,26 +12,9 @@ import { LinearProgress } from '@mui/material';
 import { canPerformActions } from '../../services/ActionChecker';
 import { ACTION_ASSIGN_COURSE_TO_PROGRAM, ACTION_CREATE_PROGRAM, ACTION_GET_PROGRAMS } from '../../authnz-library/timetabling-actions';
 import { timetablingAxiosInstance } from '../../utlis/interceptors/timetabling-interceptor';
+import TableWrapper from '../../utlis/TableWrapper';
 const alerts: Alerts = new ToastifyAlerts();
-const tableIcons: Icons = {
-    Add: forwardRef((props, ref) => <AddBox {...props} ref={ref} />),
-    Check: forwardRef((props, ref) => <Check {...props} ref={ref} />),
-    Clear: forwardRef((props, ref) => <Clear {...props} ref={ref} />),
-    Delete: forwardRef((props, ref) => <DeleteOutline {...props} ref={ref} />),
-    DetailPanel: forwardRef((props, ref) => <ChevronRight {...props} ref={ref} />),
-    Edit: forwardRef((props, ref) => <Edit {...props} ref={ref} />),
-    Export: forwardRef((props, ref) => <SaveAlt {...props} ref={ref} />),
-    Filter: forwardRef((props, ref) => <FilterList {...props} ref={ref} />),
-    FirstPage: forwardRef((props, ref) => <FirstPage {...props} ref={ref} />),
-    LastPage: forwardRef((props, ref) => <LastPage {...props} ref={ref} />),
-    NextPage: forwardRef((props, ref) => <ChevronRight {...props} ref={ref} />),
-    PreviousPage: forwardRef((props, ref) => <ChevronLeft {...props} ref={ref} />),
-    ResetSearch: forwardRef((props, ref) => <Clear {...props} ref={ref} />),
-    Search: forwardRef((props, ref) => <Search {...props} ref={ref} />),
-    SortArrow: forwardRef((props, ref) => <ArrowDownward {...props} ref={ref} />),
-    ThirdStateCheck: forwardRef((props, ref) => <Remove {...props} ref={ref} />),
-    ViewColumn: forwardRef((props, ref) => <ViewColumn {...props} ref={ref} />)
-};
+
 const Programs = (): JSX.Element => {
     interface Program {
         name: string;
@@ -165,13 +130,13 @@ const Programs = (): JSX.Element => {
                 console.error(error);
                 alerts.showError(error.message);
             });
-        
+
         timetablingAxiosInstance
             .get('/departments')
             .then((res) => {
                 setDepartments(res.data);
             })
-            .catch(error => {
+            .catch((error) => {
                 alerts.showError(error.message);
             });
     }, []);
@@ -268,15 +233,7 @@ const Programs = (): JSX.Element => {
                                         </Alert>
                                     )}
                                 </div>
-                                <MaterialTable
-                                    title="Programs"
-                                    columns={columns}
-                                    data={data}
-                                    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-                                    // @ts-ignore
-                                    icons={tableIcons}
-                                    options={{ pageSize: 50 }}
-                                />
+                                <TableWrapper title="Programs" columns={columns} data={data} options={{}} />
                             </Card>
                         </Col>
                     </Row>
@@ -360,13 +317,13 @@ const Programs = (): JSX.Element => {
                             <br />
                             <SelectGroup name="department" id="department" required onChange={(e) => setSelectedDepartment(e.target.value)}>
                                 <option value="">-- select a department --</option>
-                                {
-                                    departments.map((dpt) => {
-                                        return (
-                                            <option key={dpt.id} value={dpt.id}>{dpt.name}</option>
-                                        );
-                                    })
-                                }
+                                {departments.map((dpt) => {
+                                    return (
+                                        <option key={dpt.id} value={dpt.id}>
+                                            {dpt.name}
+                                        </option>
+                                    );
+                                })}
                             </SelectGroup>
                             <label htmlFor="requiresClearance">
                                 <b>Requires Clearance</b>
@@ -427,9 +384,12 @@ const Programs = (): JSX.Element => {
                         <Button className="btn btn-danger float-left" onClick={handleCloseModal}>
                             Cancel
                         </Button>
-                        <Button className="btn btn-primary float-right" onClick={() => {
-                            handleToggleStatusSubmit(rowData);
-                        }}>
+                        <Button
+                            className="btn btn-primary float-right"
+                            onClick={() => {
+                                handleToggleStatusSubmit(rowData);
+                            }}
+                        >
                             Confirm
                         </Button>
                     </ValidationForm>

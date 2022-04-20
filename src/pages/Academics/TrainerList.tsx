@@ -1,22 +1,5 @@
 /* eslint-disable react/display-name */
 import React, { useState, useEffect } from 'react';
-import { forwardRef } from 'react';
-import MaterialTable, { Icons } from 'material-table';
-import AddBox from '@material-ui/icons/AddBox';
-import ArrowDownward from '@material-ui/icons/ArrowDownward';
-import Check from '@material-ui/icons/Check';
-import ChevronLeft from '@material-ui/icons/ChevronLeft';
-import ChevronRight from '@material-ui/icons/ChevronRight';
-import Clear from '@material-ui/icons/Clear';
-import DeleteOutline from '@material-ui/icons/DeleteOutline';
-import Edit from '@material-ui/icons/Edit';
-import FilterList from '@material-ui/icons/FilterList';
-import FirstPage from '@material-ui/icons/FirstPage';
-import LastPage from '@material-ui/icons/LastPage';
-import Remove from '@material-ui/icons/Remove';
-import SaveAlt from '@material-ui/icons/SaveAlt';
-import Search from '@material-ui/icons/Search';
-import ViewColumn from '@material-ui/icons/ViewColumn';
 import Alert from '@material-ui/lab/Alert';
 import Department from '../services/Department';
 import Breadcrumb from '../../App/components/Breadcrumb';
@@ -31,27 +14,10 @@ import { timetablingAxiosInstance } from '../../utlis/interceptors/timetabling-i
 import { Select } from '@material-ui/core';
 import MenuItem from '@mui/material/MenuItem';
 import { DepartmentService } from '../services/DepartmentService';
+import TableWrapper from '../../utlis/TableWrapper';
 
 const alerts: Alerts = new ToastifyAlerts();
-const tableIcons: Icons = {
-    Add: forwardRef((props, ref) => <AddBox {...props} ref={ref} />),
-    Check: forwardRef((props, ref) => <Check {...props} ref={ref} />),
-    Clear: forwardRef((props, ref) => <Clear {...props} ref={ref} />),
-    Delete: forwardRef((props, ref) => <DeleteOutline {...props} ref={ref} />),
-    DetailPanel: forwardRef((props, ref) => <ChevronRight {...props} ref={ref} />),
-    Edit: forwardRef((props, ref) => <Edit {...props} ref={ref} />),
-    Export: forwardRef((props, ref) => <SaveAlt {...props} ref={ref} />),
-    Filter: forwardRef((props, ref) => <FilterList {...props} ref={ref} />),
-    FirstPage: forwardRef((props, ref) => <FirstPage {...props} ref={ref} />),
-    LastPage: forwardRef((props, ref) => <LastPage {...props} ref={ref} />),
-    NextPage: forwardRef((props, ref) => <ChevronRight {...props} ref={ref} />),
-    PreviousPage: forwardRef((props, ref) => <ChevronLeft {...props} ref={ref} />),
-    ResetSearch: forwardRef((props, ref) => <Clear {...props} ref={ref} />),
-    Search: forwardRef((props, ref) => <Search {...props} ref={ref} />),
-    SortArrow: forwardRef((props, ref) => <ArrowDownward {...props} ref={ref} />),
-    ThirdStateCheck: forwardRef((props, ref) => <Remove {...props} ref={ref} />),
-    ViewColumn: forwardRef((props, ref) => <ViewColumn {...props} ref={ref} />)
-};
+
 enum TrainerType {
     Lecturer = 'LECTURER',
     Trainer = 'TRAINER',
@@ -65,13 +31,13 @@ const TrainerList = (): JSX.Element => {
         { title: 'Department ID', field: 'tr_departmentId' },
         {
             title: ' Actions',
-            render: (row:{tr_departmentId:number, tr_trainerType:string, tr_id:number}) => (
+            render: (row: { tr_departmentId: number; tr_trainerType: string; tr_id: number }) => (
                 <Select>
                     {canPerformActions(ACTION_UPDATE_TRAINER.name) && (
                         <div
                             className=""
                             onClick={() => {
-                                console.log('trainer row',row);
+                                console.log('trainer row', row);
                                 setDept(row.tr_departmentId);
                                 setTrainerType(row.tr_trainerType);
                                 toggleEditModal();
@@ -192,7 +158,7 @@ const TrainerList = (): JSX.Element => {
             });
     };
 
-    const handleDelete = async (trainerId:number) => {
+    const handleDelete = async (trainerId: number) => {
         const departmentsWithHoDTrainer = await DepartmentService.getDepartmentByHODTrainerId(trainerId);
         console.log(departmentsWithHoDTrainer);
         setDepartmentsWithHoDTrainer(departmentsWithHoDTrainer);
@@ -203,16 +169,14 @@ const TrainerList = (): JSX.Element => {
         toggleDeleteModal();
     };
 
-    const deleteTrainer = (trainerId:number) => {
+    const deleteTrainer = (trainerId: number) => {
         setLinearDisplay('block');
-        timetablingAxiosInstance
-            .delete(`trainers/${trainerId}`)
-            .then(() => {
-                alerts.showSuccess('Succesfully removed trainer');
-                toggleDeleteModal();
-                fetchTrainers();
-                setLinearDisplay('none');
-            });
+        timetablingAxiosInstance.delete(`trainers/${trainerId}`).then(() => {
+            alerts.showSuccess('Succesfully removed trainer');
+            toggleDeleteModal();
+            fetchTrainers();
+            setLinearDisplay('none');
+        });
     };
 
     const getAADAlias = (id: number) => {
@@ -260,14 +224,7 @@ const TrainerList = (): JSX.Element => {
                                     </Alert>
                                 )}
                             </div>
-                            <MaterialTable
-                                title="Trainers"
-                                columns={columns}
-                                data={data}
-                                icons={tableIcons}
-                                editable={{}}
-                                options={{ pageSize: 50 }}
-                            />
+                            <TableWrapper title="Trainers" columns={columns} data={data} editable={{}} options={{}} />
                         </Card>
                     )}
                 </Col>
@@ -418,11 +375,8 @@ const TrainerList = (): JSX.Element => {
                                 <option value={TrainerType['Assistant']}>Assistant</option>;
                             </SelectGroup>
                         </div>
-
                     </ValidationForm>
-                    <button className="btn btn-danger float-left" >
-                        Close
-                    </button>
+                    <button className="btn btn-danger float-left">Close</button>
                 </Modal.Body>
             </Modal>
             <Modal
@@ -438,10 +392,8 @@ const TrainerList = (): JSX.Element => {
                     <Modal.Title>Remove trainer</Modal.Title>
                 </Modal.Header>
                 <Modal.Body>
-                    <p>
-                          Please change the HoD for {departmentsWithHoDTrainer?.name} before attempting to remove this trainer
-                    </p>
-                    
+                    <p>Please change the HoD for {departmentsWithHoDTrainer?.name} before attempting to remove this trainer</p>
+
                     <Modal.Footer>
                         <Button variant="primary" onClick={() => toggleCantDeleteModal()}>
                             Close
@@ -463,9 +415,10 @@ const TrainerList = (): JSX.Element => {
                 </Modal.Header>
                 <Modal.Body>
                     <p>
-                    Are you sure you want to remove this trainer? Removing the trainer will remove them from all courses and course-cohorts that they are assigned to
+                        Are you sure you want to remove this trainer? Removing the trainer will remove them from all courses and
+                        course-cohorts that they are assigned to
                     </p>
-                    
+
                     <Modal.Footer>
                         <Button variant="primary" onClick={() => toggleDeleteModal()}>
                             Close
