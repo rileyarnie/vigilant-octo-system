@@ -1,5 +1,4 @@
 import { AxiosResponse } from 'axios';
-import { financeAxiosInstance } from '../../utlis/interceptors/finance-interceptor';
 import { simsAxiosInstance } from '../../utlis/interceptors/sims-interceptor';
 import { timetablingAxiosInstance } from '../../utlis/interceptors/timetabling-interceptor';
 export class ProgramCohortService {
