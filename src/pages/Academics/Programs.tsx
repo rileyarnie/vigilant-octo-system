@@ -30,9 +30,7 @@ import { LinearProgress } from '@mui/material';
 import { canPerformActions } from '../../services/ActionChecker';
 import { ACTION_ASSIGN_COURSE_TO_PROGRAM, ACTION_CREATE_PROGRAM, ACTION_GET_PROGRAMS } from '../../authnz-library/timetabling-actions';
 import { timetablingAxiosInstance } from '../../utlis/interceptors/timetabling-interceptor';
-
 const alerts: Alerts = new ToastifyAlerts();
-
 const tableIcons: Icons = {
     Add: forwardRef((props, ref) => <AddBox {...props} ref={ref} />),
     Check: forwardRef((props, ref) => <Check {...props} ref={ref} />),
@@ -79,20 +77,24 @@ const Programs = (): JSX.Element => {
     const [showModal, setModal] = useState(false);
     const [, setProgramId] = useState(null);
     const [, setDisabled] = useState(false);
+    const [activationModal, setActivationModal] = useState(false);
+    const [rowData, setRowData] = useState<Program>();
     const [selectedDepartment, setSelectedDepartment] = useState();
     let activationStatus: boolean;
     const handleActivationStatusToggle = (event, row: Program) => {
         setDisabled(true);
         if (row.activation_status) {
             activationStatus = false;
-            handleToggleStatusSubmit(event, row);
+            toggleActivationModal();
+            setRowData(row);
         }
         if (!row.activation_status) {
             activationStatus = true;
-            handleToggleStatusSubmit(event, row);
+            toggleActivationModal();
+            setRowData(row);
         }
     };
-    const handleToggleStatusSubmit = (e, row: Program) => {
+    const handleToggleStatusSubmit = (row: Program) => {
         const program = {
             activation_status: activationStatus
         };
@@ -227,6 +229,13 @@ const Programs = (): JSX.Element => {
     };
     const toggleCreateModal = () => {
         showModal ? resetStateCloseModal() : setModal(true);
+    };
+    const toggleActivationModal = () => {
+        activationModal ? resetStateCloseModal() : setActivationModal(true);
+    };
+    const handleCloseModal = () => {
+        fetchPrograms();
+        setActivationModal(false);
     };
     const handleClose = () => setModal(false);
     return (
@@ -399,6 +408,31 @@ const Programs = (): JSX.Element => {
                     <button className="btn btn-danger float-danger" onClick={handleClose}>
                         Close
                     </button>
+                </Modal.Body>
+            </Modal>
+            <Modal
+                backdrop="static"
+                show={activationModal}
+                onHide={toggleActivationModal}
+                size="sm"
+                aria-labelledby="contained-modal-title-vcenter"
+                centered
+            >
+                <Modal.Header>
+                    <Modal.Title id="contained-modal-title-vcenter">{}</Modal.Title>
+                </Modal.Header>
+                <Modal.Body>
+                    <ValidationForm>
+                        <p className="text-center">A you sure you want to change the status of {rowData?.name} ?</p>
+                        <Button className="btn btn-danger float-left" onClick={handleCloseModal}>
+                            Cancel
+                        </Button>
+                        <Button className="btn btn-primary float-right" onClick={() => {
+                            handleToggleStatusSubmit(rowData);
+                        }}>
+                            Confirm
+                        </Button>
+                    </ValidationForm>
                 </Modal.Body>
             </Modal>
         </>

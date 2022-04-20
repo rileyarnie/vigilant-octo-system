@@ -96,19 +96,22 @@ const ProgramCohorts = (): JSX.Element => {
     const [activationStatus, setStatus] = useState('');
     const year = graduationDate.split('').slice(0, 4).join('');
     const month = graduationDate.slice(5, 7);
-
+    const [activationModal, setActivationModal] = useState(false);
+    const [rowData, setRowData] = useState<programCohort>();
     const handleActivationStatusToggle = (event, row: programCohort) => {
         setDisabled(true);
         if (row.program_cohorts_status === 'active') {
             setStatus('canceled');
-            handleToggleStatusSubmit(event, row);
+            toggleActivationModal();
+            setRowData(row);
         }
         if (row.program_cohorts_status === 'canceled') {
             setStatus('active');
-            handleToggleStatusSubmit(event, row);
+            toggleActivationModal();
+            setRowData(row);
         }
     };
-    const handleToggleStatusSubmit = (e, row: programCohort) => {
+    const handleToggleStatusSubmit = (row: programCohort) => {
         const cohortStatus = {
             status: activationStatus
         };
@@ -405,6 +408,13 @@ const ProgramCohorts = (): JSX.Element => {
     const getProgramCohortFields = (id: number) => {
         return data.filter((dat) => dat.program_cohorts_id === id)[0];
     };
+    const toggleActivationModal = () => {
+        activationModal ? resetStateCloseModal() : setActivationModal(true);
+    };
+    const handleCloseModal = () => {
+        fetchProgramCohorts();
+        setActivationModal(false);
+    };
     return (
         <>
             <Row className="align-items-center page-header">
@@ -699,6 +709,31 @@ const ProgramCohorts = (): JSX.Element => {
                         Confirm
                     </Button>
                 </Modal.Footer>
+            </Modal>
+            <Modal
+                backdrop="static"
+                show={activationModal}
+                onHide={toggleActivationModal}
+                size="sm"
+                aria-labelledby="contained-modal-title-vcenter"
+                centered
+            >
+                <Modal.Header>
+                    <Modal.Title id="contained-modal-title-vcenter">{}</Modal.Title>
+                </Modal.Header>
+                <Modal.Body>
+                    <ValidationForm>
+                        <p className="text-center">A you sure you want to change the status of {rowData?.pg_name} ?</p>
+                        <Button className="btn btn-danger float-left" onClick={handleCloseModal}>
+                            Cancel
+                        </Button>
+                        <Button className="btn btn-primary float-right" onClick={() => {
+                            handleToggleStatusSubmit(rowData);
+                        }}>
+                            Confirm
+                        </Button>
+                    </ValidationForm>
+                </Modal.Body>
             </Modal>
         </>
     );

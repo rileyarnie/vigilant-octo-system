@@ -27,6 +27,7 @@ import LinearProgress from '@mui/material/LinearProgress';
 import { canPerformActions } from '../../services/ActionChecker';
 import { ACTION_CREATE_COURSE, ACTION_GET_COURSES, ACTION_UPDATE_COURSE } from '../../authnz-library/timetabling-actions';
 import { timetablingAxiosInstance } from '../../utlis/interceptors/timetabling-interceptor';
+import { ValidationForm } from 'react-bootstrap4-form-validation';
 const alerts: Alerts = new ToastifyAlerts();
 const tableIcons: Icons = {
     Add: forwardRef((props, ref) => <AddBox {...props} ref={ref} />),
@@ -82,6 +83,8 @@ const CoursesList = (): JSX.Element => {
     const [iserror] = useState(false);
     const [errorMessages] = useState([]);
     const [linearDisplay, setLinearDisplay] = useState('none');
+    const [activationModal, setActivationModal] = useState(false);
+    const [rowData, setRowData] = useState<Course>();
     //const [selectedCourse,setSelectedCourse] = useState({} as Course)
     let approvalStatus: boolean;
     let activationStatus: boolean;
@@ -93,14 +96,16 @@ const CoursesList = (): JSX.Element => {
             activationStatus = false;
             approvalStatus = row.approval_status;
             isElective = row.isElective;
-            handleToggleStatusSubmit(event, row);
+            toggleActivationModal();
+            setRowData(row);
         }
         if (!row.activation_status) {
             msg = 'Successfully Activated Course';
             activationStatus = true;
             approvalStatus = row.approval_status;
             isElective = row.isElective;
-            handleToggleStatusSubmit(event, row);
+            toggleActivationModal();
+            setRowData(row);
         }
     };
     const handleApprovalStatusToggle = (event, row: Course) => {
@@ -109,18 +114,18 @@ const CoursesList = (): JSX.Element => {
             approvalStatus = false;
             activationStatus = row.activation_status;
             isElective = row.isElective;
-            handleToggleStatusSubmit(event, row);
+            handleToggleStatusSubmit(row);
         }
         if (!row.approval_status) {
             msg = 'Successfully Approved Course';
             approvalStatus = true;
             activationStatus = row.activation_status;
             isElective = row.isElective;
-            handleToggleStatusSubmit(event, row);
+            handleToggleStatusSubmit(row);
         }
     };
 
-    const handleToggleStatusSubmit = (e, row: Course) => {
+    const handleToggleStatusSubmit = (row: Course) => {
         const course = {
             activation_status: activationStatus,
             approval_status: approvalStatus,
@@ -173,6 +178,13 @@ const CoursesList = (): JSX.Element => {
 
     const toggleCreateModal = () => {
         showModal ? setModal(false) : setModal(true);
+    };
+    const toggleActivationModal = () => {
+        setActivationModal(true);
+    };
+    const handleCloseModal = () => {
+        fetchCourses();
+        setActivationModal(false);
     };
     return (
         <>
@@ -228,6 +240,31 @@ const CoursesList = (): JSX.Element => {
                     >
                         {' '}
                     </CourseCreation>
+                </Modal.Body>
+            </Modal>
+            <Modal
+                backdrop="static"
+                show={activationModal}
+                onHide={toggleActivationModal}
+                size="sm"
+                aria-labelledby="contained-modal-title-vcenter"
+                centered
+            >
+                <Modal.Header>
+                    <Modal.Title id="contained-modal-title-vcenter">{}</Modal.Title>
+                </Modal.Header>
+                <Modal.Body>
+                    <ValidationForm>
+                        <p className="text-center">A you sure you want to change the status of {rowData?.name} ?</p>
+                        <Button className="btn btn-danger float-left" onClick={handleCloseModal}>
+                            Cancel
+                        </Button>
+                        <Button className="btn btn-primary float-right" onClick={() => {
+                            handleToggleStatusSubmit(rowData);
+                        }}>
+                            Confirm
+                        </Button>
+                    </ValidationForm>
                 </Modal.Body>
             </Modal>
         </>
