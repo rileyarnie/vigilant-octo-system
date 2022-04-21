@@ -7,12 +7,14 @@ import Alert from '@material-ui/lab/Alert';
 import Breadcrumb from '../../App/components/Breadcrumb';
 import { Row, Col, Card, Button, Modal } from 'react-bootstrap';
 import { Link } from 'react-router-dom';
-import { ValidationForm, SelectGroup, TextInput } from 'react-bootstrap4-form-validation';
+import { ValidationForm, TextInput } from 'react-bootstrap4-form-validation';
 import { LinearProgress } from '@mui/material';
 import { canPerformActions } from '../../services/ActionChecker';
 import { ACTION_ASSIGN_COURSE_TO_PROGRAM, ACTION_CREATE_PROGRAM, ACTION_GET_PROGRAMS } from '../../authnz-library/timetabling-actions';
 import { timetablingAxiosInstance } from '../../utlis/interceptors/timetabling-interceptor';
 import TableWrapper from '../../utlis/TableWrapper';
+import { customSelectTheme, selectOptions, certType } from '../lib/SelectThemes';
+import Select from 'react-select';
 const alerts: Alerts = new ToastifyAlerts();
 
 const Programs = (): JSX.Element => {
@@ -30,7 +32,9 @@ const Programs = (): JSX.Element => {
 
     const [data, setData] = useState([]);
     const [iserror] = useState(false);
-
+    const departmentOptions = [];
+    const selectionOptions = [];
+    const certificationTypes = [];
     const [programName, setProgramName] = useState('');
     const [description, setDescription] = useState('');
     const [prerequisiteDocumentation, setPrerequisiteDocumentation] = useState('');
@@ -140,7 +144,15 @@ const Programs = (): JSX.Element => {
                 alerts.showError(error.message);
             });
     }, []);
-
+    departments.map((dept) => {
+        return departmentOptions.push({value: dept.id, label: dept.name});
+    });
+    selectOptions.map((sel) => {
+        return selectionOptions.push({ value: sel.value, label: sel.label });
+    });
+    certType.map((sel) => {
+        return certificationTypes.push({ value: sel.value, label: sel.label });
+    });
     const fetchPrograms = () => {
         setLinearDisplay('block');
         timetablingAxiosInstance
@@ -191,6 +203,15 @@ const Programs = (): JSX.Element => {
         setCertificationType('');
         setDuration('');
         setModal(false);
+    };
+    const handleChange = (selectedDepartment) => {
+        setSelectedDepartment(selectedDepartment);
+    };
+    const handleClearance = (requiresClearance) => {
+        setRequiresClearance(requiresClearance);
+    };
+    const handleCertType = (certType) => {
+        setCertificationType(certType);
     };
     const toggleCreateModal = () => {
         showModal ? resetStateCloseModal() : setModal(true);
@@ -286,7 +307,7 @@ const Programs = (): JSX.Element => {
                                 name="prerequisiteDocumentation"
                                 id="prerequisiteDocumentation"
                                 multiline
-                                rows="1"
+                                rows="3"
                                 value={prerequisiteDocumentation}
                                 onChange={(e) => setPrerequisiteDocumentation(e.target.value)}
                                 type="textarea"
@@ -294,52 +315,47 @@ const Programs = (): JSX.Element => {
                             />
                             <br />
                             <label htmlFor="certificationType">
-                                <b>CertificationType</b>
+                                <b>Certification Type</b>
                             </label>
                             <br />
-                            <SelectGroup
-                                name="certificationType"
-                                value={certificationType}
-                                onChange={(e) => setCertificationType(e.target.value)}
-                                required
-                                errorMessage="Please select CertificationType."
-                            >
-                                <option value="">--- Please select ---</option>
-                                <option value="Degree">Bachelors</option>
-                                <option value="Diploma">Diploma</option>
-                                <option value="Certificate">Certificate</option>
-                            </SelectGroup>
-                            <br />
-                            <br />
+                            <Select
+                                theme={customSelectTheme}
+                                defaultValue=""
+                                options={certificationTypes}
+                                isMulti={false}
+                                isClearable
+                                placeholder="Please select CertificationType."
+                                noOptionsMessage={() => 'No types available'}
+                                onChange={handleCertType}
+                            /><br/>
                             <label htmlFor="tiimetablelable">
                                 <b>Department</b>
                             </label>
                             <br />
-                            <SelectGroup name="department" id="department" required onChange={(e) => setSelectedDepartment(e.target.value)}>
-                                <option value="">-- select a department --</option>
-                                {departments.map((dpt) => {
-                                    return (
-                                        <option key={dpt.id} value={dpt.id}>
-                                            {dpt.name}
-                                        </option>
-                                    );
-                                })}
-                            </SelectGroup>
+                            <Select
+                                theme={customSelectTheme}
+                                defaultValue=""
+                                options={departmentOptions}
+                                isMulti={false}
+                                isClearable
+                                placeholder="Select a department."
+                                noOptionsMessage={() => 'No department available'}
+                                onChange={handleChange}
+                            /><br/>
                             <label htmlFor="requiresClearance">
                                 <b>Requires Clearance</b>
                             </label>
                             <br />
-                            <SelectGroup
-                                name="requiresClearance"
-                                value={requiresClearance}
-                                id="requiresClearance"
-                                onChange={(e) => setRequiresClearance(e.target.value)}
-                            >
-                                <option value="">--- Please select ---</option>
-                                <option value="true">Yes</option>
-                                <option value="false">No</option>
-                            </SelectGroup>
-                            <br />
+                            <Select
+                                theme={customSelectTheme}
+                                defaultValue=""
+                                options={selectionOptions}
+                                isMulti={false}
+                                isClearable
+                                placeholder="Please select"
+                                noOptionsMessage={() => 'No option available'}
+                                onChange={handleClearance}
+                            /><br/>
                             <br />
                             <label htmlFor="duration">
                                 <b>Program duration</b>

@@ -2,7 +2,6 @@
 import React, { useState, useEffect } from 'react';
 import Edit from '@material-ui/icons/Edit';
 import Alert from '@material-ui/lab/Alert';
-import { SelectGroup } from 'react-bootstrap4-form-validation';
 import Breadcrumb from '../../App/components/Breadcrumb';
 import { Row, Col, Card, Button, Modal } from 'react-bootstrap';
 import { ValidationForm, TextInput } from 'react-bootstrap4-form-validation';
@@ -13,6 +12,8 @@ import { canPerformActions } from '../../services/ActionChecker';
 import { ACTION_CREATE_DEPARTMENT, ACTION_GET_DEPARTMENTS, ACTION_UPDATE_DEPARTMENT } from '../../authnz-library/timetabling-actions';
 import { timetablingAxiosInstance } from '../../utlis/interceptors/timetabling-interceptor';
 import TableWrapper from '../../utlis/TableWrapper';
+import { customSelectTheme } from '../lib/SelectThemes';
+import Select from 'react-select';
 
 const alerts: Alerts = new ToastifyAlerts();
 
@@ -38,12 +39,13 @@ const Department = (): JSX.Element => {
             )
         }
     ];
+    const options = [];
     const [data, setData] = useState([]);
     const [iserror] = useState(false);
     const [deptname, setDeptName] = useState('');
     const [showModal, setModal] = useState(false);
     const [deptId, setDeptId] = useState(null);
-    const [hod, setHoD] = useState(null);
+    const [hod, setHod] = useState(null);
     const [selectedDeptName, setSelectedDeptName] = useState('');
     const [selectedHoD, setSelectedHoD] = useState(null);
     const [users, setUsers] = useState([]);
@@ -77,6 +79,7 @@ const Department = (): JSX.Element => {
             .then(() => {
                 const msg = activationStatus ? 'Department activated successfully' : 'Department deactivated successfully';
                 alerts.showSuccess(msg);
+                setActivationModal(false);
                 fetchDepartments();
                 setDisabled(false);
             })
@@ -95,7 +98,6 @@ const Department = (): JSX.Element => {
                 setData(res.data);
             })
             .catch((error) => {
-                //handle error using logging library
                 console.error(error);
                 alerts.showError(error.message);
             });
@@ -110,6 +112,9 @@ const Department = (): JSX.Element => {
                 alerts.showError(error.message);
             });
     }, []);
+    users.map((hod) => {
+        return options.push({ value: hod.tr_id, label: hod.tr_id });
+    });
     const updateDepartment = (deptId, updates) => {
         setLinearDisplay('block');
         console.log('fucking updates object ', updates);
@@ -179,6 +184,9 @@ const Department = (): JSX.Element => {
                 setLinearDisplay('none');
             });
     };
+    const handleChange = (hod) => {
+        setHod(hod);
+    };
     const resetStateCloseModal = () => {
         setDeptId(null);
         setDeptName('');
@@ -237,7 +245,7 @@ const Department = (): JSX.Element => {
                                                     onClick: (event, rowData) => {
                                                         setDeptId(rowData.id);
                                                         setSelectedDeptName(rowData.name);
-                                                        setHoD(rowData.hodTrainerId);
+                                                        setSelectedHoD(rowData.hodTrainerId);
                                                         setSelectedStatus(rowData.isActive);
                                                         toggleCreateModal();
                                                     }
@@ -279,27 +287,15 @@ const Department = (): JSX.Element => {
                         </div>
                         <div className="form-group">
                             <label htmlFor="trainerType">Select a HoD</label>
-                            <SelectGroup
-                                name="hod"
-                                id="hod"
-                                value={deptId ? selectedHoD : hod}
-                                required
-                                errorMessage="Please select a HOD."
-                                placeholder={deptId ? selectedHoD : 'Select a HoD'}
-                                onChange={(e) => {
-                                    console.log('TARGET ',e.target.value);
-                                    deptId ? setSelectedHoD(e.target.value) : setHoD(e.target.value);
-                                }}
-                            >
-                                <option value="">-- select a trainer --</option>
-                                {
-                                    users.map((user) => {
-                                        return (
-                                            <option key={user.tr_id} value={user.tr_id}>{user.tr_id}</option>
-                                        );
-                                    })   
-                                }
-                            </SelectGroup>
+                            <Select
+                                theme={customSelectTheme}
+                                defaultValue=""
+                                options={options}
+                                isMulti={false}
+                                placeholder="Select a HOD."
+                                noOptionsMessage={() => 'No HODs available'}
+                                onChange={handleChange}
+                            /><br/>
                         </div>
                         <div className="form-group" style={{ display: 'flex', justifyContent: 'space-between' }}>
                             <button className="btn btn-danger" onClick={() => toggleCreateModal()}>
