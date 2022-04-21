@@ -29,12 +29,14 @@ import ApplicantsList from './pages/finance/ApplicantsList';
 import StudentFeesReport from './pages/finance/StudentFeesReport';
 import WorkFlows from './pages/workFlows/WorkFlows';
 import ActionApprovals from './pages/Approvals/ActionApprovals';
+import StaffList from './pages/Users/StaffList';
 
 const routes = [
     { path: '/dashboard', exact: true, name: 'default', component: Default },
     { path: '/roles', exact: true, name: 'default', component: RoleList },
     { path: '/cohorts', exact: true, name: 'default', component: ProgramCohorts },
     { path: '/users', exact: true, name: 'default', component: UserList },
+    { path: '/staff', exact: true, name: 'default', component: StaffList },
     { path: '/createcampus', exact: true, name: 'default', component: CreateCampus },
     { path: '/createuser', exact: true, name: 'default', component: CreateUser },
     { path: '/departments', exact: true, name: 'default', component: Departments },

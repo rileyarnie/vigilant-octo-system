@@ -216,6 +216,13 @@ const chartData: { items: MenuItemType[] } = {
                     type: 'item',
                     icon: 'feather icon-user',
                     url: '/actionapprovals'
+                },
+                {
+                    id: 'Staff',
+                    title: 'Staff',
+                    type: 'item',
+                    icon: 'feather icon-user',
+                    url: '/staff'
                 }
             ]
         }
