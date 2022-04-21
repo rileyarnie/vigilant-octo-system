@@ -143,7 +143,7 @@ class CreateVenue extends Component<Props> {
                                                     options={this.options}
                                                     isMulti={false}
                                                     placeholder="Select campus"
-                                                    noOptionsMessage={() => 'No available courses'}
+                                                    noOptionsMessage={() => 'No available campus'}
                                                     onChange={this.handleSelectChange}
                                                 />
                                                 &nbsp;&nbsp;&nbsp;
