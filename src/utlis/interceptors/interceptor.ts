@@ -1,9 +1,9 @@
-export function onRequestMade (requestConfig)  {
+export function onRequestMade(requestConfig) {
     requestConfig.headers.authorization = `Bearer ${localStorage.getItem('idToken')}`;
     return requestConfig;
 }
 
-export function onRequestFailed(error)  {
+export function onRequestFailed(error) {
     return Promise.reject(error);
 }
 
@@ -11,11 +11,11 @@ export function onResponseSuccess(responseConfig) {
     return responseConfig;
 }
 
-export function onResponseFailed(error)  {
+export function onResponseFailed(error) {
     const customErrorObject: { status: number; message: string } = { status: 0, message: '' };
     const status = error.response?.status;
     //check if error from server is 401 then logout user
-    if (status === 401 || status === 403) {
+    if (status === 401) {
         localStorage.removeItem('idToken');
         window.location.replace('login');
     }
