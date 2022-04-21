@@ -12,14 +12,7 @@ import TableWrapper from '../../utlis/TableWrapper';
 const alerts: Alerts = new ToastifyAlerts();
 import { Select, MenuItem } from '@material-ui/core';
 
-interface History {
-    push: (path: string) => void;
-}
-interface IProps {
-    history: History;
-}
-
-const StaffList = (props: IProps): JSX.Element => {
+const StaffList = (): JSX.Element => {
     const columns = [
         { title: 'SN', field: 'id' },
         { title: 'Name', field: 'isStaff' },
@@ -88,12 +81,7 @@ const StaffList = (props: IProps): JSX.Element => {
                 <Row>
                     <Col>
                         <Card>
-                            <TableWrapper
-                                columns={columns}
-                                title="users"
-                                data={data}
-                                options={{}}
-                            />
+                            <TableWrapper columns={columns} title="users" data={data} options={{}} />
                         </Card>
                     </Col>
                 </Row>
