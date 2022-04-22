@@ -2,15 +2,16 @@
 /* eslint-disable react/display-name */
 import React, { useState, useEffect } from 'react';
 import Breadcrumb from '../../App/components/Breadcrumb';
-import { Row, Col, Card, Button } from 'react-bootstrap';
+import { Row, Col, Card,} from 'react-bootstrap';
 import { Alerts, ToastifyAlerts } from '../lib/Alert';
 import { LinearProgress } from '@mui/material';
 import { canPerformActions } from '../../services/ActionChecker';
-import { ACTION_ASSIGN_ROLES, ACTION_GET_USERS } from '../../authnz-library/authnz-actions';
+import { ACTION_GET_USERS } from '../../authnz-library/authnz-actions';
 import { authnzAxiosInstance } from '../../utlis/interceptors/authnz-interceptor';
 import TableWrapper from '../../utlis/TableWrapper';
 const alerts: Alerts = new ToastifyAlerts();
 import { Select, MenuItem } from '@material-ui/core';
+import CreateStaff from './CreateStaff/CreateStaff';
 
 const StaffList = (): JSX.Element => {
     const columns = [
@@ -58,10 +59,10 @@ const StaffList = (): JSX.Element => {
                 alerts.showError(error.message);
             });
     };
-    const handleRouteChange = () => {
-        // create staff logic here
-        console.log('create staff function');
-    };
+    // const handleRouteChange = () => {
+    //     // create staff logic here
+    //     console.log('create staff function');
+    // };
 
     return (
         <>
@@ -70,18 +71,20 @@ const StaffList = (): JSX.Element => {
                     <Breadcrumb />
                 </Col>
 
-                {canPerformActions(ACTION_ASSIGN_ROLES.name) && (
+                {/* {canPerformActions(ACTION_ASSIGN_ROLES.name) && (
                     <Button variant="danger" onClick={() => handleRouteChange()}>
                         Create Staff
                     </Button>
-                )}
+                )} */}
+                <CreateStaff/>
+
             </Row>
             <LinearProgress style={{ display: linearDisplay }} />
             {canPerformActions(ACTION_GET_USERS.name) && (
                 <Row>
                     <Col>
                         <Card>
-                            <TableWrapper columns={columns} title="users" data={data} options={{}} />
+                            <TableWrapper columns={columns} title="Staff" data={data} options={{}} />
                         </Card>
                     </Col>
                 </Row>
