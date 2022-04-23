@@ -126,8 +126,10 @@
         "validator": "^13.7.0"
     },
     "scripts": {
-        "start:dev": "cross-env PORT=3001 react-scripts start",
-        "build": "react-scripts build",
+        "start:dev": "cp src/config.local.ts src/config.ts && cross-env PORT=3001 react-scripts start",
+        "build:develop": "cp src/config.develop.ts src/config.ts && react-scripts build",
+        "build:qa": "cp src/config.qa.ts src/config.ts && react-scripts build",
+        "build:prod": "cp src/config.prod.ts src/config.ts && react-scripts build",
         "test": "react-scripts test",
         "eject": "react-scripts eject",
         "lint": "eslint . --ext .ts",
