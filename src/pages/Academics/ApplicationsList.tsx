@@ -265,53 +265,29 @@ const ApplicationsList = (): JSX.Element => {
                                     columns={columns}
                                     onRowClick={(event, row) => {
                                         toggleCreateModal();
-
                                         setFirstName(row.applications_firstName);
-
                                         setLastName(row.applications_lastName);
-
                                         setOtherName(row.applications_otherName);
-
                                         setIdentification(row.applications_identification);
-
                                         setGender(row.applications_gender);
-
                                         setMaritalStatus(row.applications_maritalStatus);
-
                                         setReligion(row.applications_religion);
-
                                         setDateOfBirth(row.applications_dateOfBirth.slice(0, 10));
-
                                         setPlaceOfBirth(row.applications_placeofBirth);
-
                                         setPhoneNumber(row.applications_phoneNumber);
-
                                         setEmailAddress(row.applications_emailAddress);
-
                                         setNationality(row.applications_nationality);
-
                                         setPhysicalChallenges(row.applications_physicalChallenges);
-
                                         setCourseStartDate(row.applications_courseStartDate.slice(0, 10));
-
                                         setCampus(row.applications_campus);
-
                                         setSponsor(row.applications_sponsor);
-
                                         setCountryOfResidence(row.applications_countryOfResidence);
-
                                         setProgramCohortId(row.applications_programCohortId);
-
                                         setIsAdmitted(row.applications_status);
-
                                         setNextOfKinName(row.nkd_name);
-
                                         setNextOfKinPhoneNumber(row.nkd_nextOfKinPhoneNumber);
-
                                         setNextOfKinRelation(row.nkd_relation);
-
                                         setApplicationId(row.applications_id);
-
                                         setDocumentsUrl(row.sdocs_documentUrl);
                                     }}
                                     data={data}
@@ -336,6 +312,7 @@ const ApplicationsList = (): JSX.Element => {
                                                         <MenuItem value={'ADMITTED'}>Admitted</MenuItem>
                                                         <MenuItem value={'PENDING'}>Pending</MenuItem>
                                                         <MenuItem value={'REJECTED'}>Rejected</MenuItem>
+                                                        <MenuItem value={'FAILED'}>Failed</MenuItem>
                                                     </Select>
                                                 </div>
                                             </div>
