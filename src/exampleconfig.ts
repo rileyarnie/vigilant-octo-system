@@ -1,0 +1,24 @@
+/* eslint-disable linebreak-style */
+const Config = {
+    appId: 'AAD app id',
+    redirectUri: 'uri that AAD will redirect to on successful login e.g. https://localhost/students',
+    authority: 'AAD authority url',
+    scopes: ['user.read'],
+    defaultPath: '/dashboard',
+    basename: '/staff',
+    layout: 'vertical',
+    collapseMenu: false,
+    layoutType: 'menu-dark',
+    headerBackColor: '',
+    fullWidthLayout: true,
+    navFixedLayout: true,
+    headerFixedLayout: true,
+    baseUrl: {
+        authnzSrv: 'https://host/authnz-service/v0.0.1',
+        timetablingSrv: 'https://host/timetabling-service/0.0.1',
+        financeSrv: 'https://host/finance-service/0.0.1',
+        simsSrv: 'https://host/sim-service/v0.0.1'
+    }
+};
+
+export default Config;
