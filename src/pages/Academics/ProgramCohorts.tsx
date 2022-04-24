@@ -33,10 +33,14 @@ const ProgramCohorts = (): JSX.Element => {
         pg_id: number;
         bannerImageUrl: string;
         program_cohorts_campusId: number;
+        cmps_id:number;
+        cmps_name:string
     }
 
     const programOptions = [];
     const campusOptions = [];
+    const programAssigned = [];
+    const campusAssigned = [];
     const [data, setData] = useState([]);
     const [isError] = useState(false);
     const [, setDisabled] = useState(false);
@@ -233,6 +237,22 @@ const ProgramCohorts = (): JSX.Element => {
     campuses.map((camp) => {
         return campusOptions.push({value: camp.id, label: camp.name});
     });
+    const assignedProgram:{ pg_id: number; pg_name: string }[] = [
+        {pg_id: selectedProgramCohort?.pg_id, pg_name : selectedProgramCohort?.pg_name},
+    ];
+    const assignedCampus:{ cmps_id: number; cmps_name: string  }[] = [
+        {cmps_id: selectedProgramCohort?.cmps_id, cmps_name : selectedProgramCohort?.cmps_name},
+    ];
+    assignedProgram.map((prog) => {
+        return programAssigned.push({value: prog.pg_id, label: prog.pg_name});
+    });
+    assignedCampus.map((camp) => {
+        return campusAssigned.push({value: camp.cmps_id, label: camp.cmps_name});
+    });
+    console.log('Debug',selectedProgramCohort);
+    console.log('PROGRAM',assignedProgram);
+    console.log('CAMPUS',assignedCampus);
+
     const fetchProgramCohorts = (): void => {
         setLinearDisplay('block');
         timetablingAxiosInstance
@@ -470,7 +490,7 @@ const ProgramCohorts = (): JSX.Element => {
                                     </label>
                                     <Select
                                         theme={customSelectTheme}
-                                        defaultValue=""
+                                        defaultValue={programAssigned}
                                         options={programOptions}
                                         isMulti={false}
                                         placeholder="Select a Program."
@@ -482,7 +502,7 @@ const ProgramCohorts = (): JSX.Element => {
                                     </label>
                                     <Select
                                         theme={customSelectTheme}
-                                        defaultValue=""
+                                        defaultValue={campusAssigned}
                                         options={campusOptions}
                                         isMulti={false}
                                         placeholder="Select a Campus."
