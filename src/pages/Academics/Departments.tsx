@@ -118,7 +118,7 @@ const Department = (): JSX.Element => {
     });
     const updateDepartment = (deptId, updates) => {
         setLinearDisplay('block');
-        console.log('fucking updates object ', updates);
+        console.log('updating with payload', updates);
         timetablingAxiosInstance
             .put(`/departments/${deptId}`, updates)
             .then(() => {

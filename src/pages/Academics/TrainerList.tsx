@@ -9,7 +9,6 @@ import {Alerts, ToastifyAlerts} from '../lib/Alert';
 import LinearProgress from '@mui/material/LinearProgress';
 import {canPerformActions} from '../../services/ActionChecker';
 import {ACTION_CREATE_TRAINER, ACTION_UPDATE_TRAINER} from '../../authnz-library/timetabling-actions';
-import {authnzAxiosInstance} from '../../utlis/interceptors/authnz-interceptor';
 import {timetablingAxiosInstance} from '../../utlis/interceptors/timetabling-interceptor';
 import {DepartmentService} from '../services/DepartmentService';
 import TableWrapper from '../../utlis/TableWrapper';
@@ -26,10 +25,10 @@ const alerts: Alerts = new ToastifyAlerts();
 
 const TrainerList = (): JSX.Element => {
     const columns = [
-        {title: 'ID', field: 'tr_id', hidden: false},
-        {title: 'Trainer AADAlias', render: (rowData) => getAADAlias(rowData.tr_userId)},
-        {title: 'Trainer type', field: 'tr_trainerType'},
-        {title: 'Department ID', field: 'tr_departmentId'},
+        { title: 'ID', field: 'tr_id', hidden: false },
+        { title: 'Trainer AADAlias', render: (rowData) => rowData.stf_email },
+        { title: 'Trainer type', field: 'tr_trainerType' },
+        { title: 'Department ID', field: 'tr_departmentId' },
         {
             title: ' Actions',
             render: (row: { tr_departmentId: number, tr_trainerType: string, tr_id: number }) => (
@@ -62,12 +61,12 @@ const TrainerList = (): JSX.Element => {
             )
         }
     ];
-    const userOptions = [];
+    const staffOptions = [];
     const departmentOptions = [];
     const trainerTypeOptions = [];
     const [data, setData] = useState([]);
     const [isError] = useState(false);
-    const [users, setUsers] = useState([]);
+    const [staff, setStaff] = useState([]);
     const [departments, setDepartments] = useState([]);
     const [selectedUser, setSelectedUser] = useState(0);
     const [selectedDept, setDept] = useState<number>();
@@ -96,10 +95,10 @@ const TrainerList = (): JSX.Element => {
                 alerts.showError(error.message);
             });
 
-        authnzAxiosInstance
-            .get('/users')
+        timetablingAxiosInstance
+            .get('/staff')
             .then((res) => {
-                setUsers(res.data);
+                setStaff(res.data);
             })
             .catch((error) => {
                 //handle error using logging library
@@ -118,8 +117,8 @@ const TrainerList = (): JSX.Element => {
                 alerts.showError(error.message);
             });
     }, []);
-    users.map((user) => {
-        return userOptions.push({value: user.id, label: user.aadAlias});
+    staff.map((staff) => {
+        return staffOptions.push({value: staff.id, label: staff.name});
     });
     departments.map((dept) => {
         return departmentOptions.push({value: dept.id, label: dept.name});
@@ -145,7 +144,7 @@ const TrainerList = (): JSX.Element => {
     const handleSubmit = (e) => {
         e.preventDefault();
         const trainer = {
-            userId: selectedUser,
+            staffId: selectedUser,
             departmentId: selectedDept,
             trainerType: trainerType
         };
@@ -190,9 +189,6 @@ const TrainerList = (): JSX.Element => {
         });
     };
 
-    const getAADAlias = (id: number) => {
-        return users.filter((user) => user.id === id).map((user) => user.aadAlias)[0];
-    };
     const toggleCreateModal = () => {
         showModal ? setModal(false) : setModal(true);
     };
@@ -203,10 +199,11 @@ const TrainerList = (): JSX.Element => {
         setDept(parseInt(selectedDept));
     };
     const handleUser = (selectedUser) => {
-        setSelectedUser(selectedUser);
+        console.log('selected user ', selectedUser.value);
+        setSelectedUser(selectedUser.value);
     };
     const handleTrainerType = (trainerTyp) => {
-        setTrainerType(trainerTyp);
+        setTrainerType(trainerTyp.value);
     };
     const toggleEditModal = () => {
         showEditModal ? setEditModal(false) : setEditModal(true);
@@ -272,11 +269,11 @@ const TrainerList = (): JSX.Element => {
                 <Modal.Body>
                     <ValidationForm>
                         <div className="form-group">
-                            <label htmlFor="user">Select a user</label>
+                            <label htmlFor="user">Select staff</label>
                             <Select
                                 theme={customSelectTheme}
                                 defaultValue=""
-                                options={userOptions}
+                                options={staffOptions}
                                 isMulti={false}
                                 placeholder="Select a user."
                                 noOptionsMessage={() => 'No users available'}
