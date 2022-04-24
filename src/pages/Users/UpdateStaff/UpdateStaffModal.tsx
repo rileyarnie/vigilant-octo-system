@@ -4,19 +4,17 @@ import { Modal } from 'react-bootstrap';
 import { Row, Col } from 'react-bootstrap';
 import { ValidationForm, TextInput } from 'react-bootstrap4-form-validation';
 import validator from 'validator';
-import Select from 'react-select';
 import { timetablingAxiosInstance } from '../../../utlis/interceptors/timetabling-interceptor';
-
 import { Alerts, ToastifyAlerts } from '../../lib/Alert';
 
 const alerts: Alerts = new ToastifyAlerts();
 
-const CreateStaffModal = (props): JSX.Element => {
-    const [identificationType, setIdentificationType] = useState('');
-    const [identification, setIdentification] = useState('');
-    const [name, setName] = useState('');
-    const [email, setEmail] = useState('');
-    const [userId, setUserId] = useState('');
+const UpdateStaffModal = (props): JSX.Element => {
+    const [identificationType, setIdentificationType] = useState(props.data.identificationType);
+    const [identification, setIdentification] = useState(props.data.identification);
+    const [name, setName] = useState(props.data.name);
+    const [userId, setUserId] = useState(props.data.id);
+    const [email, setEmail] = useState(props.data.email);
 
     const handleIdentificationTypeChange = (event) => {
         setIdentificationType(event.target.value);
@@ -24,22 +22,23 @@ const CreateStaffModal = (props): JSX.Element => {
     const handleIdentificationChange = (event) => {
         setIdentification(event.target.value);
     };
-    const handleNameChange = (event) => {
-        setName(event.target.value);
-    };
+
     const handleEmailChange = (event) => {
         setEmail(event.target.value);
+    };
+
+    const handleNameChange = (event) => {
+        setName(event.target.value);
     };
 
     const handleSubmit = (e) => {
         e.preventDefault();
         //submit function here
         const data = { name, identification, identificationType, email };
-        const body = userId ? { ...data, userId } : data;
         timetablingAxiosInstance
-            .post('/staff', body)
+            .put(`/staff/${userId}`, data)
             .then(() => {
-                alerts.showSuccess('successfully created staff');
+                alerts.showSuccess('successfully updated staff');
                 setEmail('');
                 setUserId('');
                 setName('');
@@ -54,14 +53,14 @@ const CreateStaffModal = (props): JSX.Element => {
     const handleErrorSubmit = (e, _formData, errorInputs) => {
         console.error(errorInputs);
     };
-    const handleSelect = (e) => {
-        setUserId(e.value);
-    };
+    // const handleSelect = (e) => {
+    //     setUserId(e.value);
+    // };
 
     return (
         <Modal {...props} size="lg" aria-labelledby="contained-modal-title-vcenter" centered backdrop="static">
             <Modal.Header closeButton>
-                <Modal.Title id="contained-modal-title-vcenter">Create Staff</Modal.Title>
+                <Modal.Title id="contained-modal-title-vcenter">Update Staff</Modal.Title>
             </Modal.Header>
             <Modal.Body>
                 <>
@@ -74,7 +73,7 @@ const CreateStaffModal = (props): JSX.Element => {
                                 <Col md={12}>
                                     <ValidationForm onSubmit={handleSubmit} onErrorSubmit={handleErrorSubmit}>
                                         <Row style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                                            <Col sm={6}>
+                                            {/* <Col sm={6}>
                                                 <div className="form-group">
                                                     <label htmlFor="user">
                                                         <b>User</b>
@@ -91,7 +90,7 @@ const CreateStaffModal = (props): JSX.Element => {
                                                         onChange={(e) => handleSelect(e)}
                                                     />
                                                 </div>
-                                            </Col>
+                                            </Col> */}
                                             <Col sm={6}>
                                                 <div className="form-group">
                                                     <label htmlFor="email">
@@ -111,7 +110,7 @@ const CreateStaffModal = (props): JSX.Element => {
                                             </Col>
                                             <Col sm={6}>
                                                 <div className="form-group">
-                                                    <label htmlFor="name">
+                                                    <label htmlFor="email">
                                                         <b>Name</b>
                                                     </label>
                                                     <TextInput
@@ -127,7 +126,7 @@ const CreateStaffModal = (props): JSX.Element => {
                                             </Col>
                                             <Col sm={6}>
                                                 <div className="form-group">
-                                                    <label htmlFor="identificationType">
+                                                    <label htmlFor="email">
                                                         <b>Identification Type</b>
                                                     </label>
                                                     <TextInput
@@ -143,7 +142,7 @@ const CreateStaffModal = (props): JSX.Element => {
                                             </Col>
                                             <Col sm={6}>
                                                 <div className="form-group">
-                                                    <label htmlFor="identification">
+                                                    <label htmlFor="email">
                                                         <b>Identification</b>
                                                     </label>
                                                     <TextInput
@@ -157,7 +156,6 @@ const CreateStaffModal = (props): JSX.Element => {
                                                     />
                                                 </div>
                                             </Col>
-                                            <Col sm={6}></Col>
                                         </Row>
 
                                         <div className="form-group">
@@ -177,4 +175,4 @@ const CreateStaffModal = (props): JSX.Element => {
     );
 };
 
-export default CreateStaffModal;
+export default UpdateStaffModal;
