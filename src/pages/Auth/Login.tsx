@@ -5,13 +5,13 @@ import React, {useContext, useState, useEffect} from 'react';
 import {PublicClientApplication} from '@azure/msal-browser';
 import {Alerts, ToastifyAlerts} from '../lib/Alert';
 import {getUserDetails} from '../lib/GraphService';
-import Config from '../../config';
 import {AuthContext} from '../../App/context/AuthContext';
 import {Button} from 'react-bootstrap';
 import {authnzAxiosInstance} from '../../utlis/interceptors/authnz-interceptor';
 import LinearProgress from '@mui/material/LinearProgress';
 import background from '../../assets/images/staffbg.jpg';
 import logo from '../../assets/images/logo-dark.png';
+import Config from '../../exampleconfig';
 
 const alerts: Alerts = new ToastifyAlerts();
 const Login = () => {

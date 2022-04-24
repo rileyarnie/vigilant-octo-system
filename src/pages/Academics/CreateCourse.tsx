@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import React, { Component } from 'react';
-import { Row, Col, Card } from 'react-bootstrap';
+import {Row, Col, Card, Modal, Button} from 'react-bootstrap';
 import { ValidationForm, TextInput } from 'react-bootstrap4-form-validation';
 import Select from 'react-select';
 import { Alerts, ToastifyAlerts } from '../lib/Alert';
@@ -37,7 +37,8 @@ class CourseCreation extends Component<Props> {
         courseOutline: '',
         editorState: EditorState.createEmpty(),
         departments: [],
-        departmentId: 0
+        departmentId: 0,
+        confirmModal:false
     };
 
     componentDidMount() {
@@ -149,11 +150,16 @@ class CourseCreation extends Component<Props> {
             this.coursesArr.push(el.value);
         });
     };
-
+    toggleConfirmModal = () => {
+        this.setState({confirmModal:true});
+    };
+    toggleCloseConfirmModal = () => {
+        this.setState({confirmModal:false});
+    };
     render(): JSX.Element {
         return (
             <>
-                <Row className="align-items-center page-header"></Row>
+                <Row className="align-items-center page-header"/>
                 <LinearProgress style={{ display: this.props.linearDisplay }} />
                 <Row>
                     <Col>
@@ -187,7 +193,7 @@ class CourseCreation extends Component<Props> {
                                                     noOptionsMessage={() => 'No available courses'}
                                                     onChange={this.handleSelectChange}
                                                 />
-                                                <p></p>
+                                                <p/>
                                                 <label htmlFor="description">
                                                     <b>Description</b>
                                                 </label>
@@ -293,6 +299,26 @@ class CourseCreation extends Component<Props> {
                         </Card>
                     </Col>
                 </Row>
+                <Modal
+                    show={this.state.confirmModal}
+                    onHide={this.toggleConfirmModal}
+                    size="sm"
+                    backdrop="static"
+                    aria-labelledby="contained-modal-title-vcenter"
+                    centered>
+                    <Modal.Header>{' '}</Modal.Header>
+                    <Modal.Body>
+                        <h6 className="text-center">A you sure you want to create a course ?</h6>
+                    </Modal.Body>
+                    <Modal.Footer style={{display: 'flex', justifyContent: 'space-between'}}>
+                        <Button variant="btn btn-danger btn-rounded" onClick={this.toggleCloseConfirmModal}>
+                            Continue editing
+                        </Button>
+                        <button className="btn btn-info float-right" onClick={this.handleSubmit}>
+                            Confirm
+                        </button>
+                    </Modal.Footer>
+                </Modal>
             </>
         );
     }

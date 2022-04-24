@@ -42,6 +42,7 @@ const ProgramCohorts = (): JSX.Element => {
     const programAssigned = [];
     const campusAssigned = [];
     const [data, setData] = useState([]);
+    const [confirmModal, setConfirmModal] = useState(false);
     const [isError] = useState(false);
     const [, setDisabled] = useState(false);
     const [programId, setProgramId] = useState(0);
@@ -249,10 +250,6 @@ const ProgramCohorts = (): JSX.Element => {
     assignedCampus.map((camp) => {
         return campusAssigned.push({value: camp.cmps_id, label: camp.cmps_name});
     });
-    console.log('Debug',selectedProgramCohort);
-    console.log('PROGRAM',assignedProgram);
-    console.log('CAMPUS',assignedCampus);
-
     const fetchProgramCohorts = (): void => {
         setLinearDisplay('block');
         timetablingAxiosInstance
@@ -419,6 +416,12 @@ const ProgramCohorts = (): JSX.Element => {
         fetchProgramCohorts();
         setActivationModal(false);
     };
+    const toggleConfirmModal = () => {
+        setConfirmModal(true);
+    };
+    const toggleCloseConfirmModal = () => {
+        setConfirmModal(false);
+    };
     return (
         <>
             <Row className="align-items-center page-header">
@@ -584,25 +587,18 @@ const ProgramCohorts = (): JSX.Element => {
                                 </div>
                                 <input name="banner" id="banner" type="hidden" required value={banner}/>
                                 <br/>
-                                <div className="form-group">
-                                    <button
-                                        className="btn btn-primary float-right"
-                                        onClick={(e) => {
-                                            cohortId ? handleEdit(e) : handleCreate(e);
-                                        }}
-                                    >
-                                        Submit
-                                    </button>
-                                    <button
-                                        className="btn btn-danger float-left"
-                                        onClick={() => {
-                                            toggleCreateModal();
-                                        }}
-                                    >
-                                        Cancel
-                                    </button>
-                                </div>
                             </ValidationForm>
+                            <div className="form-group">
+                                <button className="btn btn-info float-right" onClick={toggleConfirmModal}>Submit</button>
+                                <button
+                                    className="btn btn-danger float-left"
+                                    onClick={() => {
+                                        toggleCreateModal();
+                                    }}
+                                >
+                                    Cancel
+                                </button>
+                            </div>
                         </Col>
                         <Col sm={4}>
                             <CardPreview
@@ -714,6 +710,33 @@ const ProgramCohorts = (): JSX.Element => {
                         </Button>
                     </ValidationForm>
                 </Modal.Body>
+            </Modal>
+            <Modal
+                show={confirmModal}
+                onHide={toggleConfirmModal}
+                size="sm"
+                backdrop="static"
+                aria-labelledby="contained-modal-title-vcenter"
+                centered>
+                <Modal.Header>{' '}</Modal.Header>
+                <Modal.Body>
+                    <h6 className="text-center">{cohortId
+                        ? `A you sure you want to Edit: ${getProgramCohortFields(cohortId).pg_name}`
+                        : 'A you sure you want to create a program cohort ?'}</h6>
+                </Modal.Body>
+                <Modal.Footer style={{display: 'flex', justifyContent: 'space-between'}}>
+                    <Button variant="btn btn-danger btn-rounded" onClick={toggleCloseConfirmModal}>
+                        Continue editing
+                    </Button>
+                    <button
+                        className="btn btn-info float-right"
+                        onClick={(e) => {
+                            cohortId ? handleEdit(e) : handleCreate(e);
+                        }}
+                    >
+                        Confirm
+                    </button>
+                </Modal.Footer>
             </Modal>
         </>
     );

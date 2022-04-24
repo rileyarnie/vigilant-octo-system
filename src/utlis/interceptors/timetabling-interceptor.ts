@@ -1,5 +1,5 @@
 import axios from 'axios';
-import Config from '../../config';
+import Config from '../../exampleconfig';
 import {onRequestFailed, onRequestMade, onResponseFailed, onResponseSuccess} from './interceptor';
 
 const baseURL = Config.baseUrl.timetablingSrv;
