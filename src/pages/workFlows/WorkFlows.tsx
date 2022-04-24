@@ -50,6 +50,7 @@ const WorkFlows = (): JSX.Element => {
     const [linearDisplay, setLinearDisplay] = useState('none');
     const [showModal, setModal] = useState(false);
     const [roles, setRoles] = useState([]);
+    const [confirmModal, setConfirmModal] = useState(false);
     const authnzActions = Array.from(getAuthnzServiceActions().values());
     const financeActions = Array.from(getFinanceServiceActions().values());
     const timetableActions = Array.from(getTimetablingServiceActions().values());
@@ -119,6 +120,12 @@ const WorkFlows = (): JSX.Element => {
     const handleClose = () => {
         showModal ? resetStateCloseModal() : setModal(false);
     };
+    const toggleConfirmModal = () => {
+        setConfirmModal(true);
+    };
+    const toggleCloseConfirmModal = () => {
+        setConfirmModal(false);
+    };
     return (
         <>
             <div>
@@ -175,9 +182,29 @@ const WorkFlows = (): JSX.Element => {
                     <Button className="btn btn-danger float-left" onClick={handleClose}>
                         Close
                     </Button>
-                    <Button className="btn btn-info float-right" onClick={handleSubmitWorkFlow}>
+                    <Button className="btn btn-info float-right" onClick={toggleConfirmModal}>
                         Submit
                     </Button>
+                </Modal.Footer>
+            </Modal>
+            <Modal
+                show={confirmModal}
+                onHide={toggleConfirmModal}
+                size="sm"
+                backdrop="static"
+                aria-labelledby="contained-modal-title-vcenter"
+                centered>
+                <Modal.Header>{' '}</Modal.Header>
+                <Modal.Body>
+                    <h6 className="text-center">A you sure you want to administer workflow for <i style={{fontWeight:'lighter'}}>{actionName}</i>?</h6>
+                </Modal.Body>
+                <Modal.Footer style={{display: 'flex', justifyContent: 'space-between'}}>
+                    <Button variant="btn btn-danger btn-rounded" onClick={toggleCloseConfirmModal}>
+                        Continue editing
+                    </Button>
+                    <button className="btn btn-info float-right" onClick={handleSubmitWorkFlow}>
+                        Confirm
+                    </button>
                 </Modal.Footer>
             </Modal>
         </>

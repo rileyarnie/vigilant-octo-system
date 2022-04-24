@@ -1,19 +1,19 @@
 /* eslint-disable react/display-name */
-import React, { useState, useEffect } from 'react';
+import React, {useState, useEffect} from 'react';
 import Alert from '@material-ui/lab/Alert';
 import Department from '../services/Department';
 import Breadcrumb from '../../App/components/Breadcrumb';
-import { Row, Col, Card, Modal, Button, DropdownButton, Dropdown } from 'react-bootstrap';
-import { ValidationForm} from 'react-bootstrap4-form-validation';
-import { Alerts, ToastifyAlerts } from '../lib/Alert';
+import {Row, Col, Card, Modal, Button, DropdownButton, Dropdown} from 'react-bootstrap';
+import {ValidationForm} from 'react-bootstrap4-form-validation';
+import {Alerts, ToastifyAlerts} from '../lib/Alert';
 import LinearProgress from '@mui/material/LinearProgress';
-import { canPerformActions } from '../../services/ActionChecker';
-import { ACTION_CREATE_TRAINER, ACTION_UPDATE_TRAINER } from '../../authnz-library/timetabling-actions';
-import { authnzAxiosInstance } from '../../utlis/interceptors/authnz-interceptor';
-import { timetablingAxiosInstance } from '../../utlis/interceptors/timetabling-interceptor';
-import { DepartmentService } from '../services/DepartmentService';
+import {canPerformActions} from '../../services/ActionChecker';
+import {ACTION_CREATE_TRAINER, ACTION_UPDATE_TRAINER} from '../../authnz-library/timetabling-actions';
+import {authnzAxiosInstance} from '../../utlis/interceptors/authnz-interceptor';
+import {timetablingAxiosInstance} from '../../utlis/interceptors/timetabling-interceptor';
+import {DepartmentService} from '../services/DepartmentService';
 import TableWrapper from '../../utlis/TableWrapper';
-import { customSelectTheme, trainerTypes } from '../lib/SelectThemes';
+import {customSelectTheme, trainerTypes} from '../lib/SelectThemes';
 import Select from 'react-select';
 
 const alerts: Alerts = new ToastifyAlerts();
@@ -26,13 +26,13 @@ const alerts: Alerts = new ToastifyAlerts();
 
 const TrainerList = (): JSX.Element => {
     const columns = [
-        { title: 'ID', field: 'tr_id', hidden: false },
-        { title: 'Trainer AADAlias', render: (rowData) => getAADAlias(rowData.tr_userId) },
-        { title: 'Trainer type', field: 'tr_trainerType' },
-        { title: 'Department ID', field: 'tr_departmentId' },
+        {title: 'ID', field: 'tr_id', hidden: false},
+        {title: 'Trainer AADAlias', render: (rowData) => getAADAlias(rowData.tr_userId)},
+        {title: 'Trainer type', field: 'tr_trainerType'},
+        {title: 'Department ID', field: 'tr_departmentId'},
         {
             title: ' Actions',
-            render: (row:{tr_departmentId:number, tr_trainerType:string, tr_id:number}) => (
+            render: (row: { tr_departmentId: number, tr_trainerType: string, tr_id: number }) => (
                 <DropdownButton id="dropdown-basic-button" variant="Secondary" title="Actions">
                     {canPerformActions(ACTION_UPDATE_TRAINER.name) && (
                         <div
@@ -73,6 +73,7 @@ const TrainerList = (): JSX.Element => {
     const [selectedDept, setDept] = useState<number>();
     const [trainerType, setTrainerType] = useState<string>();
     const [showModal, setModal] = useState(false);
+    const [confirmModal, setConfirmModal] = useState(false);
     const [showEditModal, setEditModal] = useState(false);
     const [errorMessages] = useState([]);
     const [trainerId, setTrainerId] = useState(0);
@@ -216,11 +217,17 @@ const TrainerList = (): JSX.Element => {
     const toggleDeleteModal = () => {
         showDeleteModal ? setDeleteModal(false) : setDeleteModal(true);
     };
+    const toggleConfirmModal = () => {
+        setConfirmModal(true);
+    };
+    const toggleCloseConfirmModal = () => {
+        setConfirmModal(false);
+    };
     return (
         <>
             <Row className="align-items-center page-header">
                 <Col>
-                    <Breadcrumb />
+                    <Breadcrumb/>
                 </Col>
                 <Col>
                     {canPerformActions(ACTION_CREATE_TRAINER.name) && (
@@ -231,7 +238,7 @@ const TrainerList = (): JSX.Element => {
                 </Col>
             </Row>
 
-            <LinearProgress style={{ display: linearDisplay }} />
+            <LinearProgress style={{display: linearDisplay}}/>
             <Row>
                 <Col>
                     {canPerformActions(ACTION_CREATE_TRAINER.name) && (
@@ -245,7 +252,7 @@ const TrainerList = (): JSX.Element => {
                                     </Alert>
                                 )}
                             </div>
-                            <TableWrapper title="Trainers" columns={columns} data={data} editable={{}} options={{}} />
+                            <TableWrapper title="Trainers" columns={columns} data={data} editable={{}} options={{}}/>
                         </Card>
                     )}
                 </Col>
@@ -304,15 +311,15 @@ const TrainerList = (): JSX.Element => {
                                 onChange={handleTrainerType}
                             /><br/>
                         </div>
-                        <div className="form-group">
-                            <button className="btn btn-primary float-right" onClick={(e) => handleSubmit(e)}>
-                                Submit
-                            </button>
-                        </div>
+                    </ValidationForm>
+                    <Col>
+                        <button className="btn btn-info float-right" onClick={toggleConfirmModal}>
+                            Submit
+                        </button>
                         <button className="btn btn-danger float-left" onClick={handleCloseModal}>
                             Cancel
                         </button>
-                    </ValidationForm>
+                    </Col>
                 </Modal.Body>
             </Modal>
             <Modal
@@ -371,13 +378,12 @@ const TrainerList = (): JSX.Element => {
                 </Modal.Header>
                 <Modal.Body>
                     <p>Please change the HoD for {departmentsWithHoDTrainer?.name} before attempting to remove this trainer</p>
-
-                    <Modal.Footer>
-                        <Button variant="primary" onClick={() => toggleCantDeleteModal()}>
-                            Close
-                        </Button>
-                    </Modal.Footer>
                 </Modal.Body>
+                <Modal.Footer>
+                    <Button variant="primary" onClick={() => toggleCantDeleteModal()}>
+                        Close
+                    </Button>
+                </Modal.Footer>
             </Modal>
             <Modal
                 show={showDeleteModal}
@@ -393,7 +399,8 @@ const TrainerList = (): JSX.Element => {
                 </Modal.Header>
                 <Modal.Body>
                     <p>
-                        Are you sure you want to remove this trainer? Removing the trainer will remove them from all courses and
+                        Are you sure you want to remove this trainer? Removing the trainer will remove them from all
+                        courses and
                         course-cohorts that they are assigned to
                     </p>
 
@@ -406,6 +413,32 @@ const TrainerList = (): JSX.Element => {
                         </Button>
                     </Modal.Footer>
                 </Modal.Body>
+            </Modal>
+
+            <Modal
+                show={confirmModal}
+                onHide={toggleConfirmModal}
+                size="sm"
+                backdrop="static"
+                aria-labelledby="contained-modal-title-vcenter"
+                centered
+            >
+                <Modal.Header closeButton>
+                    <Modal.Title>Please confirm</Modal.Title>
+                </Modal.Header>
+                <Modal.Body>
+                    <p>
+                        Are you sure you want to create a new trainer
+                    </p>
+                </Modal.Body>
+                <Modal.Footer>
+                    <Button variant="btn btn-danger btn-rounded float-left" onClick={() => toggleCloseConfirmModal()}>
+                        Continue editing
+                    </Button>
+                    <button className="btn btn-info float-right" onClick={(e) => handleSubmit(e)}>
+                        Confirm
+                    </button>
+                </Modal.Footer>
             </Modal>
         </>
     );

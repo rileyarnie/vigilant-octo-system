@@ -40,6 +40,7 @@ const Department = (): JSX.Element => {
         }
     ];
     const options = [];
+    const [confirmModal, setConfirmModal] = useState(false);
     const [data, setData] = useState([]);
     const [iserror] = useState(false);
     const [deptname, setDeptName] = useState('');
@@ -202,6 +203,12 @@ const Department = (): JSX.Element => {
     const handleCloseModal = () => {
         setActivationModal(false);
     };
+    const toggleConfirmModal = () => {
+        setConfirmModal(true);
+    };
+    const toggleCloseConfirmModal = () => {
+        setConfirmModal(false);
+    };
     return (
         <>
             <Row className="align-items-center page-header">
@@ -297,15 +304,15 @@ const Department = (): JSX.Element => {
                                 onChange={handleChange}
                             /><br/>
                         </div>
-                        <div className="form-group" style={{ display: 'flex', justifyContent: 'space-between' }}>
-                            <button className="btn btn-danger" onClick={() => toggleCreateModal()}>
-                                Cancel
-                            </button>
-                            <button className="btn btn-primary" onClick={(e) => (deptId ? handleEdit(e) : handleCreate(e))}>
-                                Submit
-                            </button>
-                        </div>
                     </ValidationForm>
+                    <Col>
+                        <button className="btn btn-danger float-left" onClick={() => toggleCreateModal()}>
+                            Cancel
+                        </button>
+                        <button className="btn btn-info float-right" onClick={toggleConfirmModal}>
+                            Submit
+                        </button>
+                    </Col>
                 </Modal.Body>
             </Modal>
             <Modal
@@ -332,6 +339,26 @@ const Department = (): JSX.Element => {
                         </Button>
                     </ValidationForm>
                 </Modal.Body>
+            </Modal>
+            <Modal
+                show={confirmModal}
+                onHide={toggleConfirmModal}
+                size="sm"
+                backdrop="static"
+                aria-labelledby="contained-modal-title-vcenter"
+                centered>
+                <Modal.Header>{' '}</Modal.Header>
+                <Modal.Body>
+                    <h6 className="text-center">{deptId ? `A you sure you want to edit ${selectedDeptName} ?` : 'A you sure you want to create a new department ?'}</h6>
+                </Modal.Body>
+                <Modal.Footer style={{display: 'flex', justifyContent: 'space-between'}}>
+                    <Button variant="btn btn-danger btn-rounded" onClick={toggleCloseConfirmModal}>
+                        Continue editing
+                    </Button>
+                    <button className="btn btn-primary" onClick={(e) => (deptId ? handleEdit(e) : handleCreate(e))}>
+                        Confirm
+                    </button>
+                </Modal.Footer>
             </Modal>
         </>
     );
