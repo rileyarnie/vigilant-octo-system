@@ -118,7 +118,7 @@ const TrainerList = (): JSX.Element => {
             });
     }, []);
     staff.map((staff) => {
-        return staffOptions.push({value: staff.id, label: staff.email});
+        return staffOptions.push({value: staff.id, label: staff.name});
     });
     departments.map((dept) => {
         return departmentOptions.push({value: dept.id, label: dept.name});
