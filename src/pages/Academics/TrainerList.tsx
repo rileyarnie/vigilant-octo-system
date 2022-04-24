@@ -9,7 +9,6 @@ import { Alerts, ToastifyAlerts } from '../lib/Alert';
 import LinearProgress from '@mui/material/LinearProgress';
 import { canPerformActions } from '../../services/ActionChecker';
 import { ACTION_CREATE_TRAINER, ACTION_UPDATE_TRAINER } from '../../authnz-library/timetabling-actions';
-import { authnzAxiosInstance } from '../../utlis/interceptors/authnz-interceptor';
 import { timetablingAxiosInstance } from '../../utlis/interceptors/timetabling-interceptor';
 import { DepartmentService } from '../services/DepartmentService';
 import TableWrapper from '../../utlis/TableWrapper';
