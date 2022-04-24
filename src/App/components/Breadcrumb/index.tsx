@@ -1,6 +1,6 @@
-import React, {Component} from 'react';
-import config from '../../../config';
-import navigation, {MenuItemType} from '../../../menu-items';
+import React, { Component } from 'react';
+import config from '../../../exampleconfig';
+import navigation, { MenuItemType } from '../../../menu-items';
 import SYS from '../../../store/constant';
 
 type BreadcrumbState = {
@@ -40,7 +40,7 @@ class Breadcrumb extends Component<BreadcrumbState> {
                     this.getCollapse(collapse);
                 } else if (collapse.type && collapse.type === 'item') {
                     if (document.location.pathname === config.basename + collapse.url) {
-                        this.setState({item: collapse, main: item});
+                        this.setState({ item: collapse, main: item });
                     }
                 }
                 return false;
@@ -76,7 +76,7 @@ class Breadcrumb extends Component<BreadcrumbState> {
                             <ul className="breadcrumb">
                                 <li className="breadcrumb-item">
                                     <a href="/" className="radius8 lightBg">
-                                        <i className="feather icon-home"/>
+                                        <i className="feather icon-home" />
                                     </a>
                                 </li>
                                 {main}

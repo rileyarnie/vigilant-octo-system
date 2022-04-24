@@ -1,7 +1,7 @@
 /* eslint-disable linebreak-style */
 /* eslint-disable @typescript-eslint/no-unused-vars */
-import React, { useState, useEffect, } from 'react';
-// import Config from '../../config';
+import React, { useState, useEffect } from 'react';
+// import Config from '../../exampleconfig';
 import axios from 'axios';
 import Alert from '@material-ui/lab/Alert';
 import { Button, Card, Col, Modal, Row } from 'react-bootstrap';
@@ -210,7 +210,7 @@ function roleList(): JSX.Element {
                                         </Alert>
                                     )}
                                 </div>
-                                <TableWrapper title="Role List" columns={columns} data={data} options={{}}/>
+                                <TableWrapper title="Role List" columns={columns} data={data} options={{}} />
                             </Card>
                         </Col>
                     </Row>
