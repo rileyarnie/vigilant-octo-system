@@ -199,10 +199,11 @@ const TrainerList = (): JSX.Element => {
         setDept(parseInt(selectedDept));
     };
     const handleUser = (selectedUser) => {
-        setSelectedUser(selectedUser);
+        console.log('selected user ', selectedUser.value);
+        setSelectedUser(selectedUser.value);
     };
     const handleTrainerType = (trainerTyp) => {
-        setTrainerType(trainerTyp);
+        setTrainerType(trainerTyp.value);
     };
     const toggleEditModal = () => {
         showEditModal ? setEditModal(false) : setEditModal(true);
