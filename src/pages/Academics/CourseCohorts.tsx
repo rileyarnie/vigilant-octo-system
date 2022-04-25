@@ -162,7 +162,7 @@ const CourseCohorts = (): JSX.Element => {
                                                         {trainersData.map((tr) => {
                                                             return (
                                                                 <MenuItem key={tr.tr_id} value={tr.tr_id}>
-                                                                    {tr.tr_id}
+                                                                    {tr.stf_name}
                                                                 </MenuItem>
                                                             );
                                                         })}

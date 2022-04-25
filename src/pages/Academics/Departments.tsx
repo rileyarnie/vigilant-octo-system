@@ -329,7 +329,7 @@ const Department = (): JSX.Element => {
                                 {
                                     users.map((user) => {
                                         return (
-                                            <option key={user.tr_id} value={user.tr_id}>{user.tr_id}</option>
+                                            <option key={user.tr_id} value={user.tr_id}>{user.stf_name}</option>
                                         );
                                     })   
                                 }

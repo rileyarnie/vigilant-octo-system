@@ -26,7 +26,7 @@ const venueData = VenueService.fetchVenues().then((res) => {
     })
 const trainerData = TrainerService.fetchTrainers().then((res) => {
     return res['data'].map((t) => {
-        return {id: t.tr_id, text: t.tr_userId}
+        return {id: t.tr_id, text: t.stf_name}
     })
 })
     .catch((error) => {
