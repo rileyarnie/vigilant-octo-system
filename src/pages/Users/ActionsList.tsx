@@ -26,7 +26,7 @@ export const ActionsList = (props): JSX.Element => {
 
     const columns = [
         { title: 'id', field: 'id' },
-        { title: 'Action Name', field: 'ActionName' }
+        { title: 'Action Name', field: 'name' }
     ];
     return (
         <div>
