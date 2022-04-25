@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { Dropdown } from 'react-bootstrap';
 import Avatar1 from '../../../../../assets/images/user/avatar.png';
 import SYS from '../../../../../store/constant';
+import handleLogout from '../../../../../utlis/Logout';
 
 const NavRight = () => {
     const [name, setName] = useState('');
@@ -13,10 +14,7 @@ const NavRight = () => {
         }
     }, []);
 
-    const handleLogout = () => {
-        localStorage.clear();
-        window.location.assign('/login');
-    };
+
     return (
         <>
             <ul className="navbar-nav ml-auto">
