@@ -114,7 +114,7 @@ const Department = (): JSX.Element => {
             });
     }, []);
     users.map((hod) => {
-        return options.push({ value: hod.tr_id, label: hod.tr_id });
+        return options.push({ value: hod.tr_id, label: hod.stf_name });
     });
     const updateDepartment = (deptId, updates) => {
         setLinearDisplay('block');
@@ -302,7 +302,7 @@ const Department = (): JSX.Element => {
                                 placeholder="Select a HOD."
                                 noOptionsMessage={() => 'No HODs available'}
                                 onChange={handleChange}
-                            /><br/>
+                            />
                         </div>
                     </ValidationForm>
                     <Col>
