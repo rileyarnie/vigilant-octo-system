@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import React, { Component } from 'react';
-import { Row, Col, Card } from 'react-bootstrap';
+import { Row, Col, Card, Modal, Button } from 'react-bootstrap';
 import { ValidationForm, TextInput } from 'react-bootstrap4-form-validation';
 import { Alerts, ToastifyAlerts } from '../lib/Alert';
 import validator from 'validator';
@@ -23,7 +23,8 @@ class CreateVenue extends Component<Props> {
         description: '',
         capacity: '',
         campusId: '',
-        campuses: []
+        campuses: [],
+        confirmModal:false
     };
     options = [] as any;
     componentDidMount() {
@@ -78,22 +79,26 @@ class CreateVenue extends Component<Props> {
                 alerts.showError(error.message);
             });
     };
-
     handleErrorSubmit = (e, _formData, errorInputs) => {
         console.error(errorInputs);
     };
-
+    toggleConfirmModal = () => {
+        this.setState({confirmModal:true});
+    };
+    toggleCloseConfirmModal = () => {
+        this.setState({confirmModal:false});
+    };
     render(): JSX.Element {
         return (
             <>
-                <Row className="align-items-center page-header"></Row>
+                <Row className="align-items-center page-header"/>
                 <Row>
                     <Col>
                         <Card>
                             <Card.Body>
                                 <Row>
                                     <Col md={12}>
-                                        <ValidationForm onSubmit={this.handleSubmit} onErrorSubmit={this.handleErrorSubmit}>
+                                        <ValidationForm  onErrorSubmit={this.handleErrorSubmit}>
                                             <div className="form-group">
                                                 <label htmlFor="name">
                                                     <b>Name of Venue</b>
@@ -143,25 +148,45 @@ class CreateVenue extends Component<Props> {
                                                     options={this.options}
                                                     isMulti={false}
                                                     placeholder="Select campus"
-                                                    noOptionsMessage={() => 'No available courses'}
+                                                    noOptionsMessage={() => 'No available campus'}
                                                     onChange={this.handleSelectChange}
                                                 />
                                                 &nbsp;&nbsp;&nbsp;
                                             </div>
-
-                                            <div className="form-group">
-                                                <button className="btn btn-info float-right">Submit</button>
-                                            </div>
                                         </ValidationForm>
-                                        <button className="btn btn-danger float-left" onClick={() => this.props.setModal(false)}>
-                                            Cancel
-                                        </button>
+                                        <Col>
+                                            <button className="btn btn-info float-right" onClick={this.toggleConfirmModal}>Submit</button>
+                                            <button className="btn btn-danger float-left" onClick={() => this.props.setModal(false)}>
+                                                Cancel
+                                            </button>
+                                        </Col>
+
                                     </Col>
                                 </Row>
                             </Card.Body>
                         </Card>
                     </Col>
                 </Row>
+                <Modal
+                    show={this.state.confirmModal}
+                    onHide={this.toggleConfirmModal}
+                    size="sm"
+                    backdrop="static"
+                    aria-labelledby="contained-modal-title-vcenter"
+                    centered>
+                    <Modal.Header>{' '}</Modal.Header>
+                    <Modal.Body>
+                        <h6 className="text-center">A you sure you want to create a venue ?</h6>
+                    </Modal.Body>
+                    <Modal.Footer style={{display: 'flex', justifyContent: 'space-between'}}>
+                        <Button variant="btn btn-danger btn-rounded" onClick={this.toggleCloseConfirmModal}>
+                            Continue editing
+                        </Button>
+                        <button className="btn btn-info float-right" onClick={this.handleSubmit}>
+                            Confirm
+                        </button>
+                    </Modal.Footer>
+                </Modal>
             </>
         );
     }

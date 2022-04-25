@@ -3,7 +3,6 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 /* eslint-disable react/display-name */
 import React, { useState, useEffect, forwardRef } from 'react';
-import MaterialTable from 'material-table';
 import AddBox from '@material-ui/icons/AddBox';
 import ArrowDownward from '@material-ui/icons/ArrowDownward';
 import Check from '@material-ui/icons/Check';
@@ -28,7 +27,7 @@ import Breadcrumb from '../../App/components/Breadcrumb';
 import { ValidationForm, SelectGroup, TextInput } from 'react-bootstrap4-form-validation';
 import { Row, Col, Card, Modal, Button } from 'react-bootstrap';
 import DeleteIcon from '@material-ui/icons/Delete';
-import Config from '../../config';
+import Config from '../../exampleconfig';
 import SelectCurrency from 'react-select-currency';
 import { DeactivateCourseCohort } from './DeactivateCourseCohort';
 import { Alerts, ToastifyAlerts } from '../lib/Alert';
@@ -38,25 +37,8 @@ import IconButton from '@material-ui/core/IconButton';
 import ArrowBackIcon from '@material-ui/icons/ArrowBack';
 import { financeAxiosInstance } from '../../utlis/interceptors/finance-interceptor';
 import { timetablingAxiosInstance } from '../../utlis/interceptors/timetabling-interceptor';
-const tableIcons: Icons = {
-    Add: forwardRef((props, ref) => <AddBox {...props} ref={ref} />),
-    Check: forwardRef((props, ref) => <Check {...props} ref={ref} />),
-    Clear: forwardRef((props, ref) => <Clear {...props} ref={ref} />),
-    Delete: forwardRef((props, ref) => <DeleteOutline {...props} ref={ref} />),
-    DetailPanel: forwardRef((props, ref) => <ChevronRight {...props} ref={ref} />),
-    Edit: forwardRef((props, ref) => <Edit {...props} ref={ref} />),
-    Export: forwardRef((props, ref) => <SaveAlt {...props} ref={ref} />),
-    Filter: forwardRef((props, ref) => <FilterList {...props} ref={ref} />),
-    FirstPage: forwardRef((props, ref) => <FirstPage {...props} ref={ref} />),
-    LastPage: forwardRef((props, ref) => <LastPage {...props} ref={ref} />),
-    NextPage: forwardRef((props, ref) => <ChevronRight {...props} ref={ref} />),
-    PreviousPage: forwardRef((props, ref) => <ChevronLeft {...props} ref={ref} />),
-    ResetSearch: forwardRef((props, ref) => <Clear {...props} ref={ref} />),
-    Search: forwardRef((props, ref) => <Search {...props} ref={ref} />),
-    SortArrow: forwardRef((props, ref) => <ArrowDownward {...props} ref={ref} />),
-    ThirdStateCheck: forwardRef((props, ref) => <Remove {...props} ref={ref} />),
-    ViewColumn: forwardRef((props, ref) => <ViewColumn {...props} ref={ref} />)
-};
+import TableWrapper from '../../utlis/TableWrapper';
+
 const useStyles = makeStyles((theme: Theme) =>
     createStyles({
         margin: {
@@ -274,7 +256,7 @@ const CourseCohortsList = (props): JSX.Element => {
 
     const handleFeeItemsPost = async () => {
         financeAxiosInstance
-            .post('/',{
+            .post('/', {
                 createFeeItemRequest: {
                     narrative: narrative,
                     amount: amount,
@@ -350,7 +332,7 @@ const CourseCohortsList = (props): JSX.Element => {
                                 </Alert>
                             )}
                         </div>
-                        <MaterialTable
+                        <TableWrapper
                             title={`${programName} of ${anticipatedGraduation} courses`}
                             columns={columns}
                             data={data}
@@ -363,8 +345,7 @@ const CourseCohortsList = (props): JSX.Element => {
                                     }
                                 })
                             ]}
-                            options={{ pageSize: 50 }}
-                            icons={tableIcons}
+                            options={{}}
                         />
                     </Card>
                 </Col>

@@ -1,51 +1,21 @@
 /* eslint-disable react/display-name */
-import React, { useState, useEffect } from 'react';
-import { forwardRef } from 'react';
-import MaterialTable, { Icons } from 'material-table';
-import AddBox from '@material-ui/icons/AddBox';
-import ArrowDownward from '@material-ui/icons/ArrowDownward';
-import Check from '@material-ui/icons/Check';
-import ChevronLeft from '@material-ui/icons/ChevronLeft';
-import ChevronRight from '@material-ui/icons/ChevronRight';
-import Clear from '@material-ui/icons/Clear';
-import DeleteOutline from '@material-ui/icons/DeleteOutline';
+import React, {useState, useEffect} from 'react';
 import Edit from '@material-ui/icons/Edit';
-import FilterList from '@material-ui/icons/FilterList';
-import FirstPage from '@material-ui/icons/FirstPage';
-import LastPage from '@material-ui/icons/LastPage';
-import Remove from '@material-ui/icons/Remove';
-import SaveAlt from '@material-ui/icons/SaveAlt';
-import Search from '@material-ui/icons/Search';
-import ViewColumn from '@material-ui/icons/ViewColumn';
-import { LinearProgress, Switch } from '@material-ui/core';
+import {LinearProgress, Switch} from '@material-ui/core';
 import Alert from '@material-ui/lab/Alert';
 import Breadcrumb from '../../App/components/Breadcrumb';
-import { Row, Col, Card, Button, Modal } from 'react-bootstrap';
-import { ValidationForm, TextInput } from 'react-bootstrap4-form-validation';
-import { Alerts, ToastifyAlerts } from '../lib/Alert';
-import { canPerformActions } from '../../services/ActionChecker';
-import { ACTION_CREATE_CAMPUS, ACTION_GET_CAMPUSES, ACTION_UPDATE_CAMPUS } from '../../authnz-library/timetabling-actions';
-import { timetablingAxiosInstance } from '../../utlis/interceptors/timetabling-interceptor';
+import {Row, Col, Card, Button, Modal} from 'react-bootstrap';
+import {ValidationForm, TextInput} from 'react-bootstrap4-form-validation';
+import {Alerts, ToastifyAlerts} from '../lib/Alert';
+import {canPerformActions} from '../../services/ActionChecker';
+import {
+    ACTION_CREATE_CAMPUS,
+    ACTION_GET_CAMPUSES,
+    ACTION_UPDATE_CAMPUS
+} from '../../authnz-library/timetabling-actions';
+import {timetablingAxiosInstance} from '../../utlis/interceptors/timetabling-interceptor';
+import TableWrapper from '../../utlis/TableWrapper';
 
-const tableIcons: Icons = {
-    Add: forwardRef((props, ref) => <AddBox {...props} ref={ref} />),
-    Check: forwardRef((props, ref) => <Check {...props} ref={ref} />),
-    Clear: forwardRef((props, ref) => <Clear {...props} ref={ref} />),
-    Delete: forwardRef((props, ref) => <DeleteOutline {...props} ref={ref} />),
-    DetailPanel: forwardRef((props, ref) => <ChevronRight {...props} ref={ref} />),
-    Edit: forwardRef((props, ref) => <Edit {...props} ref={ref} />),
-    Export: forwardRef((props, ref) => <SaveAlt {...props} ref={ref} />),
-    Filter: forwardRef((props, ref) => <FilterList {...props} ref={ref} />),
-    FirstPage: forwardRef((props, ref) => <FirstPage {...props} ref={ref} />),
-    LastPage: forwardRef((props, ref) => <LastPage {...props} ref={ref} />),
-    NextPage: forwardRef((props, ref) => <ChevronRight {...props} ref={ref} />),
-    PreviousPage: forwardRef((props, ref) => <ChevronLeft {...props} ref={ref} />),
-    ResetSearch: forwardRef((props, ref) => <Clear {...props} ref={ref} />),
-    Search: forwardRef((props, ref) => <Search {...props} ref={ref} />),
-    SortArrow: forwardRef((props, ref) => <ArrowDownward {...props} ref={ref} />),
-    ThirdStateCheck: forwardRef((props, ref) => <Remove {...props} ref={ref} />),
-    ViewColumn: forwardRef((props, ref) => <ViewColumn {...props} ref={ref} />)
-};
 const alerts: Alerts = new ToastifyAlerts();
 const CampusList = (): JSX.Element => {
     interface Campus {
@@ -55,29 +25,35 @@ const CampusList = (): JSX.Element => {
         activation_status: boolean;
         approval_status: boolean;
     }
+
     const [data, setData] = useState([]);
     const [iserror] = useState(false);
+    const [confirmModal, setConfirmModal] = useState(false);
     const [campusName, setCampusName] = useState('');
     const [description, setDescription] = useState('');
     const [showModal, setModal] = useState(false);
+    const [activationModal, setActivationModal] = useState(false);
     const [campusId, setCampusId] = useState(null);
     const [selectedCampusName, setSelectedCampusName] = useState('');
     const [selectedDescription, setSelectedDescription] = useState('');
     const [linearDisplay, setLinearDisplay] = useState('none');
+    const [rowData, setRowData] = useState<Campus>();
     const [, setDisabled] = useState(false);
     let activationStatus: boolean;
     const handleActivationStatusToggle = (event, row: Campus) => {
         setDisabled(true);
         if (row.activation_status) {
             activationStatus = false;
-            handleToggleStatusSubmit(event, row);
+            toggleActivationModal();
+            setRowData(row);
         }
         if (!row.activation_status) {
             activationStatus = true;
-            handleToggleStatusSubmit(event, row);
+            toggleActivationModal();
+            setRowData(row);
         }
     };
-    const handleToggleStatusSubmit = (e, row: Campus) => {
+    const handleToggleStatusSubmit = (row: Campus) => {
         const campus = {
             activation_status: activationStatus
         };
@@ -87,6 +63,7 @@ const CampusList = (): JSX.Element => {
                 const msg = activationStatus ? 'Successfully activated campus' : 'Successfully Deactivated campus';
                 alerts.showSuccess(msg);
                 fetchCampuses();
+                setActivationModal(false);
                 setDisabled(false);
             })
             .catch((error) => {
@@ -97,9 +74,9 @@ const CampusList = (): JSX.Element => {
     };
 
     const columns = [
-        { title: 'ID', field: 'id' },
-        { title: 'Campus name', field: 'name' },
-        { title: 'Description', field: 'description' },
+        {title: 'ID', field: 'id'},
+        {title: 'Campus name', field: 'name'},
+        {title: 'Description', field: 'description'},
 
         {
             title: 'Activation Status',
@@ -108,7 +85,7 @@ const CampusList = (): JSX.Element => {
                 canPerformActions(ACTION_UPDATE_CAMPUS.name) && (
                     <Switch
                         onChange={(event) => handleActivationStatusToggle(event, row)}
-                        inputProps={{ 'aria-label': 'controlled' }}
+                        inputProps={{'aria-label': 'controlled'}}
                         defaultChecked={row.activation_status === true}
                     />
                 )
@@ -194,19 +171,33 @@ const CampusList = (): JSX.Element => {
         setCampusId(null);
         setCampusName('');
         setDescription('');
+        setActivationModal(false);
         setModal(false);
     };
     const toggleCreateModal = () => {
         showModal ? resetStateCloseModal() : setModal(true);
     };
+    const toggleActivationModal = () => {
+        activationModal ? resetStateCloseModal() : setActivationModal(true);
+    };
+    const handleCloseModal = () => {
+        fetchCampuses();
+        setActivationModal(false);
+    };
     const handleClose = () => {
         showModal ? resetStateCloseModal() : setModal(false);
+    };
+    const toggleConfirmModal = () => {
+        setConfirmModal(true);
+    };
+    const toggleCloseConfirmModal = () => {
+        setConfirmModal(false);
     };
     return (
         <>
             <Row className="align-items-center page-header">
                 <Col>
-                    <Breadcrumb />
+                    <Breadcrumb/>
                 </Col>
                 <Col>
                     {canPerformActions(ACTION_CREATE_CAMPUS.name) && (
@@ -218,7 +209,7 @@ const CampusList = (): JSX.Element => {
             </Row>
             {canPerformActions(ACTION_GET_CAMPUSES.name) && (
                 <>
-                    <LinearProgress style={{ display: linearDisplay }} />
+                    <LinearProgress style={{display: linearDisplay}}/>
                     <Row>
                         <Col>
                             <Card>
@@ -231,12 +222,11 @@ const CampusList = (): JSX.Element => {
                                         </Alert>
                                     )}
                                 </div>
-                                <MaterialTable
+                                <TableWrapper
                                     title="Campuses"
                                     columns={columns}
-                                    options={{ actionsColumnIndex: -1, pageSize: 50 }}
+                                    options={{actionsColumnIndex: -1,}}
                                     data={data}
-                                    icons={tableIcons}
                                     actions={
                                         canPerformActions(ACTION_UPDATE_CAMPUS.name)
                                             ? [
@@ -268,7 +258,8 @@ const CampusList = (): JSX.Element => {
                 centered
             >
                 <Modal.Header closeButton>
-                    <Modal.Title id="contained-modal-title-vcenter">{campusId ? 'Edit Campus' : 'Create a Campus'}</Modal.Title>
+                    <Modal.Title
+                        id="contained-modal-title-vcenter">{campusId ? 'Edit Campus' : 'Create a Campus'}</Modal.Title>
                 </Modal.Header>
                 <Modal.Body>
                     <ValidationForm>
@@ -283,11 +274,11 @@ const CampusList = (): JSX.Element => {
                                 onChange={(e) => (campusId ? setSelectedCampusName(e.target.value) : setCampusName(e.target.value))}
                                 required
                             />
-                            <br />
-                            <label htmlFor="Date">
+                            <br/>
+                            <label htmlFor="description">
                                 <b>Description</b>
                             </label>
-                            <br />
+                            <br/>
                             <TextInput
                                 name="description"
                                 minLength="4"
@@ -300,18 +291,65 @@ const CampusList = (): JSX.Element => {
                                 rows="5"
                                 onChange={(e) => (campusId ? setSelectedDescription(e.target.value) : setDescription(e.target.value))}
                             />
-                            <br />
-                        </div>
-                        <div className="form-group">
-                            <button className="btn btn-info float-right" onClick={(e) => (campusId ? handleEdit(e) : handleAdd(e))}>
-                                Submit
-                            </button>
+                            <br/>
                         </div>
                     </ValidationForm>
-                    <button className="btn btn-danger float-left" onClick={handleClose}>
-                        Close
-                    </button>
+                    <Col>
+                        <button className="btn btn-info float-right" onClick={toggleConfirmModal}>
+                            Submit
+                        </button>
+                        <button className="btn btn-danger float-left" onClick={handleClose}>
+                            Close
+                        </button>
+                    </Col>
                 </Modal.Body>
+            </Modal>
+            <Modal
+                backdrop="static"
+                show={activationModal}
+                onHide={toggleActivationModal}
+                size="sm"
+                aria-labelledby="contained-modal-title-vcenter"
+                centered
+            >
+                <Modal.Header>
+                    <Modal.Title id="contained-modal-title-vcenter">{}</Modal.Title>
+                </Modal.Header>
+                <Modal.Body>
+                    <ValidationForm>
+                        <h6>A you sure you want to change the status of {rowData?.name} ?</h6>
+                        <Button className="btn btn-danger float-left" onClick={handleCloseModal}>
+                            Cancel
+                        </Button>
+                        <Button className="btn btn-primary float-right" onClick={() => {
+                            handleToggleStatusSubmit(rowData);
+                        }}>
+                            Confirm
+                        </Button>
+                    </ValidationForm>
+                </Modal.Body>
+            </Modal>
+            <Modal
+                show={confirmModal}
+                onHide={toggleConfirmModal}
+                size="sm"
+                backdrop="static"
+                aria-labelledby="contained-modal-title-vcenter"
+                centered>
+                <Modal.Header closeButton>
+                    <Modal.Title>{' '}</Modal.Title>
+                </Modal.Header>
+                <Modal.Body>
+                    <h6>{campusId ? `A you sure you want to update ${selectedCampusName} ?` : 'A you sure you want to create a new campus ?'}</h6>
+                </Modal.Body>
+                <Modal.Footer style={{display: 'flex', justifyContent: 'space-between'}}>
+                    <Button variant="btn btn-danger btn-rounded" onClick={toggleCloseConfirmModal}>
+                        Continue editing
+                    </Button>
+                    <button className="btn btn-info float-right" onClick={(e) => (campusId ? handleEdit(e) : handleAdd(e))}>
+                        Submit
+                    </button>
+                </Modal.Footer>
             </Modal>
         </>
     );

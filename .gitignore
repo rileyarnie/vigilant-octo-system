@@ -24,6 +24,7 @@ target/
 
 # JetBrains IDE
 .idea/
+**.iml
 
 # Unit test reports
 TEST*.xml
@@ -51,4 +52,4 @@ ormconfig.json
 
 # other files
 /build
-/src/config
+src/config*.ts

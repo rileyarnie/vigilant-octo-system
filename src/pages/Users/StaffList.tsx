@@ -2,39 +2,38 @@
 /* eslint-disable react/display-name */
 import React, { useState, useEffect } from 'react';
 import Breadcrumb from '../../App/components/Breadcrumb';
-import { Row, Col, Card, Button } from 'react-bootstrap';
-import CreateUser from './CreateUserModal/CreateUser';
+import { Row, Col, Card } from 'react-bootstrap';
 import { Alerts, ToastifyAlerts } from '../lib/Alert';
 import { LinearProgress } from '@mui/material';
 import { canPerformActions } from '../../services/ActionChecker';
-import { ACTION_ASSIGN_ROLES, ACTION_GET_USERS } from '../../authnz-library/authnz-actions';
-import { authnzAxiosInstance } from '../../utlis/interceptors/authnz-interceptor';
+import { ACTION_GET_USERS } from '../../authnz-library/authnz-actions';
 import TableWrapper from '../../utlis/TableWrapper';
 const alerts: Alerts = new ToastifyAlerts();
+import CreateStaff from './CreateStaff/CreateStaff';
+import { timetablingAxiosInstance } from '../../utlis/interceptors/timetabling-interceptor';
+import UpdateStaff from './UpdateStaff/UpdateStaff';
 
-interface History {
-    push: (path: string) => void;
-}
-interface IProps {
-    history: History;
-}
-
-const UserList = (props: IProps): JSX.Element => {
+const StaffList = (): JSX.Element => {
     const columns = [
-        { title: 'ID', field: 'id' },
-        { title: 'AAD Alias', field: 'aadAlias' }
+        { title: 'SN', field: 'id' },
+        { title: 'Name', field: 'name' },
+        { title: 'User', field: 'email' },
+        {
+            title: 'Actions',
+            render: (row) => <UpdateStaff fetchStaff={fetchStaff} data={row} />
+        }
     ];
     const [data, setData] = useState([]);
     const [linearDisplay, setLinearDisplay] = useState('none');
 
     useEffect(() => {
-        fetchUsers();
+        fetchStaff();
     }, []);
 
-    const fetchUsers = () => {
+    const fetchStaff = () => {
         setLinearDisplay('block');
-        authnzAxiosInstance
-            .get('/users')
+        timetablingAxiosInstance
+            .get('/staff')
             .then((res) => {
                 setData(res.data);
                 setLinearDisplay('none');
@@ -45,9 +44,6 @@ const UserList = (props: IProps): JSX.Element => {
                 alerts.showError(error.message);
             });
     };
-    const handleRouteChange = () => {
-        props.history.push('assignrole');
-    };
 
     return (
         <>
@@ -55,22 +51,14 @@ const UserList = (props: IProps): JSX.Element => {
                 <Col>
                     <Breadcrumb />
                 </Col>
-
-                <Col>
-                    <CreateUser fetchUsers={fetchUsers}></CreateUser>
-                </Col>
-                {canPerformActions(ACTION_ASSIGN_ROLES.name) && (
-                    <Button variant="danger" onClick={() => handleRouteChange()}>
-                        Assign Role
-                    </Button>
-                )}
+                <CreateStaff fetchStaff={fetchStaff} />
             </Row>
             <LinearProgress style={{ display: linearDisplay }} />
             {canPerformActions(ACTION_GET_USERS.name) && (
                 <Row>
                     <Col>
                         <Card>
-                            <TableWrapper columns={columns} title="users" data={data} options={{}} />
+                            <TableWrapper columns={columns} title="Staff" data={data} options={{}} />
                         </Card>
                     </Col>
                 </Row>
@@ -78,4 +66,4 @@ const UserList = (props: IProps): JSX.Element => {
         </>
     );
 };
-export default UserList;
+export default StaffList;

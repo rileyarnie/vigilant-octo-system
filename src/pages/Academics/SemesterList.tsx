@@ -1,52 +1,23 @@
 /* eslint-disable react/display-name */
-import React, { useState, useEffect } from 'react';
-import { forwardRef } from 'react';
-import MaterialTable from 'material-table';
-import AddBox from '@material-ui/icons/AddBox';
-import ArrowDownward from '@material-ui/icons/ArrowDownward';
-import Check from '@material-ui/icons/Check';
-import ChevronLeft from '@material-ui/icons/ChevronLeft';
-import ChevronRight from '@material-ui/icons/ChevronRight';
-import Clear from '@material-ui/icons/Clear';
-import DeleteOutline from '@material-ui/icons/DeleteOutline';
+import React, {useState, useEffect} from 'react';
 import Edit from '@material-ui/icons/Edit';
-import FilterList from '@material-ui/icons/FilterList';
-import FirstPage from '@material-ui/icons/FirstPage';
-import LastPage from '@material-ui/icons/LastPage';
-import Remove from '@material-ui/icons/Remove';
-import SaveAlt from '@material-ui/icons/SaveAlt';
-import Search from '@material-ui/icons/Search';
-import ViewColumn from '@material-ui/icons/ViewColumn';
-import { LinearProgress, Switch } from '@material-ui/core';
+import {LinearProgress, Switch} from '@material-ui/core';
 import Alert from '@material-ui/lab/Alert';
 import Breadcrumb from '../../App/components/Breadcrumb';
-import { Row, Col, Card, Button, Modal } from 'react-bootstrap';
-import { ValidationForm, TextInput } from 'react-bootstrap4-form-validation';
-import { Icons } from 'material-table';
-import { Alerts, ToastifyAlerts } from '../lib/Alert';
-import { canPerformActions } from '../../services/ActionChecker';
-import { ACTION_CREATE_SEMESTERS, ACTION_GET_SEMESTERS, ACTION_UPDATE_SEMESTERS } from '../../authnz-library/timetabling-actions';
-import { timetablingAxiosInstance } from '../../utlis/interceptors/timetabling-interceptor';
+import {Row, Col, Card, Button, Modal} from 'react-bootstrap';
+import {ValidationForm, TextInput} from 'react-bootstrap4-form-validation';
+import {Alerts, ToastifyAlerts} from '../lib/Alert';
+import {canPerformActions} from '../../services/ActionChecker';
+import {
+    ACTION_CREATE_SEMESTERS,
+    ACTION_GET_SEMESTERS,
+    ACTION_UPDATE_SEMESTERS
+} from '../../authnz-library/timetabling-actions';
+import {timetablingAxiosInstance} from '../../utlis/interceptors/timetabling-interceptor';
+import TableWrapper from '../../utlis/TableWrapper';
+
 const alerts: Alerts = new ToastifyAlerts();
-const tableIcons: Icons = {
-    Add: forwardRef((props, ref) => <AddBox {...props} ref={ref} />),
-    Check: forwardRef((props, ref) => <Check {...props} ref={ref} />),
-    Clear: forwardRef((props, ref) => <Clear {...props} ref={ref} />),
-    Delete: forwardRef((props, ref) => <DeleteOutline {...props} ref={ref} />),
-    DetailPanel: forwardRef((props, ref) => <ChevronRight {...props} ref={ref} />),
-    Edit: forwardRef((props, ref) => <Edit {...props} ref={ref} />),
-    Export: forwardRef((props, ref) => <SaveAlt {...props} ref={ref} />),
-    Filter: forwardRef((props, ref) => <FilterList {...props} ref={ref} />),
-    FirstPage: forwardRef((props, ref) => <FirstPage {...props} ref={ref} />),
-    LastPage: forwardRef((props, ref) => <LastPage {...props} ref={ref} />),
-    NextPage: forwardRef((props, ref) => <ChevronRight {...props} ref={ref} />),
-    PreviousPage: forwardRef((props, ref) => <ChevronLeft {...props} ref={ref} />),
-    ResetSearch: forwardRef((props, ref) => <Clear {...props} ref={ref} />),
-    Search: forwardRef((props, ref) => <Search {...props} ref={ref} />),
-    SortArrow: forwardRef((props, ref) => <ArrowDownward {...props} ref={ref} />),
-    ThirdStateCheck: forwardRef((props, ref) => <Remove {...props} ref={ref} />),
-    ViewColumn: forwardRef((props, ref) => <ViewColumn {...props} ref={ref} />)
-};
+
 const SemesterList = (): JSX.Element => {
     interface Semester {
         id: number;
@@ -56,41 +27,11 @@ const SemesterList = (): JSX.Element => {
         activation_status: boolean;
     }
 
-    let activationStatus: boolean;
-    const handleActivationStatusToggle = (event, row: Semester) => {
-        setDisabled(true);
-        if (row.activation_status) {
-            activationStatus = false;
-            handleToggleStatusSubmit(event, row);
-        }
-        if (!row.activation_status) {
-            activationStatus = true;
-            handleToggleStatusSubmit(event, row);
-        }
-    };
-    const handleToggleStatusSubmit = (e, row: Semester) => {
-        const semester = {
-            activation_status: activationStatus
-        };
-        timetablingAxiosInstance
-            .put(`/semesters/${row.id}`, { body: semester })
-            .then(() => {
-                const msg = activationStatus ? 'Successfully activated semester' : 'Successfully Deactivated semester';
-                alerts.showSuccess(msg);
-                fetchSemesters();
-                setDisabled(false);
-            })
-            .catch((error) => {
-                console.error(error);
-                alerts.showError(error.message);
-                setDisabled(false);
-            });
-    };
     const columns = [
-        { title: 'ID', field: 'id' },
-        { title: 'Semester name', field: 'name' },
-        { title: 'Start Date', render: (row) => row.startDate.slice(0, 10) },
-        { title: 'End Date', render: (row) => row.endDate.slice(0, 10) },
+        {title: 'ID', field: 'id'},
+        {title: 'Semester name', field: 'name'},
+        {title: 'Start Date', render: (row) => row.startDate.slice(0, 10)},
+        {title: 'End Date', render: (row) => row.endDate.slice(0, 10)},
         {
             title: 'Activation Status',
             field: 'internal_action',
@@ -98,7 +39,7 @@ const SemesterList = (): JSX.Element => {
                 canPerformActions(ACTION_UPDATE_SEMESTERS.name) && (
                     <Switch
                         onChange={(event) => handleActivationStatusToggle(event, row)}
-                        inputProps={{ 'aria-label': 'controlled' }}
+                        inputProps={{'aria-label': 'controlled'}}
                         defaultChecked={row.activation_status === true}
                     />
                 )
@@ -113,12 +54,47 @@ const SemesterList = (): JSX.Element => {
     const [showModal, setModal] = useState(false);
     const [semesterId, setSemesterId] = useState(null);
     const [errorMessages] = useState([]);
+    const [confirmModal, setConfirmModal] = useState(false);
     const [selectedSemesterName, setSelectedSemesterName] = useState('');
     const [selectedStartDate, setSelectedStartDate] = useState('');
     const [selectedEndDate, setSelectedEndDate] = useState('');
     const [selectedSemester, setSelectedSemester] = useState<Semester>();
     const [linearDisplay, setLinearDisplay] = useState('none');
+    const [activationModal, setActivationModal] = useState(false);
+    const [rowData, setRowData] = useState<Semester>();
     const today = new Date().toISOString().slice(0, 10);
+    let activationStatus: boolean;
+    const handleActivationStatusToggle = (event, row: Semester) => {
+        setDisabled(true);
+        if (row.activation_status) {
+            activationStatus = false;
+            toggleActivationModal();
+            setRowData(row);
+        }
+        if (!row.activation_status) {
+            activationStatus = true;
+            toggleActivationModal();
+            setRowData(row);
+        }
+    };
+    const handleToggleStatusSubmit = (row: Semester) => {
+        const semester = {
+            activation_status: activationStatus
+        };
+        timetablingAxiosInstance
+            .put(`/semesters/${row.id}`, {body: semester})
+            .then(() => {
+                const msg = activationStatus ? 'Successfully activated semester' : 'Successfully Deactivated semester';
+                alerts.showSuccess(msg);
+                fetchSemesters();
+                setDisabled(false);
+            })
+            .catch((error) => {
+                console.error(error);
+                alerts.showError(error.message);
+                setDisabled(false);
+            });
+    };
     useEffect(() => {
         timetablingAxiosInstance
             .get('/semesters')
@@ -134,7 +110,7 @@ const SemesterList = (): JSX.Element => {
     }, []);
     const updateSemester = (semesterId, updates) => {
         timetablingAxiosInstance
-            .put(`/semesters/${semesterId}`, { body: updates })
+            .put(`/semesters/${semesterId}`, {body: updates})
             .then(() => {
                 setLinearDisplay('none');
                 alerts.showSuccess('Successfully updated Semester');
@@ -212,11 +188,24 @@ const SemesterList = (): JSX.Element => {
     const getStartDate = (date?: string, semesterId?: number) => {
         return semesterId ? date?.slice(0, 10) : selectedStartDate;
     };
+    const toggleActivationModal = () => {
+        activationModal ? resetStateCloseModal() : setActivationModal(true);
+    };
+    const handleCloseModal = () => {
+        fetchSemesters();
+        setActivationModal(false);
+    };
+    const toggleConfirmModal = () => {
+        setConfirmModal(true);
+    };
+    const toggleCloseConfirmModal = () => {
+        setConfirmModal(false);
+    };
     return (
         <>
             <Row className="align-items-center page-header">
                 <Col>
-                    <Breadcrumb />
+                    <Breadcrumb/>
                 </Col>
                 <Col>
                     {canPerformActions(ACTION_CREATE_SEMESTERS.name) && (
@@ -228,7 +217,7 @@ const SemesterList = (): JSX.Element => {
             </Row>
             {canPerformActions(ACTION_GET_SEMESTERS.name) && (
                 <>
-                    <LinearProgress style={{ display: linearDisplay }} />
+                    <LinearProgress style={{display: linearDisplay}}/>
                     <Row>
                         <Col>
                             <Card>
@@ -241,12 +230,11 @@ const SemesterList = (): JSX.Element => {
                                         </Alert>
                                     )}
                                 </div>
-                                <MaterialTable
+                                <TableWrapper
                                     title="Semesters"
                                     columns={columns}
                                     data={data}
-                                    options={{ actionsColumnIndex: -1, pageSize: 50 }}
-                                    icons={tableIcons}
+                                    options={{actionsColumnIndex: -1, pageSize: 50}}
                                     actions={
                                         canPerformActions(ACTION_UPDATE_SEMESTERS.name)
                                             ? [
@@ -281,7 +269,8 @@ const SemesterList = (): JSX.Element => {
                 centered
             >
                 <Modal.Header closeButton>
-                    <Modal.Title id="contained-modal-title-vcenter">{semesterId ? 'Edit Semester' : 'Create a Semester'}</Modal.Title>
+                    <Modal.Title
+                        id="contained-modal-title-vcenter">{semesterId ? `Edit ${getName(selectedSemester?.name, semesterId)}` : 'Create a Semester'}</Modal.Title>
                 </Modal.Header>
                 <Modal.Body>
                     <ValidationForm>
@@ -299,11 +288,11 @@ const SemesterList = (): JSX.Element => {
                                     setSemesterName(e.target.value);
                                 }}
                             />
-                            <br />
+                            <br/>
                             <label htmlFor="Date">
                                 <b>Start Date</b>
                             </label>
-                            <br />
+                            <br/>
                             <TextInput
                                 name="startDate"
                                 id="startDate"
@@ -315,11 +304,11 @@ const SemesterList = (): JSX.Element => {
                                     setStartDate(e.target.value);
                                 }}
                             />
-                            <br />
+                            <br/>
                             <label htmlFor="Date">
                                 <b>End Date</b>
                             </label>
-                            <br />
+                            <br/>
                             <TextInput
                                 name="endDate"
                                 id="endDate"
@@ -331,18 +320,66 @@ const SemesterList = (): JSX.Element => {
                                     setEndDate(e.target.value);
                                 }}
                             />
-                            <br />
-                        </div>
-                        <div className="form-group">
-                            <button className="btn btn-info float-right" onClick={(e) => (semesterId ? handleEdit(e) : handleCreate(e))}>
-                                Submit
-                            </button>
+                            <br/>
                         </div>
                     </ValidationForm>
-                    <button className="btn btn-danger float-left" onClick={handleClose}>
-                        Close
-                    </button>
+                    <div className="form-group">
+                        <button className="btn btn-info float-right" onClick={toggleConfirmModal}>
+                            Submit
+                        </button>
+                        <button className="btn btn-danger float-left" onClick={handleClose}>
+                            Close
+                        </button>
+                    </div>
                 </Modal.Body>
+            </Modal>
+            <Modal
+                backdrop="static"
+                show={activationModal}
+                onHide={toggleActivationModal}
+                size="sm"
+                aria-labelledby="contained-modal-title-vcenter"
+                centered
+            >
+                <Modal.Header>
+                    <Modal.Title id="contained-modal-title-vcenter">{}</Modal.Title>
+                </Modal.Header>
+                <Modal.Body>
+                    <ValidationForm>
+                        <p className="text-center">A you sure you want to change the status of {rowData?.name} ?</p>
+                        <Button className="btn btn-danger float-left" onClick={handleCloseModal}>
+                            Cancel
+                        </Button>
+                        <Button
+                            className="btn btn-primary float-right"
+                            onClick={() => {
+                                handleToggleStatusSubmit(rowData);
+                            }}
+                        >
+                            Confirm
+                        </Button>
+                    </ValidationForm>
+                </Modal.Body>
+            </Modal>
+            <Modal
+                show={confirmModal}
+                onHide={toggleConfirmModal}
+                size="sm"
+                backdrop="static"
+                aria-labelledby="contained-modal-title-vcenter"
+                centered>
+                <Modal.Header>{' '}</Modal.Header>
+                <Modal.Body>
+                    <h6 className="text-center">{semesterId ? `A you sure you want to edit ${getName(selectedSemester?.name, semesterId)} ?` : 'A you sure you want to create a semester ?'}</h6>
+                </Modal.Body>
+                <Modal.Footer style={{display: 'flex', justifyContent: 'space-between'}}>
+                    <Button variant="btn btn-danger btn-rounded" onClick={toggleCloseConfirmModal}>
+                        Continue editing
+                    </Button>
+                    <button className="btn btn-info float-right" onClick={(e) => (semesterId ? handleEdit(e) : handleCreate(e))}>
+                        Confirm
+                    </button>
+                </Modal.Footer>
             </Modal>
         </>
     );
