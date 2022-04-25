@@ -196,7 +196,8 @@ const TrainerList = (): JSX.Element => {
         setModal(false);
     };
     const handleChange = (selectedDept) => {
-        setDept(parseInt(selectedDept));
+        console.log('selected department val ', selectedDept);
+        setDept(parseInt(selectedDept.value));
     };
     const handleUser = (selectedUser) => {
         console.log('selected user ', selectedUser.value);
