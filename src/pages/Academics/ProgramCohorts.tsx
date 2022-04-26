@@ -385,6 +385,7 @@ const ProgramCohorts = (): JSX.Element => {
         setBanner('');
         setModal(false);
         setProgramName('');
+        setConfirmModal(false);
     };
     const toggleCreateModal = () => {
         showModal ? resetStateCloseModal() : setModal(true);
