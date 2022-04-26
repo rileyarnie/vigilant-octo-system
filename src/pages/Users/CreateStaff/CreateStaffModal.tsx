@@ -1,5 +1,5 @@
 /* eslint-disable react/prop-types */
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Modal } from 'react-bootstrap';
 import { Row, Col } from 'react-bootstrap';
 import { ValidationForm, TextInput } from 'react-bootstrap4-form-validation';
@@ -8,6 +8,7 @@ import Select from 'react-select';
 import { timetablingAxiosInstance } from '../../../utlis/interceptors/timetabling-interceptor';
 
 import { Alerts, ToastifyAlerts } from '../../lib/Alert';
+import { authnzAxiosInstance } from '../../../utlis/interceptors/authnz-interceptor';
 
 const alerts: Alerts = new ToastifyAlerts();
 
@@ -17,6 +18,24 @@ const CreateStaffModal = (props): JSX.Element => {
     const [name, setName] = useState('');
     const [email, setEmail] = useState('');
     const [userId, setUserId] = useState('');
+    const [users, setUsers] = useState([]);
+    
+    useEffect(() => {
+        fetchUsers();
+    }, []);
+    
+    const fetchUsers = () => {
+        authnzAxiosInstance
+            .get('/users')
+            .then((res) => {
+                setUsers(res.data);
+            })
+            .catch((error) => {
+                //handle error using logging library
+                console.log('Error', error.message);
+                alerts.showError(error.message);
+            });
+    };
 
     const handleIdentificationTypeChange = (event) => {
         setIdentificationType(event.target.value);
@@ -80,11 +99,10 @@ const CreateStaffModal = (props): JSX.Element => {
                                                         <b>User</b>
                                                     </label>
                                                     <Select
-                                                        options={[
-                                                            { value: 'user 1', label: 'user 1' },
-                                                            { value: 'user 2', label: 'user 2' },
-                                                            { value: 'user 3', label: 'user 3' }
-                                                        ]}
+                                                        options={users.map(user => ({
+                                                            value: user.id,
+                                                            label: user.aadAlias
+                                                        }))}
                                                         isMulti={false}
                                                         placeholder="Select User"
                                                         noOptionsMessage={() => 'No available users'}
