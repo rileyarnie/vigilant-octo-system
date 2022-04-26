@@ -114,6 +114,7 @@ class CourseCreation extends Component<Props> {
                     courseOutline: ''
                 });
                 this.props.fetchCourses();
+                this.setState({confirmModal:false});
             })
             .catch((error) => {
                 //handle error using logging library

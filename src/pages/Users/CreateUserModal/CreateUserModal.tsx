@@ -25,8 +25,8 @@ const CreateUserModal = (props): JSX.Element => {
                 alerts.showSuccess('successfully created user');
                 props.fetchUsers();
                 props.onHide();
-                //clear input on success
                 setEmail('');
+                setConfirmModal(false);
             })
             .catch((error) => {
                 //handle error using logging library
@@ -102,7 +102,7 @@ const CreateUserModal = (props): JSX.Element => {
                 centered>
                 <Modal.Header>{' '}</Modal.Header>
                 <Modal.Body>
-                    <h6 className="text-center">A you sure you want to add <p>{email}</p>  ?</h6>
+                    <h6 className="text-center">Are you sure you want to add <p>{email}</p>  ?</h6>
                 </Modal.Body>
                 <Modal.Footer style={{display: 'flex', justifyContent: 'space-between'}}>
                     <Button variant="btn btn-danger btn-rounded" onClick={toggleCloseConfirmModal}>
