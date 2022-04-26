@@ -189,6 +189,7 @@ const Programs = (): JSX.Element => {
                 setLinearDisplay('none');
                 alerts.showSuccess('Program created succesfully');
                 fetchPrograms();
+                setConfirmModal(false);
                 resetStateCloseModal();
             })
             .catch((error) => {
@@ -206,13 +207,13 @@ const Programs = (): JSX.Element => {
         setModal(false);
     };
     const handleChange = (selectedDepartment) => {
-        setSelectedDepartment(selectedDepartment);
+        setSelectedDepartment(selectedDepartment.value);
     };
     const handleClearance = (requiresClearance) => {
-        setRequiresClearance(requiresClearance);
+        setRequiresClearance(requiresClearance.value);
     };
     const handleCertType = (certType) => {
-        setCertificationType(certType);
+        setCertificationType(certType.value);
     };
     const toggleCreateModal = () => {
         showModal ? resetStateCloseModal() : setModal(true);
