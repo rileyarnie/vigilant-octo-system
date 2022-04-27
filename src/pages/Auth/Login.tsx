@@ -140,7 +140,7 @@ const Login = () => {
             return;
         }
         if (userInfo) {
-            window.location.assign('/staffportal');
+            window.location.assign(Config.basename);
             return;
         }
     };
