@@ -29,12 +29,13 @@ const Department = (): JSX.Element => {
         { title: 'HOD', field: 'hodTrainerId' },
         {
             title: 'Activation Status',
-            field: 'internal_action',
+            field: 'isActive',
             render: (row: department) => (
                 <Switch
                     onChange={(event) => handleActivationStatusToggle(event, row)}
                     inputProps={{ 'aria-label': 'controlled' }}
-                    defaultChecked={row.isActive === true}
+                    defaultChecked={row.isActive}
+                    value={row.isActive}
                 />
             )
         }
@@ -50,39 +51,34 @@ const Department = (): JSX.Element => {
     const [selectedDeptName, setSelectedDeptName] = useState('');
     const [selectedHoD, setSelectedHoD] = useState(null);
     const [users, setUsers] = useState([]);
-    const [isActive, setSelectedStatus] = useState(false);
+    const [isActive, setIsActive] = useState(false);
     const [errorMessages] = useState([]);
     const [, setDisabled] = useState(false);
     const [activationModal, setActivationModal] = useState(false);
     const [linearDisplay, setLinearDisplay] = useState('none');
     const [rowData, setRowData] = useState<department>();
     let activationStatus: boolean;
+
     const handleActivationStatusToggle = (event, row: department) => {
-        setDisabled(true);
-        if (row.isActive) {
-            activationStatus = false;
-            toggleActivationModal();
-            setRowData(row);
-        }
-        if (!row.isActive) {
-            activationStatus = true;
-            toggleActivationModal();
-            setRowData(row);
-        }
+        setRowData(row);
+        setIsActive(!row.isActive);
+        toggleActivationModal();
     };
+
     const handleToggleStatusSubmit = (row: department) => {
         const departmentStatus = {
             name: row.name,
-            isActive: activationStatus
+            isActive
         };
+
         timetablingAxiosInstance
             .put(`/departments/${row.id}`, departmentStatus)
             .then(() => {
-                const msg = activationStatus ? 'Department activated successfully' : 'Department deactivated successfully';
+                const msg = isActive ? 'Department activated successfully' : 'Department deactivated successfully';
                 alerts.showSuccess(msg);
                 setActivationModal(false);
-                fetchDepartments();
                 setDisabled(false);
+                fetchDepartments();
             })
             .catch((error) => {
                 console.error(error);
@@ -106,7 +102,7 @@ const Department = (): JSX.Element => {
             .get('/trainers')
             .then((res) => {
                 setLinearDisplay('none');
-                console.log('trainers',res.data);
+                console.log('trainers', res.data);
                 setUsers(res.data);
             })
             .catch((error) => {
@@ -243,7 +239,7 @@ const Department = (): JSX.Element => {
                                     title="Departments"
                                     columns={columns}
                                     data={data}
-                                    options={{ actionsColumnIndex: -1,}}
+                                    options={{ actionsColumnIndex: -1 }}
                                     actions={
                                         canPerformActions(ACTION_UPDATE_DEPARTMENT.name)
                                             ? [
@@ -254,7 +250,7 @@ const Department = (): JSX.Element => {
                                                         setDeptId(rowData.id);
                                                         setSelectedDeptName(rowData.name);
                                                         setSelectedHoD(rowData.hodTrainerId);
-                                                        setSelectedStatus(rowData.isActive);
+                                                        setIsActive(rowData.isActive);
                                                         toggleCreateModal();
                                                     }
                                                 }
@@ -329,13 +325,18 @@ const Department = (): JSX.Element => {
                 </Modal.Header>
                 <Modal.Body>
                     <ValidationForm>
-                        <p className="text-center">Are you sure you want to change the status of <b>{rowData?.name}</b> ?</p>
+                        <p className="text-center">
+                            Are you sure you want to change the status of <b>{rowData?.name}</b> ?
+                        </p>
                         <Button className="btn btn-danger float-left" onClick={handleCloseModal}>
                             Cancel
                         </Button>
-                        <Button className="btn btn-primary float-right" onClick={() => {
-                            handleToggleStatusSubmit(rowData);
-                        }}>
+                        <Button
+                            className="btn btn-primary float-right"
+                            onClick={() => {
+                                handleToggleStatusSubmit(rowData);
+                            }}
+                        >
                             Confirm
                         </Button>
                     </ValidationForm>
@@ -347,12 +348,17 @@ const Department = (): JSX.Element => {
                 size="sm"
                 backdrop="static"
                 aria-labelledby="contained-modal-title-vcenter"
-                centered>
-                <Modal.Header>{' '}</Modal.Header>
+                centered
+            >
+                <Modal.Header> </Modal.Header>
                 <Modal.Body>
-                    <h6 className="text-center">{deptId ? `Are you sure you want to edit ${selectedDeptName} ?` : 'Are you sure you want to create a new department ?'}</h6>
+                    <h6 className="text-center">
+                        {deptId
+                            ? `Are you sure you want to edit ${selectedDeptName} ?`
+                            : 'Are you sure you want to create a new department ?'}
+                    </h6>
                 </Modal.Body>
-                <Modal.Footer style={{display: 'flex', justifyContent: 'space-between'}}>
+                <Modal.Footer style={{ display: 'flex', justifyContent: 'space-between' }}>
                     <Button variant="btn btn-danger btn-rounded" onClick={toggleCloseConfirmModal}>
                         Continue editing
                     </Button>
