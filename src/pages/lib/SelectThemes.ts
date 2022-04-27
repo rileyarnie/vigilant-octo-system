@@ -11,8 +11,8 @@ export const customSelectTheme = (theme) => {
     };
 };
 export const selectOptions = [
-    { value: 'true', label: 'Yes'},
-    { value: 'false', label: 'No' }
+    { value: true, label: 'Yes'},
+    { value: false, label: 'No' }
 ];
 export const certType = [
     { value: 'Degree', label: 'Bachelors'},
