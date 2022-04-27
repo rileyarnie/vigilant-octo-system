@@ -76,6 +76,7 @@ const AssignCourse = (): JSX.Element => {
                 setLinearDisplay('block');
                 alerts.showSuccess('Course assignment successful');
                 fetchCourses();
+                toggleCloseConfirmModal();
                 setSelectedRows([]);
                 return res;
                 setLinearDisplay('none');

@@ -371,10 +371,10 @@ const ProgramCohorts = (): JSX.Element => {
             });
     };
     const handleProgramChange = (programId) => {
-        setProgramId(parseInt(programId));
+        setProgramId(parseInt(programId.value));
     };
     const handleCampusChange = (campusId) => {
-        setCampusId(parseInt(campusId));
+        setCampusId(parseInt(campusId.value));
     };
     const resetStateCloseModal = (): void => {
         setCohortId(null);
@@ -385,6 +385,7 @@ const ProgramCohorts = (): JSX.Element => {
         setBanner('');
         setModal(false);
         setProgramName('');
+        setConfirmModal(false);
     };
     const toggleCreateModal = () => {
         showModal ? resetStateCloseModal() : setModal(true);

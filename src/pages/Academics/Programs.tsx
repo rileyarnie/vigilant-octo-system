@@ -189,7 +189,6 @@ const Programs = (): JSX.Element => {
                 setLinearDisplay('none');
                 alerts.showSuccess('Program created succesfully');
                 fetchPrograms();
-                setConfirmModal(false);
                 resetStateCloseModal();
             })
             .catch((error) => {
@@ -204,6 +203,7 @@ const Programs = (): JSX.Element => {
         setRequiresClearance('');
         setCertificationType('');
         setDuration('');
+        setConfirmModal(false);
         setModal(false);
     };
     const handleChange = (selectedDepartment) => {

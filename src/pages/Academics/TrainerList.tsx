@@ -159,6 +159,7 @@ const TrainerList = (): JSX.Element => {
                 alerts.showSuccess('Trainer created successfully');
                 fetchTrainers();
                 setModal(false);
+                setConfirmModal(true);
                 setLinearDisplay('none');
             })
             .catch((error) => {

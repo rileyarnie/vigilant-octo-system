@@ -173,6 +173,7 @@ const CampusList = (): JSX.Element => {
         setDescription('');
         setActivationModal(false);
         setModal(false);
+        setConfirmModal(false);
     };
     const toggleCreateModal = () => {
         showModal ? resetStateCloseModal() : setModal(true);

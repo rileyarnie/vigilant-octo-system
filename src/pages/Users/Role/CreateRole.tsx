@@ -39,6 +39,7 @@ const CreateRole = (props: IProps): JSX.Element => {
     const resetStateCloseModal = () => {
         setRoleName('');
         setRoleDescription('');
+        setConfirmModal(false);
     };
     const toggleConfirmModal = () => {
         setConfirmModal(true);
@@ -117,7 +118,7 @@ const CreateRole = (props: IProps): JSX.Element => {
                 centered>
                 <Modal.Header>{' '}</Modal.Header>
                 <Modal.Body>
-                    <h6 className="text-center">A you sure you want to create a role ?</h6>
+                    <h6 className="text-center">Are you sure you want to create a role : {roleName}?</h6>
                 </Modal.Body>
                 <Modal.Footer style={{display: 'flex', justifyContent: 'space-between'}}>
                     <Button variant="btn btn-danger btn-rounded" onClick={toggleCloseConfirmModal}>

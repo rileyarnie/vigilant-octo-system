@@ -193,6 +193,7 @@ const Department = (): JSX.Element => {
         setDeptName('');
         setSelectedHoD(null);
         setModal(false);
+        setConfirmModal(false);
     };
     const toggleCreateModal = () => {
         showModal ? resetStateCloseModal() : setModal(true);
@@ -328,7 +329,7 @@ const Department = (): JSX.Element => {
                 </Modal.Header>
                 <Modal.Body>
                     <ValidationForm>
-                        <p className="text-center">A you sure you want to change the status of <b>{rowData?.name}</b> ?</p>
+                        <p className="text-center">Are you sure you want to change the status of <b>{rowData?.name}</b> ?</p>
                         <Button className="btn btn-danger float-left" onClick={handleCloseModal}>
                             Cancel
                         </Button>
@@ -349,7 +350,7 @@ const Department = (): JSX.Element => {
                 centered>
                 <Modal.Header>{' '}</Modal.Header>
                 <Modal.Body>
-                    <h6 className="text-center">{deptId ? `A you sure you want to edit ${selectedDeptName} ?` : 'A you sure you want to create a new department ?'}</h6>
+                    <h6 className="text-center">{deptId ? `Are you sure you want to edit ${selectedDeptName} ?` : 'Are you sure you want to create a new department ?'}</h6>
                 </Modal.Body>
                 <Modal.Footer style={{display: 'flex', justifyContent: 'space-between'}}>
                     <Button variant="btn btn-danger btn-rounded" onClick={toggleCloseConfirmModal}>
