@@ -11,7 +11,7 @@ import { authnzAxiosInstance } from '../../utlis/interceptors/authnz-interceptor
 import LinearProgress from '@mui/material/LinearProgress';
 import background from '../../assets/images/staffbg.jpg';
 import logo from '../../assets/images/logo-dark.png';
-import Config from '../../exampleconfig';
+import Config from '../../config';
 
 const alerts: Alerts = new ToastifyAlerts();
 const Login = () => {
