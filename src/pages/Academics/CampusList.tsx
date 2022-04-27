@@ -28,6 +28,7 @@ const CampusList = (): JSX.Element => {
 
     const [data, setData] = useState([]);
     const [iserror] = useState(false);
+    const [confirmModal, setConfirmModal] = useState(false);
     const [campusName, setCampusName] = useState('');
     const [description, setDescription] = useState('');
     const [showModal, setModal] = useState(false);
@@ -172,6 +173,7 @@ const CampusList = (): JSX.Element => {
         setDescription('');
         setActivationModal(false);
         setModal(false);
+        setConfirmModal(false);
     };
     const toggleCreateModal = () => {
         showModal ? resetStateCloseModal() : setModal(true);
@@ -185,6 +187,12 @@ const CampusList = (): JSX.Element => {
     };
     const handleClose = () => {
         showModal ? resetStateCloseModal() : setModal(false);
+    };
+    const toggleConfirmModal = () => {
+        setConfirmModal(true);
+    };
+    const toggleCloseConfirmModal = () => {
+        setConfirmModal(false);
     };
     return (
         <>
@@ -286,15 +294,15 @@ const CampusList = (): JSX.Element => {
                             />
                             <br/>
                         </div>
-                        <div className="form-group">
-                            <button className="btn btn-info float-right" onClick={(e) => (campusId ? handleEdit(e) : handleAdd(e))}>
-                                Submit
-                            </button>
-                        </div>
                     </ValidationForm>
-                    <button className="btn btn-danger float-left" onClick={handleClose}>
-                        Close
-                    </button>
+                    <Col>
+                        <button className="btn btn-info float-right" onClick={toggleConfirmModal}>
+                            Submit
+                        </button>
+                        <button className="btn btn-danger float-left" onClick={handleClose}>
+                            Close
+                        </button>
+                    </Col>
                 </Modal.Body>
             </Modal>
             <Modal
@@ -321,6 +329,28 @@ const CampusList = (): JSX.Element => {
                         </Button>
                     </ValidationForm>
                 </Modal.Body>
+            </Modal>
+            <Modal
+                show={confirmModal}
+                onHide={toggleConfirmModal}
+                size="sm"
+                backdrop="static"
+                aria-labelledby="contained-modal-title-vcenter"
+                centered>
+                <Modal.Header closeButton>
+                    <Modal.Title>{' '}</Modal.Title>
+                </Modal.Header>
+                <Modal.Body>
+                    <h6>{campusId ? `A you sure you want to update ${selectedCampusName} ?` : 'A you sure you want to create a new campus ?'}</h6>
+                </Modal.Body>
+                <Modal.Footer style={{display: 'flex', justifyContent: 'space-between'}}>
+                    <Button variant="btn btn-danger btn-rounded" onClick={toggleCloseConfirmModal}>
+                        Continue editing
+                    </Button>
+                    <button className="btn btn-info float-right" onClick={(e) => (campusId ? handleEdit(e) : handleAdd(e))}>
+                        Submit
+                    </button>
+                </Modal.Footer>
             </Modal>
         </>
     );

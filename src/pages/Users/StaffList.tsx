@@ -2,53 +2,38 @@
 /* eslint-disable react/display-name */
 import React, { useState, useEffect } from 'react';
 import Breadcrumb from '../../App/components/Breadcrumb';
-import { Row, Col, Card,} from 'react-bootstrap';
+import { Row, Col, Card } from 'react-bootstrap';
 import { Alerts, ToastifyAlerts } from '../lib/Alert';
 import { LinearProgress } from '@mui/material';
 import { canPerformActions } from '../../services/ActionChecker';
 import { ACTION_GET_USERS } from '../../authnz-library/authnz-actions';
-import { authnzAxiosInstance } from '../../utlis/interceptors/authnz-interceptor';
 import TableWrapper from '../../utlis/TableWrapper';
 const alerts: Alerts = new ToastifyAlerts();
-import { Select, MenuItem } from '@material-ui/core';
 import CreateStaff from './CreateStaff/CreateStaff';
+import { timetablingAxiosInstance } from '../../utlis/interceptors/timetabling-interceptor';
+import UpdateStaff from './UpdateStaff/UpdateStaff';
 
 const StaffList = (): JSX.Element => {
     const columns = [
         { title: 'SN', field: 'id' },
-        { title: 'Name', field: 'isStaff' },
-        { title: 'User', field: 'aadAlias' },
+        { title: 'Name', field: 'name' },
+        { title: 'User', field: 'email' },
         {
             title: 'Actions',
-            render: (row) => (
-                <div style={{ padding: '0px 5px' }}>
-                    <Select
-                        labelId="demo-simple-select-label"
-                        id="demo-simple-select"
-                        style={{ width: 150 }}
-                        value={isActivated}
-                        onChange={(e) => setIsActivated(e.target.value as string)}
-                    >
-                        {console.log(row)}
-                        <MenuItem value={'ACTIVATE'}>Edit</MenuItem>
-                        <MenuItem value={'DEACTIVATE'}>Deactivate</MenuItem>
-                    </Select>
-                </div>
-            )
+            render: (row) => <UpdateStaff fetchStaff={fetchStaff} data={row} />
         }
     ];
     const [data, setData] = useState([]);
     const [linearDisplay, setLinearDisplay] = useState('none');
-    const [isActivated, setIsActivated] = useState('ACTIVATE');
 
     useEffect(() => {
-        fetchUsers();
+        fetchStaff();
     }, []);
 
-    const fetchUsers = () => {
+    const fetchStaff = () => {
         setLinearDisplay('block');
-        authnzAxiosInstance
-            .get('/users')
+        timetablingAxiosInstance
+            .get('/staff')
             .then((res) => {
                 setData(res.data);
                 setLinearDisplay('none');
@@ -59,10 +44,6 @@ const StaffList = (): JSX.Element => {
                 alerts.showError(error.message);
             });
     };
-    // const handleRouteChange = () => {
-    //     // create staff logic here
-    //     console.log('create staff function');
-    // };
 
     return (
         <>
@@ -70,14 +51,7 @@ const StaffList = (): JSX.Element => {
                 <Col>
                     <Breadcrumb />
                 </Col>
-
-                {/* {canPerformActions(ACTION_ASSIGN_ROLES.name) && (
-                    <Button variant="danger" onClick={() => handleRouteChange()}>
-                        Create Staff
-                    </Button>
-                )} */}
-                <CreateStaff/>
-
+                <CreateStaff fetchStaff={fetchStaff} />
             </Row>
             <LinearProgress style={{ display: linearDisplay }} />
             {canPerformActions(ACTION_GET_USERS.name) && (

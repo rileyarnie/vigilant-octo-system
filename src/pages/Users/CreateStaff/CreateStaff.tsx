@@ -1,12 +1,12 @@
 import React from 'react';
 import { Button } from 'react-bootstrap';
-import { ACTION_CREATE_USERS } from '../../../authnz-library/authnz-actions';
+import { ACTION_CREATE_USERS} from '../../../authnz-library/authnz-actions';
 import { canPerformActions } from '../../../services/ActionChecker';
 import CreateStaffModal from './CreateStaffModal';
 
 
 interface IProps {
-    fetchUsers?: () => void;
+    fetchStaff?: () => void;
 }
 const CreateStaff = (props: IProps): JSX.Element => {
     const [modalShow, setModalShow] = React.useState(false);
@@ -22,7 +22,7 @@ const CreateStaff = (props: IProps): JSX.Element => {
                 show={modalShow}
                 onHide={() => setModalShow(false)}
                 setModalShow={setModalShow}
-                fetchUsers={props.fetchUsers}
+                fetchStaff={props.fetchStaff}
             />
         </>
     );

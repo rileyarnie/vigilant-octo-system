@@ -4,7 +4,7 @@ const Config = {
     redirectUri: 'uri that AAD will redirect to on successful login e.g. https://localhost/students',
     authority: 'AAD authority url',
     scopes: ['user.read'],
-    defaultPath: '/dashboard',
+    defaultPath: '/timetable',
     basename: '/staff',
     layout: 'vertical',
     collapseMenu: false,

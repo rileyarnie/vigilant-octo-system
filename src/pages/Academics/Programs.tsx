@@ -35,6 +35,7 @@ const Programs = (): JSX.Element => {
     const departmentOptions = [];
     const selectionOptions = [];
     const certificationTypes = [];
+    const [confirmModal, setConfirmModal] = useState(false);
     const [programName, setProgramName] = useState('');
     const [description, setDescription] = useState('');
     const [prerequisiteDocumentation, setPrerequisiteDocumentation] = useState('');
@@ -202,16 +203,17 @@ const Programs = (): JSX.Element => {
         setRequiresClearance('');
         setCertificationType('');
         setDuration('');
+        setConfirmModal(false);
         setModal(false);
     };
     const handleChange = (selectedDepartment) => {
-        setSelectedDepartment(selectedDepartment);
+        setSelectedDepartment(selectedDepartment.value);
     };
     const handleClearance = (requiresClearance) => {
-        setRequiresClearance(requiresClearance);
+        setRequiresClearance(requiresClearance.value);
     };
     const handleCertType = (certType) => {
-        setCertificationType(certType);
+        setCertificationType(certType.value);
     };
     const toggleCreateModal = () => {
         showModal ? resetStateCloseModal() : setModal(true);
@@ -224,6 +226,12 @@ const Programs = (): JSX.Element => {
         setActivationModal(false);
     };
     const handleClose = () => setModal(false);
+    const toggleConfirmModal = () => {
+        setConfirmModal(true);
+    };
+    const toggleCloseConfirmModal = () => {
+        setConfirmModal(false);
+    };
     return (
         <>
             <Row className="align-items-center page-header">
@@ -372,15 +380,15 @@ const Programs = (): JSX.Element => {
                             <br />
                             <br />
                         </div>
-                        <div className="form-group">
-                            <button className="btn btn-primary float-right" onClick={(e) => handleCreate(e)}>
-                                Submit
-                            </button>
-                        </div>
                     </ValidationForm>
-                    <button className="btn btn-danger float-danger" onClick={handleClose}>
-                        Close
-                    </button>
+                    <Col>
+                        <button className="btn btn-info float-right" onClick={toggleConfirmModal}>
+                            Submit
+                        </button>
+                        <button className="btn btn-danger float-danger" onClick={handleClose}>
+                            Close
+                        </button>
+                    </Col>
                 </Modal.Body>
             </Modal>
             <Modal
@@ -410,6 +418,26 @@ const Programs = (): JSX.Element => {
                         </Button>
                     </ValidationForm>
                 </Modal.Body>
+            </Modal>
+            <Modal
+                show={confirmModal}
+                onHide={toggleConfirmModal}
+                size="sm"
+                backdrop="static"
+                aria-labelledby="contained-modal-title-vcenter"
+                centered>
+                <Modal.Header>{' '}</Modal.Header>
+                <Modal.Body>
+                    <h6 className="text-center">A you sure you want to create <b>program :</b> <i>{programName}</i> ?</h6>
+                </Modal.Body>
+                <Modal.Footer style={{display: 'flex', justifyContent: 'space-between'}}>
+                    <Button variant="btn btn-danger btn-rounded" onClick={toggleCloseConfirmModal}>
+                        Continue editing
+                    </Button>
+                    <button className="btn btn-info float-right" onClick={(e) => handleCreate(e)}>
+                        Confirm
+                    </button>
+                </Modal.Footer>
             </Modal>
         </>
     );

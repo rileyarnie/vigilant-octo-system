@@ -1,3 +1,5 @@
+import handleLogout from '../Logout';
+
 export function onRequestMade(requestConfig) {
     requestConfig.headers.authorization = `Bearer ${localStorage.getItem('idToken')}`;
     return requestConfig;
@@ -16,8 +18,7 @@ export function onResponseFailed(error) {
     const status = error.response?.status;
     //check if error from server is 401 then logout user
     if (status === 401) {
-        localStorage.removeItem('idToken');
-        window.location.replace('login');
+        handleLogout();
     }
     //check if error from server is 403
     if (status === 403) {

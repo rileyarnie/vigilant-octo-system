@@ -15,6 +15,7 @@ const RecordFeePayment: React.FunctionComponent<Props> = (props) => {
     const [evidenceUrl, setEvidenceUrl] = useState('');
     const [showUploadModal, setShowUploadModal] = useState(false);
     const [amount, setAmount] = useState('');
+    const [confirmModal, setConfirmModal] = useState(false);
     const [fileUploaded, setFileUploaded] = useState('');
     const handleUpload = () => {
         const form = new FormData();
@@ -52,6 +53,12 @@ const RecordFeePayment: React.FunctionComponent<Props> = (props) => {
     const toggleUploadModal = () => {
         showUploadModal ? setShowUploadModal(false) : setShowUploadModal(true);
     };
+    const toggleConfirmModal = () => {
+        setConfirmModal(true);
+    };
+    const toggleCloseConfirmModal = () => {
+        setConfirmModal(false);
+    };
     return (
         <>
             <ModalWrapper
@@ -60,7 +67,7 @@ const RecordFeePayment: React.FunctionComponent<Props> = (props) => {
                 title="Record Fee Item"
                 modalSize="lg"
                 submitButton
-                submitFunction={handleSubmit}
+                submitFunction={toggleConfirmModal}
             >
                 <Form>
                     <Form.Group controlId="formAmount">
@@ -125,6 +132,26 @@ const RecordFeePayment: React.FunctionComponent<Props> = (props) => {
                         <Button className="float-right" variant="info" onClick={() => handleUpload()}>Upload</Button>
                     </Modal.Footer>
                 </Modal.Dialog>
+            </Modal>
+            <Modal
+                show={confirmModal}
+                onHide={toggleConfirmModal}
+                size="sm"
+                backdrop="static"
+                aria-labelledby="contained-modal-title-vcenter"
+                centered>
+                <Modal.Header>{' '}</Modal.Header>
+                <Modal.Body>
+                    <h6 className="text-center">A you sure you want to add a fee record ?</h6>
+                </Modal.Body>
+                <Modal.Footer style={{display: 'flex', justifyContent: 'space-between'}}>
+                    <Button variant="btn btn-danger btn-rounded" onClick={toggleCloseConfirmModal}>
+                        Continue editing
+                    </Button>
+                    <button className="btn btn-info float-right" onClick={handleSubmit}>
+                        Confirm
+                    </button>
+                </Modal.Footer>
             </Modal>
         </>
     );

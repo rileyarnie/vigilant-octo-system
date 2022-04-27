@@ -74,22 +74,6 @@ const CoursesList = (): JSX.Element => {
             setRowData(row);
         }
     };
-    const handleApprovalStatusToggle = (event, row: Course) => {
-        if (row.approval_status) {
-            msg = 'Successfully Declined Course';
-            approvalStatus = false;
-            activationStatus = row.activation_status;
-            isElective = row.isElective;
-            handleToggleStatusSubmit(row);
-        }
-        if (!row.approval_status) {
-            msg = 'Successfully Approved Course';
-            approvalStatus = true;
-            activationStatus = row.activation_status;
-            isElective = row.isElective;
-            handleToggleStatusSubmit(row);
-        }
-    };
 
     const handleToggleStatusSubmit = (row: Course) => {
         const course = {
@@ -128,18 +112,6 @@ const CoursesList = (): JSX.Element => {
                     />
                 )
         },
-        {
-            title: 'Toggle Approval Status',
-            field: 'internal_action',
-            render: (row: Course) =>
-                canPerformActions(ACTION_UPDATE_COURSE.name) && (
-                    <Switch
-                        onChange={(event) => handleApprovalStatusToggle(event, row)}
-                        inputProps={{ 'aria-label': 'controlled' }}
-                        defaultChecked={row.approval_status === true}
-                    />
-                )
-        }
     ];
 
     const toggleCreateModal = () => {
