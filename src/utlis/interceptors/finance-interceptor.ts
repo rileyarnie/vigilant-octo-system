@@ -1,5 +1,5 @@
 import axios from 'axios';
-import Config from '../../exampleconfig';
+import Config from '../../config';
 import { onRequestFailed, onRequestMade, onResponseFailed, onResponseSuccess } from './interceptor';
 
 const baseURL = Config.baseUrl.financeSrv;

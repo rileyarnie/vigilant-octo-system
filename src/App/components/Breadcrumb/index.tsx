@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import config from '../../../exampleconfig';
+import config from '../../../config';
 import navigation, { MenuItemType } from '../../../menu-items';
 import SYS from '../../../store/constant';
 

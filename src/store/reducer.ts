@@ -1,5 +1,5 @@
 import * as actionTypes from './actions';
-import config from '../exampleconfig';
+import config from '../config';
 import { ACTIONTYPE } from './actions';
 
 export const initialState = {

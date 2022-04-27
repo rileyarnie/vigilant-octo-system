@@ -27,7 +27,7 @@ import Breadcrumb from '../../App/components/Breadcrumb';
 import { ValidationForm, SelectGroup, TextInput } from 'react-bootstrap4-form-validation';
 import { Row, Col, Card, Modal, Button } from 'react-bootstrap';
 import DeleteIcon from '@material-ui/icons/Delete';
-import Config from '../../exampleconfig';
+import Config from '../../config';
 import SelectCurrency from 'react-select-currency';
 import { DeactivateCourseCohort } from './DeactivateCourseCohort';
 import { Alerts, ToastifyAlerts } from '../lib/Alert';
