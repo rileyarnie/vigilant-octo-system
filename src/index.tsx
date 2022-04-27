@@ -8,7 +8,7 @@ import reducer from './store/reducer';
 import './assets/scss/style.scss';
 import Login from './pages/Auth/Login';
 import { ProtectedRoutes } from './App/components/ProtectedRoutes';
-import Config from './exampleconfig';
+import Config from './config';
 const store = createStore(reducer);
 
 const isLoggedIn = JSON.parse(localStorage.getItem('userInfo')) ? true : false;
