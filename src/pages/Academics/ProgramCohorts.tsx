@@ -18,6 +18,7 @@ import TableWrapper from '../../utlis/TableWrapper';
 const alerts: Alerts = new ToastifyAlerts();
 import Select from 'react-select';
 import { customSelectTheme } from '../lib/SelectThemes';
+import ConfirmationModalWrapper from '../../App/components/modal/ConfirmationModalWrapper';
 
 
 const ProgramCohorts = (): JSX.Element => {
@@ -427,7 +428,7 @@ const ProgramCohorts = (): JSX.Element => {
         <>
             <Row className="align-items-center page-header">
                 <Col>
-                    <Breadcrumb/>
+                    <Breadcrumb />
                 </Col>
                 <Col>
                     {canPerformActions(ACTION_CREATE_PROGRAM_COHORT.name) && (
@@ -445,7 +446,7 @@ const ProgramCohorts = (): JSX.Element => {
             </Row>
             {canPerformActions(ACTION_GET_PROGRAM_COHORTS.name) && (
                 <>
-                    <LinearProgress style={{display: linearDisplay}}/>
+                    <LinearProgress style={{ display: linearDisplay }} />
                     <Row>
                         <Col>
                             <Card>
@@ -458,12 +459,7 @@ const ProgramCohorts = (): JSX.Element => {
                                         </Alert>
                                     )}
                                 </div>
-                                <TableWrapper
-                                    title="Program Cohorts"
-                                    columns={columns}
-                                    data={data}
-                                    options={{ actionsColumnIndex: -1}}
-                                />
+                                <TableWrapper title="Program Cohorts" columns={columns} data={data} options={{ actionsColumnIndex: -1 }} />
                             </Card>
                         </Col>
                     </Row>
@@ -500,7 +496,8 @@ const ProgramCohorts = (): JSX.Element => {
                                         placeholder="Select a Program."
                                         noOptionsMessage={() => 'No Programs available'}
                                         onChange={handleProgramChange}
-                                    /><br/>
+                                    />
+                                    <br />
                                     <label htmlFor="cohortName">
                                         <b>{cohortId ? 'Select a new campus for this cohort' : 'Select a campus'}</b>
                                     </label>
@@ -512,11 +509,12 @@ const ProgramCohorts = (): JSX.Element => {
                                         placeholder="Select a Campus."
                                         noOptionsMessage={() => 'No campus available'}
                                         onChange={handleCampusChange}
-                                    /><br/>
+                                    />
+                                    <br />
                                     <label htmlFor="Date">
                                         <b>Start Date</b>
                                     </label>
-                                    <br/>
+                                    <br />
                                     <TextInput
                                         name="startDate"
                                         id="startDate"
@@ -529,11 +527,11 @@ const ProgramCohorts = (): JSX.Element => {
                                             setStartDate(e.target.value);
                                         }}
                                     />
-                                    <br/>
+                                    <br />
                                     <label htmlFor="Date">
                                         <b>Anticipated Graduation Date</b>
                                     </label>
-                                    <br/>
+                                    <br />
                                     <TextInput
                                         name="graduationDate"
                                         id="graduationDate"
@@ -551,7 +549,7 @@ const ProgramCohorts = (): JSX.Element => {
                                             setGraduationDate(e.target.value);
                                         }}
                                     />
-                                    <br/>
+                                    <br />
                                     <label htmlFor="cohortName">
                                         <b>Description</b>
                                     </label>
@@ -571,11 +569,11 @@ const ProgramCohorts = (): JSX.Element => {
                                             setDescription(e.target.value);
                                         }}
                                     />
-                                    <br/>
+                                    <br />
                                     <label htmlFor="cohortName">
                                         <b>Banner Image</b>
                                     </label>
-                                    <br/>
+                                    <br />
                                     <button
                                         className="btn btn-primary"
                                         onClick={(e) => {
@@ -586,11 +584,13 @@ const ProgramCohorts = (): JSX.Element => {
                                         Add image
                                     </button>
                                 </div>
-                                <input name="banner" id="banner" type="hidden" required value={banner}/>
-                                <br/>
+                                <input name="banner" id="banner" type="hidden" required value={banner} />
+                                <br />
                             </ValidationForm>
                             <div className="form-group">
-                                <button className="btn btn-info float-right" onClick={toggleConfirmModal}>Submit</button>
+                                <button className="btn btn-info float-right" onClick={toggleConfirmModal}>
+                                    Submit
+                                </button>
                                 <button
                                     className="btn btn-danger float-left"
                                     onClick={() => {
@@ -609,8 +609,8 @@ const ProgramCohorts = (): JSX.Element => {
                                 graduationDate={
                                     cohortId
                                         ? selectedProgramCohort.program_cohorts_anticipatedGraduationYear +
-                                        ' - ' +
-                                        selectedProgramCohort.program_cohorts_anticipatedGraduationMonth
+                                          ' - ' +
+                                          selectedProgramCohort.program_cohorts_anticipatedGraduationMonth
                                         : graduationDate
                                 }
                                 bannerImage={cohortId ? selectedProgramCohort.program_cohorts_bannerImageUrl : banner}
@@ -645,7 +645,7 @@ const ProgramCohorts = (): JSX.Element => {
                         />
                     </ValidationForm>
                 </Modal.Body>
-                <Modal.Footer style={{display: 'flex', justifyContent: 'space-between'}}>
+                <Modal.Footer style={{ display: 'flex', justifyContent: 'space-between' }}>
                     <Button variant="btn btn-info btn-rounded" onClick={toggleUploadModal}>
                         Close
                     </Button>
@@ -670,7 +670,7 @@ const ProgramCohorts = (): JSX.Element => {
                         </p>
                     </ValidationForm>
                 </Modal.Body>
-                <Modal.Footer style={{display: 'flex', justifyContent: 'space-between'}}>
+                <Modal.Footer style={{ display: 'flex', justifyContent: 'space-between' }}>
                     <Button variant="btn btn-danger btn-rounded" onClick={toggleCancelModal}>
                         Close
                     </Button>
@@ -712,33 +712,20 @@ const ProgramCohorts = (): JSX.Element => {
                     </ValidationForm>
                 </Modal.Body>
             </Modal>
-            <Modal
+            <ConfirmationModalWrapper
+                submitButton
+                submitFunction={(e) => {
+                    cohortId ? handleEdit(e) : handleCreate(e);
+                }}
+                closeModal={toggleCloseConfirmModal}
                 show={confirmModal}
-                onHide={toggleConfirmModal}
-                size="sm"
-                backdrop="static"
-                aria-labelledby="contained-modal-title-vcenter"
-                centered>
-                <Modal.Header>{' '}</Modal.Header>
-                <Modal.Body>
-                    <h6 className="text-center">{cohortId
-                        ? `A you sure you want to Edit: ${getProgramCohortFields(cohortId).pg_name}`
-                        : 'A you sure you want to create a program cohort ?'}</h6>
-                </Modal.Body>
-                <Modal.Footer style={{display: 'flex', justifyContent: 'space-between'}}>
-                    <Button variant="btn btn-danger btn-rounded" onClick={toggleCloseConfirmModal}>
-                        Continue editing
-                    </Button>
-                    <button
-                        className="btn btn-info float-right"
-                        onClick={(e) => {
-                            cohortId ? handleEdit(e) : handleCreate(e);
-                        }}
-                    >
-                        Confirm
-                    </button>
-                </Modal.Footer>
-            </Modal>
+            >
+                <h6 className="text-center">
+                    {cohortId
+                        ? `Are you sure you want to Edit: ${getProgramCohortFields(cohortId).pg_name}`
+                        : 'Are you sure you want to create a program cohort ?'}
+                </h6>
+            </ConfirmationModalWrapper>
         </>
     );
 };

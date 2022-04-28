@@ -15,6 +15,7 @@ import { timetablingAxiosInstance } from '../../utlis/interceptors/timetabling-i
 import TableWrapper from '../../utlis/TableWrapper';
 import { customSelectTheme, selectOptions, certType } from '../lib/SelectThemes';
 import Select from 'react-select';
+import ConfirmationModalWrapper from '../../App/components/modal/ConfirmationModalWrapper';
 const alerts: Alerts = new ToastifyAlerts();
 
 const Programs = (): JSX.Element => {
@@ -335,7 +336,8 @@ const Programs = (): JSX.Element => {
                                 placeholder="Please select CertificationType."
                                 noOptionsMessage={() => 'No types available'}
                                 onChange={handleCertType}
-                            /><br/>
+                            />
+                            <br />
                             <label htmlFor="tiimetablelable">
                                 <b>Department</b>
                             </label>
@@ -349,7 +351,8 @@ const Programs = (): JSX.Element => {
                                 placeholder="Select a department."
                                 noOptionsMessage={() => 'No department available'}
                                 onChange={handleChange}
-                            /><br/>
+                            />
+                            <br />
                             <label htmlFor="requiresClearance">
                                 <b>Requires Clearance</b>
                             </label>
@@ -363,7 +366,8 @@ const Programs = (): JSX.Element => {
                                 placeholder="Please select"
                                 noOptionsMessage={() => 'No option available'}
                                 onChange={handleClearance}
-                            /><br/>
+                            />
+                            <br />
                             <br />
                             <label htmlFor="duration">
                                 <b>Program duration</b>
@@ -419,26 +423,16 @@ const Programs = (): JSX.Element => {
                     </ValidationForm>
                 </Modal.Body>
             </Modal>
-            <Modal
+            <ConfirmationModalWrapper
+                submitButton
+                submitFunction={(e) => handleCreate(e)}
+                closeModal={toggleCloseConfirmModal}
                 show={confirmModal}
-                onHide={toggleConfirmModal}
-                size="sm"
-                backdrop="static"
-                aria-labelledby="contained-modal-title-vcenter"
-                centered>
-                <Modal.Header>{' '}</Modal.Header>
-                <Modal.Body>
-                    <h6 className="text-center">A you sure you want to create <b>program :</b> <i>{programName}</i> ?</h6>
-                </Modal.Body>
-                <Modal.Footer style={{display: 'flex', justifyContent: 'space-between'}}>
-                    <Button variant="btn btn-danger btn-rounded" onClick={toggleCloseConfirmModal}>
-                        Continue editing
-                    </Button>
-                    <button className="btn btn-info float-right" onClick={(e) => handleCreate(e)}>
-                        Confirm
-                    </button>
-                </Modal.Footer>
-            </Modal>
+            >
+                <h6 className="text-center">
+                    A you sure you want to create <b>program :</b> <i>{programName}</i> ?
+                </h6>
+            </ConfirmationModalWrapper>
         </>
     );
 };

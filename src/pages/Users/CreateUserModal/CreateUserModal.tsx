@@ -7,6 +7,7 @@ import validator from 'validator';
 
 import {Alerts, ToastifyAlerts} from '../../lib/Alert';
 import {authnzAxiosInstance} from '../../../utlis/interceptors/authnz-interceptor';
+import ConfirmationModalWrapper from '../../../App/components/modal/ConfirmationModalWrapper';
 
 const alerts: Alerts = new ToastifyAlerts();
 const CreateUserModal = (props): JSX.Element => {
@@ -25,11 +26,14 @@ const CreateUserModal = (props): JSX.Element => {
                 alerts.showSuccess('successfully created user');
                 props.fetchUsers();
                 props.onHide();
+                toggleCloseConfirmModal();
                 setEmail('');
                 setConfirmModal(false);
             })
             .catch((error) => {
                 //handle error using logging library
+                props.onHide();
+                toggleCloseConfirmModal();
                 console.error(error);
                 alerts.showError(error.message);
             });
@@ -53,7 +57,7 @@ const CreateUserModal = (props): JSX.Element => {
                 <Modal.Body>
                     <>
                         <Row className="align-items-center page-header">
-                            <Col/>
+                            <Col />
                         </Row>
                         <Row>
                             <Col>
@@ -70,7 +74,7 @@ const CreateUserModal = (props): JSX.Element => {
                                                     type="email"
                                                     placeholder="user@miog.co.ke"
                                                     validator={validator.isEmail}
-                                                    errorMessage={{validator: 'Please enter a valid email'}}
+                                                    errorMessage={{ validator: 'Please enter a valid email' }}
                                                     value={email}
                                                     onChange={handleChange}
                                                 />
@@ -93,26 +97,11 @@ const CreateUserModal = (props): JSX.Element => {
                     </>
                 </Modal.Body>
             </Modal>
-            <Modal
-                show={confirmModal}
-                onHide={toggleConfirmModal}
-                size="sm"
-                backdrop="static"
-                aria-labelledby="contained-modal-title-vcenter"
-                centered>
-                <Modal.Header>{' '}</Modal.Header>
-                <Modal.Body>
-                    <h6 className="text-center">Are you sure you want to add <p>{email}</p>  ?</h6>
-                </Modal.Body>
-                <Modal.Footer style={{display: 'flex', justifyContent: 'space-between'}}>
-                    <Button variant="btn btn-danger btn-rounded" onClick={toggleCloseConfirmModal}>
-                        Continue editing
-                    </Button>
-                    <button className="btn btn-info float-right" onClick={handleSubmit}>
-                        Confirm
-                    </button>
-                </Modal.Footer>
-            </Modal>
+            <ConfirmationModalWrapper submitButton submitFunction={handleSubmit} closeModal={toggleCloseConfirmModal} show={confirmModal}>
+                <h6 className="text-center">
+                    Are you sure you want to add <p>{email}</p> ?
+                </h6>
+            </ConfirmationModalWrapper>
         </>
     );
 };

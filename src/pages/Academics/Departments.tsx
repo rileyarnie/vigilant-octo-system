@@ -14,6 +14,7 @@ import { timetablingAxiosInstance } from '../../utlis/interceptors/timetabling-i
 import TableWrapper from '../../utlis/TableWrapper';
 import { customSelectTheme } from '../lib/SelectThemes';
 import Select from 'react-select';
+import ConfirmationModalWrapper from '../../App/components/modal/ConfirmationModalWrapper';
 
 const alerts: Alerts = new ToastifyAlerts();
 
@@ -106,7 +107,7 @@ const Department = (): JSX.Element => {
             .get('/trainers')
             .then((res) => {
                 setLinearDisplay('none');
-                console.log('trainers',res.data);
+                console.log('trainers', res.data);
                 setUsers(res.data);
             })
             .catch((error) => {
@@ -243,7 +244,7 @@ const Department = (): JSX.Element => {
                                     title="Departments"
                                     columns={columns}
                                     data={data}
-                                    options={{ actionsColumnIndex: -1,}}
+                                    options={{ actionsColumnIndex: -1 }}
                                     actions={
                                         canPerformActions(ACTION_UPDATE_DEPARTMENT.name)
                                             ? [
@@ -329,38 +330,31 @@ const Department = (): JSX.Element => {
                 </Modal.Header>
                 <Modal.Body>
                     <ValidationForm>
-                        <p className="text-center">Are you sure you want to change the status of <b>{rowData?.name}</b> ?</p>
+                        <p className="text-center">
+                            Are you sure you want to change the status of <b>{rowData?.name}</b> ?
+                        </p>
                         <Button className="btn btn-danger float-left" onClick={handleCloseModal}>
                             Cancel
                         </Button>
-                        <Button className="btn btn-primary float-right" onClick={() => {
-                            handleToggleStatusSubmit(rowData);
-                        }}>
+                        <Button
+                            className="btn btn-primary float-right"
+                            onClick={() => {
+                                handleToggleStatusSubmit(rowData);
+                            }}
+                        >
                             Confirm
                         </Button>
                     </ValidationForm>
                 </Modal.Body>
             </Modal>
-            <Modal
+            <ConfirmationModalWrapper
+                submitButton
+                submitFunction={(e) => (deptId ? handleEdit(e) : handleCreate(e))}
+                closeModal={toggleCloseConfirmModal}
                 show={confirmModal}
-                onHide={toggleConfirmModal}
-                size="sm"
-                backdrop="static"
-                aria-labelledby="contained-modal-title-vcenter"
-                centered>
-                <Modal.Header>{' '}</Modal.Header>
-                <Modal.Body>
-                    <h6 className="text-center">{deptId ? `Are you sure you want to edit ${selectedDeptName} ?` : 'Are you sure you want to create a new department ?'}</h6>
-                </Modal.Body>
-                <Modal.Footer style={{display: 'flex', justifyContent: 'space-between'}}>
-                    <Button variant="btn btn-danger btn-rounded" onClick={toggleCloseConfirmModal}>
-                        Continue editing
-                    </Button>
-                    <button className="btn btn-primary" onClick={(e) => (deptId ? handleEdit(e) : handleCreate(e))}>
-                        Confirm
-                    </button>
-                </Modal.Footer>
-            </Modal>
+            >
+                {deptId ? `Are you sure you want to edit ${selectedDeptName} ?` : 'Are you sure you want to create a new department ?'}
+            </ConfirmationModalWrapper>
         </>
     );
 };

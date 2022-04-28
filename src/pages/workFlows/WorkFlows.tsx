@@ -16,6 +16,7 @@ import { LinearProgress } from '@material-ui/core';
 import { canPerformActions } from '../../services/ActionChecker';
 import TableWrapper from '../../utlis/TableWrapper';
 const alerts: Alerts = new ToastifyAlerts();
+import ConfirmationModalWrapper from '../../App/components/modal/ConfirmationModalWrapper';
 
 const WorkFlows = (): JSX.Element => {
     const columns = [
@@ -48,6 +49,7 @@ const WorkFlows = (): JSX.Element => {
     const [selectedOptions, setSelectedOptions] = useState([]);
     const [approvers, setApprovers] = useState([]);
     const [linearDisplay, setLinearDisplay] = useState('none');
+    const [confirmLinearDisplay, setConfirmLinearDisplay] = useState('none');
     const [showModal, setModal] = useState(false);
     const [roles, setRoles] = useState([]);
     const [confirmModal, setConfirmModal] = useState(false);
@@ -103,13 +105,16 @@ const WorkFlows = (): JSX.Element => {
                 roleId: selectedOption.value
             });
         });
+        setConfirmLinearDisplay('block');
+        toggleCloseConfirmModal();
         WorkFlowService.handleSubmitWorkFlow(actionName, approvingRoles)
             .then(() => {
                 alerts.showSuccess('Successfully created a workflow');
-                toggleCloseConfirmModal();
+                setConfirmLinearDisplay('none');
                 handleClose();
             })
             .catch((error) => {
+                setConfirmLinearDisplay('none');
                 alerts.showError(error.message);
             });
     }
@@ -165,6 +170,7 @@ const WorkFlows = (): JSX.Element => {
                     </Modal.Title>
                 </Modal.Header>
                 <Modal.Body>
+                    <LinearProgress style={{ display: confirmLinearDisplay }} />
                     <ValidationForm>
                         <Select
                             theme={customSelectTheme}
@@ -186,29 +192,16 @@ const WorkFlows = (): JSX.Element => {
                     </Button>
                 </Modal.Footer>
             </Modal>
-            <Modal
+            <ConfirmationModalWrapper
+                submitButton
+                submitFunction={handleSubmitWorkFlow}
+                closeModal={toggleCloseConfirmModal}
                 show={confirmModal}
-                onHide={toggleConfirmModal}
-                size="sm"
-                backdrop="static"
-                aria-labelledby="contained-modal-title-vcenter"
-                centered
             >
-                <Modal.Header> </Modal.Header>
-                <Modal.Body>
-                    <h6 className="text-center">
+                <h6 className="text-center">
                         A you sure you want to administer workflow for <i style={{ fontWeight: 'lighter' }}>{actionName}</i>?
-                    </h6>
-                </Modal.Body>
-                <Modal.Footer style={{ display: 'flex', justifyContent: 'space-between' }}>
-                    <Button variant="btn btn-danger btn-rounded" onClick={toggleCloseConfirmModal}>
-                        Continue editing
-                    </Button>
-                    <button className="btn btn-info float-right" onClick={handleSubmitWorkFlow}>
-                        Confirm
-                    </button>
-                </Modal.Footer>
-            </Modal>
+                </h6>
+            </ConfirmationModalWrapper>
         </>
     );
 };

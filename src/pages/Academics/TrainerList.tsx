@@ -14,6 +14,7 @@ import {DepartmentService} from '../services/DepartmentService';
 import TableWrapper from '../../utlis/TableWrapper';
 import {customSelectTheme, trainerTypes} from '../lib/SelectThemes';
 import Select from 'react-select';
+import ConfirmationModalWrapper from '../../App/components/modal/ConfirmationModalWrapper';
 
 const alerts: Alerts = new ToastifyAlerts();
 
@@ -159,7 +160,7 @@ const TrainerList = (): JSX.Element => {
                 alerts.showSuccess('Trainer created successfully');
                 fetchTrainers();
                 setModal(false);
-                setConfirmModal(true);
+                setConfirmModal(false);
                 setLinearDisplay('none');
             })
             .catch((error) => {
@@ -226,7 +227,7 @@ const TrainerList = (): JSX.Element => {
         <>
             <Row className="align-items-center page-header">
                 <Col>
-                    <Breadcrumb/>
+                    <Breadcrumb />
                 </Col>
                 <Col>
                     {canPerformActions(ACTION_CREATE_TRAINER.name) && (
@@ -237,7 +238,7 @@ const TrainerList = (): JSX.Element => {
                 </Col>
             </Row>
 
-            <LinearProgress style={{display: linearDisplay}}/>
+            <LinearProgress style={{ display: linearDisplay }} />
             <Row>
                 <Col>
                     {canPerformActions(ACTION_CREATE_TRAINER.name) && (
@@ -251,7 +252,7 @@ const TrainerList = (): JSX.Element => {
                                     </Alert>
                                 )}
                             </div>
-                            <TableWrapper title="Trainers" columns={columns} data={data} editable={{}} options={{}}/>
+                            <TableWrapper title="Trainers" columns={columns} data={data} editable={{}} options={{}} />
                         </Card>
                     )}
                 </Col>
@@ -281,7 +282,8 @@ const TrainerList = (): JSX.Element => {
                                 noOptionsMessage={() => 'No users available'}
                                 isClearable
                                 onChange={handleUser}
-                            /><br/>
+                            />
+                            <br />
                         </div>
                         <div className="form-group">
                             <label htmlFor="department">Select a department</label>
@@ -294,7 +296,8 @@ const TrainerList = (): JSX.Element => {
                                 placeholder="Select a department."
                                 noOptionsMessage={() => 'No department available'}
                                 onChange={handleChange}
-                            /><br/>
+                            />
+                            <br />
                         </div>
 
                         <div className="form-group">
@@ -308,7 +311,8 @@ const TrainerList = (): JSX.Element => {
                                 placeholder="Select trainer type."
                                 noOptionsMessage={() => 'No types available'}
                                 onChange={handleTrainerType}
-                            /><br/>
+                            />
+                            <br />
                         </div>
                     </ValidationForm>
                     <Col>
@@ -344,7 +348,8 @@ const TrainerList = (): JSX.Element => {
                                 placeholder="Select a Program."
                                 noOptionsMessage={() => 'No Programs available'}
                                 onChange={handleChange}
-                            /><br/>
+                            />
+                            <br />
                         </div>
 
                         <div className="form-group">
@@ -357,7 +362,8 @@ const TrainerList = (): JSX.Element => {
                                 placeholder="Select trainer type."
                                 noOptionsMessage={() => 'No types available'}
                                 onChange={handleTrainerType}
-                            /><br/>
+                            />
+                            <br />
                         </div>
                     </ValidationForm>
                     <button className="btn btn-danger float-left">Close</button>
@@ -398,8 +404,7 @@ const TrainerList = (): JSX.Element => {
                 </Modal.Header>
                 <Modal.Body>
                     <p>
-                        Are you sure you want to remove this trainer? Removing the trainer will remove them from all
-                        courses and
+                        Are you sure you want to remove this trainer? Removing the trainer will remove them from all courses and
                         course-cohorts that they are assigned to
                     </p>
 
@@ -413,32 +418,14 @@ const TrainerList = (): JSX.Element => {
                     </Modal.Footer>
                 </Modal.Body>
             </Modal>
-
-            <Modal
+            <ConfirmationModalWrapper
+                submitButton
+                submitFunction={(e) => handleSubmit(e)}
+                closeModal={toggleCloseConfirmModal}
                 show={confirmModal}
-                onHide={toggleConfirmModal}
-                size="sm"
-                backdrop="static"
-                aria-labelledby="contained-modal-title-vcenter"
-                centered
             >
-                <Modal.Header closeButton>
-                    <Modal.Title>Please confirm</Modal.Title>
-                </Modal.Header>
-                <Modal.Body>
-                    <p>
-                        Are you sure you want to create a new trainer
-                    </p>
-                </Modal.Body>
-                <Modal.Footer>
-                    <Button variant="btn btn-danger btn-rounded float-left" onClick={() => toggleCloseConfirmModal()}>
-                        Continue editing
-                    </Button>
-                    <button className="btn btn-info float-right" onClick={(e) => handleSubmit(e)}>
-                        Confirm
-                    </button>
-                </Modal.Footer>
-            </Modal>
+                <p>Are you sure you want to create a new trainer</p>
+            </ConfirmationModalWrapper>
         </>
     );
 };

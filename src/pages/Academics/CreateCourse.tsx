@@ -1,21 +1,22 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import React, {Component} from 'react';
-import {Row, Col, Card, Modal, Button} from 'react-bootstrap';
-import {ValidationForm, SelectGroup, TextInput} from 'react-bootstrap4-form-validation';
+import React, { Component } from 'react';
+import { Row, Col, Card } from 'react-bootstrap';
+import { ValidationForm, SelectGroup, TextInput } from 'react-bootstrap4-form-validation';
 import Select from 'react-select';
-import {Alerts, ToastifyAlerts} from '../lib/Alert';
-import {customSelectTheme} from '../lib/SelectThemes';
+import { Alerts, ToastifyAlerts } from '../lib/Alert';
+import { customSelectTheme } from '../lib/SelectThemes';
 import LinearProgress from '@mui/material/LinearProgress';
-import {Editor} from 'react-draft-wysiwyg';
+import { Editor } from 'react-draft-wysiwyg';
 import 'react-draft-wysiwyg/dist/react-draft-wysiwyg.css';
-import {EditorState, convertToRaw} from 'draft-js';
+import { EditorState, convertToRaw } from 'draft-js';
 import draftToHtml from 'draftjs-to-html';
-import {timetablingAxiosInstance} from '../../utlis/interceptors/timetabling-interceptor';
+import { timetablingAxiosInstance } from '../../utlis/interceptors/timetabling-interceptor';
+import ConfirmationModalWrapper from '../../App/components/modal/ConfirmationModalWrapper';
 
 const alerts: Alerts = new ToastifyAlerts();
 const selectOptions = [
-    {value: true, label: 'Yes'},
-    {value: false, label: 'No'}
+    { value: true, label: 'Yes' },
+    { value: false, label: 'No' }
 ];
 
 interface Props extends React.HTMLAttributes<Element> {
@@ -51,18 +52,18 @@ class CourseCreation extends Component<Props> {
         this.fetchCoursesAndInitSelect();
         timetablingAxiosInstance
             .get('/departments')
-            .then(res => {
+            .then((res) => {
                 this.setState({
                     departments: res.data
                 });
                 this.state.departments.map((dpt) => {
-                    return this.departmentOptions.push({value: dpt.id, label: dpt.name});
+                    return this.departmentOptions.push({ value: dpt.id, label: dpt.name });
                 });
                 selectOptions.map((sel) => {
-                    return this.selectionOptions.push({value: sel.value, label: sel.label});
+                    return this.selectionOptions.push({ value: sel.value, label: sel.label });
                 });
             })
-            .catch(err => {
+            .catch((err) => {
                 alerts.showError(err.message);
             });
     }
@@ -73,13 +74,13 @@ class CourseCreation extends Component<Props> {
         });
     };
     handleDepartment = (departmentId) => {
-        this.setState({departmentId: departmentId.value});
+        this.setState({ departmentId: departmentId.value });
     };
     handleTechnician = (technician) => {
-        this.setState({needsTechnicalAssistant: technician.value});
+        this.setState({ needsTechnicalAssistant: technician.value });
     };
     handleElective = (elective) => {
-        this.setState({isElective: elective.value});
+        this.setState({ isElective: elective.value });
     };
     onEditorStateChange = (editorState) => {
         this.setState({
@@ -119,10 +120,11 @@ class CourseCreation extends Component<Props> {
                     courseOutline: ''
                 });
                 this.props.fetchCourses();
-                this.setState({confirmModal: false});
+                this.setState({ confirmModal: false });
             })
             .catch((error) => {
                 //handle error using logging library
+                this.setState({ confirmModal: false });
                 console.error(error);
                 alerts.showError(error.message);
             });
@@ -143,7 +145,7 @@ class CourseCreation extends Component<Props> {
                     courses: res.data
                 });
                 this.state.courses.map((course) => {
-                    return this.options.push({value: course.id, label: course.name});
+                    return this.options.push({ value: course.id, label: course.name });
                 });
             })
             .catch((error) => {
@@ -157,17 +159,17 @@ class CourseCreation extends Component<Props> {
         });
     };
     toggleConfirmModal = () => {
-        this.setState({confirmModal: true});
+        this.setState({ confirmModal: true });
     };
     toggleCloseConfirmModal = () => {
-        this.setState({confirmModal: false});
+        this.setState({ confirmModal: false });
     };
 
     render(): JSX.Element {
         return (
             <>
-                <Row className="align-items-center page-header"/>
-                <LinearProgress style={{display: this.props.linearDisplay}}/>
+                <Row className="align-items-center page-header" />
+                <LinearProgress style={{ display: this.props.linearDisplay }} />
                 <Row>
                     <Col>
                         <Card>
@@ -188,7 +190,7 @@ class CourseCreation extends Component<Props> {
                                                     placeholder="Enter name"
                                                     onChange={this.handleChange}
                                                 />
-                                                <br/>
+                                                <br />
                                                 <label htmlFor="name">
                                                     <b>Course pre-requisites</b>
                                                 </label>
@@ -200,7 +202,7 @@ class CourseCreation extends Component<Props> {
                                                     noOptionsMessage={() => 'No available courses'}
                                                     onChange={this.handleSelectChange}
                                                 />
-                                                <p/>
+                                                <p />
                                                 <label htmlFor="description">
                                                     <b>Description</b>
                                                 </label>
@@ -215,10 +217,11 @@ class CourseCreation extends Component<Props> {
                                                     placeholder="enter description"
                                                     onChange={this.handleChange}
                                                 />
-                                                <br/>
+                                                <br />
                                                 <label htmlFor="department">
                                                     <b>Department</b>
-                                                </label><br/>
+                                                </label>
+                                                <br />
                                                 <Select
                                                     theme={customSelectTheme}
                                                     defaultValue=""
@@ -228,7 +231,8 @@ class CourseCreation extends Component<Props> {
                                                     placeholder="Select a department."
                                                     noOptionsMessage={() => 'No department available'}
                                                     onChange={this.handleDepartment}
-                                                /><br/>
+                                                />
+                                                <br />
                                                 <label htmlFor="trainingHours">
                                                     <b>Training Hours</b>
                                                 </label>
@@ -241,7 +245,7 @@ class CourseCreation extends Component<Props> {
                                                     required
                                                     onChange={this.handleChange}
                                                 />
-                                                <br/>
+                                                <br />
                                                 <label htmlFor="courseOutline">
                                                     <b>Course outline</b>
                                                 </label>
@@ -254,16 +258,19 @@ class CourseCreation extends Component<Props> {
                                                 />
                                                 <label htmlFor="timetablelable">
                                                     <b>Timetablable?</b>
-                                                </label><br/>
-                                                <br/>
+                                                </label>
+                                                <br />
+                                                <br />
                                                 <SelectGroup name="isTimetablable" id="timetableable" required onChange={this.handleChange}>
                                                     <option value="">--- Please select ---</option>
                                                     <option value="true">Yes</option>
                                                     <option value="false">No</option>
-                                                </SelectGroup><br/>
+                                                </SelectGroup>
+                                                <br />
                                                 <label htmlFor="needsTechnicalAssistant">
                                                     <b>Needs Technical Assistant?</b>
-                                                </label><br/>
+                                                </label>
+                                                <br />
                                                 <Select
                                                     theme={customSelectTheme}
                                                     defaultValue=""
@@ -273,10 +280,12 @@ class CourseCreation extends Component<Props> {
                                                     placeholder="Please select"
                                                     noOptionsMessage={() => 'No option available'}
                                                     onChange={this.handleTechnician}
-                                                /><br/>
+                                                />
+                                                <br />
                                                 <label htmlFor="isElective">
                                                     <b>Is Elective?</b>
-                                                </label><br/>
+                                                </label>
+                                                <br />
                                                 <Select
                                                     theme={customSelectTheme}
                                                     defaultValue=""
@@ -286,13 +295,17 @@ class CourseCreation extends Component<Props> {
                                                     placeholder="Please select"
                                                     noOptionsMessage={() => 'No option available'}
                                                     onChange={this.handleElective}
-                                                /><br/>
+                                                />
+                                                <br />
                                             </div>
                                         </ValidationForm>
                                         <Col>
-                                            <button className="btn btn-info float-right" onClick={this.toggleConfirmModal}>Submit
+                                            <button className="btn btn-info float-right" onClick={this.toggleConfirmModal}>
+                                                Submit
                                             </button>
-                                            <button className="btn btn-danger float-left" onClick={() => this.props.setModal(false)}>Cancel</button>
+                                            <button className="btn btn-danger float-left" onClick={() => this.props.setModal(false)}>
+                                                Cancel
+                                            </button>
                                         </Col>
                                     </Col>
                                 </Row>
@@ -300,26 +313,14 @@ class CourseCreation extends Component<Props> {
                         </Card>
                     </Col>
                 </Row>
-                <Modal
+                <ConfirmationModalWrapper
+                    submitButton
+                    submitFunction={this.handleSubmit}
+                    closeModal={this.toggleCloseConfirmModal}
                     show={this.state.confirmModal}
-                    onHide={this.toggleConfirmModal}
-                    size="sm"
-                    backdrop="static"
-                    aria-labelledby="contained-modal-title-vcenter"
-                    centered>
-                    <Modal.Header>{' '}</Modal.Header>
-                    <Modal.Body>
-                        <h6 className="text-center">Are you sure you want to create a course ?</h6>
-                    </Modal.Body>
-                    <Modal.Footer style={{display: 'flex', justifyContent: 'space-between'}}>
-                        <Button variant="btn btn-danger btn-rounded" onClick={this.toggleCloseConfirmModal}>
-                            Continue editing
-                        </Button>
-                        <button className="btn btn-info float-right" onClick={this.handleSubmit}>
-                            Confirm
-                        </button>
-                    </Modal.Footer>
-                </Modal>
+                >
+                    <h6 className="text-center">Are you sure you want to create a course ?</h6>
+                </ConfirmationModalWrapper>
             </>
         );
     }
