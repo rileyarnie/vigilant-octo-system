@@ -3,9 +3,9 @@ import React, { useState, useEffect } from 'react';
 import Card from '@material-ui/core/Card';
 import Alert from '@material-ui/lab/Alert';
 import Breadcrumb from '../../App/components/Breadcrumb';
-import {Row, DropdownButton, Dropdown, Col, Modal, Button} from 'react-bootstrap';
-import {Switch} from '@material-ui/core';
-import {ValidationForm, FileInput, TextInput} from 'react-bootstrap4-form-validation';
+import { Row, DropdownButton, Dropdown, Col, Modal, Button } from 'react-bootstrap';
+import { Switch } from '@material-ui/core';
+import { ValidationForm, FileInput, TextInput } from 'react-bootstrap4-form-validation';
 import CardPreview from './CardPreview';
 import { Link } from 'react-router-dom';
 import { Alerts, ToastifyAlerts } from '../lib/Alert';
@@ -20,7 +20,6 @@ import Select from 'react-select';
 import { customSelectTheme } from '../lib/SelectThemes';
 import ConfirmationModalWrapper from '../../App/components/modal/ConfirmationModalWrapper';
 
-
 const ProgramCohorts = (): JSX.Element => {
     interface programCohort {
         program_cohorts_id: number;
@@ -34,8 +33,8 @@ const ProgramCohorts = (): JSX.Element => {
         pg_id: number;
         bannerImageUrl: string;
         program_cohorts_campusId: number;
-        cmps_id:number;
-        cmps_name:string
+        cmps_id: number;
+        cmps_name: string;
     }
 
     const programOptions = [];
@@ -111,14 +110,14 @@ const ProgramCohorts = (): JSX.Element => {
     };
 
     const columns = [
-        {title: 'ID', field: 'program_cohorts_id'},
-        {title: 'Code', field: 'program_cohorts_code'},
-        {title: 'Program Name', field: 'pg_name'},
-        {title: 'Campus Name', field: 'cmps_name'},
-        {title: 'Requires Clearance', field: 'pg_requiresClearance'},
-        {title: 'Duration', field: 'pg_duration'},
-        {title: 'Certification Type', field: 'pg_certificationType'},
-        {title: 'Start Date', render: (rowData) => rowData.program_cohorts_startDate.slice(0, 10)},
+        { title: 'ID', field: 'program_cohorts_id' },
+        { title: 'Code', field: 'program_cohorts_code' },
+        { title: 'Program Name', field: 'pg_name' },
+        { title: 'Campus Name', field: 'cmps_name' },
+        { title: 'Requires Clearance', field: 'pg_requiresClearance' },
+        { title: 'Duration', field: 'pg_duration' },
+        { title: 'Certification Type', field: 'pg_certificationType' },
+        { title: 'Start Date', render: (rowData) => rowData.program_cohorts_startDate.slice(0, 10) },
         {
             title: 'Anticipated Graduation Date',
             render: (rowData) =>
@@ -132,7 +131,7 @@ const ProgramCohorts = (): JSX.Element => {
                     onChange={(event) => {
                         handleActivationStatusToggle(event, row);
                     }}
-                    inputProps={{'aria-label': 'controlled'}}
+                    inputProps={{ 'aria-label': 'controlled' }}
                     defaultChecked={row.program_cohorts_status !== 'canceled'}
                 />
             )
@@ -205,7 +204,7 @@ const ProgramCohorts = (): JSX.Element => {
     useEffect(() => {
         setLinearDisplay('block');
         timetablingAxiosInstance
-            .get('/program-cohorts', {params: {loadExtras: 'programs'}})
+            .get('/program-cohorts', { params: { loadExtras: 'programs' } })
             .then((res) => {
                 setLinearDisplay('none');
                 setData(res.data);
@@ -234,27 +233,27 @@ const ProgramCohorts = (): JSX.Element => {
             });
     }, []);
     programs.map((prog) => {
-        return programOptions.push({value: prog.id, label: prog.name});
+        return programOptions.push({ value: prog.id, label: prog.name });
     });
     campuses.map((camp) => {
-        return campusOptions.push({value: camp.id, label: camp.name});
+        return campusOptions.push({ value: camp.id, label: camp.name });
     });
-    const assignedProgram:{ pg_id: number; pg_name: string }[] = [
-        {pg_id: selectedProgramCohort?.pg_id, pg_name : selectedProgramCohort?.pg_name},
+    const assignedProgram: { pg_id: number; pg_name: string }[] = [
+        { pg_id: selectedProgramCohort?.pg_id, pg_name: selectedProgramCohort?.pg_name }
     ];
-    const assignedCampus:{ cmps_id: number; cmps_name: string  }[] = [
-        {cmps_id: selectedProgramCohort?.cmps_id, cmps_name : selectedProgramCohort?.cmps_name},
+    const assignedCampus: { cmps_id: number; cmps_name: string }[] = [
+        { cmps_id: selectedProgramCohort?.cmps_id, cmps_name: selectedProgramCohort?.cmps_name }
     ];
     assignedProgram.map((prog) => {
-        return programAssigned.push({value: prog.pg_id, label: prog.pg_name});
+        return programAssigned.push({ value: prog.pg_id, label: prog.pg_name });
     });
     assignedCampus.map((camp) => {
-        return campusAssigned.push({value: camp.cmps_id, label: camp.cmps_name});
+        return campusAssigned.push({ value: camp.cmps_id, label: camp.cmps_name });
     });
     const fetchProgramCohorts = (): void => {
         setLinearDisplay('block');
         timetablingAxiosInstance
-            .get('/program-cohorts', {params: {loadExtras: 'programs'}})
+            .get('/program-cohorts', { params: { loadExtras: 'programs' } })
             .then((res) => {
                 res.data.forEach((program) => {
                     program.name = getProgramName(res.data[0].programId);
@@ -271,7 +270,7 @@ const ProgramCohorts = (): JSX.Element => {
         const form = new FormData();
         form.append('fileUploaded', imageUploaded);
         const config = {
-            headers: {'content-type': 'multipart/form-data'}
+            headers: { 'content-type': 'multipart/form-data' }
         };
         setLinearDisplay('block');
         timetablingAxiosInstance
@@ -349,8 +348,11 @@ const ProgramCohorts = (): JSX.Element => {
                 console.log(res);
                 alerts.showSuccess('Successfully cancelled a program cohort');
                 toggleCancelModal();
+                toggleCloseConfirmModal();
             })
             .catch((error) => {
+                toggleCancelModal();
+                toggleCloseConfirmModal();
                 alerts.showError(error.response.data);
                 console.log(error);
             });
@@ -362,12 +364,13 @@ const ProgramCohorts = (): JSX.Element => {
         timetablingAxiosInstance
             .post('/program-cohorts', cohortData)
             .then(() => {
+                resetStateCloseModal();
                 setLinearDisplay('none');
                 alerts.showSuccess('Successfully created Program Cohort');
                 fetchProgramCohorts();
-                resetStateCloseModal();
             })
             .catch((error) => {
+                resetStateCloseModal();
                 alerts.showError(error.message);
             });
     };
