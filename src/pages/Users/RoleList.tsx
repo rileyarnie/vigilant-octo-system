@@ -61,7 +61,6 @@ function roleList(): JSX.Element {
                             onClick={() => {
                                 setId(row.id);
                                 setRoleName(row.name);
-                                toggleActionsModal();
                                 getActionsByRoleId(row.id, row.name);
                             }}
                         >
@@ -149,17 +148,20 @@ function roleList(): JSX.Element {
 
     const getActionsByRoleId = (roleId: number, roleName?: string) => {
         setDefaultRoleValues([]);
+        setLinearDisplay('block');
         authnzAxiosInstance
             .get(`/actions/${roleId}`)
             .then((res) => {
                 const myData = res.data;
                 setActions(myData);
                 setDefaultRoleValues(res.data.map((role: { id: number; name: string }) => ({ value: role.id, label: role.name })));
-                setActionModal(true);
             })
             .catch((err) => {
                 console.log('err', err);
                 alerts.showError(`We couldn’t fetch the existing actions for ${roleName}, reopening the dialog should resolve this`);
+            })
+            .finally(()=>{
+                setLinearDisplay('none');
                 setActionModal(true);
             });
     };
@@ -239,7 +241,6 @@ function roleList(): JSX.Element {
                 <Modal.Body>
                     <TableWrapper
                         title="Action Lists"
-                        onRowClick={(event, row) => getActionsByRoleId(row.id)}
                         columns={actionColumns}
                         data={actions}
                         options={{ pageSize: 10 }}
