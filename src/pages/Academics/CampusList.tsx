@@ -1,19 +1,15 @@
 /* eslint-disable react/display-name */
-import React, {useState, useEffect} from 'react';
+import React, { useState, useEffect } from 'react';
 import Edit from '@material-ui/icons/Edit';
-import {LinearProgress, Switch} from '@material-ui/core';
+import { LinearProgress, Switch } from '@material-ui/core';
 import Alert from '@material-ui/lab/Alert';
 import Breadcrumb from '../../App/components/Breadcrumb';
-import {Row, Col, Card, Button, Modal} from 'react-bootstrap';
-import {ValidationForm, TextInput} from 'react-bootstrap4-form-validation';
-import {Alerts, ToastifyAlerts} from '../lib/Alert';
-import {canPerformActions} from '../../services/ActionChecker';
-import {
-    ACTION_CREATE_CAMPUS,
-    ACTION_GET_CAMPUSES,
-    ACTION_UPDATE_CAMPUS
-} from '../../authnz-library/timetabling-actions';
-import {timetablingAxiosInstance} from '../../utlis/interceptors/timetabling-interceptor';
+import { Row, Col, Card, Button, Modal } from 'react-bootstrap';
+import { ValidationForm, TextInput } from 'react-bootstrap4-form-validation';
+import { Alerts, ToastifyAlerts } from '../lib/Alert';
+import { canPerformActions } from '../../services/ActionChecker';
+import { ACTION_CREATE_CAMPUS, ACTION_GET_CAMPUSES, ACTION_UPDATE_CAMPUS } from '../../authnz-library/timetabling-actions';
+import { timetablingAxiosInstance } from '../../utlis/interceptors/timetabling-interceptor';
 import TableWrapper from '../../utlis/TableWrapper';
 import ConfirmationModalWrapper from '../../App/components/modal/ConfirmationModalWrapper';
 
@@ -41,6 +37,8 @@ const CampusList = (): JSX.Element => {
     const [rowData, setRowData] = useState<Campus>();
     const [, setDisabled] = useState(false);
     let activationStatus: boolean;
+    const [disabledButton, setDisabledButton] = useState(false);
+
     const handleActivationStatusToggle = (event, row: Campus) => {
         setDisabled(true);
         if (row.activation_status) {
@@ -55,12 +53,14 @@ const CampusList = (): JSX.Element => {
         }
     };
     const handleToggleStatusSubmit = (row: Campus) => {
+        setDisabledButton(true);
         const campus = {
             activation_status: activationStatus
         };
         timetablingAxiosInstance
             .put(`/campuses/${row.id}`, campus)
             .then(() => {
+                setDisabledButton(false);
                 const msg = activationStatus ? 'Successfully activated campus' : 'Successfully Deactivated campus';
                 alerts.showSuccess(msg);
                 fetchCampuses();
@@ -68,6 +68,7 @@ const CampusList = (): JSX.Element => {
                 setDisabled(false);
             })
             .catch((error) => {
+                setDisabledButton(false);
                 console.error(error);
                 alerts.showError(error.message);
                 setDisabled(false);
@@ -75,9 +76,9 @@ const CampusList = (): JSX.Element => {
     };
 
     const columns = [
-        {title: 'ID', field: 'id'},
-        {title: 'Campus name', field: 'name'},
-        {title: 'Description', field: 'description'},
+        { title: 'ID', field: 'id' },
+        { title: 'Campus name', field: 'name' },
+        { title: 'Description', field: 'description' },
 
         {
             title: 'Activation Status',
@@ -86,7 +87,7 @@ const CampusList = (): JSX.Element => {
                 canPerformActions(ACTION_UPDATE_CAMPUS.name) && (
                     <Switch
                         onChange={(event) => handleActivationStatusToggle(event, row)}
-                        inputProps={{'aria-label': 'controlled'}}
+                        inputProps={{ 'aria-label': 'controlled' }}
                         defaultChecked={row.activation_status === true}
                     />
                 )
@@ -319,10 +320,11 @@ const CampusList = (): JSX.Element => {
                 <Modal.Body>
                     <ValidationForm>
                         <h6>A you sure you want to change the status of {rowData?.name} ?</h6>
-                        <Button className="btn btn-danger float-left" onClick={handleCloseModal}>
+                        <Button disabled={disabledButton} className="btn btn-danger float-left" onClick={handleCloseModal}>
                             Cancel
                         </Button>
                         <Button
+                            disabled={disabledButton}
                             className="btn btn-primary float-right"
                             onClick={() => {
                                 handleToggleStatusSubmit(rowData);

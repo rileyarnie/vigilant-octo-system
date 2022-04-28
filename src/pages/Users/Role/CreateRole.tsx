@@ -20,19 +20,24 @@ const CreateRole = (props: IProps): JSX.Element => {
     const [roleName, setRoleName] = useState('');
     const [showCreateModal, setShowCreateModal] = useState(false);
     const [roleDescription, setRoleDescription] = useState('');
+    const [disabled, setDisabled] = useState(false);
+
     const handleRoleChange = (event, field) => {
         field === 'name' ? setRoleName(event.target.value) : setRoleDescription(event.target.value);
     };
     const handleRoleSubmit = () => {
+        setDisabled(true);
         authnzAxiosInstance
             .put('/roles', { roleName: roleName, description: roleDescription })
             .then(() => {
+                setDisabled(false);
                 props.fetchRoles();
                 setShowCreateModal(false);
                 resetStateCloseModal();
                 alerts.showSuccess('Success created role');
             })
             .catch((error) => {
+                setDisabled(false);
                 resetStateCloseModal();
                 alerts.showError(error.message);
                 console.log(error);
@@ -102,10 +107,10 @@ const CreateRole = (props: IProps): JSX.Element => {
                 </Modal.Body>
                 <Modal.Footer>
                     <Col>
-                        <Button className="float-right" variant="info" onClick={toggleConfirmModal}>
+                        <Button disabled={disabled} className="float-right" variant="info" onClick={toggleConfirmModal}>
                             Submit
                         </Button>
-                        <Button className="float-left" variant="danger" onClick={() => setShowCreateModal(false)}>
+                        <Button disabled={disabled} className="float-left" variant="danger" onClick={() => setShowCreateModal(false)}>
                             Cancel
                         </Button>
                     </Col>

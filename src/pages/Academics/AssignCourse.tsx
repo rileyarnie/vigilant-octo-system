@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react';
 import Alert from '@material-ui/lab/Alert';
 import Breadcrumb from '../../App/components/Breadcrumb';
-import { Row, Col, Card,} from 'react-bootstrap';
+import { Row, Col, Card } from 'react-bootstrap';
 import { Button, LinearProgress } from '@material-ui/core';
 import { Alerts, ToastifyAlerts } from '../lib/Alert';
 import { timetablingAxiosInstance } from '../../utlis/interceptors/timetabling-interceptor';
@@ -31,6 +31,8 @@ const AssignCourse = (): JSX.Element => {
     const [errorMessages] = useState([]);
     const progId = JSON.parse(localStorage.getItem('programId'));
     console.log('program id ', progId);
+    const [disabled, setDisabled] = useState(false);
+
     useEffect(() => {
         timetablingAxiosInstance
             .get('/courses')
@@ -71,9 +73,11 @@ const AssignCourse = (): JSX.Element => {
 
     const assignSelectedCoursesToProgram = () => {
         setLinearDisplay('block');
+        setDisabled(true);
         timetablingAxiosInstance
             .put(`/programs/${programId}/courses`, { courses: selectedRows })
             .then((res) => {
+                setDisabled(false);
                 setLinearDisplay('block');
                 alerts.showSuccess('Course assignment successful');
                 fetchCourses();
@@ -83,26 +87,10 @@ const AssignCourse = (): JSX.Element => {
                 return res;
             })
             .catch((error) => {
+                setDisabled(false);
                 alerts.showError(error.message);
             });
     };
-    // const assignSelectedCoursesToProgram = (selectedCourses: Array<number>) => {
-    //     setLinearDisplay('block');
-    //     timetablingAxiosInstance
-    //         .put(`/programs/${programId}/courses`, { courses: selectedCourses })
-    //         .then((res) => {
-    //             setLinearDisplay('block');
-    //             alerts.showSuccess('Course assignment successful');
-    //             fetchCourses();
-    //             toggleCloseConfirmModal();
-    //             setSelectedRows([]);
-    //             return res;
-    //             setLinearDisplay('none');
-    //         })
-    //         .catch((error) => {
-    //             alerts.showError(error.message);
-    //         });
-    // };
     const toggleConfirmModal = () => {
         setConfirmModal(true);
     };
@@ -150,6 +138,7 @@ const AssignCourse = (): JSX.Element => {
                         variant="contained"
                         color="secondary"
                         onClick={toggleConfirmModal}
+                        disabled={disabled}
                     >
                         Assign courses
                     </Button>

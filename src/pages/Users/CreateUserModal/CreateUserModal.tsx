@@ -1,28 +1,32 @@
 /* eslint-disable react/prop-types */
-import React, {useState} from 'react';
-import {Button, Modal} from 'react-bootstrap';
-import {Row, Col} from 'react-bootstrap';
-import {ValidationForm, TextInput} from 'react-bootstrap4-form-validation';
+import React, { useState } from 'react';
+import { Button, Modal } from 'react-bootstrap';
+import { Row, Col } from 'react-bootstrap';
+import { ValidationForm, TextInput } from 'react-bootstrap4-form-validation';
 import validator from 'validator';
 
-import {Alerts, ToastifyAlerts} from '../../lib/Alert';
-import {authnzAxiosInstance} from '../../../utlis/interceptors/authnz-interceptor';
+import { Alerts, ToastifyAlerts } from '../../lib/Alert';
+import { authnzAxiosInstance } from '../../../utlis/interceptors/authnz-interceptor';
 import ConfirmationModalWrapper from '../../../App/components/modal/ConfirmationModalWrapper';
 
 const alerts: Alerts = new ToastifyAlerts();
 const CreateUserModal = (props): JSX.Element => {
     const [email, setEmail] = useState('');
     const [confirmModal, setConfirmModal] = useState(false);
+    const [disabled, setDisabled] = useState(false);
+
     const handleChange = (event) => {
         setEmail(event.target.value);
     };
     const handleSubmit = (e) => {
+        setDisabled(true);
         e.preventDefault();
         const params = new URLSearchParams();
         params.append('AADAlias', email);
         authnzAxiosInstance
-            .post('/users', {AADAlias: email, isStaff: true})
+            .post('/users', { AADAlias: email, isStaff: true })
             .then(() => {
+                setDisabled(false);
                 alerts.showSuccess('successfully created user');
                 props.fetchUsers();
                 props.onHide();
@@ -31,6 +35,7 @@ const CreateUserModal = (props): JSX.Element => {
                 setConfirmModal(false);
             })
             .catch((error) => {
+                setDisabled(false);
                 //handle error using logging library
                 props.onHide();
                 toggleCloseConfirmModal();
@@ -82,12 +87,17 @@ const CreateUserModal = (props): JSX.Element => {
                                             </div>
 
                                             <div className="form-group">
-                                                <Button className="float-right" variant="info" onClick={toggleConfirmModal}>
+                                                <Button
+                                                    disabled={disabled}
+                                                    className="float-right"
+                                                    variant="info"
+                                                    onClick={toggleConfirmModal}
+                                                >
                                                     Submit
                                                 </Button>
                                             </div>
                                         </ValidationForm>
-                                        <button className="btn btn-danger float-left" onClick={() => props.onHide()}>
+                                        <button disabled={disabled} className="btn btn-danger float-left" onClick={() => props.onHide()}>
                                             Cancel
                                         </button>
                                     </Col>

@@ -58,6 +58,8 @@ const WorkFlows = (): JSX.Element => {
     const timetableActions = Array.from(getTimetablingServiceActions().values());
     const simsActions = Array.from(getSimServiceActions().values());
     const data = [...authnzActions, ...financeActions, ...timetableActions, ...simsActions];
+    const [disabled, setDisabled] = useState(false);
+
     useEffect(() => {
         fetchRoles();
     }, []);
@@ -98,6 +100,7 @@ const WorkFlows = (): JSX.Element => {
         setSelectedOptions(selectedOptions);
     };
     function handleSubmitWorkFlow() {
+        setDisabled(true);
         const approvingRoles = [];
         selectedOptions.forEach((selectedOption, i) => {
             approvingRoles.push({
@@ -109,11 +112,13 @@ const WorkFlows = (): JSX.Element => {
         toggleCloseConfirmModal();
         WorkFlowService.handleSubmitWorkFlow(actionName, approvingRoles)
             .then(() => {
+                setDisabled(false);
                 alerts.showSuccess('Successfully created a workflow');
                 setConfirmLinearDisplay('none');
                 handleClose();
             })
             .catch((error) => {
+                setDisabled(false);
                 setConfirmLinearDisplay('none');
                 alerts.showError(error.message);
             });
@@ -184,10 +189,10 @@ const WorkFlows = (): JSX.Element => {
                     </ValidationForm>
                 </Modal.Body>
                 <Modal.Footer>
-                    <Button className="btn btn-danger float-left" onClick={handleClose}>
+                    <Button disabled={disabled} className="btn btn-danger float-left" onClick={handleClose}>
                         Close
                     </Button>
-                    <Button className="btn btn-info float-right" onClick={toggleConfirmModal}>
+                    <Button disabled={disabled} className="btn btn-info float-right" onClick={toggleConfirmModal}>
                         Submit
                     </Button>
                 </Modal.Footer>
@@ -199,7 +204,7 @@ const WorkFlows = (): JSX.Element => {
                 show={confirmModal}
             >
                 <h6 className="text-center">
-                        A you sure you want to administer workflow for <i style={{ fontWeight: 'lighter' }}>{actionName}</i>?
+                    A you sure you want to administer workflow for <i style={{ fontWeight: 'lighter' }}>{actionName}</i>?
                 </h6>
             </ConfirmationModalWrapper>
         </>

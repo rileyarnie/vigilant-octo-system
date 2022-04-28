@@ -25,6 +25,7 @@ export const AssignRoleModal = (props: IProps): JSX.Element => {
     const [isMulti] = useState(true);
     const [confirmModal, setConfirmModal] = useState(false);
     const [selectedOptions, setSelectedOptions] = useState([]);
+    const [disabled, setDisabled] = useState(false);
     const options = [];
     useEffect(() => {
         authnzAxiosInstance
@@ -48,10 +49,12 @@ export const AssignRoleModal = (props: IProps): JSX.Element => {
 
     const handlePostRoles = async () => {
         const roleIds: number[] = selectedOptions.map((option) => option.value);
+        setDisabled(true);
 
         authnzAxiosInstance
             .post(`/users/${props.selectedrowprops.id}/roles`, { roleIds: roleIds })
             .then((res) => {
+                setDisabled(false);
                 if (res.status == 200) {
                     props.onHide();
                     toggleCloseConfirmModal();
@@ -60,6 +63,7 @@ export const AssignRoleModal = (props: IProps): JSX.Element => {
                 }
             })
             .catch((error) => {
+                setDisabled(false);
                 props.onHide();
                 toggleCloseConfirmModal();
                 console.error(error);
@@ -91,7 +95,7 @@ export const AssignRoleModal = (props: IProps): JSX.Element => {
                     />
                 </Modal.Body>
                 <Modal.Footer>
-                    <Button variant="danger" onClick={toggleConfirmModal}>
+                    <Button disabled={disabled} variant="danger" onClick={toggleConfirmModal}>
                         Save
                     </Button>
                 </Modal.Footer>

@@ -61,6 +61,8 @@ const SemesterList = (): JSX.Element => {
     const [rowData, setRowData] = useState<Semester>();
     const today = new Date().toISOString().slice(0, 10);
     let activationStatus: boolean;
+    const [disabledButton, setDisabledButton] = useState(false);
+
     const handleActivationStatusToggle = (event, row: Semester) => {
         setDisabled(true);
         if (row.activation_status) {
@@ -78,15 +80,18 @@ const SemesterList = (): JSX.Element => {
         const semester = {
             activation_status: activationStatus
         };
+        setDisabledButton(true);
         timetablingAxiosInstance
-            .put(`/semesters/${row.id}`, { body: semester })
-            .then(() => {
+        .put(`/semesters/${row.id}`, { body: semester })
+        .then(() => {
+                setDisabledButton(false);
                 const msg = activationStatus ? 'Successfully activated semester' : 'Successfully Deactivated semester';
                 alerts.showSuccess(msg);
                 fetchSemesters();
                 setDisabled(false);
             })
             .catch((error) => {
+                setDisabledButton(false);
                 console.error(error);
                 alerts.showError(error.message);
                 setDisabled(false);
@@ -106,9 +111,11 @@ const SemesterList = (): JSX.Element => {
             });
     }, []);
     const updateSemester = (semesterId, updates) => {
+        setDisabledButton(true);
         timetablingAxiosInstance
-            .put(`/semesters/${semesterId}`, { body: updates })
-            .then(() => {
+        .put(`/semesters/${semesterId}`, { body: updates })
+        .then(() => {
+                setDisabledButton(false);
                 setLinearDisplay('none');
                 alerts.showSuccess('Successfully updated Semester');
                 fetchSemesters();
@@ -116,6 +123,7 @@ const SemesterList = (): JSX.Element => {
                 toggleCloseConfirmModal();
             })
             .catch((error) => {
+                setDisabledButton(false);
                 console.error(error);
                 alerts.showError(error.message);
             });
@@ -237,19 +245,19 @@ const SemesterList = (): JSX.Element => {
                                     actions={
                                         canPerformActions(ACTION_UPDATE_SEMESTERS.name)
                                             ? [
-                                                {
-                                                    icon: Edit,
-                                                    tooltip: 'Edit Row',
-                                                    onClick: (event, rowData) => {
-                                                        setSemesterId(rowData.id);
-                                                        setSelectedSemesterName(rowData.name);
-                                                        setSelectedStartDate(rowData.startDate);
-                                                        setSelectedEndDate(rowData.endDate);
-                                                        setSelectedSemester(rowData);
-                                                        toggleCreateModal();
-                                                    }
-                                                }
-                                            ]
+                                                  {
+                                                      icon: Edit,
+                                                      tooltip: 'Edit Row',
+                                                      onClick: (event, rowData) => {
+                                                          setSemesterId(rowData.id);
+                                                          setSelectedSemesterName(rowData.name);
+                                                          setSelectedStartDate(rowData.startDate);
+                                                          setSelectedEndDate(rowData.endDate);
+                                                          setSelectedSemester(rowData);
+                                                          toggleCreateModal();
+                                                      }
+                                                  }
+                                              ]
                                             : []
                                     }
                                 />
@@ -347,10 +355,11 @@ const SemesterList = (): JSX.Element => {
                 <Modal.Body>
                     <ValidationForm>
                         <p className="text-center">A you sure you want to change the status of {rowData?.name} ?</p>
-                        <Button className="btn btn-danger float-left" onClick={handleCloseModal}>
+                        <Button disabled={disabledButton} className="btn btn-danger float-left" onClick={handleCloseModal}>
                             Cancel
                         </Button>
                         <Button
+                            disabled={disabledButton}
                             className="btn btn-primary float-right"
                             onClick={() => {
                                 handleToggleStatusSubmit(rowData);

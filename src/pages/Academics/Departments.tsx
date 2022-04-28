@@ -59,6 +59,8 @@ const Department = (): JSX.Element => {
     const [linearDisplay, setLinearDisplay] = useState('none');
     const [rowData, setRowData] = useState<department>();
     let activationStatus: boolean;
+    const [disabledButton, setDisabledButton] = useState(false);
+
 
     const handleActivationStatusToggle = (event, row: department) => {
         setRowData(row);
@@ -71,10 +73,12 @@ const Department = (): JSX.Element => {
             name: row.name,
             isActive
         };
-
+        setDisabledButton(true);
+        
         timetablingAxiosInstance
             .put(`/departments/${row.id}`, departmentStatus)
             .then(() => {
+                setDisabledButton(false);
                 const msg = isActive ? 'Department activated successfully' : 'Department deactivated successfully';
                 alerts.showSuccess(msg);
                 setActivationModal(false);
@@ -82,6 +86,7 @@ const Department = (): JSX.Element => {
                 fetchDepartments();
             })
             .catch((error) => {
+                setDisabledButton(false);
                 console.error(error);
                 alerts.showError(error.message);
                 setDisabled(false);
@@ -304,10 +309,10 @@ const Department = (): JSX.Element => {
                         </div>
                     </ValidationForm>
                     <Col>
-                        <button className="btn btn-danger float-left" onClick={() => toggleCreateModal()}>
+                        <button disabled={disabledButton} className="btn btn-danger float-left" onClick={() => toggleCreateModal()}>
                             Cancel
                         </button>
-                        <button className="btn btn-info float-right" onClick={toggleConfirmModal}>
+                        <button disabled={disabledButton} className="btn btn-info float-right" onClick={toggleConfirmModal}>
                             Submit
                         </button>
                     </Col>

@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import {Button, Col, Form, FormControl, Modal, Row } from 'react-bootstrap';
+import { Button, Col, Form, FormControl, Modal, Row } from 'react-bootstrap';
 import ModalWrapper from '../../App/components/modal/ModalWrapper';
 import { ValidationForm, FileInput } from 'react-bootstrap4-form-validation';
 import { Alerts, ToastifyAlerts } from '../lib/Alert';
@@ -9,7 +9,7 @@ import ConfirmationModalWrapper from '../../App/components/modal/ConfirmationMod
 interface Props {
     show: boolean;
     closeModal: () => void;
-    studentId: number
+    studentId: number;
 }
 const RecordFeePayment: React.FunctionComponent<Props> = (props) => {
     const [narrative, setNarrative] = useState('');
@@ -18,6 +18,8 @@ const RecordFeePayment: React.FunctionComponent<Props> = (props) => {
     const [amount, setAmount] = useState('');
     const [confirmModal, setConfirmModal] = useState(false);
     const [fileUploaded, setFileUploaded] = useState('');
+    const [disabled, setDisabled] = useState(false);
+
     const handleUpload = () => {
         const form = new FormData();
         form.append('fileUploaded', fileUploaded);
@@ -36,6 +38,7 @@ const RecordFeePayment: React.FunctionComponent<Props> = (props) => {
             });
     };
     const handleSubmit = () => {
+        setDisabled(true);
         const createFeeRecord = {
             studentId: props.studentId,
             narrative: narrative,
@@ -44,16 +47,18 @@ const RecordFeePayment: React.FunctionComponent<Props> = (props) => {
         };
         StudentFeesManagementService.recordFeesReport(createFeeRecord)
             .then(() => {
+                setDisabled(false);
                 alerts.showSuccess('Fee Record created successfully');
                 props.closeModal();
                 toggleCloseConfirmModal();
             })
             .catch((error) => {
+                setDisabled(false);
                 props.closeModal();
                 toggleCloseConfirmModal();
                 alerts.showError(error.response.data);
             });
-        console.log('Data to be sent',createFeeRecord);
+        console.log('Data to be sent', createFeeRecord);
     };
     const toggleUploadModal = () => {
         showUploadModal ? setShowUploadModal(false) : setShowUploadModal(true);
@@ -160,10 +165,10 @@ const RecordFeePayment: React.FunctionComponent<Props> = (props) => {
                     </Modal.Body>
 
                     <Modal.Footer style={{ display: 'flex', justifyContent: 'space-between' }}>
-                        <Button className="float-left" variant="danger" onClick={toggleUploadModal}>
+                        <Button disabled={disabled} className="float-left" variant="danger" onClick={toggleUploadModal}>
                             Close
                         </Button>
-                        <Button className="float-right" variant="info" onClick={() => handleUpload()}>
+                        <Button disabled={disabled} className="float-right" variant="info" onClick={() => handleUpload()}>
                             Upload
                         </Button>
                     </Modal.Footer>

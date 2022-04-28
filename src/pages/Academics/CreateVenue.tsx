@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import React, { Component } from 'react';
-import { Row, Col, Card, } from 'react-bootstrap';
+import { Row, Col, Card } from 'react-bootstrap';
 import { ValidationForm, TextInput } from 'react-bootstrap4-form-validation';
 import { Alerts, ToastifyAlerts } from '../lib/Alert';
 import validator from 'validator';
@@ -25,7 +25,8 @@ class CreateVenue extends Component<Props> {
         capacity: '',
         campusId: '',
         campuses: [],
-        confirmModal: false
+        confirmModal: false,
+        disabled: false
     };
     options = [] as any;
     componentDidMount() {
@@ -59,6 +60,7 @@ class CreateVenue extends Component<Props> {
 
     handleSubmit = (e) => {
         e.preventDefault();
+        this.setState({ disabled: true });
         const venue = {
             name: this.state.name,
             description: this.state.description,
@@ -69,6 +71,7 @@ class CreateVenue extends Component<Props> {
         timetablingAxiosInstance
             .post('/venues', { Venue: venue })
             .then(() => {
+                this.setState({ disabled: false });
                 alerts.showSuccess('Venue Created Successfully');
                 this.props.fetchVenues();
                 this.props.setModal(false);
@@ -77,6 +80,7 @@ class CreateVenue extends Component<Props> {
             })
             .catch((error) => {
                 //handle error using logging library
+                this.setState({ disabled: false });
                 this.toggleCloseConfirmModal();
                 console.error(error);
                 alerts.showError(error.message);
@@ -158,10 +162,10 @@ class CreateVenue extends Component<Props> {
                                             </div>
                                         </ValidationForm>
                                         <Col>
-                                            <button className="btn btn-info float-right" onClick={this.toggleConfirmModal}>
+                                            <button disabled={this.state.disabled} className="btn btn-info float-right" onClick={this.toggleConfirmModal}>
                                                 Submit
                                             </button>
-                                            <button className="btn btn-danger float-left" onClick={() => this.props.setModal(false)}>
+                                            <button disabled={this.state.disabled} className="btn btn-danger float-left" onClick={() => this.props.setModal(false)}>
                                                 Cancel
                                             </button>
                                         </Col>

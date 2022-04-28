@@ -73,6 +73,8 @@ const ProgramCohorts = (): JSX.Element => {
     const month = graduationDate.slice(5, 7);
     const [activationModal, setActivationModal] = useState(false);
     const [rowData, setRowData] = useState<programCohort>();
+    const [disabledButton, setDisabledButton] = useState(false);
+
     const handleActivationStatusToggle = (event, row: programCohort) => {
         setDisabled(true);
         if (row.program_cohorts_status === 'active') {
@@ -90,10 +92,12 @@ const ProgramCohorts = (): JSX.Element => {
         const cohortStatus = {
             status: activationStatus
         };
+        setDisabledButton(true);
         setLinearDisplay('block');
         timetablingAxiosInstance
             .put(`/program-cohorts/${row.program_cohorts_id}`, cohortStatus)
             .then(() => {
+                setDisabledButton(false);
                 const msg =
                     activationStatus === 'canceled' ? 'Successfully Deactivated Program Cohorts' : 'Successfully activated Program Cohort';
                 alerts.showSuccess(msg);
@@ -103,6 +107,7 @@ const ProgramCohorts = (): JSX.Element => {
                 setLinearDisplay('none');
             })
             .catch((error) => {
+                setDisabledButton(false);
                 console.error(error);
                 alerts.showError(error.message);
                 setDisabled(false);
@@ -701,10 +706,11 @@ const ProgramCohorts = (): JSX.Element => {
                 <Modal.Body>
                     <ValidationForm>
                         <p className="text-center">A you sure you want to change the status of {rowData?.pg_name} ?</p>
-                        <Button className="btn btn-danger float-left" onClick={handleCloseModal}>
+                        <Button disabled={disabledButton} className="btn btn-danger float-left" onClick={handleCloseModal}>
                             Cancel
                         </Button>
                         <Button
+                            disabled={disabledButton}
                             className="btn btn-primary float-right"
                             onClick={() => {
                                 handleToggleStatusSubmit(rowData);

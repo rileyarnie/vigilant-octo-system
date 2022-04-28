@@ -52,6 +52,8 @@ const Programs = (): JSX.Element => {
     const [rowData, setRowData] = useState<Program>();
     const [selectedDepartment, setSelectedDepartment] = useState();
     let activationStatus: boolean;
+    const [disabledButton, setDisabledButton] = useState(false);
+
     const handleActivationStatusToggle = (event, row: Program) => {
         setDisabled(true);
         if (row.activation_status) {
@@ -69,10 +71,12 @@ const Programs = (): JSX.Element => {
         const program = {
             activation_status: activationStatus
         };
+        setDisabledButton(true);
         setLinearDisplay('block');
         timetablingAxiosInstance
             .put(`/programs/${row.id}`, program)
             .then(() => {
+                setDisabledButton(false);
                 const msg = activationStatus ? 'Successfully activated program' : 'Successfully Deactivated program';
                 setLinearDisplay('none');
                 alerts.showSuccess(msg);
@@ -80,6 +84,7 @@ const Programs = (): JSX.Element => {
                 setDisabled(false);
             })
             .catch((error) => {
+                setDisabledButton(false);
                 setLinearDisplay('block');
                 console.error(error);
                 alerts.showError(error.message);
@@ -147,7 +152,7 @@ const Programs = (): JSX.Element => {
             });
     }, []);
     departments.map((dept) => {
-        return departmentOptions.push({value: dept.id, label: dept.name});
+        return departmentOptions.push({ value: dept.id, label: dept.name });
     });
     selectOptions.map((sel) => {
         return selectionOptions.push({ value: sel.value, label: sel.label });
@@ -409,10 +414,11 @@ const Programs = (): JSX.Element => {
                 <Modal.Body>
                     <ValidationForm>
                         <p className="text-center">A you sure you want to change the status of {rowData?.name} ?</p>
-                        <Button className="btn btn-danger float-left" onClick={handleCloseModal}>
+                        <Button disabled={disabledButton} className="btn btn-danger float-left" onClick={handleCloseModal}>
                             Cancel
                         </Button>
                         <Button
+                            disabled={disabledButton}
                             className="btn btn-primary float-right"
                             onClick={() => {
                                 handleToggleStatusSubmit(rowData);
