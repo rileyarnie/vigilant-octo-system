@@ -82,8 +82,8 @@ const SemesterList = (): JSX.Element => {
         };
         setDisabledButton(true);
         timetablingAxiosInstance
-        .put(`/semesters/${row.id}`, { body: semester })
-        .then(() => {
+            .put(`/semesters/${row.id}`, { body: semester })
+            .then(() => {
                 setDisabledButton(false);
                 const msg = activationStatus ? 'Successfully activated semester' : 'Successfully Deactivated semester';
                 alerts.showSuccess(msg);
@@ -113,8 +113,8 @@ const SemesterList = (): JSX.Element => {
     const updateSemester = (semesterId, updates) => {
         setDisabledButton(true);
         timetablingAxiosInstance
-        .put(`/semesters/${semesterId}`, { body: updates })
-        .then(() => {
+            .put(`/semesters/${semesterId}`, { body: updates })
+            .then(() => {
                 setDisabledButton(false);
                 setLinearDisplay('none');
                 alerts.showSuccess('Successfully updated Semester');
@@ -245,19 +245,19 @@ const SemesterList = (): JSX.Element => {
                                     actions={
                                         canPerformActions(ACTION_UPDATE_SEMESTERS.name)
                                             ? [
-                                                  {
-                                                      icon: Edit,
-                                                      tooltip: 'Edit Row',
-                                                      onClick: (event, rowData) => {
-                                                          setSemesterId(rowData.id);
-                                                          setSelectedSemesterName(rowData.name);
-                                                          setSelectedStartDate(rowData.startDate);
-                                                          setSelectedEndDate(rowData.endDate);
-                                                          setSelectedSemester(rowData);
-                                                          toggleCreateModal();
-                                                      }
-                                                  }
-                                              ]
+                                                {
+                                                    icon: Edit,
+                                                    tooltip: 'Edit Row',
+                                                    onClick: (event, rowData) => {
+                                                        setSemesterId(rowData.id);
+                                                        setSelectedSemesterName(rowData.name);
+                                                        setSelectedStartDate(rowData.startDate);
+                                                        setSelectedEndDate(rowData.endDate);
+                                                        setSelectedSemester(rowData);
+                                                        toggleCreateModal();
+                                                    }
+                                                }
+                                            ]
                                             : []
                                     }
                                 />
