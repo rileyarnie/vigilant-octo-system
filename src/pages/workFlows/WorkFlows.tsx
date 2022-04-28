@@ -106,6 +106,8 @@ const WorkFlows = (): JSX.Element => {
         WorkFlowService.handleSubmitWorkFlow(actionName, approvingRoles)
             .then(() => {
                 alerts.showSuccess('Successfully created a workflow');
+                toggleCloseConfirmModal();
+                handleClose();
             })
             .catch((error) => {
                 alerts.showError(error.message);
@@ -149,12 +151,7 @@ const WorkFlows = (): JSX.Element => {
                                             </Alert>
                                         )}
                                     </div>
-                                    <TableWrapper
-                                        title="Work Flows"
-                                        columns={columns}
-                                        data={data}
-                                        options={{}}
-                                    />
+                                    <TableWrapper title="Work Flows" columns={columns} data={data} options={{}} />
                                 </Card>
                             </Col>
                         </Row>
@@ -163,7 +160,9 @@ const WorkFlows = (): JSX.Element => {
             </div>
             <Modal size="lg" show={showModal} aria-labelledby="contained-modal-title-vcenter" centered>
                 <Modal.Header closeButton>
-                    <Modal.Title id="contained-modal-title-vcenter">Administer Workflow for action <i style={{fontWeight:'lighter'}}>{actionName}</i></Modal.Title>
+                    <Modal.Title id="contained-modal-title-vcenter">
+                        Administer Workflow for action <i style={{ fontWeight: 'lighter' }}>{actionName}</i>
+                    </Modal.Title>
                 </Modal.Header>
                 <Modal.Body>
                     <ValidationForm>
@@ -193,12 +192,15 @@ const WorkFlows = (): JSX.Element => {
                 size="sm"
                 backdrop="static"
                 aria-labelledby="contained-modal-title-vcenter"
-                centered>
-                <Modal.Header>{' '}</Modal.Header>
+                centered
+            >
+                <Modal.Header> </Modal.Header>
                 <Modal.Body>
-                    <h6 className="text-center">A you sure you want to administer workflow for <i style={{fontWeight:'lighter'}}>{actionName}</i>?</h6>
+                    <h6 className="text-center">
+                        A you sure you want to administer workflow for <i style={{ fontWeight: 'lighter' }}>{actionName}</i>?
+                    </h6>
                 </Modal.Body>
-                <Modal.Footer style={{display: 'flex', justifyContent: 'space-between'}}>
+                <Modal.Footer style={{ display: 'flex', justifyContent: 'space-between' }}>
                     <Button variant="btn btn-danger btn-rounded" onClick={toggleCloseConfirmModal}>
                         Continue editing
                     </Button>
