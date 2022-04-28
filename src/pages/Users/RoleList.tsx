@@ -90,7 +90,7 @@ function roleList(): JSX.Element {
     ];
     const [data, setData] = useState([]);
     const [id, setId] = useState(0);
-    const [showModal, setModal] = useState(false);
+    //const [showModal, setModal] = useState(false);
     const [roleName, setRoleName] = useState('');
     const [isError] = useState(false);
     const [errorMessages] = useState([]);
@@ -166,13 +166,14 @@ function roleList(): JSX.Element {
             });
     };
 
+
     const selectedRowProps = {
         id: id,
         name: roleName
     };
-    const resetStateCloseModal = () => {
-        setModal(false);
-    };
+    // const resetStateCloseModal = () => {
+    //     setModal(false);
+    // };
     const toggleActionsModal = () => {
         setActionModal(!actionModal);
     };
@@ -182,9 +183,9 @@ function roleList(): JSX.Element {
     const handleCloseViewActions = () => {
         setViewActions(false);
     };
-    const handleClose = () => {
-        showModal ? resetStateCloseModal() : setModal(false);
-    };
+    // const handleClose = () => {
+    //     showModal ? resetStateCloseModal() : setModal(false);
+    // };
     return (
         <>
             <div>
