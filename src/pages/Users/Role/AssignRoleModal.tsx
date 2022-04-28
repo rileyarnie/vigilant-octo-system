@@ -55,6 +55,7 @@ export const AssignRoleModal = (props: IProps): JSX.Element => {
                     alerts.showSuccess('Successfully assigned role to user');
                     console.log(res);
                     props.onHide();
+                    toggleCloseConfirmModal();
                 }
             })
             .catch((error) => {
@@ -102,7 +103,8 @@ export const AssignRoleModal = (props: IProps): JSX.Element => {
                 centered>
                 <Modal.Header>{' '}</Modal.Header>
                 <Modal.Body>
-                    <h6 className="text-center">Are you sure you want to create a role ?</h6>
+                    <h6 className="text-center">Are you sure you want to Assign roles
+                        to {props.selectedrowprops.aadAlias} ?</h6>
                 </Modal.Body>
                 <Modal.Footer style={{display: 'flex', justifyContent: 'space-between'}}>
                     <Button variant="btn btn-danger btn-rounded" onClick={toggleCloseConfirmModal}>

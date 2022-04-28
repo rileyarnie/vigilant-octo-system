@@ -16,7 +16,6 @@ import { canPerformActions } from '../../services/ActionChecker';
 import {
     ACTION_ADD_ACTIONS_TO_ROLE,
     ACTION_DEACTIVATE_ROLE,
-    ACTION_GET_ACTIONS,
     ACTION_GET_ROLES
 } from '../../authnz-library/authnz-actions';
 import { authnzAxiosInstance } from '../../utlis/interceptors/authnz-interceptor';
@@ -41,27 +40,12 @@ function roleList(): JSX.Element {
             title: ' Actions',
             render: (row: Role) => (
                 <Select>
-                    {canPerformActions(ACTION_GET_ACTIONS.name) && (
-                        <div
-                            className=""
-                            onClick={() => {
-                                roleActions(row.id);
-                                setId(row.id);
-                                setRoleName(row.name);
-                                viewRoleActions();
-                            }}
-                        >
-                            <MenuItem value="View role actions">View Role Actions</MenuItem>
-                        </div>
-                    )}
-
                     {canPerformActions(ACTION_ADD_ACTIONS_TO_ROLE.name) && (
                         <div
                             className=""
                             onClick={() => {
                                 setId(row.id);
                                 setRoleName(row.name);
-                                toggleActionsModal();
                                 getActionsByRoleId(row.id, row.name);
                             }}
                         >
@@ -91,7 +75,7 @@ function roleList(): JSX.Element {
     ];
     const [data, setData] = useState([]);
     const [id, setId] = useState(0);
-    const [showModal, setModal] = useState(false);
+    //const [showModal, setModal] = useState(false);
     const [roleName, setRoleName] = useState('');
     const [isError] = useState(false);
     const [errorMessages] = useState([]);
@@ -118,20 +102,6 @@ function roleList(): JSX.Element {
                 alerts.showError((error as Error).message);
             });
     }
-    function roleActions(roleId: number) {
-        setLinearDisplay('block');
-        authnzAxiosInstance
-            .get(`/actions/${roleId}`)
-            .then((res) => {
-                const myData = res.data;
-                setActions(myData);
-                setLinearDisplay('none');
-            })
-            .catch((error) => {
-                console.log(error);
-                alerts.showError((error as Error).message);
-            });
-    }
     function handleRowDelete(id: number): void {
         setLinearDisplay('block');
         authnzAxiosInstance
@@ -149,27 +119,28 @@ function roleList(): JSX.Element {
 
     const getActionsByRoleId = (roleId: number, roleName?: string) => {
         setDefaultRoleValues([]);
+        setLinearDisplay('block');
         authnzAxiosInstance
             .get(`/actions/${roleId}`)
             .then((res) => {
                 const myData = res.data;
                 setActions(myData);
                 setDefaultRoleValues(res.data.map((role: { id: number; name: string }) => ({ value: role.id, label: role.name })));
-                setActionModal(true);
             })
             .catch((err) => {
                 console.log('err', err);
                 alerts.showError(`We couldn’t fetch the existing actions for ${roleName}, reopening the dialog should resolve this`);
+            })
+            .finally(()=>{
+                setLinearDisplay('none');
                 setActionModal(true);
             });
     };
 
+
     const selectedRowProps = {
         id: id,
         name: roleName
-    };
-    const resetStateCloseModal = () => {
-        setModal(false);
     };
     const toggleActionsModal = () => {
         setActionModal(!actionModal);
@@ -179,9 +150,6 @@ function roleList(): JSX.Element {
     };
     const handleCloseViewActions = () => {
         setViewActions(false);
-    };
-    const handleClose = () => {
-        showModal ? resetStateCloseModal() : setModal(false);
     };
     return (
         <>
@@ -239,7 +207,6 @@ function roleList(): JSX.Element {
                 <Modal.Body>
                     <TableWrapper
                         title="Action Lists"
-                        onRowClick={(event, row) => getActionsByRoleId(row.id)}
                         columns={actionColumns}
                         data={actions}
                         options={{ pageSize: 10 }}
