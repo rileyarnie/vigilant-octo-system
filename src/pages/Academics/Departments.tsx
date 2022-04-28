@@ -30,12 +30,13 @@ const Department = (): JSX.Element => {
         { title: 'HOD', field: 'hodTrainerId' },
         {
             title: 'Activation Status',
-            field: 'internal_action',
+            field: 'isActive',
             render: (row: department) => (
                 <Switch
                     onChange={(event) => handleActivationStatusToggle(event, row)}
                     inputProps={{ 'aria-label': 'controlled' }}
-                    defaultChecked={row.isActive === true}
+                    defaultChecked={row.isActive}
+                    value={row.isActive}
                 />
             )
         }
@@ -51,39 +52,34 @@ const Department = (): JSX.Element => {
     const [selectedDeptName, setSelectedDeptName] = useState('');
     const [selectedHoD, setSelectedHoD] = useState(null);
     const [users, setUsers] = useState([]);
-    const [isActive, setSelectedStatus] = useState(false);
+    const [isActive, setIsActive] = useState(false);
     const [errorMessages] = useState([]);
     const [, setDisabled] = useState(false);
     const [activationModal, setActivationModal] = useState(false);
     const [linearDisplay, setLinearDisplay] = useState('none');
     const [rowData, setRowData] = useState<department>();
     let activationStatus: boolean;
+
     const handleActivationStatusToggle = (event, row: department) => {
-        setDisabled(true);
-        if (row.isActive) {
-            activationStatus = false;
-            toggleActivationModal();
-            setRowData(row);
-        }
-        if (!row.isActive) {
-            activationStatus = true;
-            toggleActivationModal();
-            setRowData(row);
-        }
+        setRowData(row);
+        setIsActive(!row.isActive);
+        toggleActivationModal();
     };
+
     const handleToggleStatusSubmit = (row: department) => {
         const departmentStatus = {
             name: row.name,
-            isActive: activationStatus
+            isActive
         };
+
         timetablingAxiosInstance
             .put(`/departments/${row.id}`, departmentStatus)
             .then(() => {
-                const msg = activationStatus ? 'Department activated successfully' : 'Department deactivated successfully';
+                const msg = isActive ? 'Department activated successfully' : 'Department deactivated successfully';
                 alerts.showSuccess(msg);
                 setActivationModal(false);
-                fetchDepartments();
                 setDisabled(false);
+                fetchDepartments();
             })
             .catch((error) => {
                 console.error(error);
@@ -255,7 +251,7 @@ const Department = (): JSX.Element => {
                                                         setDeptId(rowData.id);
                                                         setSelectedDeptName(rowData.name);
                                                         setSelectedHoD(rowData.hodTrainerId);
-                                                        setSelectedStatus(rowData.isActive);
+                                                        setIsActive(rowData.isActive);
                                                         toggleCreateModal();
                                                     }
                                                 }
