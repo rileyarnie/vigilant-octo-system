@@ -16,7 +16,6 @@ import { canPerformActions } from '../../services/ActionChecker';
 import {
     ACTION_ADD_ACTIONS_TO_ROLE,
     ACTION_DEACTIVATE_ROLE,
-    ACTION_GET_ACTIONS,
     ACTION_GET_ROLES
 } from '../../authnz-library/authnz-actions';
 import { authnzAxiosInstance } from '../../utlis/interceptors/authnz-interceptor';
@@ -41,20 +40,6 @@ function roleList(): JSX.Element {
             title: ' Actions',
             render: (row: Role) => (
                 <Select>
-                    {canPerformActions(ACTION_GET_ACTIONS.name) && (
-                        <div
-                            className=""
-                            onClick={() => {
-                                roleActions(row.id);
-                                setId(row.id);
-                                setRoleName(row.name);
-                                viewRoleActions();
-                            }}
-                        >
-                            <MenuItem value="View role actions">View Role Actions</MenuItem>
-                        </div>
-                    )}
-
                     {canPerformActions(ACTION_ADD_ACTIONS_TO_ROLE.name) && (
                         <div
                             className=""
@@ -110,20 +95,6 @@ function roleList(): JSX.Element {
             .get('/roles')
             .then((res: { data: [] }) => {
                 setData(res.data);
-                setLinearDisplay('none');
-            })
-            .catch((error) => {
-                console.log(error);
-                alerts.showError((error as Error).message);
-            });
-    }
-    function roleActions(roleId: number) {
-        setLinearDisplay('block');
-        authnzAxiosInstance
-            .get(`/actions/${roleId}`)
-            .then((res) => {
-                const myData = res.data;
-                setActions(myData);
                 setLinearDisplay('none');
             })
             .catch((error) => {
