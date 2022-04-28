@@ -142,9 +142,6 @@ function roleList(): JSX.Element {
         id: id,
         name: roleName
     };
-    // const resetStateCloseModal = () => {
-    //     setModal(false);
-    // };
     const toggleActionsModal = () => {
         setActionModal(!actionModal);
     };
@@ -154,9 +151,6 @@ function roleList(): JSX.Element {
     const handleCloseViewActions = () => {
         setViewActions(false);
     };
-    // const handleClose = () => {
-    //     showModal ? resetStateCloseModal() : setModal(false);
-    // };
     return (
         <>
             <div>
