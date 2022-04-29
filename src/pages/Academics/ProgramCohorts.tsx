@@ -291,7 +291,7 @@ const ProgramCohorts = (): JSX.Element => {
     const updateProgramCohort = (cohortId, updates): void => {
         setLinearDisplay('block');
         timetablingAxiosInstance
-            .put(`/program-cohorts/${cohortId}/`, updates)
+            .put(`/program-cohorts/${cohortId}`, updates)
             .then(() => {
                 setLinearDisplay('none');
                 alerts.showSuccess('Successfully updated Cohort');
