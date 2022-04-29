@@ -1,19 +1,20 @@
 /* eslint-disable react/display-name */
-import React, {useState, useEffect} from 'react';
+import React, { useState, useEffect } from 'react';
 import Alert from '@material-ui/lab/Alert';
 import Department from '../services/Department';
 import Breadcrumb from '../../App/components/Breadcrumb';
-import {Row, Col, Card, Modal, Button, DropdownButton, Dropdown} from 'react-bootstrap';
-import {ValidationForm} from 'react-bootstrap4-form-validation';
-import {Alerts, ToastifyAlerts} from '../lib/Alert';
+import { Row, Col, Card, Modal, Button, DropdownButton, Dropdown } from 'react-bootstrap';
+import { ValidationForm } from 'react-bootstrap4-form-validation';
+import { Alerts, ToastifyAlerts } from '../lib/Alert';
 import LinearProgress from '@mui/material/LinearProgress';
-import {canPerformActions} from '../../services/ActionChecker';
-import {ACTION_CREATE_TRAINER, ACTION_UPDATE_TRAINER} from '../../authnz-library/timetabling-actions';
-import {timetablingAxiosInstance} from '../../utlis/interceptors/timetabling-interceptor';
-import {DepartmentService} from '../services/DepartmentService';
+import { canPerformActions } from '../../services/ActionChecker';
+import { ACTION_CREATE_TRAINER, ACTION_UPDATE_TRAINER } from '../../authnz-library/timetabling-actions';
+import { timetablingAxiosInstance } from '../../utlis/interceptors/timetabling-interceptor';
+import { DepartmentService } from '../services/DepartmentService';
 import TableWrapper from '../../utlis/TableWrapper';
-import {customSelectTheme, trainerTypes} from '../lib/SelectThemes';
+import { customSelectTheme, trainerTypes } from '../lib/SelectThemes';
 import Select from 'react-select';
+import ConfirmationModalWrapper from '../../App/components/modal/ConfirmationModalWrapper';
 
 const alerts: Alerts = new ToastifyAlerts();
 
@@ -31,7 +32,7 @@ const TrainerList = (): JSX.Element => {
         { title: 'Department ID', field: 'tr_departmentId' },
         {
             title: ' Actions',
-            render: (row: { tr_departmentId: number, tr_trainerType: string, tr_id: number }) => (
+            render: (row: { tr_departmentId: number; tr_trainerType: string; tr_id: number }) => (
                 <DropdownButton id="dropdown-basic-button" variant="Secondary" title="Actions">
                     {canPerformActions(ACTION_UPDATE_TRAINER.name) && (
                         <div
@@ -80,6 +81,8 @@ const TrainerList = (): JSX.Element => {
     const [showDeleteModal, setDeleteModal] = useState(false);
     const [showCantDeleteModal, setCantDeleteModal] = useState(false);
     const [departmentsWithHoDTrainer, setDepartmentsWithHoDTrainer] = useState<Department>();
+    const [disabled, setDisabled] = useState(false);
+
     useEffect(() => {
         setLinearDisplay('block');
         timetablingAxiosInstance
@@ -118,13 +121,13 @@ const TrainerList = (): JSX.Element => {
             });
     }, []);
     staff.map((staff) => {
-        return staffOptions.push({value: staff.id, label: staff.name});
+        return staffOptions.push({ value: staff.id, label: staff.name });
     });
     departments.map((dept) => {
-        return departmentOptions.push({value: dept.id, label: dept.name});
+        return departmentOptions.push({ value: dept.id, label: dept.name });
     });
     trainerTypes.map((tt) => {
-        return trainerTypeOptions.push({value: tt.value, label: tt.label});
+        return trainerTypeOptions.push({ value: tt.value, label: tt.label });
     });
     const fetchTrainers = () => {
         setLinearDisplay('block');
@@ -142,6 +145,7 @@ const TrainerList = (): JSX.Element => {
     };
 
     const handleSubmit = (e) => {
+        setDisabled(true);
         e.preventDefault();
         const trainer = {
             staffId: selectedUser,
@@ -156,13 +160,15 @@ const TrainerList = (): JSX.Element => {
         timetablingAxiosInstance
             .post('/trainers', trainerData)
             .then(() => {
+                setDisabled(false);
                 alerts.showSuccess('Trainer created successfully');
                 fetchTrainers();
                 setModal(false);
-                setConfirmModal(true);
+                setConfirmModal(false);
                 setLinearDisplay('none');
             })
             .catch((error) => {
+                setDisabled(false);
                 //handle error using logging library
                 console.error(error);
                 alerts.showError(error.message);
@@ -181,13 +187,23 @@ const TrainerList = (): JSX.Element => {
     };
 
     const deleteTrainer = (trainerId: number) => {
+        setDisabled(true);
         setLinearDisplay('block');
-        timetablingAxiosInstance.delete(`trainers/${trainerId}`).then(() => {
-            alerts.showSuccess('Succesfully removed trainer');
-            toggleDeleteModal();
-            fetchTrainers();
-            setLinearDisplay('none');
-        });
+        timetablingAxiosInstance
+            .delete(`trainers/${trainerId}`)
+            .then(() => {
+                setDisabled(false);
+                alerts.showSuccess('Succesfully removed trainer');
+                toggleDeleteModal();
+                fetchTrainers();
+                setLinearDisplay('none');
+            })
+            .catch((error) => {
+                setDisabled(false);
+                //handle error using logging library
+                console.error(error);
+                alerts.showError(error.message);
+            });
     };
 
     const toggleCreateModal = () => {
@@ -226,7 +242,7 @@ const TrainerList = (): JSX.Element => {
         <>
             <Row className="align-items-center page-header">
                 <Col>
-                    <Breadcrumb/>
+                    <Breadcrumb />
                 </Col>
                 <Col>
                     {canPerformActions(ACTION_CREATE_TRAINER.name) && (
@@ -237,7 +253,7 @@ const TrainerList = (): JSX.Element => {
                 </Col>
             </Row>
 
-            <LinearProgress style={{display: linearDisplay}}/>
+            <LinearProgress style={{ display: linearDisplay }} />
             <Row>
                 <Col>
                     {canPerformActions(ACTION_CREATE_TRAINER.name) && (
@@ -251,7 +267,7 @@ const TrainerList = (): JSX.Element => {
                                     </Alert>
                                 )}
                             </div>
-                            <TableWrapper title="Trainers" columns={columns} data={data} editable={{}} options={{}}/>
+                            <TableWrapper title="Trainers" columns={columns} data={data} editable={{}} options={{}} />
                         </Card>
                     )}
                 </Col>
@@ -281,7 +297,8 @@ const TrainerList = (): JSX.Element => {
                                 noOptionsMessage={() => 'No users available'}
                                 isClearable
                                 onChange={handleUser}
-                            /><br/>
+                            />
+                            <br />
                         </div>
                         <div className="form-group">
                             <label htmlFor="department">Select a department</label>
@@ -294,7 +311,8 @@ const TrainerList = (): JSX.Element => {
                                 placeholder="Select a department."
                                 noOptionsMessage={() => 'No department available'}
                                 onChange={handleChange}
-                            /><br/>
+                            />
+                            <br />
                         </div>
 
                         <div className="form-group">
@@ -308,7 +326,8 @@ const TrainerList = (): JSX.Element => {
                                 placeholder="Select trainer type."
                                 noOptionsMessage={() => 'No types available'}
                                 onChange={handleTrainerType}
-                            /><br/>
+                            />
+                            <br />
                         </div>
                     </ValidationForm>
                     <Col>
@@ -344,7 +363,8 @@ const TrainerList = (): JSX.Element => {
                                 placeholder="Select a Program."
                                 noOptionsMessage={() => 'No Programs available'}
                                 onChange={handleChange}
-                            /><br/>
+                            />
+                            <br />
                         </div>
 
                         <div className="form-group">
@@ -357,10 +377,13 @@ const TrainerList = (): JSX.Element => {
                                 placeholder="Select trainer type."
                                 noOptionsMessage={() => 'No types available'}
                                 onChange={handleTrainerType}
-                            /><br/>
+                            />
+                            <br />
                         </div>
                     </ValidationForm>
-                    <button className="btn btn-danger float-left">Close</button>
+                    <button disabled={disabled} className="btn btn-danger float-left">
+                        Close
+                    </button>
                 </Modal.Body>
             </Modal>
             <Modal
@@ -379,66 +402,31 @@ const TrainerList = (): JSX.Element => {
                     <p>Please change the HoD for {departmentsWithHoDTrainer?.name} before attempting to remove this trainer</p>
                 </Modal.Body>
                 <Modal.Footer>
-                    <Button variant="primary" onClick={() => toggleCantDeleteModal()}>
+                    <Button disabled={disabled} variant="primary" onClick={() => toggleCantDeleteModal()}>
                         Close
                     </Button>
                 </Modal.Footer>
             </Modal>
-            <Modal
+            <ConfirmationModalWrapper
+                title="Remove trainer"
+                submitButton
+                submitFunction={() => deleteTrainer(trainerId)}
+                closeModal={toggleDeleteModal}
                 show={showDeleteModal}
-                onHide={toggleDeleteModal}
-                size="lg"
-                backdrop="static"
-                onBackdropClick={toggleDeleteModal}
-                aria-labelledby="contained-modal-title-vcenter"
-                centered
             >
-                <Modal.Header closeButton>
-                    <Modal.Title>Remove trainer</Modal.Title>
-                </Modal.Header>
-                <Modal.Body>
-                    <p>
-                        Are you sure you want to remove this trainer? Removing the trainer will remove them from all
-                        courses and
-                        course-cohorts that they are assigned to
-                    </p>
-
-                    <Modal.Footer>
-                        <Button variant="primary" onClick={() => toggleDeleteModal()}>
-                            Close
-                        </Button>
-                        <Button variant="danger" onClick={() => deleteTrainer(trainerId)}>
-                            Delete
-                        </Button>
-                    </Modal.Footer>
-                </Modal.Body>
-            </Modal>
-
-            <Modal
+                <p>
+                    Are you sure you want to remove this trainer? Removing the trainer will remove them from all courses and course-cohorts
+                    that they are assigned to
+                </p>{' '}
+            </ConfirmationModalWrapper>
+            <ConfirmationModalWrapper
+                submitButton
+                submitFunction={(e) => handleSubmit(e)}
+                closeModal={toggleCloseConfirmModal}
                 show={confirmModal}
-                onHide={toggleConfirmModal}
-                size="sm"
-                backdrop="static"
-                aria-labelledby="contained-modal-title-vcenter"
-                centered
             >
-                <Modal.Header closeButton>
-                    <Modal.Title>Please confirm</Modal.Title>
-                </Modal.Header>
-                <Modal.Body>
-                    <p>
-                        Are you sure you want to create a new trainer
-                    </p>
-                </Modal.Body>
-                <Modal.Footer>
-                    <Button variant="btn btn-danger btn-rounded float-left" onClick={() => toggleCloseConfirmModal()}>
-                        Continue editing
-                    </Button>
-                    <button className="btn btn-info float-right" onClick={(e) => handleSubmit(e)}>
-                        Confirm
-                    </button>
-                </Modal.Footer>
-            </Modal>
+                <p>Are you sure you want to create a new trainer</p>
+            </ConfirmationModalWrapper>
         </>
     );
 };

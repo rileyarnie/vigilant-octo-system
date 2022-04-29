@@ -1,20 +1,17 @@
 /* eslint-disable react/display-name */
-import React, {useState, useEffect} from 'react';
+import React, { useState, useEffect } from 'react';
 import Edit from '@material-ui/icons/Edit';
-import {LinearProgress, Switch} from '@material-ui/core';
+import { LinearProgress, Switch } from '@material-ui/core';
 import Alert from '@material-ui/lab/Alert';
 import Breadcrumb from '../../App/components/Breadcrumb';
-import {Row, Col, Card, Button, Modal} from 'react-bootstrap';
-import {ValidationForm, TextInput} from 'react-bootstrap4-form-validation';
-import {Alerts, ToastifyAlerts} from '../lib/Alert';
-import {canPerformActions} from '../../services/ActionChecker';
-import {
-    ACTION_CREATE_CAMPUS,
-    ACTION_GET_CAMPUSES,
-    ACTION_UPDATE_CAMPUS
-} from '../../authnz-library/timetabling-actions';
-import {timetablingAxiosInstance} from '../../utlis/interceptors/timetabling-interceptor';
+import { Row, Col, Card, Button, Modal } from 'react-bootstrap';
+import { ValidationForm, TextInput } from 'react-bootstrap4-form-validation';
+import { Alerts, ToastifyAlerts } from '../lib/Alert';
+import { canPerformActions } from '../../services/ActionChecker';
+import { ACTION_CREATE_CAMPUS, ACTION_GET_CAMPUSES, ACTION_UPDATE_CAMPUS } from '../../authnz-library/timetabling-actions';
+import { timetablingAxiosInstance } from '../../utlis/interceptors/timetabling-interceptor';
 import TableWrapper from '../../utlis/TableWrapper';
+import ConfirmationModalWrapper from '../../App/components/modal/ConfirmationModalWrapper';
 
 const alerts: Alerts = new ToastifyAlerts();
 const CampusList = (): JSX.Element => {
@@ -40,6 +37,8 @@ const CampusList = (): JSX.Element => {
     const [rowData, setRowData] = useState<Campus>();
     const [, setDisabled] = useState(false);
     let activationStatus: boolean;
+    const [disabledButton, setDisabledButton] = useState(false);
+
     const handleActivationStatusToggle = (event, row: Campus) => {
         setDisabled(true);
         if (row.activation_status) {
@@ -54,12 +53,14 @@ const CampusList = (): JSX.Element => {
         }
     };
     const handleToggleStatusSubmit = (row: Campus) => {
+        setDisabledButton(true);
         const campus = {
             activation_status: activationStatus
         };
         timetablingAxiosInstance
             .put(`/campuses/${row.id}`, campus)
             .then(() => {
+                setDisabledButton(false);
                 const msg = activationStatus ? 'Successfully activated campus' : 'Successfully Deactivated campus';
                 alerts.showSuccess(msg);
                 fetchCampuses();
@@ -67,6 +68,7 @@ const CampusList = (): JSX.Element => {
                 setDisabled(false);
             })
             .catch((error) => {
+                setDisabledButton(false);
                 console.error(error);
                 alerts.showError(error.message);
                 setDisabled(false);
@@ -74,9 +76,9 @@ const CampusList = (): JSX.Element => {
     };
 
     const columns = [
-        {title: 'ID', field: 'id'},
-        {title: 'Campus name', field: 'name'},
-        {title: 'Description', field: 'description'},
+        { title: 'ID', field: 'id' },
+        { title: 'Campus name', field: 'name' },
+        { title: 'Description', field: 'description' },
 
         {
             title: 'Activation Status',
@@ -85,7 +87,7 @@ const CampusList = (): JSX.Element => {
                 canPerformActions(ACTION_UPDATE_CAMPUS.name) && (
                     <Switch
                         onChange={(event) => handleActivationStatusToggle(event, row)}
-                        inputProps={{'aria-label': 'controlled'}}
+                        inputProps={{ 'aria-label': 'controlled' }}
                         defaultChecked={row.activation_status === true}
                     />
                 )
@@ -135,8 +137,8 @@ const CampusList = (): JSX.Element => {
                 alerts.showError(error.message);
             });
     };
-    const handleAdd = (e) => {
-        e.preventDefault();
+    const handleAdd = () => {
+        // e.preventDefault();
         const campus = {
             name: campusName,
             description: description
@@ -144,8 +146,8 @@ const CampusList = (): JSX.Element => {
 
         createCampus(campus);
     };
-    const handleEdit = (e) => {
-        e.preventDefault();
+    const handleEdit = () => {
+        // e.preventDefault();
         const updates = {
             name: campusName === '' ? selectedCampusName : campusName,
             description: description === '' ? selectedDescription : description
@@ -198,7 +200,7 @@ const CampusList = (): JSX.Element => {
         <>
             <Row className="align-items-center page-header">
                 <Col>
-                    <Breadcrumb/>
+                    <Breadcrumb />
                 </Col>
                 <Col>
                     {canPerformActions(ACTION_CREATE_CAMPUS.name) && (
@@ -210,7 +212,7 @@ const CampusList = (): JSX.Element => {
             </Row>
             {canPerformActions(ACTION_GET_CAMPUSES.name) && (
                 <>
-                    <LinearProgress style={{display: linearDisplay}}/>
+                    <LinearProgress style={{ display: linearDisplay }} />
                     <Row>
                         <Col>
                             <Card>
@@ -226,7 +228,7 @@ const CampusList = (): JSX.Element => {
                                 <TableWrapper
                                     title="Campuses"
                                     columns={columns}
-                                    options={{actionsColumnIndex: -1,}}
+                                    options={{ actionsColumnIndex: -1 }}
                                     data={data}
                                     actions={
                                         canPerformActions(ACTION_UPDATE_CAMPUS.name)
@@ -259,8 +261,7 @@ const CampusList = (): JSX.Element => {
                 centered
             >
                 <Modal.Header closeButton>
-                    <Modal.Title
-                        id="contained-modal-title-vcenter">{campusId ? 'Edit Campus' : 'Create a Campus'}</Modal.Title>
+                    <Modal.Title id="contained-modal-title-vcenter">{campusId ? 'Edit Campus' : 'Create a Campus'}</Modal.Title>
                 </Modal.Header>
                 <Modal.Body>
                     <ValidationForm>
@@ -275,11 +276,11 @@ const CampusList = (): JSX.Element => {
                                 onChange={(e) => (campusId ? setSelectedCampusName(e.target.value) : setCampusName(e.target.value))}
                                 required
                             />
-                            <br/>
+                            <br />
                             <label htmlFor="description">
                                 <b>Description</b>
                             </label>
-                            <br/>
+                            <br />
                             <TextInput
                                 name="description"
                                 minLength="4"
@@ -292,7 +293,7 @@ const CampusList = (): JSX.Element => {
                                 rows="5"
                                 onChange={(e) => (campusId ? setSelectedDescription(e.target.value) : setDescription(e.target.value))}
                             />
-                            <br/>
+                            <br />
                         </div>
                     </ValidationForm>
                     <Col>
@@ -319,39 +320,35 @@ const CampusList = (): JSX.Element => {
                 <Modal.Body>
                     <ValidationForm>
                         <h6>A you sure you want to change the status of {rowData?.name} ?</h6>
-                        <Button className="btn btn-danger float-left" onClick={handleCloseModal}>
+                        <Button disabled={disabledButton} className="btn btn-danger float-left" onClick={handleCloseModal}>
                             Cancel
                         </Button>
-                        <Button className="btn btn-primary float-right" onClick={() => {
-                            handleToggleStatusSubmit(rowData);
-                        }}>
+                        <Button
+                            disabled={disabledButton}
+                            className="btn btn-primary float-right"
+                            onClick={() => {
+                                handleToggleStatusSubmit(rowData);
+                            }}
+                        >
                             Confirm
                         </Button>
                     </ValidationForm>
                 </Modal.Body>
             </Modal>
-            <Modal
+            <ConfirmationModalWrapper
+                submitButton
+                submitFunction={campusId ? handleEdit : handleAdd}
+                closeModal={toggleCloseConfirmModal}
                 show={confirmModal}
-                onHide={toggleConfirmModal}
-                size="sm"
-                backdrop="static"
-                aria-labelledby="contained-modal-title-vcenter"
-                centered>
-                <Modal.Header closeButton>
-                    <Modal.Title>{' '}</Modal.Title>
-                </Modal.Header>
-                <Modal.Body>
-                    <h6>{campusId ? `A you sure you want to update ${selectedCampusName} ?` : 'A you sure you want to create a new campus ?'}</h6>
-                </Modal.Body>
-                <Modal.Footer style={{display: 'flex', justifyContent: 'space-between'}}>
-                    <Button variant="btn btn-danger btn-rounded" onClick={toggleCloseConfirmModal}>
-                        Continue editing
-                    </Button>
-                    <button className="btn btn-info float-right" onClick={(e) => (campusId ? handleEdit(e) : handleAdd(e))}>
-                        Submit
-                    </button>
-                </Modal.Footer>
-            </Modal>
+            >
+                <>
+                    <h6>
+                        {campusId
+                            ? `A you sure you want to update ${selectedCampusName} ?`
+                            : 'A you sure you want to create a new campus ?'}
+                    </h6>
+                </>
+            </ConfirmationModalWrapper>
         </>
     );
 };
