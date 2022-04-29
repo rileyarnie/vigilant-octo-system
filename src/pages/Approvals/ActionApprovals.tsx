@@ -42,7 +42,7 @@ const ActionApprovals = () => {
                         variant="sm"
                         onClick={() => {
                             setActionApprovalId(row.id);
-                            handleReject();
+                            handleReject(row.id);
                         }}
                     >
                         Reject
@@ -80,7 +80,7 @@ const ActionApprovals = () => {
                 alerts.showError(err.message);
             });
     };
-    const handleReject = () => {
+    const handleReject = (actionApprovalId:number) => {
         setLinearDisplay('none');
         const approvalStatus = {
             approvalStatus: 'rejected'
@@ -157,7 +157,7 @@ const ActionApprovals = () => {
                     <Button variant="btn btn-danger btn-rounded" onClick={toggleCloseRejectModal}>
                         Cancel
                     </Button>
-                    <button className="btn btn-info float-right" onClick={handleReject}>
+                    <button className="btn btn-info float-right" onClick={() => handleReject(actionApprovalId)}>
                         Confirm
                     </button>
                 </Modal.Footer>
