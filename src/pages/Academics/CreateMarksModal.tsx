@@ -25,6 +25,8 @@ const CreateMarksModal = (props:Props) => {
     const options= [];
     const [imageUploaded, setImageUploaded] = useState('');
     const [showUploadModal, setShowUploadModal] = useState(false);
+    const [disabled,setDisabled] = useState(false);
+
     let selectedMarks;
     const markTypes = [
         {label:'Main', value:'main'},
@@ -173,6 +175,7 @@ const CreateMarksModal = (props:Props) => {
     const handleSubmit = (e) => {
         e.preventDefault();
         props.setLinearDisplay('block');
+        setDisabled(true);
         simsAxiosInstance
             .post('/course-cohort-registration-marks', {
                 courseCohortRegistrationId: courseCohortRegistrationId,
@@ -181,6 +184,7 @@ const CreateMarksModal = (props:Props) => {
                 programCohortSemesterId: programCohortSemesterId
             })
             .then(() => {
+                setDisabled(false);
                 alerts.showSuccess('Marks Created Successfully');
                 props.fetchcourseCohortsRegistrations();
                 props.setLinearDisplay('none');
@@ -188,6 +192,7 @@ const CreateMarksModal = (props:Props) => {
             })
             .catch((error) => {
                 //handle error using logging library
+                setDisabled(false);
                 console.error(error);
                 alerts.showError(error.response.data);
             });
@@ -223,12 +228,11 @@ const CreateMarksModal = (props:Props) => {
     };
 
     return (
-        <>    
-            <Button variant="danger" className = "float-right" onClick={() => setModalShow(true)}>
+        <>
+            <Button variant="danger" className="float-right" onClick={() => setModalShow(true)}>
                 Create Marks
             </Button>
             <Modal show={modalShow}>
-
                 <Row className="align-items-center page-header"></Row>
                 <Row>
                     <Col>
@@ -249,8 +253,7 @@ const CreateMarksModal = (props:Props) => {
                                                     onChange={handleSelectChange}
                                                 />
                                                 &nbsp;&nbsp;&nbsp;
-                                                <br />      
-
+                                                <br />
                                                 {/* <label htmlFor="name">
                                                     <b>Marks</b>
                                                 </label>
@@ -264,8 +267,6 @@ const CreateMarksModal = (props:Props) => {
                                                 />
                                                 <br />                     */}
                                                 {renderSwitch()}
-
-
                                                 <label htmlFor="name">
                                                     <b>Type Of Marks</b>
                                                 </label>
@@ -276,14 +277,14 @@ const CreateMarksModal = (props:Props) => {
                                                     noOptionsMessage={() => 'No available mark types'}
                                                     onChange={handleMarkTypeChange}
                                                 />
-                                                &nbsp;&nbsp;&nbsp;                                                
+                                                &nbsp;&nbsp;&nbsp;
                                             </div>
 
                                             <div className="form-group">
                                                 <button className="btn btn-danger float-right">Submit</button>
                                             </div>
                                         </ValidationForm>
-                                        <button className="btn btn-info float-left" onClick={() =>setModalShow(false)}>
+                                        <button className="btn btn-info float-left" onClick={() => setModalShow(false)}>
                                             Cancel
                                         </button>
                                     </Col>
@@ -292,7 +293,6 @@ const CreateMarksModal = (props:Props) => {
                         </Card>
                     </Col>
                 </Row>
-        
             </Modal>
             <Modal backdrop="static" show={showUploadModal} onHide={toggleUploadModal} size="sm" centered>
                 <Modal.Header closeButton>
@@ -321,10 +321,11 @@ const CreateMarksModal = (props:Props) => {
                     </ValidationForm>
                 </Modal.Body>
                 <Modal.Footer style={{ display: 'flex', justifyContent: 'space-between' }}>
-                    <Button variant="btn btn-info btn-rounded" onClick={toggleUploadModal}>
+                    <Button disabled={disabled} variant="btn btn-info btn-rounded" onClick={toggleUploadModal}>
                         Close
                     </Button>
                     <Button
+                        disabled={disabled}
                         onClick={() => {
                             handleUpload();
                         }}
@@ -334,7 +335,7 @@ const CreateMarksModal = (props:Props) => {
                     </Button>
                 </Modal.Footer>
             </Modal>
-        </>    
+        </>
     );
     
 };

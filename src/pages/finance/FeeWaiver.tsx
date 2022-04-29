@@ -1,5 +1,6 @@
 import React, {useState} from 'react';
-import {Button, Col, Form, FormControl, Modal, Row} from 'react-bootstrap';
+import { Col, Form, FormControl, Row} from 'react-bootstrap';
+import ConfirmationModalWrapper from '../../App/components/modal/ConfirmationModalWrapper';
 import ModalWrapper from '../../App/components/modal/ModalWrapper';
 import {StudentFeesManagementService} from '../../services/StudentFeesManagementService';
 import {Alerts, ToastifyAlerts} from '../lib/Alert';
@@ -25,8 +26,12 @@ const FeeWaiver: React.FunctionComponent<Props> = (props) => {
         StudentFeesManagementService.applyWaiver({...waiver})
             .then(() => {
                 alerts.showSuccess('Fee Record created successfully');
+                toggleCloseConfirmModal();
+                props.closeModal();
             })
             .catch((error) => {
+                props.closeModal();
+                toggleCloseConfirmModal();
                 alerts.showError(error.response.data);
             });
     };
@@ -51,55 +56,41 @@ const FeeWaiver: React.FunctionComponent<Props> = (props) => {
                     >
                         <Form>
                             <Form.Group controlId="formAmmount">
-                                <Row style={{display: 'flex', alignItems: 'center', justifyContent: 'center'}}>
+                                <Row style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
                                     <Col sm={3}>Amount:</Col>
                                     <Col sm={9}>
-                                        <FormControl type="number" onChange={(e) => {
-                                            setAmount(e.target.value);
-                                        }} placeholder="Enter Amount"/>
+                                        <FormControl
+                                            type="number"
+                                            onChange={(e) => {
+                                                setAmount(e.target.value);
+                                            }}
+                                            placeholder="Enter Amount"
+                                        />
                                     </Col>
                                 </Row>
                             </Form.Group>
                             <Form.Group controlId="form">
-                                <Row style={{display: 'flex', alignItems: 'center', justifyContent: 'center'}}>
+                                <Row style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
                                     <Col sm={3}>Narrative:</Col>
                                     <Col sm={9}>
-                                        <FormControl type="text" as="textarea" onChange={(e) => { setNarrative(e.target.value);}} placeholder="Enter Narrative"/>
+                                        <FormControl
+                                            type="text"
+                                            as="textarea"
+                                            onChange={(e) => {
+                                                setNarrative(e.target.value);
+                                            }}
+                                            placeholder="Enter Narrative"
+                                        />
                                     </Col>
                                 </Row>
                             </Form.Group>
-                            {/*<Form.Group controlId="formAmmount">*/}
-                            {/*    <Row style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>*/}
-                            {/*        <Col sm={3}>Invoice Number:</Col>*/}
-                            {/*        <Col sm={9}>*/}
-                            {/*            <FormControl type="select" as="select" placeholder="Enter Invoice Number" />*/}
-                            {/*        </Col>*/}
-                            {/*    </Row>*/}
-                            {/*</Form.Group>*/}
                         </Form>
                     </ModalWrapper>
                 </div>
             </div>
-            <Modal
-                show={confirmModal}
-                onHide={toggleConfirmModal}
-                size="sm"
-                backdrop="static"
-                aria-labelledby="contained-modal-title-vcenter"
-                centered>
-                <Modal.Header>{' '}</Modal.Header>
-                <Modal.Body>
-                    <h6 className="text-center">A you sure you want to add a fee waiver ?</h6>
-                </Modal.Body>
-                <Modal.Footer style={{display: 'flex', justifyContent: 'space-between'}}>
-                    <Button variant="btn btn-danger btn-rounded" onClick={toggleCloseConfirmModal}>
-                        Continue editing
-                    </Button>
-                    <button className="btn btn-info float-right" onClick={handleSubmit}>
-                        Confirm
-                    </button>
-                </Modal.Footer>
-            </Modal>
+            <ConfirmationModalWrapper submitButton submitFunction={handleSubmit} closeModal={toggleCloseConfirmModal} show={confirmModal}>
+                <h6 className="text-center">Are you sure you want to add a fee waiver ?</h6>
+            </ConfirmationModalWrapper>
         </>
     );
 };
