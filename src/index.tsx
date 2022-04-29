@@ -11,7 +11,7 @@ import { ProtectedRoutes } from './App/components/ProtectedRoutes';
 import Config from './config';
 const store = createStore(reducer);
 
-const isLoggedIn = JSON.parse(localStorage.getItem('userInfo')) ? true : false;
+const isLoggedIn = JSON.parse(sessionStorage.getItem('userInfo')) ? true : false;
 
 const Staging = () => {
     return (

@@ -126,7 +126,8 @@ const Login = () => {
         authnzAxiosInstance
             .get('/users/me')
             .then((res) => {
-                localStorage.setItem('userInfo', JSON.stringify(res.data));
+                sessionStorage.setItem('userInfo', JSON.stringify(res.data));
+                // localStorage.setItem('userInfo', JSON.stringify(res.data));
                 setUserInfo(res.data);
                 return res.data;
             })

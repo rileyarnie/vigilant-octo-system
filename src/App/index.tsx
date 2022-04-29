@@ -21,7 +21,7 @@ const App = () => {
     // const token = ;
 
     useEffect(() => {
-        const loggedInUser = JSON.parse(localStorage.getItem('userInfo'));
+        const loggedInUser = JSON.parse(sessionStorage.getItem('userInfo'));
         if (loggedInUser && loggedInUser.isStaff) {
             setIsLoggedIn(true);
         }

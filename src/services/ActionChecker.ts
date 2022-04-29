@@ -19,7 +19,7 @@ interface User {
 }
 
 function getCurrUserActions(): { string: Action } {
-    const userDetails = JSON.parse(localStorage.getItem('userInfo')) as unknown as User;
+    const userDetails = JSON.parse(sessionStorage.getItem('userInfo')) as unknown as User;
     if (!userDetails) {
         return;
     }
