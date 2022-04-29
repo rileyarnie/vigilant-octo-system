@@ -154,10 +154,7 @@ const ProgramCohorts = (): JSX.Element => {
                     <button
                         className="btn btn btn-link"
                         onClick={() => {
-                            setCohortId(row.program_cohorts_id);
-                            setCohortName(row.pg_name);
                             toggleCancelModal();
-                            setSelectedProgramCohort(row);
                         }}
                     >
                         <Dropdown.Item>Cancel</Dropdown.Item>
@@ -306,22 +303,23 @@ const ProgramCohorts = (): JSX.Element => {
     const handleEdit = (e): void => {
         e.preventDefault();
         const updates = {
-            programId: programId === selectedProgramCohort.pg_id ? selectedProgramCohort.pg_id : selectedProgramId,
+            programId: programId === 0 ? selectedProgramCohort.pg_id : programId,
             campusId:
                 campusId === selectedProgramCohort.program_cohorts_campusId
                     ? selectedProgramCohort.program_cohorts_campusId
-                    : selectedCampusId,
+                    : campusId,
             startDate:
-                startDate === selectedProgramCohort.program_cohorts_startDate
+                startDate === ''
                     ? selectedProgramCohort.program_cohorts_startDate
-                    : selectedStartDate,
+                    : startDate,
             anticipatedGraduationYear: selectedProgramCohort.program_cohorts_anticipatedGraduationYear,
             anticipatedGraduationMonth: selectedProgramCohort.program_cohorts_anticipatedGraduationMonth,
             advertDescription:
-                description === selectedProgramCohort.program_cohorts_advertDescription
+                description === ''
                     ? selectedProgramCohort.program_cohorts_advertDescription
                     : description,
-            bannerImageUrl: banner
+            bannerImageUrl: selectedProgramCohort.program_cohorts_bannerImageUrl
+
         };
         updateProgramCohort(cohortId, updates);
     };
@@ -490,7 +488,7 @@ const ProgramCohorts = (): JSX.Element => {
                             <ValidationForm>
                                 <div className="form-group">
                                     <label htmlFor="cohortName">
-                                        <b>{cohortId ? 'Select a new program for this cohort' : 'Select a program'}</b>
+                                        <b>{cohortId ? 'Select a program' : 'Select a new program for this cohort'}</b>
                                     </label>
                                     <Select
                                         theme={customSelectTheme}
@@ -499,10 +497,10 @@ const ProgramCohorts = (): JSX.Element => {
                                         isMulti={false}
                                         placeholder="Select a Program."
                                         noOptionsMessage={() => 'No Programs available'}
-                                        onChange={handleProgramChange}
+                                        onChange={(e) => handleProgramChange(e)}
                                     /><br/>
                                     <label htmlFor="cohortName">
-                                        <b>{cohortId ? 'Select a new campus for this cohort' : 'Select a campus'}</b>
+                                        <b>{cohortId ? 'Select a campus' : 'Select a new campus for this cohort'}</b>
                                     </label>
                                     <Select
                                         theme={customSelectTheme}
@@ -511,7 +509,7 @@ const ProgramCohorts = (): JSX.Element => {
                                         isMulti={false}
                                         placeholder="Select a Campus."
                                         noOptionsMessage={() => 'No campus available'}
-                                        onChange={handleCampusChange}
+                                        onChange={(e) => handleCampusChange(e)}
                                     /><br/>
                                     <label htmlFor="Date">
                                         <b>Start Date</b>
@@ -523,7 +521,7 @@ const ProgramCohorts = (): JSX.Element => {
                                         type="date"
                                         required
                                         defaultValue={
-                                            cohortId ? selectedProgramCohort.program_cohorts_startDate.slice(0, 10) : selectedStartDate
+                                            cohortId ? selectedProgramCohort.program_cohorts_startDate.slice(0, 10) : startDate
                                         }
                                         onChange={(e) => {
                                             setStartDate(e.target.value);
