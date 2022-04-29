@@ -55,14 +55,11 @@ const ProgramCohorts = (): JSX.Element => {
     const [programs, setPrograms] = useState([]);
     const [campuses, setCampuses] = useState([]);
     const [programName, setProgramName] = useState('');
-    const [selectedCampusId] = useState(0);
-    const [selectedProgramId] = useState(0);
     const [selectedGraduationDate] = useState();
-    const [selectedStartDate] = useState();
     const [selectedDescription] = useState();
     const [showModal, setModal] = useState(false);
     const [cohortId, setCohortId] = useState(null);
-    const [cohortName, setCohortName] = useState('');
+    const [cohortName,] = useState('');
     const [errorMessages] = useState([]);
     const [showUploadModal, setShowUploadModal] = useState(false);
     const [cancelModal, setCancelModal] = useState(false);
@@ -159,10 +156,7 @@ const ProgramCohorts = (): JSX.Element => {
                     <button
                         className="btn btn btn-link"
                         onClick={() => {
-                            setCohortId(row.program_cohorts_id);
-                            setCohortName(row.pg_name);
                             toggleCancelModal();
-                            setSelectedProgramCohort(row);
                         }}
                     >
                         <Dropdown.Item>Cancel</Dropdown.Item>
@@ -296,7 +290,7 @@ const ProgramCohorts = (): JSX.Element => {
     const updateProgramCohort = (cohortId, updates): void => {
         setLinearDisplay('block');
         timetablingAxiosInstance
-            .put(`/program-cohorts/${cohortId}/`, updates)
+            .put(`/program-cohorts/${cohortId}`, updates)
             .then(() => {
                 setLinearDisplay('none');
                 alerts.showSuccess('Successfully updated Cohort');
@@ -311,22 +305,23 @@ const ProgramCohorts = (): JSX.Element => {
     const handleEdit = (e): void => {
         e.preventDefault();
         const updates = {
-            programId: programId === selectedProgramCohort.pg_id ? selectedProgramCohort.pg_id : selectedProgramId,
+            programId: programId === 0 ? selectedProgramCohort.pg_id : programId,
             campusId:
                 campusId === selectedProgramCohort.program_cohorts_campusId
                     ? selectedProgramCohort.program_cohorts_campusId
-                    : selectedCampusId,
+                    : campusId,
             startDate:
-                startDate === selectedProgramCohort.program_cohorts_startDate
+                startDate === ''
                     ? selectedProgramCohort.program_cohorts_startDate
-                    : selectedStartDate,
+                    : startDate,
             anticipatedGraduationYear: selectedProgramCohort.program_cohorts_anticipatedGraduationYear,
             anticipatedGraduationMonth: selectedProgramCohort.program_cohorts_anticipatedGraduationMonth,
             advertDescription:
-                description === selectedProgramCohort.program_cohorts_advertDescription
+                description === ''
                     ? selectedProgramCohort.program_cohorts_advertDescription
                     : description,
-            bannerImageUrl: banner
+            bannerImageUrl: selectedProgramCohort.program_cohorts_bannerImageUrl
+
         };
         updateProgramCohort(cohortId, updates);
     };
@@ -494,7 +489,7 @@ const ProgramCohorts = (): JSX.Element => {
                             <ValidationForm>
                                 <div className="form-group">
                                     <label htmlFor="cohortName">
-                                        <b>{cohortId ? 'Select a new program for this cohort' : 'Select a program'}</b>
+                                        <b>{cohortId ? 'Select a program' : 'Select a new program for this cohort'}</b>
                                     </label>
                                     <Select
                                         theme={customSelectTheme}
@@ -503,11 +498,10 @@ const ProgramCohorts = (): JSX.Element => {
                                         isMulti={false}
                                         placeholder="Select a Program."
                                         noOptionsMessage={() => 'No Programs available'}
-                                        onChange={handleProgramChange}
-                                    />
-                                    <br />
+                                        onChange={(e) => handleProgramChange(e)}
+                                    /><br/>
                                     <label htmlFor="cohortName">
-                                        <b>{cohortId ? 'Select a new campus for this cohort' : 'Select a campus'}</b>
+                                        <b>{cohortId ? 'Select a campus' : 'Select a new campus for this cohort'}</b>
                                     </label>
                                     <Select
                                         theme={customSelectTheme}
@@ -516,9 +510,8 @@ const ProgramCohorts = (): JSX.Element => {
                                         isMulti={false}
                                         placeholder="Select a Campus."
                                         noOptionsMessage={() => 'No campus available'}
-                                        onChange={handleCampusChange}
-                                    />
-                                    <br />
+                                        onChange={(e) => handleCampusChange(e)}
+                                    /><br/>
                                     <label htmlFor="Date">
                                         <b>Start Date</b>
                                     </label>
@@ -529,7 +522,7 @@ const ProgramCohorts = (): JSX.Element => {
                                         type="date"
                                         required
                                         defaultValue={
-                                            cohortId ? selectedProgramCohort.program_cohorts_startDate.slice(0, 10) : selectedStartDate
+                                            cohortId ? selectedProgramCohort.program_cohorts_startDate.slice(0, 10) : startDate
                                         }
                                         onChange={(e) => {
                                             setStartDate(e.target.value);

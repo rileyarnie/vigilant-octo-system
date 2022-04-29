@@ -13,7 +13,7 @@ interface Approval {
 }
 const ActionApprovals = () => {
     const [linearDisplay, setLinearDisplay] = useState('none');
-    const [actionApprovalId, setActionApprovalId] = useState(1);
+    const [actionApprovalId, setActionApprovalId] = useState(0);
     const [approvals, setApprovals] = useState<Approval[]>();
     const alerts: Alerts = new ToastifyAlerts();
     const [approveModal, setApproveModal] = useState(false);
@@ -32,7 +32,7 @@ const ActionApprovals = () => {
                         variant="sm"
                         onClick={() => {
                             setActionApprovalId(row.id);
-                            handleApprove();
+                            handleApprove(row.id);
                         }}
                     >
                         Approve
@@ -65,7 +65,7 @@ const ActionApprovals = () => {
                 alerts.showError(err.message);
             });
     }
-    const handleApprove = () => {
+    const handleApprove = (actionApprovalId:number) => {
         setLinearDisplay('none');
         const approvalStatus = {
             approvalStatus: 'approved'
@@ -73,6 +73,7 @@ const ActionApprovals = () => {
         WorkFlowService.handleApprovals(actionApprovalId, approvalStatus)
             .then(() => {
                 alerts.showSuccess('Action approved successfully');
+                fetchApprovals();
             })
             .catch((err) => {
                 console.log('err', err);
@@ -87,6 +88,7 @@ const ActionApprovals = () => {
         WorkFlowService.handleApprovals(actionApprovalId, approvalStatus)
             .then(() => {
                 alerts.showSuccess('Action rejected Successfully');
+                fetchApprovals();
             })
             .catch((err) => {
                 console.log('err', err);
@@ -135,7 +137,7 @@ const ActionApprovals = () => {
                     <Button variant="btn btn-danger btn-rounded" onClick={toggleCloseApproveModal}>
                         Cancel
                     </Button>
-                    <button className="btn btn-info float-right" onClick={handleApprove}>
+                    <button className="btn btn-info float-right" onClick={() => handleApprove(actionApprovalId)}>
                         Confirm
                     </button>
                 </Modal.Footer>
