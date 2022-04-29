@@ -55,14 +55,11 @@ const ProgramCohorts = (): JSX.Element => {
     const [programs, setPrograms] = useState([]);
     const [campuses, setCampuses] = useState([]);
     const [programName, setProgramName] = useState('');
-    const [selectedCampusId] = useState(0);
-    const [selectedProgramId] = useState(0);
     const [selectedGraduationDate] = useState();
-    const [selectedStartDate] = useState();
     const [selectedDescription] = useState();
     const [showModal, setModal] = useState(false);
     const [cohortId, setCohortId] = useState(null);
-    const [cohortName, setCohortName] = useState('');
+    const [cohortName,] = useState('');
     const [errorMessages] = useState([]);
     const [showUploadModal, setShowUploadModal] = useState(false);
     const [cancelModal, setCancelModal] = useState(false);
