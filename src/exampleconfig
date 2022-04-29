@@ -18,7 +18,8 @@ const Config = {
         timetablingSrv: 'https://host/timetabling-service/0.0.1',
         financeSrv: 'https://host/finance-service/0.0.1',
         simsSrv: 'https://host/sim-service/v0.0.1'
-    }
+    },
+    idleTimer: 10000 //idle time required to logout user
 };
 
 export default Config;

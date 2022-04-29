@@ -7,6 +7,9 @@ import Loader from './layout/Loader';
 import ScrollToTop from './layout/ScrollToTop';
 import routes from '../route';
 import { AuthContext } from './context/AuthContext';
+import { useIdleTimer } from 'react-idle-timer';
+import handleLogout from '../utlis/Logout';
+import Config from '../config';
 
 const MainLayout = Loadable({
     loader: () => import('./layout/MainLayout'),
@@ -19,6 +22,29 @@ const App = () => {
     const [isLoggedIn, setIsLoggedIn] = useState(false);
     const [userInfo, setUserInfo] = useState();
     // const token = ;
+
+    const onIdle = () => {
+        handleLogout();
+    };
+
+    const idleTimer = useIdleTimer({
+        onIdle,
+        timeout: Config.idleTimer,
+        events: [
+            'mousemove',
+            'keydown',
+            'wheel',
+            'DOMMouseScroll',
+            'mousewheel',
+            'mousedown',
+            'touchstart',
+            'touchmove',
+            'MSPointerDown',
+            'MSPointerMove',
+            'visibilitychange'
+        ],
+        startOnMount: true
+    });
 
     useEffect(() => {
         const loggedInUser = JSON.parse(sessionStorage.getItem('userInfo'));
