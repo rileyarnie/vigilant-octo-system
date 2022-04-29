@@ -307,8 +307,7 @@ const ProgramCohorts = (): JSX.Element => {
         const updates = {
             programId: programId === 0 ? selectedProgramCohort.pg_id : programId,
             campusId:
-                campusId === selectedProgramCohort.program_cohorts_campusId
-                    ? selectedProgramCohort.program_cohorts_campusId
+                campusId === 0 ? selectedProgramCohort.program_cohorts_campusId
                     : campusId,
             startDate:
                 startDate === ''
