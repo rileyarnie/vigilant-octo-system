@@ -1,14 +1,15 @@
 import React, { useState } from 'react';
-import {Button, Col, Form, FormControl, Modal, Row } from 'react-bootstrap';
+import { Button, Col, Form, FormControl, Modal, Row } from 'react-bootstrap';
 import ModalWrapper from '../../App/components/modal/ModalWrapper';
 import { ValidationForm, FileInput } from 'react-bootstrap4-form-validation';
 import { Alerts, ToastifyAlerts } from '../lib/Alert';
 const alerts: Alerts = new ToastifyAlerts();
 import { StudentFeesManagementService } from '../../services/StudentFeesManagementService';
+import ConfirmationModalWrapper from '../../App/components/modal/ConfirmationModalWrapper';
 interface Props {
     show: boolean;
     closeModal: () => void;
-    studentId: number
+    studentId: number;
 }
 const RecordFeePayment: React.FunctionComponent<Props> = (props) => {
     const [narrative, setNarrative] = useState('');
@@ -17,6 +18,8 @@ const RecordFeePayment: React.FunctionComponent<Props> = (props) => {
     const [amount, setAmount] = useState('');
     const [confirmModal, setConfirmModal] = useState(false);
     const [fileUploaded, setFileUploaded] = useState('');
+    const [disabled, setDisabled] = useState(false);
+
     const handleUpload = () => {
         const form = new FormData();
         form.append('fileUploaded', fileUploaded);
@@ -35,6 +38,7 @@ const RecordFeePayment: React.FunctionComponent<Props> = (props) => {
             });
     };
     const handleSubmit = () => {
+        setDisabled(true);
         const createFeeRecord = {
             studentId: props.studentId,
             narrative: narrative,
@@ -43,12 +47,18 @@ const RecordFeePayment: React.FunctionComponent<Props> = (props) => {
         };
         StudentFeesManagementService.recordFeesReport(createFeeRecord)
             .then(() => {
+                setDisabled(false);
                 alerts.showSuccess('Fee Record created successfully');
+                props.closeModal();
+                toggleCloseConfirmModal();
             })
             .catch((error) => {
+                setDisabled(false);
+                props.closeModal();
+                toggleCloseConfirmModal();
                 alerts.showError(error.response.data);
             });
-        console.log('Data to be sent',createFeeRecord);
+        console.log('Data to be sent', createFeeRecord);
     };
     const toggleUploadModal = () => {
         showUploadModal ? setShowUploadModal(false) : setShowUploadModal(true);
@@ -74,11 +84,13 @@ const RecordFeePayment: React.FunctionComponent<Props> = (props) => {
                         <Row style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
                             <Col sm={3}>Amount:</Col>
                             <Col sm={9}>
-                                <FormControl type="number"
+                                <FormControl
+                                    type="number"
                                     onChange={(e) => {
                                         setAmount(e.target.value);
                                     }}
-                                    placeholder="Enter Amount" />
+                                    placeholder="Enter Amount"
+                                />
                             </Col>
                         </Row>
                     </Form.Group>
@@ -86,11 +98,14 @@ const RecordFeePayment: React.FunctionComponent<Props> = (props) => {
                         <Row style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
                             <Col sm={3}>Narrative:</Col>
                             <Col sm={9}>
-                                <FormControl type="text" as="textarea"
+                                <FormControl
+                                    type="text"
+                                    as="textarea"
                                     onChange={(e) => {
                                         setNarrative(e.target.value);
                                     }}
-                                    placeholder="Enter Narrative" />
+                                    placeholder="Enter Narrative"
+                                />
                             </Col>
                         </Row>
                     </Form.Group>
@@ -98,7 +113,17 @@ const RecordFeePayment: React.FunctionComponent<Props> = (props) => {
                         <Row style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
                             <Col sm={3}>Supporting Documents:</Col>
                             <Col sm={9}>
-                                <Button className="btn btn-danger" onClick={(e) => { e.preventDefault(); setShowUploadModal(true); }}> Add Document</Button><br/>
+                                <Button
+                                    className="btn btn-danger"
+                                    onClick={(e) => {
+                                        e.preventDefault();
+                                        setShowUploadModal(true);
+                                    }}
+                                >
+                                    {' '}
+                                    Add Document
+                                </Button>
+                                <br />
                             </Col>
                         </Row>
                     </Form.Group>
@@ -119,40 +144,39 @@ const RecordFeePayment: React.FunctionComponent<Props> = (props) => {
 
                     <Modal.Body>
                         <ValidationForm>
-                            <FileInput name="fileUploaded" id="image" encType="multipart/form-data"
-                                fileType={['pdf', 'doc', 'docx']} maxFileSize="10mb"
-                                onInput={(e) => { setFileUploaded(() => { return e.target.files[0]; });
+                            <FileInput
+                                name="fileUploaded"
+                                id="image"
+                                encType="multipart/form-data"
+                                fileType={['pdf', 'doc', 'docx']}
+                                maxFileSize="10mb"
+                                onInput={(e) => {
+                                    setFileUploaded(() => {
+                                        return e.target.files[0];
+                                    });
                                 }}
-                                errorMessage={{ required: 'Please upload a document', fileType: 'Only document is allowed', maxFileSize: 'Max file size is 10MB' }}/>
+                                errorMessage={{
+                                    required: 'Please upload a document',
+                                    fileType: 'Only document is allowed',
+                                    maxFileSize: 'Max file size is 10MB'
+                                }}
+                            />
                         </ValidationForm>
                     </Modal.Body>
 
-                    <Modal.Footer style={{ display: 'flex', justifyContent: 'space-between' }} >
-                        <Button className="float-left" variant="danger" onClick={toggleUploadModal}>Close</Button>
-                        <Button className="float-right" variant="info" onClick={() => handleUpload()}>Upload</Button>
+                    <Modal.Footer style={{ display: 'flex', justifyContent: 'space-between' }}>
+                        <Button disabled={disabled} className="float-left" variant="danger" onClick={toggleUploadModal}>
+                            Close
+                        </Button>
+                        <Button disabled={disabled} className="float-right" variant="info" onClick={() => handleUpload()}>
+                            Upload
+                        </Button>
                     </Modal.Footer>
                 </Modal.Dialog>
             </Modal>
-            <Modal
-                show={confirmModal}
-                onHide={toggleConfirmModal}
-                size="sm"
-                backdrop="static"
-                aria-labelledby="contained-modal-title-vcenter"
-                centered>
-                <Modal.Header>{' '}</Modal.Header>
-                <Modal.Body>
-                    <h6 className="text-center">A you sure you want to add a fee record ?</h6>
-                </Modal.Body>
-                <Modal.Footer style={{display: 'flex', justifyContent: 'space-between'}}>
-                    <Button variant="btn btn-danger btn-rounded" onClick={toggleCloseConfirmModal}>
-                        Continue editing
-                    </Button>
-                    <button className="btn btn-info float-right" onClick={handleSubmit}>
-                        Confirm
-                    </button>
-                </Modal.Footer>
-            </Modal>
+            <ConfirmationModalWrapper submitButton submitFunction={handleSubmit} closeModal={toggleCloseConfirmModal} show={confirmModal}>
+                <h6 className="text-center">Are you sure you want to add a fee record ?</h6>
+            </ConfirmationModalWrapper>
         </>
     );
 };

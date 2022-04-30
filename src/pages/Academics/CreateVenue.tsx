@@ -1,12 +1,13 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import React, { Component } from 'react';
-import { Row, Col, Card, Modal, Button } from 'react-bootstrap';
+import { Row, Col, Card } from 'react-bootstrap';
 import { ValidationForm, TextInput } from 'react-bootstrap4-form-validation';
 import { Alerts, ToastifyAlerts } from '../lib/Alert';
 import validator from 'validator';
 import Select from 'react-select';
 import { customSelectTheme } from '../lib/SelectThemes';
 import { timetablingAxiosInstance } from '../../utlis/interceptors/timetabling-interceptor';
+import ConfirmationModalWrapper from '../../App/components/modal/ConfirmationModalWrapper';
 const alerts: Alerts = new ToastifyAlerts();
 interface Props extends React.HTMLAttributes<Element> {
     setModal: (boolean) => void;
@@ -24,7 +25,8 @@ class CreateVenue extends Component<Props> {
         capacity: '',
         campusId: '',
         campuses: [],
-        confirmModal:false
+        confirmModal: false,
+        disabled: false
     };
     options = [] as any;
     componentDidMount() {
@@ -58,6 +60,7 @@ class CreateVenue extends Component<Props> {
 
     handleSubmit = (e) => {
         e.preventDefault();
+        this.setState({ disabled: true });
         const venue = {
             name: this.state.name,
             description: this.state.description,
@@ -68,13 +71,17 @@ class CreateVenue extends Component<Props> {
         timetablingAxiosInstance
             .post('/venues', { Venue: venue })
             .then(() => {
+                this.setState({ disabled: false });
                 alerts.showSuccess('Venue Created Successfully');
                 this.props.fetchVenues();
                 this.props.setModal(false);
                 this.props.setLinearDisplay('none');
+                this.toggleCloseConfirmModal();
             })
             .catch((error) => {
                 //handle error using logging library
+                this.setState({ disabled: false });
+                this.toggleCloseConfirmModal();
                 console.error(error);
                 alerts.showError(error.message);
             });
@@ -83,22 +90,22 @@ class CreateVenue extends Component<Props> {
         console.error(errorInputs);
     };
     toggleConfirmModal = () => {
-        this.setState({confirmModal:true});
+        this.setState({ confirmModal: true });
     };
     toggleCloseConfirmModal = () => {
-        this.setState({confirmModal:false});
+        this.setState({ confirmModal: false });
     };
     render(): JSX.Element {
         return (
             <>
-                <Row className="align-items-center page-header"/>
+                <Row className="align-items-center page-header" />
                 <Row>
                     <Col>
                         <Card>
                             <Card.Body>
                                 <Row>
                                     <Col md={12}>
-                                        <ValidationForm  onErrorSubmit={this.handleErrorSubmit}>
+                                        <ValidationForm onErrorSubmit={this.handleErrorSubmit}>
                                             <div className="form-group">
                                                 <label htmlFor="name">
                                                     <b>Name of Venue</b>
@@ -155,38 +162,27 @@ class CreateVenue extends Component<Props> {
                                             </div>
                                         </ValidationForm>
                                         <Col>
-                                            <button className="btn btn-info float-right" onClick={this.toggleConfirmModal}>Submit</button>
-                                            <button className="btn btn-danger float-left" onClick={() => this.props.setModal(false)}>
+                                            <button disabled={this.state.disabled} className="btn btn-info float-right" onClick={this.toggleConfirmModal}>
+                                                Submit
+                                            </button>
+                                            <button disabled={this.state.disabled} className="btn btn-danger float-left" onClick={() => this.props.setModal(false)}>
                                                 Cancel
                                             </button>
                                         </Col>
-
                                     </Col>
                                 </Row>
                             </Card.Body>
                         </Card>
                     </Col>
                 </Row>
-                <Modal
+                <ConfirmationModalWrapper
+                    submitButton
+                    submitFunction={this.handleSubmit}
+                    closeModal={this.toggleCloseConfirmModal}
                     show={this.state.confirmModal}
-                    onHide={this.toggleConfirmModal}
-                    size="sm"
-                    backdrop="static"
-                    aria-labelledby="contained-modal-title-vcenter"
-                    centered>
-                    <Modal.Header>{' '}</Modal.Header>
-                    <Modal.Body>
-                        <h6 className="text-center">A you sure you want to create a venue ?</h6>
-                    </Modal.Body>
-                    <Modal.Footer style={{display: 'flex', justifyContent: 'space-between'}}>
-                        <Button variant="btn btn-danger btn-rounded" onClick={this.toggleCloseConfirmModal}>
-                            Continue editing
-                        </Button>
-                        <button className="btn btn-info float-right" onClick={this.handleSubmit}>
-                            Confirm
-                        </button>
-                    </Modal.Footer>
-                </Modal>
+                >
+                    <h6 className="text-center">Are you sure you want to create a venue ?</h6>
+                </ConfirmationModalWrapper>
             </>
         );
     }

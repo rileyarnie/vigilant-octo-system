@@ -102,6 +102,7 @@ const ApplicationsList = (): JSX.Element => {
     const [applicationId, setApplicationId] = useState('');
     const [campuses, setCampuses] = useState([]);
     const [showUploadModal, setShowUploadModal] = useState(false);
+    const [disabled, setDisabled] = useState(false);
 
     useEffect(() => {
         fetchProgramCohortApplications();
@@ -197,6 +198,7 @@ const ApplicationsList = (): JSX.Element => {
     };
     const handleAdmission = (e, admissionStatus: admissionStatus) => {
         e.preventDefault();
+        setDisabled(true);
         const admissionsPayload = {
             modifiedProgramCohortApplication: {
                 application: {
@@ -207,6 +209,7 @@ const ApplicationsList = (): JSX.Element => {
         simsAxiosInstance
             .put(`/program-cohort-applications/${applicationId}`, admissionsPayload)
             .then(() => {
+                setDisabled(false);
                 setLinearDisplay('none');
                 alerts.showSuccess('Successfully updated application details');
                 fetchProgramCohortApplications();
@@ -214,6 +217,7 @@ const ApplicationsList = (): JSX.Element => {
             })
             .catch((error) => {
                 console.error(error);
+                setDisabled(false);
                 alerts.showError(error.message);
             });
     };
@@ -342,7 +346,7 @@ const ApplicationsList = (): JSX.Element => {
                                         View Semesters
                                     </Button>
                                 </Link>
-                                <Button variant="danger" onClick={(e) => handleAdmission(e, admissionStatus.REJECTED)}>
+                                <Button variant="danger" onClick={(e) => handleAdmission(e, admissionStatus.REJECTED)} disabled={disabled}>
                                     Reject
                                 </Button>
                             </>
@@ -356,7 +360,7 @@ const ApplicationsList = (): JSX.Element => {
                                 >
                                     Admit
                                 </Button>
-                                <Button variant="danger" onClick={(e) => handleAdmission(e, admissionStatus.REJECTED)}>
+                                <Button variant="danger" onClick={(e) => handleAdmission(e, admissionStatus.REJECTED)} disabled={disabled}>
                                     Reject
                                 </Button>
                             </>
@@ -367,6 +371,7 @@ const ApplicationsList = (): JSX.Element => {
                                     style={{ marginRight: '.5rem', marginLeft: '.5rem' }}
                                     variant="info"
                                     onClick={(e) => handleAdmission(e, admissionStatus.ADMITTED)}
+                                    disabled={disabled}
                                 >
                                     Admit
                                 </Button>
@@ -859,12 +864,12 @@ const ApplicationsList = (): JSX.Element => {
                         <div className="form-group">
                             <br />
                             <br />
-                            <Button className="btn btn-primary" onClick={(e) => handleEdit(e)}>
+                            <Button disabled={disabled} className="btn btn-primary" onClick={(e) => handleEdit(e)}>
                                 Submit
                             </Button>
                         </div>
                     </ValidationForm>
-                    <Button className="btn btn-danger btn-rounded float-right" onClick={handleCloseModal}>
+                    <Button disabled={disabled} className="btn btn-danger btn-rounded float-right" onClick={handleCloseModal}>
                         Close
                     </Button>
                 </Modal.Body>
@@ -905,10 +910,10 @@ const ApplicationsList = (): JSX.Element => {
                     </Modal.Body>
 
                     <Modal.Footer style={{ display: 'flex', justifyContent: 'space-between' }}>
-                        <Button variant="primary" className="btn btn-primary rounded" onClick={toggleUploadModal}>
+                        <Button variant="primary" className="btn btn-primary rounded" onClick={toggleUploadModal} disabled={disabled}>
                             Close
                         </Button>
-                        <Button variant="danger" className="btn btn-danger rounded" onClick={() => handleUpload()}>
+                        <Button variant="danger" className="btn btn-danger rounded" onClick={() => handleUpload()} disabled={disabled}>
                             Upload
                         </Button>
                     </Modal.Footer>
