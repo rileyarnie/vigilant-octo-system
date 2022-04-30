@@ -57,12 +57,12 @@ const Login = () => {
             await loginAAD();
             await fetchUserDetails();
         } catch (err: any) {
+            alerts.showError(err.message);
             setLinearDisplay('none');
             setDisabled(false);
             console.log(err);
         }
     };
-
 
     const loginAAD = async () => {
         try {
@@ -77,10 +77,8 @@ const Login = () => {
             sessionStorage.setItem('aadUser', JSON.stringify(aadUser));
             return aadUser;
         } catch (error) {
-            alerts.showError('We received an error from AAD, please ensure pop ups are enabled and try again');
             console.log('error from login AAD function', error);
-            setLinearDisplay('none');
-            setDisabled(false);
+            throw new Error('We received an error from AAD, please ensure pop ups are enabled and try again');
         }
     };
 
@@ -101,9 +99,7 @@ const Login = () => {
                 sessionStorage.setItem('idToken', interactiveResult.idToken);
                 return interactiveResult.accessToken;
             }
-            alerts.showError('AAD failed to provide the token for your session. Please try again');
-            console.log('error fetching access token from AAD', err);
-            setLinearDisplay('none');
+            throw new Error('AAD failed to provide the token for your session. Please try again');
         }
     };
 
@@ -130,10 +126,8 @@ const Login = () => {
                 return res.data;
             })
             .catch((error) => {
-                alerts.showError(error.message);
                 console.log('error from authnz service /users/me', error);
-                setDisabled(false);
-                setLinearDisplay('none');
+                throw error;
             });
     };
     const loadPortal = (userInfo?: userInfoI) => {
