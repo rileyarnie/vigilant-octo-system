@@ -27,6 +27,7 @@ const Login = () => {
     // const ERR_USER_NOT_FOUND = 'Error, User not found';
     // let userInfo = {} as userInfoI
     const [userInfo, setUserInfo] = useState<userInfoI>();
+    const [disabled, setDisabled] = useState(false);
 
     useEffect(() => {
         localStorage.clear();
@@ -56,12 +57,14 @@ const Login = () => {
 
     const login = async () => {
         setLinearDisplay('block');
+        setDisabled(true);
         try {
             await loginAAD();
             await fetchUserDetails();
         } catch (err: any) {
             setLinearDisplay('none');
             logout(err);
+            setDisabled(false);
         }
     };
 
@@ -133,6 +136,7 @@ const Login = () => {
             })
             .catch((error) => {
                 alerts.showError(error.message);
+                setDisabled(false);
             });
     };
     const loadPortal = (userInfo?: userInfoI) => {
@@ -158,7 +162,7 @@ const Login = () => {
                 <LinearProgress style={{ display: linearDisplay }} />
                 <div className="login" style={{ display: 'grid', placeItems: 'center', height: '100vh' }}>
                     <img src={logo} alt="miog" />
-                    <Button variant="danger" onClick={login} size="lg">
+                    <Button disabled={disabled} variant="danger" onClick={login} size="lg">
                         Log In with your KPC E-mail Address
                     </Button>
                 </div>
