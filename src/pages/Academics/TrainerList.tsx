@@ -473,30 +473,17 @@ const TrainerList = (): JSX.Element => {
             </ConfirmationModalWrapper>
             <ConfirmationModalWrapper
                 submitButton
-                submitFunction={(e) => handleSubmit(e)}
+                submitFunction={(e) => selectedTrainer ?  handleEdit(e) : handleSubmit(e)}
                 closeModal={toggleCloseConfirmModal}
                 show={confirmModal}
             >
-                <Modal.Header closeButton>
-                    <Modal.Title>Please confirm</Modal.Title>
-                </Modal.Header>
-                <Modal.Body>
-                    <p>
-                        {
-                            selectedStaffId ? `Are you sure you want to edit trainer ${selectedTrainer.stf_name}?`
-                                :
-                                'Are you sure you want to create a new trainer'
-                        }
-                    </p>
-                </Modal.Body>
-                <Modal.Footer>
-                    <Button variant="btn btn-danger btn-rounded float-left" onClick={() => toggleCloseConfirmModal()}>
-                        Continue editing
-                    </Button>
-                    <button className="btn btn-info float-right" onClick={(e) => handleEdit(e)}>
-                        Confirm
-                    </button>
-                </Modal.Footer>
+                <p>
+                    {
+                        selectedTrainer ? `Are you sure you want to edit trainer ${selectedTrainer.stf_name}?`
+                            :
+                            'Are you sure you want to create a new trainer'
+                    }
+                </p>
             </ConfirmationModalWrapper>
         </>
     );
