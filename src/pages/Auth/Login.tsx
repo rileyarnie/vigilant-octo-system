@@ -162,7 +162,13 @@ const Login = () => {
                 <LinearProgress style={{ display: linearDisplay }} />
                 <div className="login" style={{ display: 'grid', placeItems: 'center', height: '100vh' }}>
                     <img src={logo} alt="miog" />
-                    <Button disabled={disabled} variant="danger" onClick={login} size="lg">
+                    <Button
+                        style={{ backgroundColor: disabled ? 'gray' : '' }}
+                        disabled={disabled}
+                        variant="danger"
+                        onClick={login}
+                        size="lg"
+                    >
                         Log In with your KPC E-mail Address
                     </Button>
                 </div>
