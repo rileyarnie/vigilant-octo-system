@@ -117,6 +117,8 @@ class Timetable extends React.Component {
                                         text: cc.course.name,
                                         id: cc.id,
                                         trainerId: cc.trainerId,
+                                        programCohortId: cc.programCohortId,
+                                        timetablingUnits: cc.timetablingUnit,
                                         trainingHours: cc.course.trainingHours
                                     }
                                 })
@@ -210,13 +212,13 @@ const items = timeTabledUnits?.map(unit=>({
             durationInMinutes: 60,
             colorId: this.state.colorId,
         }
-        console.log(timetableUnit)
         TimetableService.createTimetableUnit(timetableUnit)
             .then(() => {
                 alerts.showSuccess('TimetableUnit added successfully')
             })
             .catch((error) => {
                 console.error(error)
+                alerts.showError(error.message)
             })
         if (index >= 0) {
             this.state.courseCohort.splice(index, 1)
@@ -324,6 +326,7 @@ const items = timeTabledUnits?.map(unit=>({
                     showSpinButtons: true,
                     type: 'number',
                     onChange(args) {
+                        console.log('duration in hours data ', args)
                         this.setState({durationInMinutes: args.value})
                     }
                 }
@@ -342,6 +345,11 @@ const items = timeTabledUnits?.map(unit=>({
             startTime: e.appointmentData.startTime,
             numSessions:e.appointmentData.numSessions,
             trainerId: e.appointmentData.trainerId
+        }
+        const courseCohortId = this.getCourseCohortProgramCohortId(this.state.courseCohort, updatedTimetablingUnit.timetablingUnitId).ccId
+        const programCohortId = this.getCourseCohortProgramCohortId(this.state.courseCohort, updatedTimetablingUnit.timetablingUnitId).pcId
+        if(updatedTimetablingUnit.timetablingUnitId){
+            CourseCohortService.updateCourseCohort(courseCohortId, {trainerId: updatedTimetablingUnit.trainerId,programCohortId: programCohortId})
         }
         TimetableService.updateTimetableUnit(updatedTimetablingUnit)
             .then(() => {
@@ -379,6 +387,13 @@ const items = timeTabledUnits?.map(unit=>({
         const cc = courseCohorts.filter(courseCohort => courseCohort.id === courseCohortId )
 
         return cc.timetablingUnit.id
+    }
+    getCourseCohortProgramCohortId(courseCohorts, timetablingUnitId){
+        const cc = courseCohorts.filter(it => it.timetablingUnits.map(tu => tu.id).includes(timetablingUnitId))[0]
+        return {
+            ccId: cc.id,
+            pcId: cc.programCohortId
+        }
     }
     alertTx(e){
         alert(JSON.stringify(e.appointmentData))
