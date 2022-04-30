@@ -9,15 +9,15 @@ import './assets/scss/style.scss';
 import Login from './pages/Auth/Login';
 import { ProtectedRoutes } from './App/components/ProtectedRoutes';
 import Config from './config';
+import isLoggedIn from './utlis/isLoggedIn';
 const store = createStore(reducer);
 
-const isLoggedIn = JSON.parse(localStorage.getItem('userInfo')) ? true : false;
 
 const Staging = () => {
     return (
         <Switch>
             <Route exact path="/login" component={Login} />
-            <ProtectedRoutes isLoggedIn={isLoggedIn} path="/" component={App} />
+            <ProtectedRoutes isLoggedIn={isLoggedIn()} path="/" component={App} />
         </Switch>
     );
 };
