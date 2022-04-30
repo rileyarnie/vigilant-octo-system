@@ -134,7 +134,7 @@ const ActionApprovals = () => {
                 closeModal={toggleCloseApproveModal}
                 show={approveModal}
             >
-                <h6 className="text-center">A you sure you want to Approve ?</h6>
+                <h6 className="text-center">Are you sure you want to Approve ?</h6>
             </ConfirmationModalWrapper>
 
             <ConfirmationModalWrapper
@@ -144,7 +144,7 @@ const ActionApprovals = () => {
                 closeModal={toggleCloseRejectModal}
                 show={rejectModal}
             >
-                <h6 className="text-center">A you sure you want to Reject ?</h6>
+                <h6 className="text-center">Are you sure you want to Reject ?</h6>
             </ConfirmationModalWrapper>
         </>
     );
