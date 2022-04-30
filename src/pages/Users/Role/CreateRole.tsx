@@ -1,12 +1,13 @@
-import React, {useState} from 'react';
-import {Modal, Button} from 'react-bootstrap';
-import {Row, Col} from 'react-bootstrap';
-import {ValidationForm, TextInput} from 'react-bootstrap4-form-validation';
+import React, { useState } from 'react';
+import { Modal, Button } from 'react-bootstrap';
+import { Row, Col } from 'react-bootstrap';
+import { ValidationForm, TextInput } from 'react-bootstrap4-form-validation';
 import validator from 'validator';
-import {Alerts, ToastifyAlerts} from '../../lib/Alert';
-import {canPerformActions} from '../../../services/ActionChecker';
-import {ACTION_CREATE_ROLE} from '../../../authnz-library/authnz-actions';
-import {authnzAxiosInstance} from '../../../utlis/interceptors/authnz-interceptor';
+import { Alerts, ToastifyAlerts } from '../../lib/Alert';
+import { canPerformActions } from '../../../services/ActionChecker';
+import { ACTION_CREATE_ROLE } from '../../../authnz-library/authnz-actions';
+import { authnzAxiosInstance } from '../../../utlis/interceptors/authnz-interceptor';
+import ConfirmationModalWrapper from '../../../App/components/modal/ConfirmationModalWrapper';
 
 const alerts: Alerts = new ToastifyAlerts();
 
@@ -19,19 +20,25 @@ const CreateRole = (props: IProps): JSX.Element => {
     const [roleName, setRoleName] = useState('');
     const [showCreateModal, setShowCreateModal] = useState(false);
     const [roleDescription, setRoleDescription] = useState('');
+    const [disabled, setDisabled] = useState(false);
+
     const handleRoleChange = (event, field) => {
         field === 'name' ? setRoleName(event.target.value) : setRoleDescription(event.target.value);
     };
     const handleRoleSubmit = () => {
+        setDisabled(true);
         authnzAxiosInstance
-            .put('/roles', {roleName: roleName, description: roleDescription})
+            .put('/roles', { roleName: roleName, description: roleDescription })
             .then(() => {
-                alerts.showSuccess('Success created role');
+                setDisabled(false);
                 props.fetchRoles();
                 setShowCreateModal(false);
                 resetStateCloseModal();
+                alerts.showSuccess('Success created role');
             })
             .catch((error) => {
+                setDisabled(false);
+                resetStateCloseModal();
                 alerts.showError(error.message);
                 console.log(error);
             });
@@ -73,7 +80,7 @@ const CreateRole = (props: IProps): JSX.Element => {
                                             type="text"
                                             placeholder="Role name"
                                             validator={validator.isAlphanumeric}
-                                            errorMessage={{validator: 'Please enter a valid Role name'}}
+                                            errorMessage={{ validator: 'Please enter a valid Role name' }}
                                             value={roleName}
                                             onChange={(e) => handleRoleChange(e, 'name')}
                                         />
@@ -88,7 +95,7 @@ const CreateRole = (props: IProps): JSX.Element => {
                                             type="text"
                                             placeholder="Role description"
                                             validator={!validator.isAlphanumeric}
-                                            errorMessage={{validator: 'Please enter a valid Role description'}}
+                                            errorMessage={{ validator: 'Please enter a valid Role description' }}
                                             value={roleDescription}
                                             onChange={(e) => handleRoleChange(e, 'description')}
                                         />
@@ -100,36 +107,23 @@ const CreateRole = (props: IProps): JSX.Element => {
                 </Modal.Body>
                 <Modal.Footer>
                     <Col>
-                        <Button className="float-right" variant="info" onClick={toggleConfirmModal}>
+                        <Button disabled={disabled} className="float-right" variant="info" onClick={toggleConfirmModal}>
                             Submit
                         </Button>
-                        <Button className="float-left" variant="danger" onClick={() => setShowCreateModal(false)}>
+                        <Button disabled={disabled} className="float-left" variant="danger" onClick={() => setShowCreateModal(false)}>
                             Cancel
                         </Button>
                     </Col>
                 </Modal.Footer>
             </Modal>
-            <Modal
+            <ConfirmationModalWrapper
+                submitButton
+                submitFunction={handleRoleSubmit}
+                closeModal={toggleCloseConfirmModal}
                 show={confirmModal}
-                onHide={toggleConfirmModal}
-                size="sm"
-                backdrop="static"
-                aria-labelledby="contained-modal-title-vcenter"
-                centered>
-                <Modal.Header>{' '}</Modal.Header>
-                <Modal.Body>
-                    <h6 className="text-center">Are you sure you want to create a role : {roleName}?</h6>
-                </Modal.Body>
-                <Modal.Footer style={{display: 'flex', justifyContent: 'space-between'}}>
-                    <Button variant="btn btn-danger btn-rounded" onClick={toggleCloseConfirmModal}>
-                        Continue editing
-                    </Button>
-                    <button className="btn btn-info float-right" onClick={handleRoleSubmit}>
-                        Confirm
-                    </button>
-                </Modal.Footer>
-            </Modal>
-
+            >
+                <h6 className="text-center">Are you sure you want to create a role : {roleName}?</h6>
+            </ConfirmationModalWrapper>
         </>
     );
 };

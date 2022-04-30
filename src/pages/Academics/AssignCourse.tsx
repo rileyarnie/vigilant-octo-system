@@ -1,23 +1,24 @@
 /* eslint-disable react/react-in-jsx-scope */
 /* eslint-disable react/display-name */
-import {useState, useEffect} from 'react';
+import { useState, useEffect } from 'react';
 import Alert from '@material-ui/lab/Alert';
 import Breadcrumb from '../../App/components/Breadcrumb';
-import {Row, Col, Card, Modal} from 'react-bootstrap';
-import {Button, LinearProgress} from '@material-ui/core';
-import {Alerts, ToastifyAlerts} from '../lib/Alert';
-import {timetablingAxiosInstance} from '../../utlis/interceptors/timetabling-interceptor';
+import { Row, Col, Card } from 'react-bootstrap';
+import { Button, LinearProgress } from '@material-ui/core';
+import { Alerts, ToastifyAlerts } from '../lib/Alert';
+import { timetablingAxiosInstance } from '../../utlis/interceptors/timetabling-interceptor';
 import TableWrapper from '../../utlis/TableWrapper';
+import ConfirmationModalWrapper from '../../App/components/modal/ConfirmationModalWrapper';
 
 const alerts: Alerts = new ToastifyAlerts();
 const AssignCourse = (): JSX.Element => {
     const columns = [
-        {title: 'ID', field: 'id', hidden: false},
-        {title: 'Name', field: 'name'},
-        {title: 'Description', field: 'description'},
-        {title: 'Training Hours', field: 'trainingHours'},
-        {title: 'Timetableable', render: (row) => <>{row.isTimetablable === true ? 'Yes' : 'No'}</>},
-        {title: 'Technical Assistant', render: (row) => <>{row.needsTechnicalAssistant === true ? 'Yes' : 'No'}</>}
+        { title: 'ID', field: 'id', hidden: false },
+        { title: 'Name', field: 'name' },
+        { title: 'Description', field: 'description' },
+        { title: 'Training Hours', field: 'trainingHours' },
+        { title: 'Timetableable', render: (row) => <>{row.isTimetablable === true ? 'Yes' : 'No'}</> },
+        { title: 'Technical Assistant', render: (row) => <>{row.needsTechnicalAssistant === true ? 'Yes' : 'No'}</> }
     ];
     const [data, setData] = useState([]);
     const [programId, setProgramId] = useState();
@@ -30,6 +31,8 @@ const AssignCourse = (): JSX.Element => {
     const [errorMessages] = useState([]);
     const progId = JSON.parse(localStorage.getItem('programId'));
     console.log('program id ', progId);
+    const [disabled, setDisabled] = useState(false);
+
     useEffect(() => {
         timetablingAxiosInstance
             .get('/courses')
@@ -68,20 +71,23 @@ const AssignCourse = (): JSX.Element => {
         setCourseId(courseId);
     };
 
-    const assignSelectedCoursesToProgram = (selectedCourses: Array<number>) => {
+    const assignSelectedCoursesToProgram = () => {
         setLinearDisplay('block');
+        setDisabled(true);
         timetablingAxiosInstance
-            .put(`/programs/${programId}/courses`, {courses: selectedCourses})
+            .put(`/programs/${programId}/courses`, { courses: selectedRows })
             .then((res) => {
+                setDisabled(false);
                 setLinearDisplay('block');
                 alerts.showSuccess('Course assignment successful');
                 fetchCourses();
                 toggleCloseConfirmModal();
                 setSelectedRows([]);
-                return res;
                 setLinearDisplay('none');
+                return res;
             })
             .catch((error) => {
+                setDisabled(false);
                 alerts.showError(error.message);
             });
     };
@@ -95,10 +101,10 @@ const AssignCourse = (): JSX.Element => {
         <>
             <Row className="align-items-center page-header">
                 <Col>
-                    <Breadcrumb/>
+                    <Breadcrumb />
                 </Col>
             </Row>
-            <LinearProgress style={{display: linearDisplay}}/>
+            <LinearProgress style={{ display: linearDisplay }} />
             <Row>
                 <Col>
                     <Card>
@@ -128,35 +134,24 @@ const AssignCourse = (): JSX.Element => {
             {selectedRows.length > 0 && (
                 <>
                     <Button
-                        style={{display: !courseId ? 'none' : 'block'}}
+                        style={{ display: !courseId ? 'none' : 'block' }}
                         variant="contained"
                         color="secondary"
                         onClick={toggleConfirmModal}
+                        disabled={disabled}
                     >
                         Assign courses
                     </Button>
-                    <Modal
+                    <ConfirmationModalWrapper
+                        submitButton
+                        submitFunction={assignSelectedCoursesToProgram}
+                        closeModal={toggleCloseConfirmModal}
                         show={confirmModal}
-                        onHide={toggleConfirmModal}
-                        size="sm"
-                        backdrop="static"
-                        aria-labelledby="contained-modal-title-vcenter"
-                        centered>
-                        <Modal.Header>{' '}</Modal.Header>
-                        <Modal.Body>
-                            <h6 className="text-center">A you sure you want assign courses ?</h6>
-                        </Modal.Body>
-                        <Modal.Footer style={{display: 'flex', justifyContent: 'space-between'}}>
-                            <button className="btn btn-danger btn-rounded" onClick={toggleCloseConfirmModal}>
-                                Continue editing
-                            </button>
-                            <button className="btn btn-info float-right" onClick={() => {
-                                assignSelectedCoursesToProgram(selectedRows);
-                            }}>
-                                Confirm
-                            </button>
-                        </Modal.Footer>
-                    </Modal>
+                    >
+                        <>
+                            <h6 className="text-center">Are you sure you want assign these courses ?</h6>
+                        </>
+                    </ConfirmationModalWrapper>
                 </>
             )}
         </>

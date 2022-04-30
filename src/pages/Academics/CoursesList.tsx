@@ -56,6 +56,8 @@ const CoursesList = (): JSX.Element => {
     let activationStatus: boolean;
     let isElective: boolean;
     let msg: string;
+    const [disabled, setDisabled] = useState(false);
+
     const handleActivationStatusToggle = (event, row: Course) => {
         if (row.activation_status) {
             msg = 'Successfully Deactivated Course';
@@ -83,14 +85,17 @@ const CoursesList = (): JSX.Element => {
         };
 
         setLinearDisplay('block');
+        setDisabled(true);
         timetablingAxiosInstance
             .put(`/courses/${row.id}`, course)
             .then(() => {
+                setDisabled(false);
                 alerts.showSuccess(msg);
                 setLinearDisplay('none');
                 fetchCourses();
             })
             .catch((error) => {
+                setDisabled(false);
                 //handle error using logging library
                 console.error(error);
                 alerts.showError(error.message);
@@ -111,7 +116,7 @@ const CoursesList = (): JSX.Element => {
                         defaultChecked={row.activation_status === true}
                     />
                 )
-        },
+        }
     ];
 
     const toggleCreateModal = () => {
@@ -153,12 +158,7 @@ const CoursesList = (): JSX.Element => {
                                         </Alert>
                                     )}
                                 </div>
-                                <TableWrapper
-                                    title="Courses"
-                                    columns={columns}
-                                    data={data}
-                                    options={{ }}
-                                />
+                                <TableWrapper title="Courses" columns={columns} data={data} options={{}} />
                             </Card>
                         </Col>
                     </Row>
@@ -193,12 +193,15 @@ const CoursesList = (): JSX.Element => {
                 <Modal.Body>
                     <ValidationForm>
                         <p className="text-center">A you sure you want to change the status of {rowData?.name} ?</p>
-                        <Button className="btn btn-danger float-left" onClick={handleCloseModal}>
+                        <Button disabled={disabled} className="btn btn-danger float-left" onClick={handleCloseModal}>
                             Cancel
                         </Button>
-                        <Button className="btn btn-primary float-right" onClick={() => {
-                            handleToggleStatusSubmit(rowData);
-                        }}>
+                        <Button disabled={disabled}
+                            className="btn btn-primary float-right"
+                            onClick={() => {
+                                handleToggleStatusSubmit(rowData);
+                            }}
+                        >
                             Confirm
                         </Button>
                     </ValidationForm>

@@ -1,7 +1,7 @@
 import handleLogout from '../Logout';
 
 export function onRequestMade(requestConfig) {
-    requestConfig.headers.authorization = `Bearer ${localStorage.getItem('idToken')}`;
+    requestConfig.headers.authorization = `Bearer ${sessionStorage.getItem('idToken')}`;
     return requestConfig;
 }
 

@@ -10,7 +10,7 @@ export const getAuthenticatedClient = (accessToken: any) => {
     return client;
 };
 
-export const getUserDetails = async (accessToken: any) => {
+export const getAADUserDetails = async (accessToken: any) => {
     const client = getAuthenticatedClient(accessToken);
     const user = await client.api('/me').get();
     return user;
