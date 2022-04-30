@@ -67,9 +67,7 @@ export const AssignRoleModal = (props: IProps): JSX.Element => {
                 toggleCloseConfirmModal();
                 alerts.showError(error.message);
                 props.onHide();
-            }).finally(() => {
-
-        });
+            });
     };
     const toggleConfirmModal = () => {
         setConfirmModal(true);
