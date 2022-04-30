@@ -120,6 +120,13 @@ const Login = () => {
         authnzAxiosInstance
             .get('/users/me')
             .then((res) => {
+                if (!res.data.isStaff) {
+                    alerts.showError('You need to be a member of staff to access this app.');
+                    localStorage.clear();
+                    setLinearDisplay('none');
+                    setDisabled(false);
+                    return;
+                }
                 sessionStorage.setItem('userInfo', JSON.stringify(res.data));
                 setUserInfo(res.data);
                 setLinearDisplay('none');
