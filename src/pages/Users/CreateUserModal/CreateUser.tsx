@@ -12,7 +12,7 @@ const CreateUser = (props: IProps): JSX.Element => {
     return (
         <>
             {canPerformActions(ACTION_CREATE_USERS.name) && (
-                <Button variant="danger" className="float-right" onClick={() => setModalShow(true)}>
+                <Button variant="danger" className="float-right" style={{ marginLeft: '1rem' }} onClick={() => setModalShow(true)}>
                     Create User
                 </Button>
             )}

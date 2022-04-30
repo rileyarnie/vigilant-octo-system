@@ -1,10 +1,11 @@
 /* eslint-disable react/display-name */
 import React, { useEffect, useState } from 'react';
 import { LinearProgress } from '@material-ui/core';
-import {Breadcrumb, Button, Card, Col, Modal, Row} from 'react-bootstrap';
+import {Breadcrumb, Button, Card, Col, Row} from 'react-bootstrap';
 import { Alerts, ToastifyAlerts } from '../lib/Alert';
 import { WorkFlowService } from '../../services/WorkFlowService';
 import TableWrapper from '../../utlis/TableWrapper';
+import ConfirmationModalWrapper from '../../App/components/modal/ConfirmationModalWrapper';
 interface Approval {
     id: number;
     action_name: string;
@@ -31,18 +32,18 @@ const ActionApprovals = () => {
                         className="mr-2 btn-info"
                         variant="sm"
                         onClick={() => {
+                            toggleApproveModal();
                             setActionApprovalId(row.id);
-                            handleApprove(row.id);
                         }}
                     >
                         Approve
-                    </Button>
+                    </Button>{ ' '}
                     <Button
                         className="mr-2 btn-danger"
                         variant="sm"
                         onClick={() => {
+                            toggleRejectModal();
                             setActionApprovalId(row.id);
-                            handleReject(row.id);
                         }}
                     >
                         Reject
@@ -55,10 +56,12 @@ const ActionApprovals = () => {
         fetchApprovals();
     }, []);
     function fetchApprovals() {
+        setLinearDisplay('block');
         WorkFlowService.fetchActionApprovals()
             .then((res) => {
                 const myData = res['data'];
                 setApprovals(myData);
+                setLinearDisplay('none');
             })
             .catch((err) => {
                 console.log('err', err);
@@ -66,7 +69,7 @@ const ActionApprovals = () => {
             });
     }
     const handleApprove = (actionApprovalId:number) => {
-        setLinearDisplay('none');
+        setLinearDisplay('block');
         const approvalStatus = {
             approvalStatus: 'approved'
         };
@@ -74,14 +77,15 @@ const ActionApprovals = () => {
             .then(() => {
                 alerts.showSuccess('Action approved successfully');
                 fetchApprovals();
+                setLinearDisplay('none');
             })
             .catch((err) => {
-                console.log('err', err);
                 alerts.showError(err.message);
+                toggleCloseApproveModal();
             });
     };
     const handleReject = (actionApprovalId:number) => {
-        setLinearDisplay('none');
+        setLinearDisplay('block');
         const approvalStatus = {
             approvalStatus: 'rejected'
         };
@@ -89,17 +93,18 @@ const ActionApprovals = () => {
             .then(() => {
                 alerts.showSuccess('Action rejected Successfully');
                 fetchApprovals();
+                setLinearDisplay('none');
             })
             .catch((err) => {
-                console.log('err', err);
                 alerts.showError(err.message);
+                toggleCloseApproveModal();
             });
     };
     const toggleApproveModal = () => {
         setApproveModal(true);
     };
     const toggleCloseApproveModal = () => {
-        setRejectModal(false);
+        setApproveModal(false);
     };
     const toggleRejectModal = () => {
         setRejectModal(true);
@@ -122,46 +127,25 @@ const ActionApprovals = () => {
                     </Card>
                 </Col>
             </Row>
-            <Modal
+            <ConfirmationModalWrapper
+                submitButton
+                submitFunction={() => {handleApprove(actionApprovalId);
+                }}
+                closeModal={toggleCloseApproveModal}
                 show={approveModal}
-                onHide={toggleApproveModal}
-                size="sm"
-                backdrop="static"
-                aria-labelledby="contained-modal-title-vcenter"
-                centered>
-                <Modal.Header>{' '}</Modal.Header>
-                <Modal.Body>
-                    <h6 className="text-center">A you sure you want to Approve ?</h6>
-                </Modal.Body>
-                <Modal.Footer style={{display: 'flex', justifyContent: 'space-between'}}>
-                    <Button variant="btn btn-danger btn-rounded" onClick={toggleCloseApproveModal}>
-                        Cancel
-                    </Button>
-                    <button className="btn btn-info float-right" onClick={() => handleApprove(actionApprovalId)}>
-                        Confirm
-                    </button>
-                </Modal.Footer>
-            </Modal>
-            <Modal
+            >
+                <h6 className="text-center">A you sure you want to Approve ?</h6>
+            </ConfirmationModalWrapper>
+
+            <ConfirmationModalWrapper
+                submitButton
+                submitFunction={() => {handleReject(actionApprovalId);
+                }}
+                closeModal={toggleCloseRejectModal}
                 show={rejectModal}
-                onHide={toggleRejectModal}
-                size="sm"
-                backdrop="static"
-                aria-labelledby="contained-modal-title-vcenter"
-                centered>
-                <Modal.Header>{' '}</Modal.Header>
-                <Modal.Body>
-                    <h6 className="text-center">A you sure you want to Reject ?</h6>
-                </Modal.Body>
-                <Modal.Footer style={{display: 'flex', justifyContent: 'space-between'}}>
-                    <Button variant="btn btn-danger btn-rounded" onClick={toggleCloseRejectModal}>
-                        Cancel
-                    </Button>
-                    <button className="btn btn-info float-right" onClick={() => handleReject(actionApprovalId)}>
-                        Confirm
-                    </button>
-                </Modal.Footer>
-            </Modal>
+            >
+                <h6 className="text-center">A you sure you want to Reject ?</h6>
+            </ConfirmationModalWrapper>
         </>
     );
 };

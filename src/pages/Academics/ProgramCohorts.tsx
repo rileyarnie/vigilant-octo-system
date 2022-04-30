@@ -307,15 +307,14 @@ const ProgramCohorts = (): JSX.Element => {
         const updates = {
             programId: programId === 0 ? selectedProgramCohort.pg_id : programId,
             campusId:
-                campusId === selectedProgramCohort.program_cohorts_campusId
-                    ? selectedProgramCohort.program_cohorts_campusId
+                campusId === 0 ? selectedProgramCohort.program_cohorts_campusId
                     : campusId,
             startDate:
                 startDate === ''
                     ? selectedProgramCohort.program_cohorts_startDate
                     : startDate,
-            anticipatedGraduationYear: selectedProgramCohort.program_cohorts_anticipatedGraduationYear,
-            anticipatedGraduationMonth: selectedProgramCohort.program_cohorts_anticipatedGraduationMonth,
+            anticipatedGraduationYear:year === '' ? selectedProgramCohort.program_cohorts_anticipatedGraduationYear: year,
+            anticipatedGraduationMonth:month === '' ? selectedProgramCohort.program_cohorts_anticipatedGraduationMonth: month,
             advertDescription:
                 description === ''
                     ? selectedProgramCohort.program_cohorts_advertDescription
