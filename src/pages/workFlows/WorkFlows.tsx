@@ -218,7 +218,7 @@ const WorkFlows = (): JSX.Element => {
                 show={confirmModal}
             >
                 <h6 className="text-center">
-                    A you sure you want to administer workflow for <i style={{fontWeight: 'lighter'}}>{actionName}</i>?
+                    Are you sure you want to administer workflow for <i style={{fontWeight: 'lighter'}}>{actionName}</i>?
                 </h6>
             </ConfirmationModalWrapper>
         </>
