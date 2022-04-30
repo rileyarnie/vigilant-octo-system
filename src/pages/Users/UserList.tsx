@@ -58,7 +58,7 @@ const UserList = (props: IProps): JSX.Element => {
                 <Col>
                     <CreateUser fetchUsers={fetchUsers}></CreateUser>
                     {canPerformActions(ACTION_ASSIGN_ROLES.name) && (
-                        <button className="btn btn-danger float-right" onClick={() => handleRouteChange()} style={{ marginLeft: '1rem' }}>
+                        <button className="btn btn-danger float-right" onClick={() => handleRouteChange()} style={{ marginLeft: '1.5rem' }}>
                             Assign Role
                         </button>
                     )}

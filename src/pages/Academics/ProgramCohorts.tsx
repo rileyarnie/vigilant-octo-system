@@ -313,8 +313,8 @@ const ProgramCohorts = (): JSX.Element => {
                 startDate === ''
                     ? selectedProgramCohort.program_cohorts_startDate
                     : startDate,
-            anticipatedGraduationYear: selectedProgramCohort.program_cohorts_anticipatedGraduationYear,
-            anticipatedGraduationMonth: selectedProgramCohort.program_cohorts_anticipatedGraduationMonth,
+            anticipatedGraduationYear:year === '' ? selectedProgramCohort.program_cohorts_anticipatedGraduationYear: year,
+            anticipatedGraduationMonth:month === '' ? selectedProgramCohort.program_cohorts_anticipatedGraduationMonth: month,
             advertDescription:
                 description === ''
                     ? selectedProgramCohort.program_cohorts_advertDescription
