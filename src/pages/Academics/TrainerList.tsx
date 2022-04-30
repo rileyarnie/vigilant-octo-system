@@ -10,7 +10,6 @@ import LinearProgress from '@mui/material/LinearProgress';
 import {canPerformActions} from '../../services/ActionChecker';
 import {ACTION_CREATE_TRAINER, ACTION_UPDATE_TRAINER} from '../../authnz-library/timetabling-actions';
 import {timetablingAxiosInstance} from '../../utlis/interceptors/timetabling-interceptor';
-import {DepartmentService} from '../services/DepartmentService';
 import TableWrapper from '../../utlis/TableWrapper';
 import {customSelectTheme, trainerTypes} from '../lib/SelectThemes';
 import Select from 'react-select';
@@ -31,15 +30,18 @@ const TrainerList = (): JSX.Element => {
         { title: 'Department ID', field: 'tr_departmentId' },
         {
             title: ' Actions',
-            render: (row: { tr_departmentId: number, tr_trainerType: string, tr_id: number }) => (
+            render: (row: { tr_departmentId: number, tr_trainerType: string, tr_id: number, tr_staffId:number, stf_name:string }) => (
                 <DropdownButton id="dropdown-basic-button" variant="Secondary" title="Actions">
                     {canPerformActions(ACTION_UPDATE_TRAINER.name) && (
                         <div
                             className=""
                             onClick={() => {
-                                console.log('trainer row', row);
+                                setSelectedTrainer(row);
+                                setSelectedTrainerId(row.tr_id);
                                 setDept(row.tr_departmentId);
                                 setTrainerType(row.tr_trainerType);
+                                setSelectedStaffId(row.tr_staffId);
+
                                 toggleEditModal();
                             }}
                         >
@@ -50,8 +52,8 @@ const TrainerList = (): JSX.Element => {
                         <div
                             className=""
                             onClick={() => {
+                                toggleDeleteModal();
                                 setTrainerId(row.tr_id);
-                                handleDelete(row.tr_id);
                             }}
                         >
                             <Dropdown.Item>Remove trainer</Dropdown.Item>
@@ -76,6 +78,9 @@ const TrainerList = (): JSX.Element => {
     const [showEditModal, setEditModal] = useState(false);
     const [errorMessages] = useState([]);
     const [trainerId, setTrainerId] = useState(0);
+    const [selectedTrainerId, setSelectedTrainerId] = useState(0);
+    const [selectedTrainer, setSelectedTrainer] = useState<{ tr_departmentId: number, tr_trainerType: string, tr_id: number, tr_staffId:number, stf_name:string }>();
+    const [selectedStaffId, setSelectedStaffId] = useState(0);
     const [linearDisplay, setLinearDisplay] = useState('none');
     const [showDeleteModal, setDeleteModal] = useState(false);
     const [showCantDeleteModal, setCantDeleteModal] = useState(false);
@@ -151,6 +156,17 @@ const TrainerList = (): JSX.Element => {
         createTrainer(trainer);
     };
 
+    const handleEdit = (e) => {
+        e.preventDefault();
+        const updates = {
+            staffId: selectedStaffId,
+            departmentID: selectedDept,
+            trainerType: trainerType
+        };
+
+        editTrainer(updates, selectedTrainerId);
+    };
+
     const createTrainer = (trainerData) => {
         setLinearDisplay('block');
         timetablingAxiosInstance
@@ -169,15 +185,17 @@ const TrainerList = (): JSX.Element => {
             });
     };
 
-    const handleDelete = async (trainerId: number) => {
-        const departmentsWithHoDTrainer = await DepartmentService.getDepartmentByHODTrainerId(trainerId);
-        console.log(departmentsWithHoDTrainer);
-        setDepartmentsWithHoDTrainer(departmentsWithHoDTrainer);
-        if (departmentsWithHoDTrainer) {
-            toggleCantDeleteModal();
-            return;
-        }
-        toggleDeleteModal();
+    const editTrainer = (updates, trainerId) => {
+        setLinearDisplay('block');
+        timetablingAxiosInstance
+            .patch(`/trainers/${trainerId}`, updates)
+            .then(() => {
+                alerts.showSuccess('Succesfully edited trainer');
+                toggleEditModal();
+                toggleConfirmModal();
+                fetchTrainers();
+                setLinearDisplay('none');
+            });
     };
 
     const deleteTrainer = (trainerId: number) => {
@@ -196,6 +214,12 @@ const TrainerList = (): JSX.Element => {
     const handleCloseModal = () => {
         setModal(false);
     };
+
+    const handleEditStaff = (selectedStaff) => {
+        console.log('selected staff id', selectedStaff);
+        setSelectedStaffId(parseInt(selectedStaff.value));
+    };
+
     const handleChange = (selectedDept) => {
         console.log('selected department val ', selectedDept);
         setDept(parseInt(selectedDept.value));
@@ -335,32 +359,49 @@ const TrainerList = (): JSX.Element => {
                 <Modal.Body>
                     <ValidationForm>
                         <div className="form-group">
+                            <label htmlFor="staff">Select a staff</label>
+                            <Select
+                                theme={customSelectTheme}
+                                defaultValue={!selectedTrainer ? '' : selectedTrainer.stf_name}
+                                options={staffOptions}
+                                isMulti={false}
+                                placeholder={!selectedTrainer ? 'Select a staff.' : selectedTrainer.stf_name}
+                                noOptionsMessage={() => 'No staff available'}
+                                onChange={handleEditStaff}
+                            /><br/>
+                        </div>
+
+                        <div className="form-group">
                             <label htmlFor="department">Select a department</label>
                             <Select
                                 theme={customSelectTheme}
                                 defaultValue=""
                                 options={departmentOptions}
                                 isMulti={false}
-                                placeholder="Select a Program."
-                                noOptionsMessage={() => 'No Programs available'}
+                                placeholder='Select a department.'
+                                noOptionsMessage={() => 'No Departments available'}
                                 onChange={handleChange}
-                            /><br/>
+                            />
+                            <br />
                         </div>
 
                         <div className="form-group">
                             <label htmlFor="trainerType">Select Trainer type</label>
                             <Select
                                 theme={customSelectTheme}
-                                defaultValue=""
+                                defaultValue={!selectedTrainer ? '' : trainerType}
                                 options={trainerTypeOptions}
                                 isMulti={false}
-                                placeholder="Select trainer type."
+                                placeholder={!selectedTrainer ? 'Select trainer type.' : trainerType}
                                 noOptionsMessage={() => 'No types available'}
                                 onChange={handleTrainerType}
                             /><br/>
                         </div>
                     </ValidationForm>
-                    <button className="btn btn-danger float-left">Close</button>
+                    <button className="btn btn-danger float-left" onClick={toggleEditModal}>Close</button>
+                    <button className="btn btn-info float-right" onClick={toggleConfirmModal}>
+                            Submit
+                    </button>
                 </Modal.Body>
             </Modal>
             <Modal
@@ -427,14 +468,18 @@ const TrainerList = (): JSX.Element => {
                 </Modal.Header>
                 <Modal.Body>
                     <p>
-                        Are you sure you want to create a new trainer
+                        {
+                            selectedStaffId ? `Are you sure you want to edit trainer ${selectedTrainer.stf_name}?`
+                                :
+                                'Are you sure you want to create a new trainer'
+                        }
                     </p>
                 </Modal.Body>
                 <Modal.Footer>
                     <Button variant="btn btn-danger btn-rounded float-left" onClick={() => toggleCloseConfirmModal()}>
                         Continue editing
                     </Button>
-                    <button className="btn btn-info float-right" onClick={(e) => handleSubmit(e)}>
+                    <button className="btn btn-info float-right" onClick={(e) => handleEdit(e)}>
                         Confirm
                     </button>
                 </Modal.Footer>
