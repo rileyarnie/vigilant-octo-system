@@ -14,6 +14,7 @@ import TableWrapper from '../../utlis/TableWrapper';
 import { customSelectTheme, trainerTypes } from '../lib/SelectThemes';
 import Select from 'react-select';
 import ConfirmationModalWrapper from '../../App/components/modal/ConfirmationModalWrapper';
+import { DepartmentService } from '../services/DepartmentService';
 
 const alerts: Alerts = new ToastifyAlerts();
 
@@ -55,6 +56,7 @@ const TrainerList = (): JSX.Element => {
                             onClick={() => {
                                 toggleDeleteModal();
                                 setTrainerId(row.tr_id);
+                                handleDelete(row.tr_id);
                             }}
                         >
                             <Dropdown.Item>Remove trainer</Dropdown.Item>
@@ -85,7 +87,7 @@ const TrainerList = (): JSX.Element => {
     const [linearDisplay, setLinearDisplay] = useState('none');
     const [showDeleteModal, setDeleteModal] = useState(false);
     const [showCantDeleteModal, setCantDeleteModal] = useState(false);
-    const [departmentsWithHoDTrainer, setDepartmentsWithHoDTrainer] = useState<Department>();
+    const [departmentsWithHoDTrainer,setDepartmentsWithHoDTrainer] = useState<Department>();
     const [disabled, setDisabled] = useState(false);
 
     useEffect(() => {
@@ -169,6 +171,18 @@ const TrainerList = (): JSX.Element => {
         };
 
         editTrainer(updates, selectedTrainerId);
+    };
+
+
+    const handleDelete = async (trainerId: number) => {
+        const departmentsWithHoDTrainer = await DepartmentService.getDepartmentByHODTrainerId(trainerId);
+        console.log(departmentsWithHoDTrainer);
+        setDepartmentsWithHoDTrainer(departmentsWithHoDTrainer);
+        if (departmentsWithHoDTrainer) {
+            toggleCantDeleteModal();
+            return;
+        }
+        toggleDeleteModal();
     };
 
     const createTrainer = (trainerData) => {
