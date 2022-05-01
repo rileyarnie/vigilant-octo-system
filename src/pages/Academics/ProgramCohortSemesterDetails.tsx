@@ -96,11 +96,12 @@ function ProgramCohortSemesterDetails(props) {
     const [showCancelModal, setShowCancelModal] = useState(false);
     const [showPublishDialog, setShowPublishDialog] = useState(false);
     const [anticipatedStartDate, setAnticipatedStartDate] = useState('');
-    const [numOfSlots, setNumOfSlots] = useState('');
+    const [numOfSlots] = useState('');
     const [examCutOffDate, setExamCutOffDate] = useState('');
     const [selectedNarrative, setSelectedNarrative] = useState('');
     const [selectedAmount, setSelectedAmount] = useState(0);
     const [selectedCurrency, setSelectedCurrency] = useState('');
+    const [programCohortSemesterStatus, setProgramCohortSemesterStatus] = useState('pending');
     const programName = localStorage.getItem('programName');
     const semStartDate = localStorage.getItem('semStartDate');
     const semEndDate = localStorage.getItem('semEndDate');
@@ -115,6 +116,7 @@ function ProgramCohortSemesterDetails(props) {
     const [isError] = useState(false);
     useEffect(() => {
         fetchCourseCohortBySemesterId('course', semesterId, programCohortId);
+        getProgramCohortSemesterById(JSON.parse(programCohortSemesterId));
         getFeesItems(programCohortSemesterId);
     }, []);
     function fetchCourseCohortBySemesterId(loadExtras: string, semesterId: string, programCohortId: string) {
@@ -147,6 +149,11 @@ function ProgramCohortSemesterDetails(props) {
                 alerts.showError(error.message);
                 console.log(error);
             });
+    }
+    async function getProgramCohortSemesterById(programCohortSemesterId:number): Promise<void> {
+        const status = await (await ProgramCohortService.getProgramCohortSemesterById(programCohortSemesterId)).status;
+        setProgramCohortSemesterStatus(status);
+        return;
     }
     function handleFeeItemsCreation() {
         const createFeeItemRequest = {
@@ -191,7 +198,10 @@ function ProgramCohortSemesterDetails(props) {
     };
     function publishProgramCohort() {
         const programCohortSemester = {
-            status: 'PUBLISHED'
+            status: 'PUBLISHED',
+            examCutOffDate: examCutOffDate,
+            anticipatedStartDate: anticipatedStartDate,
+            numberOfSlots: numOfSlots
         };
         ProgramCohortService.publishProgramCohortSemester(programCohortSemesterId, programCohortSemester)
             .then((res) => {
@@ -246,6 +256,27 @@ function ProgramCohortSemesterDetails(props) {
                         <ArrowBackIcon fontSize="inherit" /> Back
                     </IconButton>
                 </div>
+                <div>
+                    <Button
+                        className="float-center"
+                        variant="danger"
+                        onClick={() => {
+                            showPublishSemesterModal();
+                        }}
+                    >
+                        {programCohortSemesterStatus === 'pending' ? 'Publish' : 'Unpublish'}
+                    </Button>
+                    <Button
+                        className="float-center"
+                        style={{ marginLeft: '48px' }}
+                        variant="danger"
+                        onClick={() => {
+                            showCancelSemesterModal();
+                        }}
+                    >
+                                        Cancel{' '}
+                    </Button>
+                </div>
             </Row>
             <LinearProgress style={{ display: linearDisplay }} />
             <Row>
@@ -267,27 +298,6 @@ function ProgramCohortSemesterDetails(props) {
                     <TabPanel value={value} index={0}>
                         <Col>
                             <Card>
-                                <Col>
-                                    <Button
-                                        className="float-center"
-                                        variant="danger"
-                                        onClick={() => {
-                                            showPublishSemesterModal();
-                                        }}
-                                    >
-                                        Publish{' '}
-                                    </Button>
-                                    <Button
-                                        className="float-center"
-                                        style={{ marginLeft: '48px' }}
-                                        variant="danger"
-                                        onClick={() => {
-                                            showCancelSemesterModal();
-                                        }}
-                                    >
-                                        Cancel{' '}
-                                    </Button>
-                                </Col>
                                 <div>
                                     {isError && (
                                         <Alert severity="error">
@@ -525,22 +535,6 @@ function ProgramCohortSemesterDetails(props) {
                                 }}
                                 required
                             />
-                            <br />
-                            <label htmlFor="amount">
-                                <b>Number of Slots</b>
-                            </label>
-                            <br />
-                            <TextInput
-                                name="number of Slots"
-                                id="number of Slots"
-                                type="number"
-                                value={numOfSlots}
-                                onChange={(e) => {
-                                    setNumOfSlots(e.target.value);
-                                }}
-                                required
-                            />
-                            <br />
                         </div>
                         <div className="form-group">
                             <button
