@@ -1,13 +1,13 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import React, { useEffect, useState } from 'react';
-import { Row, Col, Card, Modal, Button } from 'react-bootstrap';
-import { ValidationForm, TextInput } from 'react-bootstrap4-form-validation';
-import { Alerts, ToastifyAlerts } from '../lib/Alert';
+import React, {useEffect, useState} from 'react';
+import {Button, Card, Col, Modal, Row} from 'react-bootstrap';
+import {FileInput, TextInput, ValidationForm} from 'react-bootstrap4-form-validation';
+import {Alerts, ToastifyAlerts} from '../lib/Alert';
 import Select from 'react-select';
-import {  FileInput } from 'react-bootstrap4-form-validation';
 import CertificationType from './enums/CertificationType';
-import { simsAxiosInstance } from '../../utlis/interceptors/sims-interceptor';
-import { timetablingAxiosInstance } from '../../utlis/interceptors/timetabling-interceptor';
+import {simsAxiosInstance} from '../../utlis/interceptors/sims-interceptor';
+import {timetablingAxiosInstance} from '../../utlis/interceptors/timetabling-interceptor';
+
 const alerts: Alerts = new ToastifyAlerts();
 interface Props extends React.HTMLAttributes<Element> {
     setLinearDisplay: (string) => void;
@@ -33,7 +33,6 @@ const CreateMarksModal = (props:Props) => {
         {label: 'Supplementary', value:'supplementary'},
         {label:'Credit Transfer', value:'creditTransfer'},
     ];
-
     const shortTermMarks = [
         {value:'complete', label:'complete'},
         {value:'incomplete', label:'incomplete'}
@@ -83,9 +82,7 @@ const CreateMarksModal = (props:Props) => {
                         }}
                     >
                                         Upload transcript
-                    </button> 
-                    <br></br>     
-                    <br></br>  
+                    </button><br/><br/>
                 </>
             );
 
@@ -114,9 +111,7 @@ const CreateMarksModal = (props:Props) => {
                         }}
                     >
                                         Upload transcript
-                    </button> 
-                    <br></br>     
-                    <br></br>  
+                    </button><br/><br/>
                 </>                    
             );  
         default:
@@ -150,8 +145,6 @@ const CreateMarksModal = (props:Props) => {
                 setCCRegistrations(ccRegs);
             })
             .catch((error) => {
-                //handle error using logging library
-                console.error(error);
                 alerts.showError(error.message);
             });
     }

@@ -1,19 +1,20 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 /* eslint-disable react/display-name */
-import React, { useState, useEffect } from 'react';
+import React, {useEffect, useState} from 'react';
 import Card from '@material-ui/core/Card';
 import Alert from '@material-ui/lab/Alert';
 import Breadcrumb from '../../App/components/Breadcrumb';
-import { Row, Col, Button } from 'react-bootstrap';
-import { Alerts, ToastifyAlerts } from '../lib/Alert';
-import { LinearProgress } from '@mui/material';
+import {Button, Col, Row} from 'react-bootstrap';
+import {Alerts, ToastifyAlerts} from '../lib/Alert';
+import {LinearProgress} from '@mui/material';
 import CreateMarksModal from './CreateMarksModal';
 import Select from 'react-select';
 import CertificationType from './enums/CertificationType';
 import ProgramCohortGraduationList from './ProgramCohortGraduationList';
-import { simsAxiosInstance } from '../../utlis/interceptors/sims-interceptor';
-import { timetablingAxiosInstance } from '../../utlis/interceptors/timetabling-interceptor';
+import {simsAxiosInstance} from '../../utlis/interceptors/sims-interceptor';
+import {timetablingAxiosInstance} from '../../utlis/interceptors/timetabling-interceptor';
 import TableWrapper from '../../utlis/TableWrapper';
+
 const alerts: Alerts = new ToastifyAlerts();
 
 const CourseCohortsDetails = (props: any): JSX.Element => {
@@ -76,6 +77,7 @@ const CourseCohortsDetails = (props: any): JSX.Element => {
     ];
 
     useEffect(() => {
+        setLinearDisplay('block');
         fetchcourseCohortsRegistrations();
         fetchProgramByCourseCohortId();
     }, []);
@@ -83,6 +85,7 @@ const CourseCohortsDetails = (props: any): JSX.Element => {
     const courseCohortId = props.match.params.id;
 
     const fetchProgramByCourseCohortId = () => {
+        setLinearDisplay('block');
         timetablingAxiosInstance
             .get('/programs', {
                 params: {
@@ -93,13 +96,16 @@ const CourseCohortsDetails = (props: any): JSX.Element => {
             .then((res: any) => {
                 const program = res.data[0];
                 setCertificationType(program.certificationType);
+                setLinearDisplay('none');
             })
             .catch((error) => {
                 alerts.showError(error.response.data);
+                setLinearDisplay('none');
             });
     };
 
     const fetchcourseCohortsRegistrations = (): void => {
+        setLinearDisplay('block');
         simsAxiosInstance
             .get('/course-cohort-registrations', { params: { loadExtras: 'marks', courseCohortIds: courseCohortId } })
             .then((res) => {
@@ -114,27 +120,26 @@ const CourseCohortsDetails = (props: any): JSX.Element => {
     };
 
     const updateMarks = async (id: number, marks: string) => {
+        setLinearDisplay('block');
         simsAxiosInstance
             .put(`/course-cohort-registration-marks/${id}`, { marks: marks })
             .then(() => {
-                setLinearDisplay('none');
                 fetchcourseCohortsRegistrations();
                 alerts.showSuccess('Successfuly updated marks');
+                setLinearDisplay('none');
             })
             .catch((error) => {
                 alerts.showError(error.response.data);
+                setLinearDisplay('none');
             });
     };
 
     const handleMarksChange = (e) => {
         enterredMarks = parseInt(e.target.value);
     };
-
     const handleSelect = (e) => {
         selectedMarks = e.target.value;
     };
-    console.log('Non hooks', programs);
-
     return (
         <>
             {!showGraduating ? (

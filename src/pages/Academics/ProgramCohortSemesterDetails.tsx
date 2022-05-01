@@ -1,27 +1,28 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 /* eslint-disable react/prop-types */
 /* eslint-disable react/display-name */
-import React, { useState, useEffect } from 'react';
-import { Alerts, ToastifyAlerts } from '../lib/Alert';
+import React, {useEffect, useState} from 'react';
+import {Alerts, ToastifyAlerts} from '../lib/Alert';
 import Edit from '@material-ui/icons/Edit';
 import SelectCurrency from 'react-select-currency';
 import Alert from '@material-ui/lab/Alert';
 import Breadcrumb from '../../App/components/Breadcrumb';
-import { Row, Col, Card, Button, Modal } from 'react-bootstrap';
-import { ValidationForm, TextInput } from 'react-bootstrap4-form-validation';
-import { LinearProgress } from '@mui/material';
-import { CourseCohortService } from '../services/CourseCohortsService';
+import {Button, Card, Col, Modal, Row} from 'react-bootstrap';
+import {TextInput, ValidationForm} from 'react-bootstrap4-form-validation';
+import {LinearProgress} from '@mui/material';
+import {CourseCohortService} from '../services/CourseCohortsService';
 import AppBar from '@material-ui/core/AppBar';
 import Tabs from '@material-ui/core/Tabs';
 import Tab from '@material-ui/core/Tab';
 import Typography from '@material-ui/core/Typography';
 import Box from '@material-ui/core/Box';
-import { FeesManagementService } from '../services/FeesManagementService';
-import { ProgramCohortService } from '../services/ProgramCohortService';
-import { createStyles, Theme, makeStyles } from '@material-ui/core/styles';
+import {FeesManagementService} from '../services/FeesManagementService';
+import {ProgramCohortService} from '../services/ProgramCohortService';
+import {createStyles, makeStyles, Theme} from '@material-ui/core/styles';
 import IconButton from '@material-ui/core/IconButton';
 import ArrowBackIcon from '@material-ui/icons/ArrowBack';
 import TableWrapper from '../../utlis/TableWrapper';
+
 const alerts: Alerts = new ToastifyAlerts();
 
 function ProgramCohortSemesterDetails(props) {
@@ -114,10 +115,12 @@ function ProgramCohortSemesterDetails(props) {
     const [linearDisplay, setLinearDisplay] = useState('none');
     const [isError] = useState(false);
     useEffect(() => {
+        setLinearDisplay('block');
         fetchCourseCohortBySemesterId('course', semesterId, programCohortId);
         getFeesItems(programCohortSemesterId);
     }, []);
     function fetchCourseCohortBySemesterId(loadExtras: string, semesterId: string, programCohortId: string) {
+        setLinearDisplay('block');
         CourseCohortService.fetchCourseCohortBySemesterId(loadExtras, semesterId, programCohortId)
             .then((res) => {
                 const ccData = res['data'];
@@ -127,6 +130,7 @@ function ProgramCohortSemesterDetails(props) {
             .catch((error) => {
                 console.error(error);
                 alerts.showError(error.message);
+                setLinearDisplay('none');
             });
     }
     const [value, setValue] = React.useState(0);
@@ -134,21 +138,22 @@ function ProgramCohortSemesterDetails(props) {
         setValue(newValue);
     };
     function getFeesItems(programCohortSemesterId: string) {
+        setLinearDisplay('block');
         FeesManagementService.getFeesItems(programCohortSemesterId)
             .then((res) => {
                 const feeData = res['data'];
                 setFeeItemData(feeData);
+
             })
             .catch((error) => {
                 if (error.message.includes('not found')) {
-                    console.log(error);
                     return error;
                 }
                 alerts.showError(error.message);
-                console.log(error);
             });
     }
     function handleFeeItemsCreation() {
+        setLinearDisplay('block');
         const createFeeItemRequest = {
             narrative: narrative,
             amount: amount,
@@ -159,19 +164,20 @@ function ProgramCohortSemesterDetails(props) {
             .then((res) => {
                 console.log(res);
                 alerts.showSuccess('Successfully created a fee item');
+                setLinearDisplay('none');
             })
             .catch((error) => {
                 alerts.showError(error.message);
-                console.log(error);
+                setLinearDisplay('none');
             });
     }
     function updateFeeItem(feeItemId, updates) {
         setLinearDisplay('block');
         FeesManagementService.updateFeesItems(updates)
             .then(() => {
-                setLinearDisplay('none');
                 alerts.showSuccess('Successfully updated a fee item');
                 resetStateCloseModal();
+                setLinearDisplay('none');
             })
             .catch((error) => {
                 setLinearDisplay('block');
@@ -180,6 +186,7 @@ function ProgramCohortSemesterDetails(props) {
             });
     }
     const handleEdit = (e) => {
+        setLinearDisplay('block');
         e.preventDefault();
         const updates = {
             narrative: narrative === '' ? selectedNarrative : narrative,
@@ -190,6 +197,7 @@ function ProgramCohortSemesterDetails(props) {
         updateFeeItem(feeItemId, updates);
     };
     function publishProgramCohort() {
+        setLinearDisplay('block');
         const programCohortSemester = {
             status: 'PUBLISHED'
         };
@@ -199,10 +207,11 @@ function ProgramCohortSemesterDetails(props) {
                 alerts.showSuccess('Successfully published program cohort semester');
                 togglePublishModalDialog();
                 showPublishSemesterModal();
+                setLinearDisplay('none');
             })
             .catch((error) => {
                 alerts.showError(error.message);
-                console.log(error);
+                setLinearDisplay('none');
             });
     }
     const resetStateCloseModal = (): void => {

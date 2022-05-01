@@ -1,15 +1,16 @@
 /* eslint-disable linebreak-style */
 /* eslint-disable react/display-name */
-import React, { useState, useEffect } from 'react';
+import React, {useEffect, useState} from 'react';
 import Breadcrumb from '../../App/components/Breadcrumb';
-import { Row, Col, Card} from 'react-bootstrap';
+import {Card, Col, Row} from 'react-bootstrap';
 import CreateUser from './CreateUserModal/CreateUser';
-import { Alerts, ToastifyAlerts } from '../lib/Alert';
-import { LinearProgress } from '@mui/material';
-import { canPerformActions } from '../../services/ActionChecker';
-import { ACTION_ASSIGN_ROLES, ACTION_GET_USERS } from '../../authnz-library/authnz-actions';
-import { authnzAxiosInstance } from '../../utlis/interceptors/authnz-interceptor';
+import {Alerts, ToastifyAlerts} from '../lib/Alert';
+import {LinearProgress} from '@mui/material';
+import {canPerformActions} from '../../services/ActionChecker';
+import {ACTION_ASSIGN_ROLES, ACTION_GET_USERS} from '../../authnz-library/authnz-actions';
+import {authnzAxiosInstance} from '../../utlis/interceptors/authnz-interceptor';
 import TableWrapper from '../../utlis/TableWrapper';
+
 const alerts: Alerts = new ToastifyAlerts();
 
 interface History {
@@ -40,8 +41,6 @@ const UserList = (props: IProps): JSX.Element => {
                 setLinearDisplay('none');
             })
             .catch((error) => {
-                //handle error using logging library
-                console.log('Error', error.message);
                 alerts.showError(error.message);
             });
     };

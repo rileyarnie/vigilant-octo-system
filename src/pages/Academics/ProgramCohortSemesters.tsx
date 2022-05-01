@@ -1,19 +1,20 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 /* eslint-disable react/prop-types */
 /* eslint-disable react/display-name */
-import React, { useState, useEffect } from 'react';
-import { Alerts, ToastifyAlerts } from '../lib/Alert';
+import React, {useEffect, useState} from 'react';
+import {Alerts, ToastifyAlerts} from '../lib/Alert';
 import Alert from '@material-ui/lab/Alert';
 import Breadcrumb from '../../App/components/Breadcrumb';
-import { Row, Col, Card } from 'react-bootstrap';
-import { LinearProgress } from '@mui/material';
+import {Card, Col, Row} from 'react-bootstrap';
+import {LinearProgress} from '@mui/material';
 import CourseCohort from '../services/CourseCohort';
-import { CourseCohortService } from '../services/CourseCohortsService';
-import { createStyles, Theme, makeStyles } from '@material-ui/core/styles';
+import {CourseCohortService} from '../services/CourseCohortsService';
+import {createStyles, makeStyles, Theme} from '@material-ui/core/styles';
 import IconButton from '@material-ui/core/IconButton';
 import ArrowBackIcon from '@material-ui/icons/ArrowBack';
-import { simsAxiosInstance } from '../../utlis/interceptors/sims-interceptor';
+import {simsAxiosInstance} from '../../utlis/interceptors/sims-interceptor';
 import TableWrapper from '../../utlis/TableWrapper';
+
 const alerts: Alerts = new ToastifyAlerts();
 
 const useStyles = makeStyles((theme: Theme) =>
@@ -58,13 +59,13 @@ function ProgramCohortSemesters(props: { history: { goBack: () => void } }) {
     const [linearDisplay, setLinearDisplay] = useState('none');
     const [isError] = useState(false);
     useEffect(() => {
+        setLinearDisplay('block');
         fetchProgramCohortSemester('semester', programCohortId);
     }, []);
     function fetchProgramCohortSemester(loadExtras: string, programCohortId: string) {
         CourseCohortService.fetchSemestersByProgramCohortId(loadExtras, programCohortId)
             .then((res) => {
                 const ccData = res['data'];
-                //setData(ccData)
                 setLinearDisplay('none');
                 const uniqueSemIds = ccData
                     .map((v: CourseCohort) => v.programCohortSemester?.semesterId)
@@ -81,14 +82,16 @@ function ProgramCohortSemesters(props: { history: { goBack: () => void } }) {
                     };
                 });
                 setData(semesterData);
+                setLinearDisplay('none');
             })
             .catch((error) => {
-                console.error(error);
                 alerts.showError(error.message);
+                setLinearDisplay('none');
             });
     }
 
     function fetchTranscript(programCohortId: number, semesterId: number) {
+        setLinearDisplay('block');
         simsAxiosInstance
             .get('/transcripts', {
                 params: {
@@ -98,9 +101,11 @@ function ProgramCohortSemesters(props: { history: { goBack: () => void } }) {
             })
             .then(() => {
                 alerts.showSuccess('Downloading transcript');
+                setLinearDisplay('none');
             })
             .catch((error) => {
                 alerts.showError(error.message);
+                setLinearDisplay('none');
             });
     }
     const handleBack = () => {

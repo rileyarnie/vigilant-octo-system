@@ -1,17 +1,18 @@
 /* eslint-disable linebreak-style */
 /* eslint-disable react/display-name */
-import React, { useState, useEffect } from 'react';
+import React, {useEffect, useState} from 'react';
 import Breadcrumb from '../../App/components/Breadcrumb';
-import { Row, Col, Card } from 'react-bootstrap';
-import { Alerts, ToastifyAlerts } from '../lib/Alert';
-import { LinearProgress } from '@mui/material';
-import { canPerformActions } from '../../services/ActionChecker';
-import { ACTION_GET_USERS } from '../../authnz-library/authnz-actions';
+import {Card, Col, Row} from 'react-bootstrap';
+import {Alerts, ToastifyAlerts} from '../lib/Alert';
+import {LinearProgress} from '@mui/material';
+import {canPerformActions} from '../../services/ActionChecker';
+import {ACTION_GET_USERS} from '../../authnz-library/authnz-actions';
 import TableWrapper from '../../utlis/TableWrapper';
-const alerts: Alerts = new ToastifyAlerts();
 import CreateStaff from './CreateStaff/CreateStaff';
-import { timetablingAxiosInstance } from '../../utlis/interceptors/timetabling-interceptor';
+import {timetablingAxiosInstance} from '../../utlis/interceptors/timetabling-interceptor';
 import UpdateStaff from './UpdateStaff/UpdateStaff';
+
+const alerts: Alerts = new ToastifyAlerts();
 
 const StaffList = (): JSX.Element => {
     const columns = [
@@ -39,8 +40,6 @@ const StaffList = (): JSX.Element => {
                 setLinearDisplay('none');
             })
             .catch((error) => {
-                //handle error using logging library
-                console.log('Error', error.message);
                 alerts.showError(error.message);
             });
     };

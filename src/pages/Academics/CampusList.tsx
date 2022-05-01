@@ -1,15 +1,19 @@
 /* eslint-disable react/display-name */
-import React, { useState, useEffect } from 'react';
+import React, {useEffect, useState} from 'react';
 import Edit from '@material-ui/icons/Edit';
-import { LinearProgress, Switch } from '@material-ui/core';
+import {LinearProgress, Switch} from '@material-ui/core';
 import Alert from '@material-ui/lab/Alert';
 import Breadcrumb from '../../App/components/Breadcrumb';
-import { Row, Col, Card, Button, Modal } from 'react-bootstrap';
-import { ValidationForm, TextInput } from 'react-bootstrap4-form-validation';
-import { Alerts, ToastifyAlerts } from '../lib/Alert';
-import { canPerformActions } from '../../services/ActionChecker';
-import { ACTION_CREATE_CAMPUS, ACTION_GET_CAMPUSES, ACTION_UPDATE_CAMPUS } from '../../authnz-library/timetabling-actions';
-import { timetablingAxiosInstance } from '../../utlis/interceptors/timetabling-interceptor';
+import {Button, Card, Col, Modal, Row} from 'react-bootstrap';
+import {TextInput, ValidationForm} from 'react-bootstrap4-form-validation';
+import {Alerts, ToastifyAlerts} from '../lib/Alert';
+import {canPerformActions} from '../../services/ActionChecker';
+import {
+    ACTION_CREATE_CAMPUS,
+    ACTION_GET_CAMPUSES,
+    ACTION_UPDATE_CAMPUS
+} from '../../authnz-library/timetabling-actions';
+import {timetablingAxiosInstance} from '../../utlis/interceptors/timetabling-interceptor';
 import TableWrapper from '../../utlis/TableWrapper';
 import ConfirmationModalWrapper from '../../App/components/modal/ConfirmationModalWrapper';
 
@@ -45,6 +49,7 @@ const CampusList = (): JSX.Element => {
     };
     const handleToggleStatusSubmit = (row: Campus) => {
         setDisabledButton(true);
+        setLinearDisplay('block');
         const campus = {
             activationStatus: status
         };
@@ -56,6 +61,7 @@ const CampusList = (): JSX.Element => {
                 alerts.showSuccess(msg);
                 fetchCampuses();
                 setActivationModal(false);
+                setLinearDisplay('none');
                 setDisabled(false);
             })
             .catch((error) => {
@@ -63,6 +69,7 @@ const CampusList = (): JSX.Element => {
                 console.error(error);
                 alerts.showError(error.message);
                 setDisabled(false);
+                setLinearDisplay('none');
             });
     };
 
@@ -94,7 +101,7 @@ const CampusList = (): JSX.Element => {
                             show={activationModal}
                         >
                             <h6 className="text-center">
-                                A you sure you want to change the status of <>{row.name}</> ?
+                                Are you sure you want to change the status of <>{row.name}</> ?
                             </h6>
                         </ConfirmationModalWrapper>
                     </>
@@ -106,7 +113,7 @@ const CampusList = (): JSX.Element => {
     useEffect(() => {
         setLinearDisplay('block');
         timetablingAxiosInstance
-            .get('/campuses')
+            .get('/campuses',{ params: { includeDeactivated: true } })
             .then((res) => {
                 setData(res.data);
                 setLinearDisplay('none');
@@ -114,6 +121,7 @@ const CampusList = (): JSX.Element => {
             .catch((error) => {
                 console.error(error);
                 alerts.showError(error.message);
+                setLinearDisplay('none');
             });
     }, []);
 
@@ -130,12 +138,13 @@ const CampusList = (): JSX.Element => {
             .catch((error) => {
                 console.error(error);
                 alerts.showError(error.message);
+                setLinearDisplay('none');
             });
     };
     const fetchCampuses = () => {
         setLinearDisplay('block');
         timetablingAxiosInstance
-            .get('/campuses')
+            .get('/campuses',{ params: { includeDeactivated: true } })
             .then((res) => {
                 setData(res.data);
                 setLinearDisplay('none');
@@ -143,10 +152,11 @@ const CampusList = (): JSX.Element => {
             .catch((error) => {
                 console.error(error);
                 alerts.showError(error.message);
+                setLinearDisplay('none');
             });
     };
     const handleAdd = () => {
-        // e.preventDefault();
+        setLinearDisplay('block');
         const campus = {
             name: campusName,
             description: description
@@ -155,7 +165,7 @@ const CampusList = (): JSX.Element => {
         createCampus(campus);
     };
     const handleEdit = () => {
-        // e.preventDefault();
+        setLinearDisplay('block');
         const updates = {
             name: campusName === '' ? selectedCampusName : campusName,
             description: description === '' ? selectedDescription : description
@@ -175,6 +185,7 @@ const CampusList = (): JSX.Element => {
             })
             .catch((error) => {
                 alerts.showError(error.message);
+                setLinearDisplay('none');
             });
     };
     const resetStateCloseModal = () => {

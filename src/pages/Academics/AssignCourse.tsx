@@ -1,12 +1,12 @@
 /* eslint-disable react/react-in-jsx-scope */
 /* eslint-disable react/display-name */
-import { useState, useEffect } from 'react';
+import {useEffect, useState} from 'react';
 import Alert from '@material-ui/lab/Alert';
 import Breadcrumb from '../../App/components/Breadcrumb';
-import { Row, Col, Card } from 'react-bootstrap';
-import { Button, LinearProgress } from '@material-ui/core';
-import { Alerts, ToastifyAlerts } from '../lib/Alert';
-import { timetablingAxiosInstance } from '../../utlis/interceptors/timetabling-interceptor';
+import {Card, Col, Row} from 'react-bootstrap';
+import {Button, LinearProgress} from '@material-ui/core';
+import {Alerts, ToastifyAlerts} from '../lib/Alert';
+import {timetablingAxiosInstance} from '../../utlis/interceptors/timetabling-interceptor';
 import TableWrapper from '../../utlis/TableWrapper';
 import ConfirmationModalWrapper from '../../App/components/modal/ConfirmationModalWrapper';
 
@@ -34,6 +34,7 @@ const AssignCourse = (): JSX.Element => {
     const [disabled, setDisabled] = useState(false);
 
     useEffect(() => {
+        setLinearDisplay('block');
         timetablingAxiosInstance
             .get('/courses')
             .then((res) => {
@@ -50,15 +51,18 @@ const AssignCourse = (): JSX.Element => {
     }, []);
 
     const fetchCourses = () => {
+        setLinearDisplay('block');
         timetablingAxiosInstance
             .get('/courses')
             .then((res) => {
                 setData(res.data);
+                setLinearDisplay('none');
             })
             .catch((error) => {
                 //handle error using logging library
                 console.error(error);
                 alerts.showError(error.message);
+                setLinearDisplay('none');
             });
     };
 

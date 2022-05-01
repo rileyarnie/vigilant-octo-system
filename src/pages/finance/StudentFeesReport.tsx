@@ -1,6 +1,6 @@
 /* eslint-disable react/display-name */
-import React, { useState, useEffect } from 'react';
-import { MTableToolbar } from 'material-table';
+import React, {useEffect, useState} from 'react';
+import {MTableToolbar} from 'material-table';
 import Card from '@material-ui/core/Card';
 import Dialog from '@mui/material/Dialog';
 import DialogActions from '@mui/material/DialogActions';
@@ -8,16 +8,18 @@ import DialogContent from '@mui/material/DialogContent';
 import DialogContentText from '@mui/material/DialogContentText';
 import DialogTitle from '@mui/material/DialogTitle';
 import useMediaQuery from '@mui/material/useMediaQuery';
-import { useTheme } from '@mui/material/styles';
+import {useTheme} from '@mui/material/styles';
 import Alert from '@material-ui/lab/Alert';
 import Breadcrumb from '../../App/components/Breadcrumb';
-import { Row, Col, Button } from 'react-bootstrap';
-import { Alerts, ToastifyAlerts } from '../lib/Alert';
-import { StudentFeesManagementService } from '../../services/StudentFeesManagementService';
+import {Button, Col, Row} from 'react-bootstrap';
+import {Alerts, ToastifyAlerts} from '../lib/Alert';
+import {StudentFeesManagementService} from '../../services/StudentFeesManagementService';
 import RecordFeePayment from './RecordFeePayment';
 import FeeWaiver from './FeeWaiver';
 import Invoice from './Invoice';
 import TableWrapper from '../../utlis/TableWrapper';
+import LinearProgress from '@mui/material/LinearProgress';
+
 const alerts: Alerts = new ToastifyAlerts();
 
 const StudentFeeReport = (): JSX.Element => {
@@ -37,6 +39,7 @@ const StudentFeeReport = (): JSX.Element => {
     const queryParams = new URLSearchParams(window.location.search);
     const studentId = parseInt(queryParams.get('studentId'));
     const studentName = queryParams.get('studentName');
+    const [linearDisplay, setLinearDisplay] = useState('none');
 
     const closeModalHandler = () => {
         setShow(false);
@@ -76,28 +79,32 @@ const StudentFeeReport = (): JSX.Element => {
         fetchFeesData(studentId);
     }, [studentId]);
     function fetchFeesData(studentId: number) {
+        setLinearDisplay('block');
         StudentFeesManagementService.fetchFeesReport(studentId)
             .then((res) => {
                 const feesData = res['data'];
                 setFeeBalance(feesData.balance);
                 setData(feesData.entries);
+                setLinearDisplay('none');
             })
             .catch((error) => {
-                console.error(error);
                 alerts.showError(error.message);
+                setLinearDisplay('none');
             });
     }
     function handleReversal() {
+        setLinearDisplay('block');
         const reversal = {
             transactionId: transactionId
         };
         StudentFeesManagementService.handleFeeReversal(reversal)
             .then(() => {
                 alerts.showSuccess('Successfully reversed transaction');
+                setLinearDisplay('none');
             })
             .catch((error) => {
-                console.error(error);
                 alerts.showError(error.message);
+                setLinearDisplay('none');
             });
     }
     const handleClickOpen = () => {
@@ -128,6 +135,7 @@ const StudentFeeReport = (): JSX.Element => {
                     </div>
                 </Col>
             </Row>
+            <LinearProgress style={{ display: linearDisplay }} />
             <Row>
                 <Col>
                     <Card>

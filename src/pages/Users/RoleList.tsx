@@ -1,24 +1,24 @@
 /* eslint-disable linebreak-style */
 /* eslint-disable @typescript-eslint/no-unused-vars */
-import React, { useState, useEffect } from 'react';
+import React, {useEffect, useState} from 'react';
 import Alert from '@material-ui/lab/Alert';
-import { Button, Card, Col, Modal, Row } from 'react-bootstrap';
+import {Button, Card, Col, Modal, Row} from 'react-bootstrap';
 import Breadcrumb from '../../App/components/Breadcrumb';
-import { Actions } from './ActionsByRole/Actions';
-import { AddActions } from './AddActionsModal/AddActions';
+import {Actions} from './ActionsByRole/Actions';
+import {AddActions} from './AddActionsModal/AddActions';
 import CreateRole from './Role/CreateRole';
-import { Alerts, ToastifyAlerts } from '../lib/Alert';
-import { LinearProgress } from '@mui/material';
-import { MenuItem, Select } from '@material-ui/core';
-import { VerticalModal } from './ActionsByRole/VerticalModal';
-import { AddActionsModal } from './AddActionsModal/AddActionsModal';
-import { canPerformActions } from '../../services/ActionChecker';
+import {Alerts, ToastifyAlerts} from '../lib/Alert';
+import {LinearProgress} from '@mui/material';
+import {MenuItem, Select} from '@material-ui/core';
+import {VerticalModal} from './ActionsByRole/VerticalModal';
+import {AddActionsModal} from './AddActionsModal/AddActionsModal';
+import {canPerformActions} from '../../services/ActionChecker';
 import {
     ACTION_ADD_ACTIONS_TO_ROLE,
     ACTION_DEACTIVATE_ROLE,
     ACTION_GET_ROLES
 } from '../../authnz-library/authnz-actions';
-import { authnzAxiosInstance } from '../../utlis/interceptors/authnz-interceptor';
+import {authnzAxiosInstance} from '../../utlis/interceptors/authnz-interceptor';
 import TableWrapper from '../../utlis/TableWrapper';
 
 const alerts: Alerts = new ToastifyAlerts();
@@ -75,7 +75,6 @@ function roleList(): JSX.Element {
     ];
     const [data, setData] = useState([]);
     const [id, setId] = useState(0);
-    //const [showModal, setModal] = useState(false);
     const [roleName, setRoleName] = useState('');
     const [isError] = useState(false);
     const [errorMessages] = useState([]);
@@ -98,7 +97,7 @@ function roleList(): JSX.Element {
                 setLinearDisplay('none');
             })
             .catch((error) => {
-                console.log(error);
+                setLinearDisplay('none');
                 alerts.showError((error as Error).message);
             });
     }
@@ -126,9 +125,9 @@ function roleList(): JSX.Element {
                 const myData = res.data;
                 setActions(myData);
                 setDefaultRoleValues(res.data.map((role: { id: number; name: string }) => ({ value: role.id, label: role.name })));
+                setLinearDisplay('none');
             })
             .catch((err) => {
-                console.log('err', err);
                 alerts.showError(`We couldn’t fetch the existing actions for ${roleName}, reopening the dialog should resolve this`);
             })
             .finally(()=>{

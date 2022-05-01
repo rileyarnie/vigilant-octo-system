@@ -1,18 +1,18 @@
 /* eslint-disable react/display-name */
-import React, { useState, useEffect } from 'react';
+import React, {useEffect, useState} from 'react';
 import Edit from '@material-ui/icons/Edit';
 import Alert from '@material-ui/lab/Alert';
 import Breadcrumb from '../../App/components/Breadcrumb';
-import { Row, Col, Card, Button } from 'react-bootstrap';
-import { Modal } from 'react-bootstrap';
+import {Button, Card, Col, Modal, Row} from 'react-bootstrap';
 import CreateVenue from './CreateVenue';
 import EditVenue from './EditVenue';
-import { Alerts, ToastifyAlerts } from '../lib/Alert';
-import { LinearProgress } from '@mui/material';
-import { canPerformActions } from '../../services/ActionChecker';
-import { ACTION_CREATE_VENUE, ACTION_GET_VENUE, ACTION_UPDATE_VENUE } from '../../authnz-library/timetabling-actions';
-import { timetablingAxiosInstance } from '../../utlis/interceptors/timetabling-interceptor';
+import {Alerts, ToastifyAlerts} from '../lib/Alert';
+import {LinearProgress} from '@mui/material';
+import {canPerformActions} from '../../services/ActionChecker';
+import {ACTION_CREATE_VENUE, ACTION_GET_VENUE, ACTION_UPDATE_VENUE} from '../../authnz-library/timetabling-actions';
+import {timetablingAxiosInstance} from '../../utlis/interceptors/timetabling-interceptor';
 import TableWrapper from '../../utlis/TableWrapper';
+
 const alerts: Alerts = new ToastifyAlerts();
 
 const VenueList = (props): JSX.Element => {
@@ -43,13 +43,10 @@ const VenueList = (props): JSX.Element => {
         timetablingAxiosInstance
             .get('/venues')
             .then((res) => {
-                console.log(res);
                 setData(res.data);
                 setLinearDisplay('none');
             })
             .catch((error) => {
-                console.error(error);
-                setLinearDisplay('none');
                 alerts.showError(error.message);
             });
     };
