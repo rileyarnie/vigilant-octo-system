@@ -536,22 +536,6 @@ function ProgramCohortSemesterDetails(props) {
                                 }}
                                 required
                             />
-                            <br />
-                            <label htmlFor="amount">
-                                <b>Number of Slots</b>
-                            </label>
-                            <br />
-                            <TextInput
-                                name="number of Slots"
-                                id="number of Slots"
-                                type="number"
-                                value={numOfSlots}
-                                onChange={(e) => {
-                                    setNumOfSlots(e.target.value);
-                                }}
-                                required
-                            />
-                            <br />
                         </div>
                         <div className="form-group">
                             <button
