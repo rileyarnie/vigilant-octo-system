@@ -326,14 +326,8 @@ const Department = (): JSX.Element => {
                         </div>
                     </ValidationForm>
                     <Col>
-                        <button disabled={disabledButton} className="btn btn-danger float-left"
-                                onClick={() => toggleCreateModal()}>
-                            Cancel
-                        </button>
-                        <button disabled={disabledButton} className="btn btn-info float-right"
-                                onClick={toggleConfirmModal}>
-                            Submit
-                        </button>
+                        <button disabled={disabledButton} className="btn btn-danger float-left" onClick={() => toggleCreateModal()}>Cancel</button>
+                        <button disabled={disabledButton} className="btn btn-info float-right" onClick={toggleConfirmModal}>Submit</button>
                     </Col>
                 </Modal.Body>
             </Modal>
