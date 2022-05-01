@@ -22,7 +22,6 @@ import { createStyles, Theme, makeStyles } from '@material-ui/core/styles';
 import IconButton from '@material-ui/core/IconButton';
 import ArrowBackIcon from '@material-ui/icons/ArrowBack';
 import TableWrapper from '../../utlis/TableWrapper';
-import ProgramCohortSemester from '../services/ProgramCohortSemester';
 const alerts: Alerts = new ToastifyAlerts();
 
 function ProgramCohortSemesterDetails(props) {
@@ -97,7 +96,7 @@ function ProgramCohortSemesterDetails(props) {
     const [showCancelModal, setShowCancelModal] = useState(false);
     const [showPublishDialog, setShowPublishDialog] = useState(false);
     const [anticipatedStartDate, setAnticipatedStartDate] = useState('');
-    const [numOfSlots, setNumOfSlots] = useState('');
+    const [numOfSlots] = useState('');
     const [examCutOffDate, setExamCutOffDate] = useState('');
     const [selectedNarrative, setSelectedNarrative] = useState('');
     const [selectedAmount, setSelectedAmount] = useState(0);
