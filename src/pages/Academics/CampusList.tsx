@@ -19,7 +19,7 @@ const CampusList = (): JSX.Element => {
         id: number;
         name: string;
         description: string;
-        activation_status: boolean;
+        activationStatus: boolean;
         approval_status: boolean;
     }
 
@@ -40,13 +40,13 @@ const CampusList = (): JSX.Element => {
     const [, setDisabledButton] = useState(false);
     const [status, setStatus] = useState(false);
     const handleActivationStatusToggle = (event, row: Campus) => {
-        setStatus(!row.activation_status);
+        setStatus(!row.activationStatus);
         setDisabled(true);
     };
     const handleToggleStatusSubmit = (row: Campus) => {
         setDisabledButton(true);
         const campus = {
-            activation_status: status
+            activationStatus: status
         };
         timetablingAxiosInstance
             .put(`/campuses/${row.id}`, campus)
@@ -78,7 +78,7 @@ const CampusList = (): JSX.Element => {
                 canPerformActions(ACTION_UPDATE_CAMPUS.name) && (
                     <>
                         <Switch
-                            defaultChecked={row.activation_status}
+                            defaultChecked={row.activationStatus}
                             color="secondary"
                             inputProps={{'aria-label': 'controlled'}}
                             onChange={(event) => {
@@ -98,11 +98,6 @@ const CampusList = (): JSX.Element => {
                             </h6>
                         </ConfirmationModalWrapper>
                     </>
-                    // <Switch
-                    //     onChange={(event) => handleActivationStatusToggle(event, row)}
-                    //     inputProps={{ 'aria-label': 'controlled' }}
-                    //     defaultChecked={row.activation_status === true}
-                    // />
                 )
         }
     ];

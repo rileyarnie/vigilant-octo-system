@@ -15,7 +15,6 @@ import TableWrapper from '../../utlis/TableWrapper';
 import { customSelectTheme } from '../lib/SelectThemes';
 import Select from 'react-select';
 import ConfirmationModalWrapper from '../../App/components/modal/ConfirmationModalWrapper';
-
 const alerts: Alerts = new ToastifyAlerts();
 
 const Department = (): JSX.Element => {
@@ -45,7 +44,7 @@ const Department = (): JSX.Element => {
                     <ConfirmationModalWrapper
                         submitButton
                         submitFunction={() => handleToggleStatusSubmit(row)}
-                        closeModal={handleCloseModal}
+                        closeModal={() => fetchDepartments()}
                         show={activationModal}
                     >
                         <h6 className="text-center">
@@ -160,7 +159,9 @@ const Department = (): JSX.Element => {
                 setLinearDisplay('block');
                 alerts.showError(error.message);
                 setLinearDisplay('none');
-            });
+            }).finally(() => {
+                setActivationModal(false);
+        } );
     };
     const handleCreate = (e) => {
         e.preventDefault();
@@ -213,9 +214,6 @@ const Department = (): JSX.Element => {
     };
     const toggleActivationModal = () => {
         activationModal ? resetStateCloseModal() : setActivationModal(true);
-    };
-    const handleCloseModal = () => {
-        setActivationModal(false);
     };
     const toggleConfirmModal = () => {
         setConfirmModal(true);
