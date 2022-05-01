@@ -59,14 +59,12 @@ export const AssignRoleModal = (props: IProps): JSX.Element => {
                     props.onHide();
                     toggleCloseConfirmModal();
                     alerts.showSuccess('Successfully assigned role to user');
-                    console.log(res);
                 }
             })
             .catch((error) => {
                 setDisabled(false);
                 props.onHide();
                 toggleCloseConfirmModal();
-                console.error(error);
                 alerts.showError(error.message);
                 props.onHide();
             });

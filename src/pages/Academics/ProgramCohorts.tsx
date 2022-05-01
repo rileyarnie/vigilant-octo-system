@@ -30,6 +30,7 @@ const ProgramCohorts = (): JSX.Element => {
         program_cohorts_advertDescription: string;
         pg_name: string;
         program_cohorts_bannerImageUrl: string;
+        program_cohorts_numberOfSlots: number;
         pg_id: number;
         bannerImageUrl: string;
         program_cohorts_campusId: number;
@@ -57,6 +58,7 @@ const ProgramCohorts = (): JSX.Element => {
     const [programName, setProgramName] = useState('');
     const [selectedGraduationDate] = useState();
     const [selectedDescription] = useState();
+    const [numberOfSlots, setNumberOfSlots] = useState();
     const [showModal, setModal] = useState(false);
     const [cohortId, setCohortId] = useState(null);
     const [cohortName,] = useState('');
@@ -69,20 +71,18 @@ const ProgramCohorts = (): JSX.Element => {
     const year = graduationDate.split('').slice(0, 4).join('');
     const month = graduationDate.slice(5, 7);
     const [activationModal, setActivationModal] = useState(false);
-    const [rowData, setRowData] = useState<programCohort>();
-    const [disabledButton, setDisabledButton] = useState(false);
+    const [, setRowData] = useState<programCohort>();
+    const [, setDisabledButton] = useState(false);
 
     const handleActivationStatusToggle = (event, row: programCohort) => {
         setDisabled(true);
         if (row.program_cohorts_status === 'active') {
             setStatus('canceled');
             toggleActivationModal();
-            setRowData(row);
         }
         if (row.program_cohorts_status === 'canceled') {
             setStatus('active');
             toggleActivationModal();
-            setRowData(row);
         }
     };
     const handleToggleStatusSubmit = (row: programCohort) => {
@@ -129,13 +129,35 @@ const ProgramCohorts = (): JSX.Element => {
             title: 'Activation Status',
             field: 'internal_action',
             render: (row: programCohort) => (
-                <Switch
-                    onChange={(event) => {
-                        handleActivationStatusToggle(event, row);
-                    }}
-                    inputProps={{ 'aria-label': 'controlled' }}
-                    defaultChecked={row.program_cohorts_status !== 'canceled'}
-                />
+                <>
+                    <Switch
+                        defaultChecked={row.program_cohorts_status !== 'canceled'}
+                        color="secondary"
+                        inputProps={{'aria-label': 'controlled'}}
+                        onChange={(event) => {
+                            handleActivationStatusToggle(event, row);
+                            setRowData(row);
+                            toggleActivationModal();
+                        }}
+                    />
+                    <ConfirmationModalWrapper
+                        submitButton
+                        submitFunction={() => handleToggleStatusSubmit(row)}
+                        closeModal={handleCloseModal}
+                        show={activationModal}
+                    >
+                        <h6 className="text-center">
+                            A you sure you want to change the status of <>{row.pg_name}</> ?
+                        </h6>
+                    </ConfirmationModalWrapper>
+                </>
+                // <Switch
+                //     onChange={(event) => {
+                //         handleActivationStatusToggle(event, row);
+                //     }}
+                //     inputProps={{ 'aria-label': 'controlled' }}
+                //     defaultChecked={row.program_cohorts_status !== 'canceled'}
+                // />
             )
         },
         {
@@ -307,15 +329,14 @@ const ProgramCohorts = (): JSX.Element => {
         const updates = {
             programId: programId === 0 ? selectedProgramCohort.pg_id : programId,
             campusId:
-                campusId === selectedProgramCohort.program_cohorts_campusId
-                    ? selectedProgramCohort.program_cohorts_campusId
+                campusId === 0 ? selectedProgramCohort.program_cohorts_campusId
                     : campusId,
             startDate:
                 startDate === ''
                     ? selectedProgramCohort.program_cohorts_startDate
                     : startDate,
-            anticipatedGraduationYear: selectedProgramCohort.program_cohorts_anticipatedGraduationYear,
-            anticipatedGraduationMonth: selectedProgramCohort.program_cohorts_anticipatedGraduationMonth,
+            anticipatedGraduationYear:year === '' ? selectedProgramCohort.program_cohorts_anticipatedGraduationYear: year,
+            anticipatedGraduationMonth:month === '' ? selectedProgramCohort.program_cohorts_anticipatedGraduationMonth: month,
             advertDescription:
                 description === ''
                     ? selectedProgramCohort.program_cohorts_advertDescription
@@ -334,7 +355,8 @@ const ProgramCohorts = (): JSX.Element => {
             anticipatedGraduationYear: year,
             anticipatedGraduationMonth: month,
             advertDescription: description,
-            bannerImageUrl: banner
+            bannerImageUrl: banner,
+            numberOfSlots: numberOfSlots
         };
         createCohort(cohort);
     };
@@ -571,6 +593,23 @@ const ProgramCohorts = (): JSX.Element => {
                                         }}
                                     />
                                     <br />
+                                    <label htmlFor="numOfSlots">
+                                        <b>Number of slots</b>
+                                    </label>
+                                    <TextInput
+                                        name="numberOfSlots"
+                                        id="numberOfSlots"
+                                        defaultValue={
+                                            cohortId ? selectedProgramCohort.program_cohorts_numberOfSlots : numberOfSlots
+                                        }
+                                        type="text"
+                                        placeholder={'number Of slots'}
+                                        required
+                                        onChange={(e) => {
+                                            setNumberOfSlots(e.target.value);
+                                        }}
+                                    />
+                                    <br />
                                     <label htmlFor="cohortName">
                                         <b>Banner Image</b>
                                     </label>
@@ -684,35 +723,6 @@ const ProgramCohorts = (): JSX.Element => {
                         Confirm
                     </Button>
                 </Modal.Footer>
-            </Modal>
-            <Modal
-                backdrop="static"
-                show={activationModal}
-                onHide={toggleActivationModal}
-                size="sm"
-                aria-labelledby="contained-modal-title-vcenter"
-                centered
-            >
-                <Modal.Header>
-                    <Modal.Title id="contained-modal-title-vcenter">{}</Modal.Title>
-                </Modal.Header>
-                <Modal.Body>
-                    <ValidationForm>
-                        <p className="text-center">A you sure you want to change the status of {rowData?.pg_name} ?</p>
-                        <Button disabled={disabledButton} className="btn btn-danger float-left" onClick={handleCloseModal}>
-                            Cancel
-                        </Button>
-                        <Button
-                            disabled={disabledButton}
-                            className="btn btn-primary float-right"
-                            onClick={() => {
-                                handleToggleStatusSubmit(rowData);
-                            }}
-                        >
-                            Confirm
-                        </Button>
-                    </ValidationForm>
-                </Modal.Body>
             </Modal>
             <ConfirmationModalWrapper
                 submitButton

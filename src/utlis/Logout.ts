@@ -1,5 +1,8 @@
+import Config from '../config';
+
 const handleLogout = () => {
     localStorage.clear();
-    window.location.assign('/login');
+    sessionStorage.clear();
+    window.location.assign(`${Config.basename}/login`);
 };
 export default handleLogout;

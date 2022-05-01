@@ -8,7 +8,7 @@ const NavRight = () => {
     const [name, setName] = useState('');
 
     useEffect(() => {
-        const details = localStorage.getItem('User');
+        const details = sessionStorage.getItem('aadUser');
         if (details) {
             setName(JSON.parse(details).givenName);
         }

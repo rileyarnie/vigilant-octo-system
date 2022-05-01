@@ -508,7 +508,7 @@ const CourseCohortsList = (props): JSX.Element => {
                         </SelectGroup>
                         <br></br>
                         {selectedRow?.programCohortSemester?.semester ? (
-                            <Button className="btn btn-info float-right" onClick={(e) => handleSemesterUpdate()}>
+                            <Button className="btn btn-info float-right" onClick={(e) => handleAssignSemesterSubmit(e)}>
                                 Submit
                             </Button>
                         ) : (

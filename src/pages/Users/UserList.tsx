@@ -2,7 +2,7 @@
 /* eslint-disable react/display-name */
 import React, { useState, useEffect } from 'react';
 import Breadcrumb from '../../App/components/Breadcrumb';
-import { Row, Col, Card, Button } from 'react-bootstrap';
+import { Row, Col, Card} from 'react-bootstrap';
 import CreateUser from './CreateUserModal/CreateUser';
 import { Alerts, ToastifyAlerts } from '../lib/Alert';
 import { LinearProgress } from '@mui/material';
@@ -55,15 +55,14 @@ const UserList = (props: IProps): JSX.Element => {
                 <Col>
                     <Breadcrumb />
                 </Col>
-
                 <Col>
                     <CreateUser fetchUsers={fetchUsers}></CreateUser>
+                    {canPerformActions(ACTION_ASSIGN_ROLES.name) && (
+                        <button className="btn btn-danger float-right" onClick={() => handleRouteChange()} style={{ marginLeft: '1.5rem' }}>
+                            Assign Role
+                        </button>
+                    )}
                 </Col>
-                {canPerformActions(ACTION_ASSIGN_ROLES.name) && (
-                    <Button variant="danger" onClick={() => handleRouteChange()}>
-                        Assign Role
-                    </Button>
-                )}
             </Row>
             <LinearProgress style={{ display: linearDisplay }} />
             {canPerformActions(ACTION_GET_USERS.name) && (
