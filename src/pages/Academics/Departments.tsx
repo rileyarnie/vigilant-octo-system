@@ -1,20 +1,25 @@
 /* eslint-disable react/display-name */
-import React, { useState, useEffect } from 'react';
+import React, {useState, useEffect} from 'react';
 import Edit from '@material-ui/icons/Edit';
 import Alert from '@material-ui/lab/Alert';
 import Breadcrumb from '../../App/components/Breadcrumb';
-import { Row, Col, Card, Button, Modal } from 'react-bootstrap';
-import { ValidationForm, TextInput } from 'react-bootstrap4-form-validation';
-import { Switch } from '@material-ui/core';
-import { Alerts, ToastifyAlerts } from '../lib/Alert';
+import {Row, Col, Card, Button, Modal} from 'react-bootstrap';
+import {ValidationForm, TextInput} from 'react-bootstrap4-form-validation';
+import {Switch} from '@material-ui/core';
+import {Alerts, ToastifyAlerts} from '../lib/Alert';
 import LinearProgress from '@mui/material/LinearProgress';
-import { canPerformActions } from '../../services/ActionChecker';
-import { ACTION_CREATE_DEPARTMENT, ACTION_GET_DEPARTMENTS, ACTION_UPDATE_DEPARTMENT } from '../../authnz-library/timetabling-actions';
-import { timetablingAxiosInstance } from '../../utlis/interceptors/timetabling-interceptor';
+import {canPerformActions} from '../../services/ActionChecker';
+import {
+    ACTION_CREATE_DEPARTMENT,
+    ACTION_GET_DEPARTMENTS,
+    ACTION_UPDATE_DEPARTMENT
+} from '../../authnz-library/timetabling-actions';
+import {timetablingAxiosInstance} from '../../utlis/interceptors/timetabling-interceptor';
 import TableWrapper from '../../utlis/TableWrapper';
-import { customSelectTheme } from '../lib/SelectThemes';
+import {customSelectTheme} from '../lib/SelectThemes';
 import Select from 'react-select';
 import ConfirmationModalWrapper from '../../App/components/modal/ConfirmationModalWrapper';
+
 const alerts: Alerts = new ToastifyAlerts();
 
 const Department = (): JSX.Element => {
@@ -23,10 +28,11 @@ const Department = (): JSX.Element => {
         id: number;
         isActive: boolean;
     }
+
     const columns = [
-        { title: 'ID', field: 'id', hidden: true },
-        { title: 'Department name', field: 'name' },
-        { title: 'HOD', field: 'hodTrainerId' },
+        {title: 'ID', field: 'id', hidden: true},
+        {title: 'Department name', field: 'name'},
+        {title: 'HOD', field: 'hodTrainerId'},
         {
             title: 'Activation Status',
             field: 'isActive',
@@ -87,7 +93,7 @@ const Department = (): JSX.Element => {
             status
         };
         setDisabledButton(true);
-        
+
         timetablingAxiosInstance
             .put(`/departments/${row.id}`, departmentStatus)
             .then(() => {
@@ -129,7 +135,7 @@ const Department = (): JSX.Element => {
             });
     }, []);
     users.map((hod) => {
-        return options.push({ value: hod.tr_id, label: hod.stf_name });
+        return options.push({value: hod.tr_id, label: hod.stf_name});
     });
     const updateDepartment = (deptId, updates) => {
         setLinearDisplay('block');
@@ -159,9 +165,10 @@ const Department = (): JSX.Element => {
                 setLinearDisplay('block');
                 alerts.showError(error.message);
                 setLinearDisplay('none');
-            }).finally(() => {
+            })
+            .finally(() => {
                 setActivationModal(false);
-        } );
+            });
     };
     const handleCreate = (e) => {
         e.preventDefault();
@@ -225,7 +232,7 @@ const Department = (): JSX.Element => {
         <>
             <Row className="align-items-center page-header">
                 <Col>
-                    <Breadcrumb />
+                    <Breadcrumb/>
                 </Col>
                 <Col>
                     {canPerformActions(ACTION_CREATE_DEPARTMENT.name) && (
@@ -237,7 +244,7 @@ const Department = (): JSX.Element => {
             </Row>
             {canPerformActions(ACTION_GET_DEPARTMENTS.name) && (
                 <>
-                    <LinearProgress style={{ display: linearDisplay }} />
+                    <LinearProgress style={{display: linearDisplay}}/>
                     <Row>
                         <Col>
                             <Card>
@@ -254,7 +261,7 @@ const Department = (): JSX.Element => {
                                     title="Departments"
                                     columns={columns}
                                     data={data}
-                                    options={{ actionsColumnIndex: -1 }}
+                                    options={{actionsColumnIndex: -1}}
                                     actions={
                                         canPerformActions(ACTION_UPDATE_DEPARTMENT.name)
                                             ? [
@@ -287,7 +294,8 @@ const Department = (): JSX.Element => {
                 centered
             >
                 <Modal.Header closeButton>
-                    <Modal.Title id="contained-modal-title-vcenter">{deptId ? 'Edit department' : 'Create a department'}</Modal.Title>
+                    <Modal.Title
+                        id="contained-modal-title-vcenter">{deptId ? 'Edit department' : 'Create a department'}</Modal.Title>
                 </Modal.Header>
                 <Modal.Body>
                     <ValidationForm>
@@ -302,7 +310,7 @@ const Department = (): JSX.Element => {
                                 onChange={(e) => (deptId ? setSelectedDeptName(e.target.value) : setDeptName(e.target.value))}
                                 required
                             />
-                            <br />
+                            <br/>
                         </div>
                         <div className="form-group">
                             <label htmlFor="trainerType">Select a HoD</label>
@@ -318,10 +326,12 @@ const Department = (): JSX.Element => {
                         </div>
                     </ValidationForm>
                     <Col>
-                        <button disabled={disabledButton} className="btn btn-danger float-left" onClick={() => toggleCreateModal()}>
+                        <button disabled={disabledButton} className="btn btn-danger float-left"
+                                onClick={() => toggleCreateModal()}>
                             Cancel
                         </button>
-                        <button disabled={disabledButton} className="btn btn-info float-right" onClick={toggleConfirmModal}>
+                        <button disabled={disabledButton} className="btn btn-info float-right"
+                                onClick={toggleConfirmModal}>
                             Submit
                         </button>
                     </Col>
