@@ -30,6 +30,7 @@ const ProgramCohorts = (): JSX.Element => {
         program_cohorts_advertDescription: string;
         pg_name: string;
         program_cohorts_bannerImageUrl: string;
+        program_cohorts_numberOfSlots: number;
         pg_id: number;
         bannerImageUrl: string;
         program_cohorts_campusId: number;
@@ -57,6 +58,7 @@ const ProgramCohorts = (): JSX.Element => {
     const [programName, setProgramName] = useState('');
     const [selectedGraduationDate] = useState();
     const [selectedDescription] = useState();
+    const [numberOfSlots, setNumberOfSlots] = useState();
     const [showModal, setModal] = useState(false);
     const [cohortId, setCohortId] = useState(null);
     const [cohortName,] = useState('');
@@ -333,7 +335,8 @@ const ProgramCohorts = (): JSX.Element => {
             anticipatedGraduationYear: year,
             anticipatedGraduationMonth: month,
             advertDescription: description,
-            bannerImageUrl: banner
+            bannerImageUrl: banner,
+            numberOfSlots: numberOfSlots
         };
         createCohort(cohort);
     };
@@ -567,6 +570,23 @@ const ProgramCohorts = (): JSX.Element => {
                                         rows="3"
                                         onChange={(e) => {
                                             setDescription(e.target.value);
+                                        }}
+                                    />
+                                    <br />
+                                    <label htmlFor="numOfSlots">
+                                        <b>Number of slots</b>
+                                    </label>
+                                    <TextInput
+                                        name="numberOfSlots"
+                                        id="numberOfSlots"
+                                        defaultValue={
+                                            cohortId ? selectedProgramCohort.program_cohorts_numberOfSlots : numberOfSlots
+                                        }
+                                        type="text"
+                                        placeholder={'number Of slots'}
+                                        required
+                                        onChange={(e) => {
+                                            setNumberOfSlots(e.target.value);
                                         }}
                                     />
                                     <br />
