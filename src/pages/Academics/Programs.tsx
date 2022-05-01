@@ -1,21 +1,26 @@
 /* eslint-disable react/react-in-jsx-scope */
 /* eslint-disable react/display-name */
-import { useState, useEffect } from 'react';
-import { Alerts, ToastifyAlerts } from '../lib/Alert';
-import { Switch } from '@material-ui/core';
+import React, {useState, useEffect} from 'react';
+import {Alerts, ToastifyAlerts} from '../lib/Alert';
+import {Switch} from '@material-ui/core';
 import Alert from '@material-ui/lab/Alert';
 import Breadcrumb from '../../App/components/Breadcrumb';
-import { Row, Col, Card, Button, Modal } from 'react-bootstrap';
-import { Link } from 'react-router-dom';
-import { ValidationForm, TextInput } from 'react-bootstrap4-form-validation';
-import { LinearProgress } from '@mui/material';
-import { canPerformActions } from '../../services/ActionChecker';
-import { ACTION_ASSIGN_COURSE_TO_PROGRAM, ACTION_CREATE_PROGRAM, ACTION_GET_PROGRAMS } from '../../authnz-library/timetabling-actions';
-import { timetablingAxiosInstance } from '../../utlis/interceptors/timetabling-interceptor';
+import {Row, Col, Card, Button, Modal} from 'react-bootstrap';
+import {Link} from 'react-router-dom';
+import {ValidationForm, TextInput} from 'react-bootstrap4-form-validation';
+import {LinearProgress} from '@mui/material';
+import {canPerformActions} from '../../services/ActionChecker';
+import {
+    ACTION_ASSIGN_COURSE_TO_PROGRAM,
+    ACTION_CREATE_PROGRAM,
+    ACTION_GET_PROGRAMS
+} from '../../authnz-library/timetabling-actions';
+import {timetablingAxiosInstance} from '../../utlis/interceptors/timetabling-interceptor';
 import TableWrapper from '../../utlis/TableWrapper';
-import { customSelectTheme, selectOptions, certType } from '../lib/SelectThemes';
+import {customSelectTheme, selectOptions, certType} from '../lib/SelectThemes';
 import Select from 'react-select';
 import ConfirmationModalWrapper from '../../App/components/modal/ConfirmationModalWrapper';
+
 const alerts: Alerts = new ToastifyAlerts();
 
 const Programs = (): JSX.Element => {
@@ -26,7 +31,7 @@ const Programs = (): JSX.Element => {
         prerequisiteDocumentation: number;
         requiresClearance: boolean;
         certificationType: string;
-        activation_status: boolean;
+        activationStatus: boolean;
         approval_status: boolean;
         duration: string;
     }
@@ -49,34 +54,22 @@ const Programs = (): JSX.Element => {
     const [, setProgramId] = useState(null);
     const [, setDisabled] = useState(false);
     const [activationModal, setActivationModal] = useState(false);
-    const [rowData, setRowData] = useState<Program>();
     const [selectedDepartment, setSelectedDepartment] = useState();
     let activationStatus: boolean;
-    const [disabledButton, setDisabledButton] = useState(false);
-
+    const [, setDisabledButton] = useState(false);
+    const [status, setStatus] = useState(false);
     const handleActivationStatusToggle = (event, row: Program) => {
-        setDisabled(true);
-        if (row.activation_status) {
-            activationStatus = false;
-            toggleActivationModal();
-            setRowData(row);
-        }
-        if (!row.activation_status) {
-            activationStatus = true;
-            toggleActivationModal();
-            setRowData(row);
-        }
+        setStatus(!row.activationStatus);
     };
     const handleToggleStatusSubmit = (row: Program) => {
         const program = {
-            activation_status: activationStatus
+            activationStatus: status
         };
         setDisabledButton(true);
         setLinearDisplay('block');
         timetablingAxiosInstance
             .put(`/programs/${row.id}`, program)
             .then(() => {
-                setDisabledButton(false);
                 const msg = activationStatus ? 'Successfully activated program' : 'Successfully Deactivated program';
                 setLinearDisplay('none');
                 alerts.showSuccess(msg);
@@ -84,7 +77,6 @@ const Programs = (): JSX.Element => {
                 setDisabled(false);
             })
             .catch((error) => {
-                setDisabledButton(false);
                 setLinearDisplay('block');
                 console.error(error);
                 alerts.showError(error.message);
@@ -94,17 +86,33 @@ const Programs = (): JSX.Element => {
     };
 
     const columns = [
-        { title: 'ID', field: 'id', editable: 'never' as const },
-        { title: 'Program Name', field: 'name' },
+        {title: 'ID', field: 'id', editable: 'never' as const},
+        {title: 'Program Name', field: 'name'},
         {
             title: 'Activation Status',
             field: 'internal_action',
             render: (row: Program) => (
-                <Switch
-                    onChange={(event) => handleActivationStatusToggle(event, row)}
-                    inputProps={{ 'aria-label': 'controlled' }}
-                    defaultChecked={row.activation_status === true}
-                />
+                <>
+                    <Switch
+                        defaultChecked={row.activationStatus}
+                        color="secondary"
+                        inputProps={{'aria-label': 'controlled'}}
+                        onChange={(event) => {
+                            handleActivationStatusToggle(event, row);
+                            toggleActivationModal();
+                        }}
+                    />
+                    <ConfirmationModalWrapper
+                        submitButton
+                        submitFunction={() => handleToggleStatusSubmit(row)}
+                        closeModal={handleCloseModal}
+                        show={activationModal}
+                    >
+                        <h6 className="text-center">
+                            A you sure you want to change the status of <>{row.name}</> ?
+                        </h6>
+                    </ConfirmationModalWrapper>
+                </>
             )
         },
         {
@@ -152,13 +160,13 @@ const Programs = (): JSX.Element => {
             });
     }, []);
     departments.map((dept) => {
-        return departmentOptions.push({ value: dept.id, label: dept.name });
+        return departmentOptions.push({value: dept.id, label: dept.name});
     });
     selectOptions.map((sel) => {
-        return selectionOptions.push({ value: sel.value, label: sel.label });
+        return selectionOptions.push({value: sel.value, label: sel.label});
     });
     certType.map((sel) => {
-        return certificationTypes.push({ value: sel.value, label: sel.label });
+        return certificationTypes.push({value: sel.value, label: sel.label});
     });
     const fetchPrograms = () => {
         setLinearDisplay('block');
@@ -226,6 +234,7 @@ const Programs = (): JSX.Element => {
     };
     const toggleActivationModal = () => {
         activationModal ? resetStateCloseModal() : setActivationModal(true);
+        console.log('CHANGED STATUS', status);
     };
     const handleCloseModal = () => {
         fetchPrograms();
@@ -242,7 +251,7 @@ const Programs = (): JSX.Element => {
         <>
             <Row className="align-items-center page-header">
                 <Col>
-                    <Breadcrumb />
+                    <Breadcrumb/>
                 </Col>
                 <Col>
                     {canPerformActions(ACTION_CREATE_PROGRAM.name) && (
@@ -255,7 +264,7 @@ const Programs = (): JSX.Element => {
 
             {canPerformActions(ACTION_GET_PROGRAMS.name) && (
                 <>
-                    <LinearProgress style={{ display: linearDisplay }} />
+                    <LinearProgress style={{display: linearDisplay}}/>
                     <Row>
                         <Col>
                             <Card>
@@ -268,7 +277,7 @@ const Programs = (): JSX.Element => {
                                         </Alert>
                                     )}
                                 </div>
-                                <TableWrapper title="Programs" columns={columns} data={data} options={{}} />
+                                <TableWrapper title="Programs" columns={columns} data={data} options={{}}/>
                             </Card>
                         </Col>
                     </Row>
@@ -299,7 +308,7 @@ const Programs = (): JSX.Element => {
                                 placeholder="Enter name"
                                 onChange={(e) => setProgramName(e.target.value)}
                             />
-                            <br />
+                            <br/>
                             <label htmlFor="description">
                                 <b>Description</b>
                             </label>
@@ -313,7 +322,7 @@ const Programs = (): JSX.Element => {
                                 placeholder="enter description"
                                 onChange={(e) => setDescription(e.target.value)}
                             />
-                            <br />
+                            <br/>
                             <label htmlFor="cou">
                                 <b>Prerequisite Documentation</b>
                             </label>
@@ -327,11 +336,11 @@ const Programs = (): JSX.Element => {
                                 type="textarea"
                                 placeholder="Enter prerequisite documentation separate with ,"
                             />
-                            <br />
+                            <br/>
                             <label htmlFor="certificationType">
                                 <b>Certification Type</b>
                             </label>
-                            <br />
+                            <br/>
                             <Select
                                 theme={customSelectTheme}
                                 defaultValue=""
@@ -342,11 +351,11 @@ const Programs = (): JSX.Element => {
                                 noOptionsMessage={() => 'No types available'}
                                 onChange={handleCertType}
                             />
-                            <br />
+                            <br/>
                             <label htmlFor="tiimetablelable">
                                 <b>Department</b>
                             </label>
-                            <br />
+                            <br/>
                             <Select
                                 theme={customSelectTheme}
                                 defaultValue=""
@@ -357,11 +366,11 @@ const Programs = (): JSX.Element => {
                                 noOptionsMessage={() => 'No department available'}
                                 onChange={handleChange}
                             />
-                            <br />
+                            <br/>
                             <label htmlFor="requiresClearance">
                                 <b>Requires Clearance</b>
                             </label>
-                            <br />
+                            <br/>
                             <Select
                                 theme={customSelectTheme}
                                 defaultValue=""
@@ -372,12 +381,12 @@ const Programs = (): JSX.Element => {
                                 noOptionsMessage={() => 'No option available'}
                                 onChange={handleClearance}
                             />
-                            <br />
-                            <br />
+                            <br/>
+                            <br/>
                             <label htmlFor="duration">
                                 <b>Program duration</b>
                             </label>
-                            <br />
+                            <br/>
                             <TextInput
                                 name="duration"
                                 value={duration}
@@ -386,8 +395,8 @@ const Programs = (): JSX.Element => {
                                 placeholder="Enter program duration e.g 4w2d"
                                 onChange={(e) => setDuration(e.target.value)}
                             />
-                            <br />
-                            <br />
+                            <br/>
+                            <br/>
                         </div>
                     </ValidationForm>
                     <Col>
@@ -398,35 +407,6 @@ const Programs = (): JSX.Element => {
                             Close
                         </button>
                     </Col>
-                </Modal.Body>
-            </Modal>
-            <Modal
-                backdrop="static"
-                show={activationModal}
-                onHide={toggleActivationModal}
-                size="sm"
-                aria-labelledby="contained-modal-title-vcenter"
-                centered
-            >
-                <Modal.Header>
-                    <Modal.Title id="contained-modal-title-vcenter">{}</Modal.Title>
-                </Modal.Header>
-                <Modal.Body>
-                    <ValidationForm>
-                        <p className="text-center">A you sure you want to change the status of {rowData?.name} ?</p>
-                        <Button disabled={disabledButton} className="btn btn-danger float-left" onClick={handleCloseModal}>
-                            Cancel
-                        </Button>
-                        <Button
-                            disabled={disabledButton}
-                            className="btn btn-primary float-right"
-                            onClick={() => {
-                                handleToggleStatusSubmit(rowData);
-                            }}
-                        >
-                            Confirm
-                        </Button>
-                    </ValidationForm>
                 </Modal.Body>
             </Modal>
             <ConfirmationModalWrapper

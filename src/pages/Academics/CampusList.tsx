@@ -34,28 +34,19 @@ const CampusList = (): JSX.Element => {
     const [selectedCampusName, setSelectedCampusName] = useState('');
     const [selectedDescription, setSelectedDescription] = useState('');
     const [linearDisplay, setLinearDisplay] = useState('none');
-    const [rowData, setRowData] = useState<Campus>();
+    const [, setRowData] = useState<Campus>();
     const [, setDisabled] = useState(false);
     let activationStatus: boolean;
-    const [disabledButton, setDisabledButton] = useState(false);
-
+    const [, setDisabledButton] = useState(false);
+    const [status, setStatus] = useState(false);
     const handleActivationStatusToggle = (event, row: Campus) => {
+        setStatus(!row.activation_status);
         setDisabled(true);
-        if (row.activation_status) {
-            activationStatus = false;
-            toggleActivationModal();
-            setRowData(row);
-        }
-        if (!row.activation_status) {
-            activationStatus = true;
-            toggleActivationModal();
-            setRowData(row);
-        }
     };
     const handleToggleStatusSubmit = (row: Campus) => {
         setDisabledButton(true);
         const campus = {
-            activation_status: activationStatus
+            activation_status: status
         };
         timetablingAxiosInstance
             .put(`/campuses/${row.id}`, campus)
@@ -85,11 +76,33 @@ const CampusList = (): JSX.Element => {
             field: 'internal_action',
             render: (row: Campus) =>
                 canPerformActions(ACTION_UPDATE_CAMPUS.name) && (
-                    <Switch
-                        onChange={(event) => handleActivationStatusToggle(event, row)}
-                        inputProps={{ 'aria-label': 'controlled' }}
-                        defaultChecked={row.activation_status === true}
-                    />
+                    <>
+                        <Switch
+                            defaultChecked={row.activation_status}
+                            color="secondary"
+                            inputProps={{'aria-label': 'controlled'}}
+                            onChange={(event) => {
+                                handleActivationStatusToggle(event, row);
+                                setRowData(row);
+                                toggleActivationModal();
+                            }}
+                        />
+                        <ConfirmationModalWrapper
+                            submitButton
+                            submitFunction={() => handleToggleStatusSubmit(row)}
+                            closeModal={handleCloseModal}
+                            show={activationModal}
+                        >
+                            <h6 className="text-center">
+                                A you sure you want to change the status of <>{row.name}</> ?
+                            </h6>
+                        </ConfirmationModalWrapper>
+                    </>
+                    // <Switch
+                    //     onChange={(event) => handleActivationStatusToggle(event, row)}
+                    //     inputProps={{ 'aria-label': 'controlled' }}
+                    //     defaultChecked={row.activation_status === true}
+                    // />
                 )
         }
     ];
@@ -304,35 +317,6 @@ const CampusList = (): JSX.Element => {
                             Close
                         </button>
                     </Col>
-                </Modal.Body>
-            </Modal>
-            <Modal
-                backdrop="static"
-                show={activationModal}
-                onHide={toggleActivationModal}
-                size="sm"
-                aria-labelledby="contained-modal-title-vcenter"
-                centered
-            >
-                <Modal.Header>
-                    <Modal.Title id="contained-modal-title-vcenter">{}</Modal.Title>
-                </Modal.Header>
-                <Modal.Body>
-                    <ValidationForm>
-                        <h6>A you sure you want to change the status of {rowData?.name} ?</h6>
-                        <Button disabled={disabledButton} className="btn btn-danger float-left" onClick={handleCloseModal}>
-                            Cancel
-                        </Button>
-                        <Button
-                            disabled={disabledButton}
-                            className="btn btn-primary float-right"
-                            onClick={() => {
-                                handleToggleStatusSubmit(rowData);
-                            }}
-                        >
-                            Confirm
-                        </Button>
-                    </ValidationForm>
                 </Modal.Body>
             </Modal>
             <ConfirmationModalWrapper

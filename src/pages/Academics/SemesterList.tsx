@@ -21,7 +21,7 @@ const SemesterList = (): JSX.Element => {
         name: string;
         startDate: string;
         endDate: string;
-        activation_status: boolean;
+        activationStatus: boolean;
     }
 
     const columns = [
@@ -34,15 +34,31 @@ const SemesterList = (): JSX.Element => {
             field: 'internal_action',
             render: (row: Semester) =>
                 canPerformActions(ACTION_UPDATE_SEMESTERS.name) && (
-                    <Switch
-                        onChange={(event) => handleActivationStatusToggle(event, row)}
-                        inputProps={{ 'aria-label': 'controlled' }}
-                        defaultChecked={row.activation_status === true}
-                    />
+                    <>
+                        <Switch
+                            defaultChecked={row.activationStatus}
+                            color="secondary"
+                            inputProps={{'aria-label': 'controlled'}}
+                            onChange={(event) => {
+                                handleActivationStatusToggle(event, row);
+                                setRowData(row);
+                                toggleActivationModal();
+                            }}
+                        />
+                        <ConfirmationModalWrapper
+                            submitButton
+                            submitFunction={() => handleToggleStatusSubmit(row)}
+                            closeModal={handleCloseModal}
+                            show={activationModal}
+                        >
+                            <h6 className="text-center">
+                                A you sure you want to change the status of <>{row.name}</> ?
+                            </h6>
+                        </ConfirmationModalWrapper>
+                    </>
                 )
         }
     ];
-    const [, setDisabled] = useState(false);
     const [data, setData] = useState([]);
     const [isError] = useState(false);
     const [semesterName, setSemesterName] = useState('');
@@ -58,27 +74,18 @@ const SemesterList = (): JSX.Element => {
     const [selectedSemester, setSelectedSemester] = useState<Semester>();
     const [linearDisplay, setLinearDisplay] = useState('none');
     const [activationModal, setActivationModal] = useState(false);
-    const [rowData, setRowData] = useState<Semester>();
+    const [, setRowData] = useState<Semester>();
     const today = new Date().toISOString().slice(0, 10);
+    const [status, setStatus] = useState(false);
     let activationStatus: boolean;
-    const [disabledButton, setDisabledButton] = useState(false);
+    const [, setDisabledButton] = useState(false);
 
     const handleActivationStatusToggle = (event, row: Semester) => {
-        setDisabled(true);
-        if (row.activation_status) {
-            activationStatus = false;
-            toggleActivationModal();
-            setRowData(row);
-        }
-        if (!row.activation_status) {
-            activationStatus = true;
-            toggleActivationModal();
-            setRowData(row);
-        }
+        setStatus(!row.activationStatus);
     };
     const handleToggleStatusSubmit = (row: Semester) => {
         const semester = {
-            activation_status: activationStatus
+            activationStatus: status
         };
         setDisabledButton(true);
         timetablingAxiosInstance
@@ -88,13 +95,10 @@ const SemesterList = (): JSX.Element => {
                 const msg = activationStatus ? 'Successfully activated semester' : 'Successfully Deactivated semester';
                 alerts.showSuccess(msg);
                 fetchSemesters();
-                setDisabled(false);
+                handleCloseModal();
             })
             .catch((error) => {
-                setDisabledButton(false);
-                console.error(error);
                 alerts.showError(error.message);
-                setDisabled(false);
             });
     };
     useEffect(() => {
@@ -133,10 +137,11 @@ const SemesterList = (): JSX.Element => {
             .get('/semesters')
             .then((res) => {
                 setData(res.data);
+                setActivationModal(false);
             })
             .catch((error) => {
-                console.error(error);
                 alerts.showError(error.message);
+                setActivationModal(false);
             });
     };
     const handleCreate = (e) => {
@@ -200,7 +205,6 @@ const SemesterList = (): JSX.Element => {
     };
     const handleCloseModal = () => {
         fetchSemesters();
-        setActivationModal(false);
     };
     const toggleConfirmModal = () => {
         setConfirmModal(true);
@@ -339,35 +343,6 @@ const SemesterList = (): JSX.Element => {
                             Close
                         </button>
                     </div>
-                </Modal.Body>
-            </Modal>
-            <Modal
-                backdrop="static"
-                show={activationModal}
-                onHide={toggleActivationModal}
-                size="sm"
-                aria-labelledby="contained-modal-title-vcenter"
-                centered
-            >
-                <Modal.Header>
-                    <Modal.Title id="contained-modal-title-vcenter">{}</Modal.Title>
-                </Modal.Header>
-                <Modal.Body>
-                    <ValidationForm>
-                        <p className="text-center">A you sure you want to change the status of {rowData?.name} ?</p>
-                        <Button disabled={disabledButton} className="btn btn-danger float-left" onClick={handleCloseModal}>
-                            Cancel
-                        </Button>
-                        <Button
-                            disabled={disabledButton}
-                            className="btn btn-primary float-right"
-                            onClick={() => {
-                                handleToggleStatusSubmit(rowData);
-                            }}
-                        >
-                            Confirm
-                        </Button>
-                    </ValidationForm>
                 </Modal.Body>
             </Modal>
             <ConfirmationModalWrapper

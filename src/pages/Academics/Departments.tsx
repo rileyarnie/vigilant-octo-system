@@ -32,16 +32,32 @@ const Department = (): JSX.Element => {
             title: 'Activation Status',
             field: 'isActive',
             render: (row: department) => (
-                <Switch
-                    onChange={(event) => handleActivationStatusToggle(event, row)}
-                    inputProps={{ 'aria-label': 'controlled' }}
-                    defaultChecked={row.isActive}
-                    value={row.isActive}
-                />
+                <>
+                    <Switch
+                        defaultChecked={row.isActive}
+                        color="secondary"
+                        inputProps={{'aria-label': 'controlled'}}
+                        onChange={(event) => {
+                            handleActivationStatusToggle(event, row);
+                            toggleActivationModal();
+                        }}
+                    />
+                    <ConfirmationModalWrapper
+                        submitButton
+                        submitFunction={() => handleToggleStatusSubmit(row)}
+                        closeModal={handleCloseModal}
+                        show={activationModal}
+                    >
+                        <h6 className="text-center">
+                            A you sure you want to change the status of <>{row.name}</> ?
+                        </h6>
+                    </ConfirmationModalWrapper>
+                </>
             )
         }
     ];
     const options = [];
+    const [status, setStatus] = useState(false);
     const [confirmModal, setConfirmModal] = useState(false);
     const [data, setData] = useState([]);
     const [iserror] = useState(false);
@@ -57,21 +73,19 @@ const Department = (): JSX.Element => {
     const [, setDisabled] = useState(false);
     const [activationModal, setActivationModal] = useState(false);
     const [linearDisplay, setLinearDisplay] = useState('none');
-    const [rowData, setRowData] = useState<department>();
     let activationStatus: boolean;
     const [disabledButton, setDisabledButton] = useState(false);
 
 
     const handleActivationStatusToggle = (event, row: department) => {
-        setRowData(row);
-        setIsActive(!row.isActive);
+        setStatus(!row.isActive);
         toggleActivationModal();
     };
 
     const handleToggleStatusSubmit = (row: department) => {
         const departmentStatus = {
             name: row.name,
-            isActive
+            status
         };
         setDisabledButton(true);
         
@@ -120,7 +134,6 @@ const Department = (): JSX.Element => {
     });
     const updateDepartment = (deptId, updates) => {
         setLinearDisplay('block');
-        console.log('updating with payload', updates);
         timetablingAxiosInstance
             .put(`/departments/${deptId}`, updates)
             .then(() => {
@@ -144,9 +157,7 @@ const Department = (): JSX.Element => {
                 setLinearDisplay('none');
             })
             .catch((error) => {
-                //handle error using logging library
                 setLinearDisplay('block');
-                console.error(error);
                 alerts.showError(error.message);
                 setLinearDisplay('none');
             });
@@ -316,36 +327,6 @@ const Department = (): JSX.Element => {
                             Submit
                         </button>
                     </Col>
-                </Modal.Body>
-            </Modal>
-            <Modal
-                backdrop="static"
-                show={activationModal}
-                onHide={toggleActivationModal}
-                size="sm"
-                aria-labelledby="contained-modal-title-vcenter"
-                centered
-            >
-                <Modal.Header>
-                    <Modal.Title id="contained-modal-title-vcenter">{}</Modal.Title>
-                </Modal.Header>
-                <Modal.Body>
-                    <ValidationForm>
-                        <p className="text-center">
-                            Are you sure you want to change the status of <b>{rowData?.name}</b> ?
-                        </p>
-                        <Button className="btn btn-danger float-left" onClick={handleCloseModal}>
-                            Cancel
-                        </Button>
-                        <Button
-                            className="btn btn-primary float-right"
-                            onClick={() => {
-                                handleToggleStatusSubmit(rowData);
-                            }}
-                        >
-                            Confirm
-                        </Button>
-                    </ValidationForm>
                 </Modal.Body>
             </Modal>
             <ConfirmationModalWrapper
