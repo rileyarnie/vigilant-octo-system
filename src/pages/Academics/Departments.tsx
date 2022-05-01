@@ -1,18 +1,22 @@
 /* eslint-disable react/display-name */
-import React, { useState, useEffect } from 'react';
+import React, {useState, useEffect} from 'react';
 import Edit from '@material-ui/icons/Edit';
 import Alert from '@material-ui/lab/Alert';
 import Breadcrumb from '../../App/components/Breadcrumb';
-import { Row, Col, Card, Button, Modal } from 'react-bootstrap';
-import { ValidationForm, TextInput } from 'react-bootstrap4-form-validation';
-import { Switch } from '@material-ui/core';
-import { Alerts, ToastifyAlerts } from '../lib/Alert';
+import {Row, Col, Card, Button, Modal} from 'react-bootstrap';
+import {ValidationForm, TextInput} from 'react-bootstrap4-form-validation';
+import {Switch} from '@material-ui/core';
+import {Alerts, ToastifyAlerts} from '../lib/Alert';
 import LinearProgress from '@mui/material/LinearProgress';
-import { canPerformActions } from '../../services/ActionChecker';
-import { ACTION_CREATE_DEPARTMENT, ACTION_GET_DEPARTMENTS, ACTION_UPDATE_DEPARTMENT } from '../../authnz-library/timetabling-actions';
-import { timetablingAxiosInstance } from '../../utlis/interceptors/timetabling-interceptor';
+import {canPerformActions} from '../../services/ActionChecker';
+import {
+    ACTION_CREATE_DEPARTMENT,
+    ACTION_GET_DEPARTMENTS,
+    ACTION_UPDATE_DEPARTMENT
+} from '../../authnz-library/timetabling-actions';
+import {timetablingAxiosInstance} from '../../utlis/interceptors/timetabling-interceptor';
 import TableWrapper from '../../utlis/TableWrapper';
-import { customSelectTheme } from '../lib/SelectThemes';
+import {customSelectTheme} from '../lib/SelectThemes';
 import Select from 'react-select';
 import ConfirmationModalWrapper from '../../App/components/modal/ConfirmationModalWrapper';
 
@@ -24,24 +28,41 @@ const Department = (): JSX.Element => {
         id: number;
         isActive: boolean;
     }
+
     const columns = [
-        { title: 'ID', field: 'id', hidden: true },
-        { title: 'Department name', field: 'name' },
-        { title: 'HOD', field: 'hodTrainerId' },
+        {title: 'ID', field: 'id', hidden: true},
+        {title: 'Department name', field: 'name'},
+        {title: 'HOD', field: 'hodTrainerId'},
         {
             title: 'Activation Status',
             field: 'isActive',
             render: (row: department) => (
-                <Switch
-                    onChange={(event) => handleActivationStatusToggle(event, row)}
-                    inputProps={{ 'aria-label': 'controlled' }}
-                    defaultChecked={row.isActive}
-                    value={row.isActive}
-                />
+                <>
+                    <Switch
+                        defaultChecked={row.isActive}
+                        color="secondary"
+                        inputProps={{'aria-label': 'controlled'}}
+                        onChange={(event) => {
+                            handleActivationStatusToggle(event, row);
+                            toggleActivationModal();
+                        }}
+                    />
+                    <ConfirmationModalWrapper
+                        submitButton
+                        submitFunction={() => handleToggleStatusSubmit(row)}
+                        closeModal={() => fetchDepartments()}
+                        show={activationModal}
+                    >
+                        <h6 className="text-center">
+                            A you sure you want to change the status of <>{row.name}</> ?
+                        </h6>
+                    </ConfirmationModalWrapper>
+                </>
             )
         }
     ];
     const options = [];
+    const [status, setStatus] = useState(false);
     const [confirmModal, setConfirmModal] = useState(false);
     const [data, setData] = useState([]);
     const [iserror] = useState(false);
@@ -57,24 +78,22 @@ const Department = (): JSX.Element => {
     const [, setDisabled] = useState(false);
     const [activationModal, setActivationModal] = useState(false);
     const [linearDisplay, setLinearDisplay] = useState('none');
-    const [rowData, setRowData] = useState<department>();
     let activationStatus: boolean;
     const [disabledButton, setDisabledButton] = useState(false);
 
 
     const handleActivationStatusToggle = (event, row: department) => {
-        setRowData(row);
-        setIsActive(!row.isActive);
+        setStatus(!row.isActive);
         toggleActivationModal();
     };
 
     const handleToggleStatusSubmit = (row: department) => {
         const departmentStatus = {
             name: row.name,
-            isActive
+            status
         };
         setDisabledButton(true);
-        
+
         timetablingAxiosInstance
             .put(`/departments/${row.id}`, departmentStatus)
             .then(() => {
@@ -116,11 +135,10 @@ const Department = (): JSX.Element => {
             });
     }, []);
     users.map((hod) => {
-        return options.push({ value: hod.tr_id, label: hod.stf_name });
+        return options.push({value: hod.tr_id, label: hod.stf_name});
     });
     const updateDepartment = (deptId, updates) => {
         setLinearDisplay('block');
-        console.log('updating with payload', updates);
         timetablingAxiosInstance
             .put(`/departments/${deptId}`, updates)
             .then(() => {
@@ -144,11 +162,12 @@ const Department = (): JSX.Element => {
                 setLinearDisplay('none');
             })
             .catch((error) => {
-                //handle error using logging library
                 setLinearDisplay('block');
-                console.error(error);
                 alerts.showError(error.message);
                 setLinearDisplay('none');
+            })
+            .finally(() => {
+                setActivationModal(false);
             });
     };
     const handleCreate = (e) => {
@@ -203,9 +222,6 @@ const Department = (): JSX.Element => {
     const toggleActivationModal = () => {
         activationModal ? resetStateCloseModal() : setActivationModal(true);
     };
-    const handleCloseModal = () => {
-        setActivationModal(false);
-    };
     const toggleConfirmModal = () => {
         setConfirmModal(true);
     };
@@ -216,7 +232,7 @@ const Department = (): JSX.Element => {
         <>
             <Row className="align-items-center page-header">
                 <Col>
-                    <Breadcrumb />
+                    <Breadcrumb/>
                 </Col>
                 <Col>
                     {canPerformActions(ACTION_CREATE_DEPARTMENT.name) && (
@@ -228,7 +244,7 @@ const Department = (): JSX.Element => {
             </Row>
             {canPerformActions(ACTION_GET_DEPARTMENTS.name) && (
                 <>
-                    <LinearProgress style={{ display: linearDisplay }} />
+                    <LinearProgress style={{display: linearDisplay}}/>
                     <Row>
                         <Col>
                             <Card>
@@ -245,7 +261,7 @@ const Department = (): JSX.Element => {
                                     title="Departments"
                                     columns={columns}
                                     data={data}
-                                    options={{ actionsColumnIndex: -1 }}
+                                    options={{actionsColumnIndex: -1}}
                                     actions={
                                         canPerformActions(ACTION_UPDATE_DEPARTMENT.name)
                                             ? [
@@ -278,7 +294,8 @@ const Department = (): JSX.Element => {
                 centered
             >
                 <Modal.Header closeButton>
-                    <Modal.Title id="contained-modal-title-vcenter">{deptId ? 'Edit department' : 'Create a department'}</Modal.Title>
+                    <Modal.Title
+                        id="contained-modal-title-vcenter">{deptId ? 'Edit department' : 'Create a department'}</Modal.Title>
                 </Modal.Header>
                 <Modal.Body>
                     <ValidationForm>
@@ -293,7 +310,7 @@ const Department = (): JSX.Element => {
                                 onChange={(e) => (deptId ? setSelectedDeptName(e.target.value) : setDeptName(e.target.value))}
                                 required
                             />
-                            <br />
+                            <br/>
                         </div>
                         <div className="form-group">
                             <label htmlFor="trainerType">Select a HoD</label>
@@ -309,43 +326,9 @@ const Department = (): JSX.Element => {
                         </div>
                     </ValidationForm>
                     <Col>
-                        <button disabled={disabledButton} className="btn btn-danger float-left" onClick={() => toggleCreateModal()}>
-                            Cancel
-                        </button>
-                        <button disabled={disabledButton} className="btn btn-info float-right" onClick={toggleConfirmModal}>
-                            Submit
-                        </button>
+                        <button disabled={disabledButton} className="btn btn-danger float-left" onClick={() => toggleCreateModal()}>Cancel</button>
+                        <button disabled={disabledButton} className="btn btn-info float-right" onClick={toggleConfirmModal}>Submit</button>
                     </Col>
-                </Modal.Body>
-            </Modal>
-            <Modal
-                backdrop="static"
-                show={activationModal}
-                onHide={toggleActivationModal}
-                size="sm"
-                aria-labelledby="contained-modal-title-vcenter"
-                centered
-            >
-                <Modal.Header>
-                    <Modal.Title id="contained-modal-title-vcenter">{}</Modal.Title>
-                </Modal.Header>
-                <Modal.Body>
-                    <ValidationForm>
-                        <p className="text-center">
-                            Are you sure you want to change the status of <b>{rowData?.name}</b> ?
-                        </p>
-                        <Button className="btn btn-danger float-left" onClick={handleCloseModal}>
-                            Cancel
-                        </Button>
-                        <Button
-                            className="btn btn-primary float-right"
-                            onClick={() => {
-                                handleToggleStatusSubmit(rowData);
-                            }}
-                        >
-                            Confirm
-                        </Button>
-                    </ValidationForm>
                 </Modal.Body>
             </Modal>
             <ConfirmationModalWrapper

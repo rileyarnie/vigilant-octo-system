@@ -12,6 +12,7 @@ import { ACTION_CREATE_COURSE, ACTION_GET_COURSES, ACTION_UPDATE_COURSE } from '
 import { timetablingAxiosInstance } from '../../utlis/interceptors/timetabling-interceptor';
 import { ValidationForm } from 'react-bootstrap4-form-validation';
 import TableWrapper from '../../utlis/TableWrapper';
+import ConfirmationModalWrapper from '../../App/components/modal/ConfirmationModalWrapper';
 const alerts: Alerts = new ToastifyAlerts();
 
 const CoursesList = (): JSX.Element => {
@@ -50,40 +51,52 @@ const CoursesList = (): JSX.Element => {
     const [errorMessages] = useState([]);
     const [linearDisplay, setLinearDisplay] = useState('none');
     const [activationModal, setActivationModal] = useState(false);
-    const [rowData, setRowData] = useState<Course>();
-    //const [selectedCourse,setSelectedCourse] = useState({} as Course)
-    let approvalStatus: boolean;
-    let activationStatus: boolean;
+    const [rowData] = useState<Course>();
+    const [status, setStatus] = useState(true);
     let isElective: boolean;
     let msg: string;
     const [disabled, setDisabled] = useState(false);
 
+    const columns = [
+        { title: 'ID', field: 'id' },
+        { title: 'Course name', field: 'name' },
+        {
+            title: 'Toggle Activation Status',
+            field: 'internal_action',
+            render: (row: Course) =>
+                canPerformActions(ACTION_UPDATE_COURSE.name) && (
+                    <>
+                        <Switch
+                            defaultChecked={row.activation_status}
+                            color="secondary"
+                            inputProps={{'aria-label': 'controlled'}}
+                            onChange={(event) => {
+                                handleActivationStatusToggle(event, row);
+                                toggleActivationModal();
+                            }}
+                        />
+                        <ConfirmationModalWrapper
+                            submitButton
+                            submitFunction={() => handleToggleStatusSubmit(row)}
+                            closeModal={handleCloseModal}
+                            show={activationModal}
+                        >
+                            <h6 className="text-center">
+                                A you sure you want to change the status of <>{row.name}</> ?
+                            </h6>
+                        </ConfirmationModalWrapper>
+                    </>
+                )
+        }
+    ];
     const handleActivationStatusToggle = (event, row: Course) => {
-        if (row.activation_status) {
-            msg = 'Successfully Deactivated Course';
-            activationStatus = false;
-            approvalStatus = row.approval_status;
-            isElective = row.isElective;
-            toggleActivationModal();
-            setRowData(row);
-        }
-        if (!row.activation_status) {
-            msg = 'Successfully Activated Course';
-            activationStatus = true;
-            approvalStatus = row.approval_status;
-            isElective = row.isElective;
-            toggleActivationModal();
-            setRowData(row);
-        }
+        setStatus(!row.activation_status);
     };
-
     const handleToggleStatusSubmit = (row: Course) => {
         const course = {
-            activation_status: activationStatus,
-            approval_status: approvalStatus,
+            activation_status: status,
             isElective: isElective
         };
-
         setLinearDisplay('block');
         setDisabled(true);
         timetablingAxiosInstance
@@ -101,24 +114,6 @@ const CoursesList = (): JSX.Element => {
                 alerts.showError(error.message);
             });
     };
-
-    const columns = [
-        { title: 'ID', field: 'id' },
-        { title: 'Course name', field: 'name' },
-        {
-            title: 'Toggle Activation Status',
-            field: 'internal_action',
-            render: (row: Course) =>
-                canPerformActions(ACTION_UPDATE_COURSE.name) && (
-                    <Switch
-                        onChange={(event) => handleActivationStatusToggle(event, row)}
-                        inputProps={{ 'aria-label': 'controlled' }}
-                        defaultChecked={row.activation_status === true}
-                    />
-                )
-        }
-    ];
-
     const toggleCreateModal = () => {
         showModal ? setModal(false) : setModal(true);
     };
