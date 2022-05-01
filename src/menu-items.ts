@@ -172,20 +172,7 @@ const chartData: { items: MenuItemType[] } = {
                             url: '/semesters',
                             hidden: !canPerformActions(ACTION_GET_SEMESTERS.name)
                         },
-                        {
-                            id: 'finanace',
-                            title: 'Program Cohorts',
-                            type: 'item',
-                            url: '/studentlist',
-                            hidden: !canPerformActions(ACTION_GET_FEE_REPORTS.name)
-                        },
-                        {
-                            id: 'finanace',
-                            title: 'Course Cohorts',
-                            type: 'item',
-                            url: '/studentlist',
-                            hidden: !canPerformActions(ACTION_GET_FEE_REPORTS.name)
-                        },
+                        
                         {
                             id: 'applications',
                             title: 'Applications',
