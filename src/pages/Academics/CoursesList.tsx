@@ -1,18 +1,19 @@
 /* eslint-disable react/display-name */
-import React, { useState, useEffect } from 'react';
+import React, {useEffect, useState} from 'react';
 import Alert from '@material-ui/lab/Alert';
 import Breadcrumb from '../../App/components/Breadcrumb';
-import { Row, Col, Card, Button, Modal } from 'react-bootstrap';
-import { Switch } from '@material-ui/core';
+import {Button, Card, Col, Modal, Row} from 'react-bootstrap';
+import {Switch} from '@material-ui/core';
 import CourseCreation from './CreateCourse';
-import { Alerts, ToastifyAlerts } from '../lib/Alert';
+import {Alerts, ToastifyAlerts} from '../lib/Alert';
 import LinearProgress from '@mui/material/LinearProgress';
-import { canPerformActions } from '../../services/ActionChecker';
-import { ACTION_CREATE_COURSE, ACTION_GET_COURSES, ACTION_UPDATE_COURSE } from '../../authnz-library/timetabling-actions';
-import { timetablingAxiosInstance } from '../../utlis/interceptors/timetabling-interceptor';
-import { ValidationForm } from 'react-bootstrap4-form-validation';
+import {canPerformActions} from '../../services/ActionChecker';
+import {ACTION_CREATE_COURSE, ACTION_GET_COURSES, ACTION_UPDATE_COURSE} from '../../authnz-library/timetabling-actions';
+import {timetablingAxiosInstance} from '../../utlis/interceptors/timetabling-interceptor';
+import {ValidationForm} from 'react-bootstrap4-form-validation';
 import TableWrapper from '../../utlis/TableWrapper';
 import ConfirmationModalWrapper from '../../App/components/modal/ConfirmationModalWrapper';
+
 const alerts: Alerts = new ToastifyAlerts();
 
 const CoursesList = (): JSX.Element => {
@@ -35,7 +36,7 @@ const CoursesList = (): JSX.Element => {
     const fetchCourses = () => {
         setLinearDisplay('block');
         timetablingAxiosInstance
-            .get('/courses')
+            .get('/courses',{ params: { includeDeactivated: true } })
             .then((res) => {
                 setLinearDisplay('none');
                 setData(res.data);
@@ -82,7 +83,7 @@ const CoursesList = (): JSX.Element => {
                             show={activationModal}
                         >
                             <h6 className="text-center">
-                                A you sure you want to change the status of <>{row.name}</> ?
+                                Are you sure you want to change the status of <>{row.name}</> ?
                             </h6>
                         </ConfirmationModalWrapper>
                     </>
@@ -104,14 +105,13 @@ const CoursesList = (): JSX.Element => {
             .then(() => {
                 setDisabled(false);
                 alerts.showSuccess(msg);
-                setLinearDisplay('none');
                 fetchCourses();
+                setLinearDisplay('none');
             })
             .catch((error) => {
                 setDisabled(false);
-                //handle error using logging library
-                console.error(error);
                 alerts.showError(error.message);
+                setLinearDisplay('none');
             });
     };
     const toggleCreateModal = () => {
@@ -187,7 +187,7 @@ const CoursesList = (): JSX.Element => {
                 </Modal.Header>
                 <Modal.Body>
                     <ValidationForm>
-                        <p className="text-center">A you sure you want to change the status of {rowData?.name} ?</p>
+                        <p className="text-center">Are you sure you want to change the status of {rowData?.name} ?</p>
                         <Button disabled={disabled} className="btn btn-danger float-left" onClick={handleCloseModal}>
                             Cancel
                         </Button>

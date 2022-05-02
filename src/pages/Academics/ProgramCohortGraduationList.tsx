@@ -1,13 +1,14 @@
 /* eslint-disable react/display-name */
-import React, { useState, useEffect } from 'react';
-import { Row, Col, Button } from 'react-bootstrap';
+import React, {useEffect, useState} from 'react';
+import {Button, Col, Row} from 'react-bootstrap';
 import Breadcrumb from '../../App/components/Breadcrumb';
-import { LinearProgress } from '@mui/material';
+import {LinearProgress} from '@mui/material';
 import Card from '@material-ui/core/Card';
 import Alert from '@material-ui/lab/Alert';
-import { ProgramCohortService } from '../services/ProgramCohortService';
-import { Alerts, ToastifyAlerts } from '../lib/Alert';
+import {ProgramCohortService} from '../services/ProgramCohortService';
+import {Alerts, ToastifyAlerts} from '../lib/Alert';
 import TableWrapper from '../../utlis/TableWrapper';
+
 const alerts: Alerts = new ToastifyAlerts();
 
 interface Props {
@@ -15,20 +16,22 @@ interface Props {
 }
 
 const ProgramCohortGraduationList: React.FunctionComponent<Props> = ({ toggleGraduationList }) => {
-    const [linearDisplay] = useState('none');
+    const [linearDisplay, setLinearDisplay] = useState('none');
     const [errorMessages] = useState([]);
     const [isError] = useState(false);
     const [graduands, setGraduands] = useState([]);
     const programCohortId = JSON.parse(localStorage.getItem('programCohortId'));
 
     useEffect(() => {
+        setLinearDisplay('block');
         ProgramCohortService.getGraduands({ programCohortId })
             .then((res) => {
                 setGraduands(res.data);
+                setLinearDisplay('none');
             })
             .catch((error) => {
-                console.log('error', error);
                 alerts.showError(error.message);
+                setLinearDisplay('none');
             });
     }, []);
 

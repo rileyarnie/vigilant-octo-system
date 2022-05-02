@@ -1,7 +1,7 @@
 /* eslint-disable react/display-name */
 import React, {useEffect, useState} from 'react';
 import Alert from '@material-ui/lab/Alert';
-import {Card, Col, Modal, Button, Row} from 'react-bootstrap';
+import {Button, Card, Col, Modal, Row} from 'react-bootstrap';
 import Breadcrumb from '../../App/components/Breadcrumb';
 import {ValidationForm} from 'react-bootstrap4-form-validation';
 import {Alerts, ToastifyAlerts} from '../lib/Alert';
@@ -19,9 +19,9 @@ import Select from 'react-select';
 import {LinearProgress} from '@material-ui/core';
 import {canPerformActions} from '../../services/ActionChecker';
 import TableWrapper from '../../utlis/TableWrapper';
+import ConfirmationModalWrapper from '../../App/components/modal/ConfirmationModalWrapper';
 
 const alerts: Alerts = new ToastifyAlerts();
-import ConfirmationModalWrapper from '../../App/components/modal/ConfirmationModalWrapper';
 
 const WorkFlows = (): JSX.Element => {
     const columns = [
@@ -70,6 +70,7 @@ const WorkFlows = (): JSX.Element => {
     }, []);
 
     function fetchActionApprovers(actionName: string) {
+        setLinearDisplay('block');
         setApprovers([]);
         WorkFlowService.fetchActionApprovers(actionName)
             .then((res) => {
@@ -78,11 +79,12 @@ const WorkFlows = (): JSX.Element => {
                     return {value: it.role.id, label: it.role.name};
                 });
                 setApprovers(roles);
+                setLinearDisplay('none');
             })
-            .catch((err) => {
-                console.log('err', err);
+            .catch(() => {
                 alerts.showError(`We couldn’t fetch the existing approving roles for ${actionName}, reopening the modal should fix this.`);
                 toggleCreateModal();
+                setLinearDisplay('none');
             })
             .finally(() => {
                 toggleCreateModal();
@@ -98,8 +100,8 @@ const WorkFlows = (): JSX.Element => {
                 setLinearDisplay('none');
             })
             .catch((error) => {
-                console.log(error);
                 alerts.showError(error.message);
+                setLinearDisplay('none');
             });
     }
 
@@ -112,6 +114,7 @@ const WorkFlows = (): JSX.Element => {
 
     function handleSubmitWorkFlow() {
         setDisabled(true);
+        setLinearDisplay('block');
         const approvingRoles = [];
         selectedOptions.forEach((selectedOption, i) => {
             approvingRoles.push({
@@ -127,10 +130,12 @@ const WorkFlows = (): JSX.Element => {
                 alerts.showSuccess('Successfully created a workflow');
                 setConfirmLinearDisplay('none');
                 handleClose();
+                setLinearDisplay('none');
             })
             .catch((error) => {
                 setDisabled(false);
                 setConfirmLinearDisplay('none');
+                setLinearDisplay('none');
                 alerts.showError(error.message);
             });
     }

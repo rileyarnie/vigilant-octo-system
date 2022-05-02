@@ -1,15 +1,19 @@
 /* eslint-disable react/display-name */
-import React, { useState, useEffect } from 'react';
+import React, {useEffect, useState} from 'react';
 import Edit from '@material-ui/icons/Edit';
-import { LinearProgress, Switch } from '@material-ui/core';
+import {LinearProgress, Switch} from '@material-ui/core';
 import Alert from '@material-ui/lab/Alert';
 import Breadcrumb from '../../App/components/Breadcrumb';
-import { Row, Col, Card, Button, Modal } from 'react-bootstrap';
-import { ValidationForm, TextInput } from 'react-bootstrap4-form-validation';
-import { Alerts, ToastifyAlerts } from '../lib/Alert';
-import { canPerformActions } from '../../services/ActionChecker';
-import { ACTION_CREATE_SEMESTERS, ACTION_GET_SEMESTERS, ACTION_UPDATE_SEMESTERS } from '../../authnz-library/timetabling-actions';
-import { timetablingAxiosInstance } from '../../utlis/interceptors/timetabling-interceptor';
+import {Button, Card, Col, Modal, Row} from 'react-bootstrap';
+import {TextInput, ValidationForm} from 'react-bootstrap4-form-validation';
+import {Alerts, ToastifyAlerts} from '../lib/Alert';
+import {canPerformActions} from '../../services/ActionChecker';
+import {
+    ACTION_CREATE_SEMESTERS,
+    ACTION_GET_SEMESTERS,
+    ACTION_UPDATE_SEMESTERS
+} from '../../authnz-library/timetabling-actions';
+import {timetablingAxiosInstance} from '../../utlis/interceptors/timetabling-interceptor';
 import TableWrapper from '../../utlis/TableWrapper';
 import ConfirmationModalWrapper from '../../App/components/modal/ConfirmationModalWrapper';
 
@@ -84,6 +88,7 @@ const SemesterList = (): JSX.Element => {
         setStatus(!row.activationStatus);
     };
     const handleToggleStatusSubmit = (row: Semester) => {
+        setLinearDisplay('block');
         const semester = {
             activationStatus: status
         };
@@ -99,53 +104,60 @@ const SemesterList = (): JSX.Element => {
             })
             .catch((error) => {
                 alerts.showError(error.message);
+                setLinearDisplay('none');
             });
     };
     useEffect(() => {
+        setLinearDisplay('block');
         timetablingAxiosInstance
             .get('/semesters')
             .then((res) => {
                 console.log(res.data);
-                setLinearDisplay('none');
                 setData(res.data);
+                setLinearDisplay('none');
             })
             .catch((error) => {
-                console.error(error);
                 alerts.showError(error.message);
+                setLinearDisplay('none');
             });
     }, []);
     const updateSemester = (semesterId, updates) => {
+        setLinearDisplay('block');
         setDisabledButton(true);
         timetablingAxiosInstance
             .put(`/semesters/${semesterId}`, { body: updates })
             .then(() => {
                 setDisabledButton(false);
-                setLinearDisplay('none');
                 alerts.showSuccess('Successfully updated Semester');
                 fetchSemesters();
                 resetStateCloseModal();
                 toggleCloseConfirmModal();
+                setLinearDisplay('none');
             })
             .catch((error) => {
                 setDisabledButton(false);
-                console.error(error);
                 alerts.showError(error.message);
+                setLinearDisplay('none');
             });
     };
     const fetchSemesters = () => {
+        setLinearDisplay('block');
         timetablingAxiosInstance
-            .get('/semesters')
+            .get('/semesters',{ params: { includeDeactivated: true } })
             .then((res) => {
                 setData(res.data);
                 setActivationModal(false);
+                setLinearDisplay('none');
             })
             .catch((error) => {
                 alerts.showError(error.message);
                 setActivationModal(false);
+                setLinearDisplay('none');
             });
     };
     const handleCreate = (e) => {
         e.preventDefault();
+        setLinearDisplay('block');
         const semester = {
             name: semesterName,
             startDate: startDate,
@@ -155,6 +167,7 @@ const SemesterList = (): JSX.Element => {
     };
     const handleEdit = (e) => {
         e.preventDefault();
+        setLinearDisplay('block');
         const updates = {
             name: semesterName === '' ? selectedSemesterName : semesterName,
             startDate: startDate == '' ? selectedStartDate : startDate,
@@ -163,18 +176,18 @@ const SemesterList = (): JSX.Element => {
         updateSemester(semesterId, updates);
     };
     const createSemester = (semesterData) => {
-        console.log(semesterData);
         timetablingAxiosInstance
             .post('/semesters', semesterData)
             .then(() => {
-                setLinearDisplay('none');
                 alerts.showSuccess('Successfully created semesters');
                 fetchSemesters();
                 resetStateCloseModal();
                 toggleCloseConfirmModal();
+                setLinearDisplay('none');
             })
             .catch((error) => {
                 alerts.showError(error.message);
+                setLinearDisplay('none');
             });
     };
 

@@ -2,42 +2,25 @@
 /* eslint-disable linebreak-style */
 /* eslint-disable @typescript-eslint/no-unused-vars */
 /* eslint-disable react/display-name */
-import React, { useState, useEffect, forwardRef } from 'react';
-import AddBox from '@material-ui/icons/AddBox';
-import ArrowDownward from '@material-ui/icons/ArrowDownward';
-import Check from '@material-ui/icons/Check';
-import ChevronLeft from '@material-ui/icons/ChevronLeft';
-import ChevronRight from '@material-ui/icons/ChevronRight';
-import Clear from '@material-ui/icons/Clear';
-import DeleteOutline from '@material-ui/icons/DeleteOutline';
-import Edit from '@material-ui/icons/Edit';
-import FilterList from '@material-ui/icons/FilterList';
+import React, {useEffect, useState} from 'react';
 import AssignmentTurnedIn from '@material-ui/icons/AssignmentTurnedIn';
-import FirstPage from '@material-ui/icons/FirstPage';
-import LastPage from '@material-ui/icons/LastPage';
-import Remove from '@material-ui/icons/Remove';
-import SaveAlt from '@material-ui/icons/SaveAlt';
-import Search from '@material-ui/icons/Search';
-import ViewColumn from '@material-ui/icons/ViewColumn';
-import axios from 'axios';
-import { Icons } from 'material-table';
 import LinearProgress from '@material-ui/core/LinearProgress';
 import Alert from '@material-ui/lab/Alert';
 import Breadcrumb from '../../App/components/Breadcrumb';
-import { ValidationForm, SelectGroup, TextInput } from 'react-bootstrap4-form-validation';
-import { Row, Col, Card, Modal, Button } from 'react-bootstrap';
+import {SelectGroup, TextInput, ValidationForm} from 'react-bootstrap4-form-validation';
+import {Button, Card, Col, Modal, Row} from 'react-bootstrap';
 import DeleteIcon from '@material-ui/icons/Delete';
-import Config from '../../config';
 import SelectCurrency from 'react-select-currency';
-import { DeactivateCourseCohort } from './DeactivateCourseCohort';
-import { Alerts, ToastifyAlerts } from '../lib/Alert';
-const alerts: Alerts = new ToastifyAlerts();
-import { createStyles, Theme, makeStyles } from '@material-ui/core/styles';
+import {DeactivateCourseCohort} from './DeactivateCourseCohort';
+import {Alerts, ToastifyAlerts} from '../lib/Alert';
+import {createStyles, makeStyles, Theme} from '@material-ui/core/styles';
 import IconButton from '@material-ui/core/IconButton';
 import ArrowBackIcon from '@material-ui/icons/ArrowBack';
-import { financeAxiosInstance } from '../../utlis/interceptors/finance-interceptor';
-import { timetablingAxiosInstance } from '../../utlis/interceptors/timetabling-interceptor';
+import {financeAxiosInstance} from '../../utlis/interceptors/finance-interceptor';
+import {timetablingAxiosInstance} from '../../utlis/interceptors/timetabling-interceptor';
 import TableWrapper from '../../utlis/TableWrapper';
+
+const alerts: Alerts = new ToastifyAlerts();
 
 const useStyles = makeStyles((theme: Theme) =>
     createStyles({
@@ -223,13 +206,14 @@ const CourseCohortsList = (props): JSX.Element => {
         timetablingAxiosInstance
             .put(`/programs/${programId}/courses/${selectedCourseId}`)
             .then((res) => {
-                setLinearDisplay('none');
                 alerts.showSuccess('Succesfully removed course');
                 fetchCoursesAssignedToProgram(progId);
+                setLinearDisplay('none');
             })
             .catch((error) => {
                 console.log(error);
                 alerts.showError(error.message);
+                setLinearDisplay('none');
             });
     };
     const handleSemesterUpdate = () => {
@@ -243,18 +227,19 @@ const CourseCohortsList = (props): JSX.Element => {
             .put(`/program-cohort-semesters/${selectedRow.programCohortSemester.id}`, courseSemester)
             .then(() => {
                 alerts.showSuccess('Successfully changed semester');
-                setLinearDisplay('none');
                 fetchCoursesAssignedToProgram(progId);
                 resetStateCloseModal();
                 setDisabled(false);
+                setLinearDisplay('none');
             })
             .catch((error) => {
                 alerts.showError(error.message);
-                console.log(error);
+                setLinearDisplay('none');
             });
     };
 
     const handleFeeItemsPost = async () => {
+        setLinearDisplay('block');
         financeAxiosInstance
             .post('/', {
                 createFeeItemRequest: {
@@ -266,10 +251,11 @@ const CourseCohortsList = (props): JSX.Element => {
             })
             .then(() => {
                 alerts.showSuccess('Successfully posted fee items');
+                setLinearDisplay('none');
             })
             .catch((error) => {
                 alerts.showError(error.message);
-                console.log(error);
+                setLinearDisplay('none');
             });
     };
 

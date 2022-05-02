@@ -1,11 +1,13 @@
-import React, { useState } from 'react';
-import { Button, Col, Form, FormControl, Modal, Row } from 'react-bootstrap';
+import React, {useState} from 'react';
+import {Button, Col, Form, FormControl, Modal, Row} from 'react-bootstrap';
 import ModalWrapper from '../../App/components/modal/ModalWrapper';
-import { ValidationForm, FileInput } from 'react-bootstrap4-form-validation';
-import { Alerts, ToastifyAlerts } from '../lib/Alert';
-const alerts: Alerts = new ToastifyAlerts();
-import { StudentFeesManagementService } from '../../services/StudentFeesManagementService';
+import {FileInput, ValidationForm} from 'react-bootstrap4-form-validation';
+import {Alerts, ToastifyAlerts} from '../lib/Alert';
+import {StudentFeesManagementService} from '../../services/StudentFeesManagementService';
 import ConfirmationModalWrapper from '../../App/components/modal/ConfirmationModalWrapper';
+
+const alerts: Alerts = new ToastifyAlerts();
+
 interface Props {
     show: boolean;
     closeModal: () => void;

@@ -1,11 +1,12 @@
 /* eslint-disable react/display-name */
-import React, { useEffect, useState } from 'react';
-import { LinearProgress } from '@material-ui/core';
+import React, {useEffect, useState} from 'react';
+import {LinearProgress} from '@material-ui/core';
 import {Breadcrumb, Button, Card, Col, Row} from 'react-bootstrap';
-import { Alerts, ToastifyAlerts } from '../lib/Alert';
-import { WorkFlowService } from '../../services/WorkFlowService';
+import {Alerts, ToastifyAlerts} from '../lib/Alert';
+import {WorkFlowService} from '../../services/WorkFlowService';
 import TableWrapper from '../../utlis/TableWrapper';
 import ConfirmationModalWrapper from '../../App/components/modal/ConfirmationModalWrapper';
+
 interface Approval {
     id: number;
     action_name: string;
@@ -98,6 +99,7 @@ const ActionApprovals = () => {
             .catch((err) => {
                 alerts.showError(err.message);
                 toggleCloseApproveModal();
+                setLinearDisplay('none');
             });
     };
     const toggleApproveModal = () => {
