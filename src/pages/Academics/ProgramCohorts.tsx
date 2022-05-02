@@ -366,7 +366,7 @@ const ProgramCohorts = (): JSX.Element => {
             status: 'canceled'
         };
         ProgramCohortService.cancelProgramCohort(cohortId, cancelletionData)
-            .then((res) => {
+            .then(() => {
                 alerts.showSuccess('Successfully cancelled a program cohort');
                 toggleCancelModal();
                 toggleCloseConfirmModal();

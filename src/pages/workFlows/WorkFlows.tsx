@@ -81,7 +81,7 @@ const WorkFlows = (): JSX.Element => {
                 setApprovers(roles);
                 setLinearDisplay('none');
             })
-            .catch((err) => {
+            .catch(() => {
                 alerts.showError(`We couldn’t fetch the existing approving roles for ${actionName}, reopening the modal should fix this.`);
                 toggleCreateModal();
                 setLinearDisplay('none');

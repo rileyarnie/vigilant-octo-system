@@ -25,11 +25,8 @@ const CourseCohortsDetails = (props: any): JSX.Element => {
     const [linearDisplay, setLinearDisplay] = useState('block');
     const [certificationType, setCertificationType] = useState('');
     const [showGraduating, setShowGraduating] = useState(false);
-
     let enterredMarks;
     let selectedMarks;
-    let programs;
-
     const shortTermMarks = [
         { value: 'complete', label: 'complete' },
         { value: 'incomplete', label: 'incomplete' }
