@@ -1,7 +1,7 @@
-import { MenuItem, Select } from '@material-ui/core';
+import {MenuItem, Select} from '@material-ui/core';
 import React from 'react';
-import { ACTION_CREATE_USERS } from '../../../authnz-library/authnz-actions';
-import { canPerformActions } from '../../../services/ActionChecker';
+import {ACTION_CREATE_USERS} from '../../../authnz-library/authnz-actions';
+import {canPerformActions} from '../../../services/ActionChecker';
 import UpdateStaffModal from './UpdateStaffModal';
 
 interface IProps {

@@ -1,16 +1,16 @@
 /* eslint-disable react/display-name */
-import React, { useState, useEffect } from 'react';
-import  { MTableToolbar } from 'material-table';
+import React, {useEffect, useState} from 'react';
+import {MTableToolbar} from 'material-table';
 import Card from '@material-ui/core/Card';
 import Alert from '@material-ui/lab/Alert';
 import Breadcrumb from '../../App/components/Breadcrumb';
-import { Row, Col } from 'react-bootstrap';
-import { MenuItem, Select, InputLabel } from '@material-ui/core';
-import { Link } from 'react-router-dom';
-import { LinearProgress } from '@mui/material';
-import { canPerformActions } from '../../services/ActionChecker';
-import { ACTION_GET_COURSE_COHORTS } from '../../authnz-library/timetabling-actions';
-import { timetablingAxiosInstance } from '../../utlis/interceptors/timetabling-interceptor';
+import {Col, Row} from 'react-bootstrap';
+import {InputLabel, MenuItem, Select} from '@material-ui/core';
+import {Link} from 'react-router-dom';
+import {LinearProgress} from '@mui/material';
+import {canPerformActions} from '../../services/ActionChecker';
+import {ACTION_GET_COURSE_COHORTS} from '../../authnz-library/timetabling-actions';
+import {timetablingAxiosInstance} from '../../utlis/interceptors/timetabling-interceptor';
 import TableWrapper from '../../utlis/TableWrapper';
 
 
@@ -45,6 +45,7 @@ const CourseCohorts = (): JSX.Element => {
         fetchSemesters();
     }, []);
     const fetchcourseCohorts = (): void => {
+        setLinearDisplay('block');
         timetablingAxiosInstance.get('/course-cohorts', { params: { loadExtras: 'trainer' } }).then((res) => {
             const ccData = res.data;
             setData(ccData);
@@ -53,6 +54,7 @@ const CourseCohorts = (): JSX.Element => {
     };
 
     const fetchcourseCohortsByTrainerId = (trainerId: number): void => {
+        setLinearDisplay('block');
         timetablingAxiosInstance.get('/course-cohorts', { params: { trainerId: trainerId } }).then((res) => {
             const ccData = res.data;
             setData(ccData);
@@ -61,6 +63,7 @@ const CourseCohorts = (): JSX.Element => {
     };
 
     const fetchcourseCohortsBySemesterId = (semesterId: number): void => {
+        setLinearDisplay('block');
         timetablingAxiosInstance.get('/course-cohorts', { params: { semesterId: semesterId } }).then((res) => {
             const ccData = res.data;
             setData(ccData);
@@ -69,16 +72,20 @@ const CourseCohorts = (): JSX.Element => {
     };
 
     const fetchTrainers = (): void => {
+        setLinearDisplay('block');
         timetablingAxiosInstance.get('/trainers').then((res) => {
             const trData = res.data;
             setTrainers(trData);
+            setLinearDisplay('none');
         });
     };
 
     const fetchSemesters = (): void => {
+        setLinearDisplay('block');
         timetablingAxiosInstance.get('/semesters').then((res) => {
             const semData = res.data;
             setSemesters(semData);
+            setLinearDisplay('none');
         });
     };
     return (

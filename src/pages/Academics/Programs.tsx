@@ -1,13 +1,13 @@
 /* eslint-disable react/react-in-jsx-scope */
 /* eslint-disable react/display-name */
-import React, {useState, useEffect} from 'react';
+import React, {useEffect, useState} from 'react';
 import {Alerts, ToastifyAlerts} from '../lib/Alert';
 import {Switch} from '@material-ui/core';
 import Alert from '@material-ui/lab/Alert';
 import Breadcrumb from '../../App/components/Breadcrumb';
-import {Row, Col, Card, Button, Modal} from 'react-bootstrap';
+import {Button, Card, Col, Modal, Row} from 'react-bootstrap';
 import {Link} from 'react-router-dom';
-import {ValidationForm, TextInput} from 'react-bootstrap4-form-validation';
+import {TextInput, ValidationForm} from 'react-bootstrap4-form-validation';
 import {LinearProgress} from '@mui/material';
 import {canPerformActions} from '../../services/ActionChecker';
 import {
@@ -17,7 +17,7 @@ import {
 } from '../../authnz-library/timetabling-actions';
 import {timetablingAxiosInstance} from '../../utlis/interceptors/timetabling-interceptor';
 import TableWrapper from '../../utlis/TableWrapper';
-import {customSelectTheme, selectOptions, certType} from '../lib/SelectThemes';
+import {certType, customSelectTheme, selectOptions} from '../lib/SelectThemes';
 import Select from 'react-select';
 import ConfirmationModalWrapper from '../../App/components/modal/ConfirmationModalWrapper';
 
@@ -140,14 +140,14 @@ const Programs = (): JSX.Element => {
     useEffect(() => {
         setLinearDisplay('block');
         timetablingAxiosInstance
-            .get('/programs')
+            .get('/programs',{ params: { includeDeactivated: true } })
             .then((res) => {
-                setLinearDisplay('none');
                 setData(res.data);
+                setLinearDisplay('none');
             })
             .catch((error) => {
-                console.error(error);
                 alerts.showError(error.message);
+                setLinearDisplay('none');
             });
 
         timetablingAxiosInstance
@@ -157,6 +157,7 @@ const Programs = (): JSX.Element => {
             })
             .catch((error) => {
                 alerts.showError(error.message);
+                setLinearDisplay('none');
             });
     }, []);
     departments.map((dept) => {
@@ -200,13 +201,14 @@ const Programs = (): JSX.Element => {
         timetablingAxiosInstance
             .post('/programs', programData)
             .then(() => {
-                setLinearDisplay('none');
                 alerts.showSuccess('Program created succesfully');
                 fetchPrograms();
                 resetStateCloseModal();
+                setLinearDisplay('none');
             })
             .catch((error) => {
                 alerts.showError(error.message);
+                setLinearDisplay('none');
             });
     };
     const resetStateCloseModal = () => {

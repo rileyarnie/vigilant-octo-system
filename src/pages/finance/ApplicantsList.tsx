@@ -1,13 +1,13 @@
 /* eslint-disable react/display-name */
-import React, { useState, useEffect } from 'react';
+import React, {useEffect, useState} from 'react';
 import Alert from '@material-ui/lab/Alert';
 import Breadcrumb from '../../App/components/Breadcrumb';
-import { Row, Col, Card } from 'react-bootstrap';
-import { Alerts, ToastifyAlerts } from '../lib/Alert';
+import {Card, Col, Row} from 'react-bootstrap';
+import {Alerts, ToastifyAlerts} from '../lib/Alert';
 import LinearProgress from '@mui/material/LinearProgress';
-import { canPerformActions } from '../../services/ActionChecker';
-import { ACTION_GET_PROGRAM_COHORT_APPLICATIONS } from '../../authnz-library/sim-actions';
-import { simsAxiosInstance } from '../../utlis/interceptors/sims-interceptor';
+import {canPerformActions} from '../../services/ActionChecker';
+import {ACTION_GET_PROGRAM_COHORT_APPLICATIONS} from '../../authnz-library/sim-actions';
+import {simsAxiosInstance} from '../../utlis/interceptors/sims-interceptor';
 import TableWrapper from '../../utlis/TableWrapper';
 
 const alerts: Alerts = new ToastifyAlerts();
@@ -28,10 +28,12 @@ const StudentFeesManagement = (): JSX.Element => {
     const [selectedRow] = useState(null);
 
     useEffect(() => {
+        setLinearDisplay('block');
         fetchProgramCohortApplications();
     }, [isAdmitted]);
 
     const fetchProgramCohortApplications = () => {
+        setLinearDisplay('block');
         simsAxiosInstance
             .get('/program-cohort-applications', { params: { status: 'ADMITTED' } })
             .then((res) => {
@@ -39,8 +41,8 @@ const StudentFeesManagement = (): JSX.Element => {
                 setData(res.data);
             })
             .catch((error) => {
-                console.error(error);
                 alerts.showError(error.message);
+                setLinearDisplay('none');
             });
     };
     return (

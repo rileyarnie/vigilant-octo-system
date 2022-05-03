@@ -1,20 +1,20 @@
 /* eslint-disable react/display-name */
-import React, { useState, useEffect } from 'react';
+import React, {useEffect, useState} from 'react';
 import Alert from '@material-ui/lab/Alert';
 import Department from '../services/Department';
 import Breadcrumb from '../../App/components/Breadcrumb';
-import { Row, Col, Card, Modal, Button, DropdownButton, Dropdown } from 'react-bootstrap';
-import { ValidationForm } from 'react-bootstrap4-form-validation';
-import { Alerts, ToastifyAlerts } from '../lib/Alert';
+import {Button, Card, Col, Dropdown, DropdownButton, Modal, Row} from 'react-bootstrap';
+import {ValidationForm} from 'react-bootstrap4-form-validation';
+import {Alerts, ToastifyAlerts} from '../lib/Alert';
 import LinearProgress from '@mui/material/LinearProgress';
 import {canPerformActions} from '../../services/ActionChecker';
 import {ACTION_CREATE_TRAINER, ACTION_UPDATE_TRAINER} from '../../authnz-library/timetabling-actions';
 import {timetablingAxiosInstance} from '../../utlis/interceptors/timetabling-interceptor';
 import TableWrapper from '../../utlis/TableWrapper';
-import { customSelectTheme, trainerTypes } from '../lib/SelectThemes';
+import {customSelectTheme, trainerTypes} from '../lib/SelectThemes';
 import Select from 'react-select';
 import ConfirmationModalWrapper from '../../App/components/modal/ConfirmationModalWrapper';
-import { DepartmentService } from '../services/DepartmentService';
+import {DepartmentService} from '../services/DepartmentService';
 
 const alerts: Alerts = new ToastifyAlerts();
 
@@ -164,6 +164,7 @@ const TrainerList = (): JSX.Element => {
 
     const handleEdit = (e) => {
         e.preventDefault();
+        setLinearDisplay('block');
         const updates = {
             staffId: selectedStaffId,
             departmentID: selectedDept,
@@ -176,7 +177,6 @@ const TrainerList = (): JSX.Element => {
 
     const handleDelete = async (trainerId: number) => {
         const departmentsWithHoDTrainer = await DepartmentService.getDepartmentByHODTrainerId(trainerId);
-        console.log(departmentsWithHoDTrainer);
         setDepartmentsWithHoDTrainer(departmentsWithHoDTrainer);
         if (departmentsWithHoDTrainer) {
             toggleCantDeleteModal();
@@ -199,9 +199,8 @@ const TrainerList = (): JSX.Element => {
             })
             .catch((error) => {
                 setDisabled(false);
-                //handle error using logging library
-                console.error(error);
                 alerts.showError(error.message);
+                setLinearDisplay('none');
             });
     };
 
@@ -232,8 +231,6 @@ const TrainerList = (): JSX.Element => {
             })
             .catch((error) => {
                 setDisabled(false);
-                //handle error using logging library
-                console.error(error);
                 alerts.showError(error.message);
             });
     };
@@ -246,16 +243,13 @@ const TrainerList = (): JSX.Element => {
     };
 
     const handleEditStaff = (selectedStaff) => {
-        console.log('selected staff id', selectedStaff);
         setSelectedStaffId(parseInt(selectedStaff.value));
     };
 
     const handleChange = (selectedDept) => {
-        console.log('selected department val ', selectedDept);
         setDept(parseInt(selectedDept.value));
     };
     const handleUser = (selectedUser) => {
-        console.log('selected user ', selectedUser.value);
         setSelectedUser(selectedUser.value);
     };
     const handleTrainerType = (trainerTyp) => {

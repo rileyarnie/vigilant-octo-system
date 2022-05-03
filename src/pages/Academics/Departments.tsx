@@ -1,10 +1,10 @@
 /* eslint-disable react/display-name */
-import React, {useState, useEffect} from 'react';
+import React, {useEffect, useState} from 'react';
 import Edit from '@material-ui/icons/Edit';
 import Alert from '@material-ui/lab/Alert';
 import Breadcrumb from '../../App/components/Breadcrumb';
-import {Row, Col, Card, Button, Modal} from 'react-bootstrap';
-import {ValidationForm, TextInput} from 'react-bootstrap4-form-validation';
+import {Button, Card, Col, Modal, Row} from 'react-bootstrap';
+import {TextInput, ValidationForm} from 'react-bootstrap4-form-validation';
 import {Switch} from '@material-ui/core';
 import {Alerts, ToastifyAlerts} from '../lib/Alert';
 import LinearProgress from '@mui/material/LinearProgress';
@@ -80,14 +80,12 @@ const Department = (): JSX.Element => {
     const [linearDisplay, setLinearDisplay] = useState('none');
     let activationStatus: boolean;
     const [disabledButton, setDisabledButton] = useState(false);
-
-
     const handleActivationStatusToggle = (event, row: department) => {
         setStatus(!row.isActive);
         toggleActivationModal();
     };
-
     const handleToggleStatusSubmit = (row: department) => {
+        setLinearDisplay('block');
         const departmentStatus = {
             name: row.name,
             status
@@ -103,18 +101,20 @@ const Department = (): JSX.Element => {
                 setActivationModal(false);
                 setDisabled(false);
                 fetchDepartments();
+                setLinearDisplay('none');
             })
             .catch((error) => {
                 setDisabledButton(false);
                 console.error(error);
                 alerts.showError(error.message);
                 setDisabled(false);
+                setLinearDisplay('none');
             });
     };
     useEffect(() => {
         setLinearDisplay('block');
         timetablingAxiosInstance
-            .get('/departments')
+            .get('/departments',{ params: { includeDeactivated: true } })
             .then((res) => {
                 setLinearDisplay('none');
                 setData(res.data);
@@ -122,16 +122,17 @@ const Department = (): JSX.Element => {
             .catch((error) => {
                 console.error(error);
                 alerts.showError(error.message);
+                setLinearDisplay('none');
             });
         timetablingAxiosInstance
             .get('/trainers')
             .then((res) => {
                 setLinearDisplay('none');
-                console.log('trainers', res.data);
                 setUsers(res.data);
             })
             .catch((error) => {
                 alerts.showError(error.message);
+                setLinearDisplay('none');
             });
     }, []);
     users.map((hod) => {
@@ -146,6 +147,7 @@ const Department = (): JSX.Element => {
                 alerts.showSuccess('Successfully updated department');
                 fetchDepartments();
                 resetStateCloseModal();
+                setLinearDisplay('none');
             })
             .catch((error) => {
                 setLinearDisplay('block');
@@ -156,7 +158,7 @@ const Department = (): JSX.Element => {
     const fetchDepartments = () => {
         setLinearDisplay('block');
         timetablingAxiosInstance
-            .get('/departments')
+            .get('/departments',{ params: { includeDeactivated: true } })
             .then((res) => {
                 setData(res.data);
                 setLinearDisplay('none');

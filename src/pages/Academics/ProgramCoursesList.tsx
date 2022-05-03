@@ -1,36 +1,19 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 /* eslint-disable @typescript-eslint/no-explicit-any */
 /* eslint-disable react/display-name */
-import React, { useState, useEffect, forwardRef } from 'react';
-import AddBox from '@material-ui/icons/AddBox';
-import ArrowDownward from '@material-ui/icons/ArrowDownward';
-import Check from '@material-ui/icons/Check';
-import ChevronLeft from '@material-ui/icons/ChevronLeft';
-import ChevronRight from '@material-ui/icons/ChevronRight';
-import Clear from '@material-ui/icons/Clear';
-import DeleteOutline from '@material-ui/icons/DeleteOutline';
-import Edit from '@material-ui/icons/Edit';
-import FilterList from '@material-ui/icons/FilterList';
-import FirstPage from '@material-ui/icons/FirstPage';
-import LastPage from '@material-ui/icons/LastPage';
-import Remove from '@material-ui/icons/Remove';
-import SaveAlt from '@material-ui/icons/SaveAlt';
-import Search from '@material-ui/icons/Search';
-import ViewColumn from '@material-ui/icons/ViewColumn';
+import React, {useEffect, useState} from 'react';
 import Alert from '@material-ui/lab/Alert';
 import Breadcrumb from '../../App/components/Breadcrumb';
-import { Row, Col, Card } from 'react-bootstrap';
+import {Card, Col, Row} from 'react-bootstrap';
 import DeleteIcon from '@material-ui/icons/Delete';
-import { Alerts, ToastifyAlerts } from '../lib/Alert';
-import LoadingBar from 'react-top-loading-bar';
+import {Alerts, ToastifyAlerts} from '../lib/Alert';
 import LinearProgress from '@material-ui/core/LinearProgress';
-import { withRouter } from 'react-router-dom';
-import { createStyles, Theme, makeStyles } from '@material-ui/core/styles';
-import Button from '@material-ui/core/Button';
+import {createStyles, makeStyles, Theme} from '@material-ui/core/styles';
 import IconButton from '@material-ui/core/IconButton';
 import ArrowBackIcon from '@material-ui/icons/ArrowBack';
-import { timetablingAxiosInstance } from '../../utlis/interceptors/timetabling-interceptor';
+import {timetablingAxiosInstance} from '../../utlis/interceptors/timetabling-interceptor';
 import TableWrapper from '../../utlis/TableWrapper';
+
 const alerts: Alerts = new ToastifyAlerts();
 
 const useStyles = makeStyles((theme: Theme) =>
@@ -83,26 +66,27 @@ const ProgramCoursesList = (props): JSX.Element => {
         timetablingAxiosInstance
             .get(`/programs/${progId}/courses`)
             .then((res) => {
-                setLinearDisplay('none');
                 setData(res.data);
+                setLinearDisplay('none');
             })
             .catch((error) => {
                 setErrorMessages([error]);
-                console.error(error);
                 alerts.showError(error.message);
             });
     };
 
     const unassignSelectedCoursesFromTrainer = (selectedCourseId: number) => {
+        setLinearDisplay('block');
         timetablingAxiosInstance
             .put(`/programs/${programId}/courses/${selectedCourseId}`)
             .then((res) => {
                 alerts.showSuccess('Succesfully removed course');
-
                 fetchCoursesAssignedToProgram(progId);
+                setLinearDisplay('none');
             })
             .catch((error) => {
                 alerts.showError(error.message);
+                setLinearDisplay('none');
             });
     };
     const handleBack = () => {

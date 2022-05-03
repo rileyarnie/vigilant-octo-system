@@ -1,24 +1,25 @@
 /* eslint-disable react/display-name */
-import React, { useState, useEffect } from 'react';
+import React, {useEffect, useState} from 'react';
 import Card from '@material-ui/core/Card';
 import Alert from '@material-ui/lab/Alert';
 import Breadcrumb from '../../App/components/Breadcrumb';
-import { Row, DropdownButton, Dropdown, Col, Modal, Button } from 'react-bootstrap';
-import { Switch } from '@material-ui/core';
-import { ValidationForm, FileInput, TextInput } from 'react-bootstrap4-form-validation';
+import {Button, Col, Dropdown, DropdownButton, Modal, Row} from 'react-bootstrap';
+import {Switch} from '@material-ui/core';
+import {FileInput, TextInput, ValidationForm} from 'react-bootstrap4-form-validation';
 import CardPreview from './CardPreview';
-import { Link } from 'react-router-dom';
-import { Alerts, ToastifyAlerts } from '../lib/Alert';
-import { LinearProgress } from '@mui/material';
-import { ProgramCohortService } from '../services/ProgramCohortService';
-import { canPerformActions } from '../../services/ActionChecker';
-import { ACTION_CREATE_PROGRAM_COHORT, ACTION_GET_PROGRAM_COHORTS } from '../../authnz-library/timetabling-actions';
-import { timetablingAxiosInstance } from '../../utlis/interceptors/timetabling-interceptor';
+import {Link} from 'react-router-dom';
+import {Alerts, ToastifyAlerts} from '../lib/Alert';
+import {LinearProgress} from '@mui/material';
+import {ProgramCohortService} from '../services/ProgramCohortService';
+import {canPerformActions} from '../../services/ActionChecker';
+import {ACTION_CREATE_PROGRAM_COHORT, ACTION_GET_PROGRAM_COHORTS} from '../../authnz-library/timetabling-actions';
+import {timetablingAxiosInstance} from '../../utlis/interceptors/timetabling-interceptor';
 import TableWrapper from '../../utlis/TableWrapper';
-const alerts: Alerts = new ToastifyAlerts();
 import Select from 'react-select';
-import { customSelectTheme } from '../lib/SelectThemes';
+import {customSelectTheme} from '../lib/SelectThemes';
 import ConfirmationModalWrapper from '../../App/components/modal/ConfirmationModalWrapper';
+
+const alerts: Alerts = new ToastifyAlerts();
 
 const ProgramCohorts = (): JSX.Element => {
     interface programCohort {
@@ -108,6 +109,7 @@ const ProgramCohorts = (): JSX.Element => {
                 console.error(error);
                 alerts.showError(error.message);
                 setDisabled(false);
+                setLinearDisplay('none');
             });
     };
 
@@ -151,13 +153,6 @@ const ProgramCohorts = (): JSX.Element => {
                         </h6>
                     </ConfirmationModalWrapper>
                 </>
-                // <Switch
-                //     onChange={(event) => {
-                //         handleActivationStatusToggle(event, row);
-                //     }}
-                //     inputProps={{ 'aria-label': 'controlled' }}
-                //     defaultChecked={row.program_cohorts_status !== 'canceled'}
-                // />
             )
         },
         {
@@ -225,32 +220,37 @@ const ProgramCohorts = (): JSX.Element => {
     useEffect(() => {
         setLinearDisplay('block');
         timetablingAxiosInstance
-            .get('/program-cohorts', { params: { loadExtras: 'programs' } })
+            .get('/program-cohorts', { params: { loadExtras: 'programs', includeDeactivated: true } })
             .then((res) => {
-                setLinearDisplay('none');
                 setData(res.data);
+                setLinearDisplay('none');
             })
             .catch((error) => {
                 console.error(error);
                 alerts.showError(error.message);
+                setLinearDisplay('none');
             });
         timetablingAxiosInstance
             .get('/programs')
             .then((res) => {
                 setPrograms(res.data);
+                setLinearDisplay('none');
             })
             .catch((error) => {
                 console.error(error);
                 alerts.showError(error.message);
+                setLinearDisplay('none');
             });
         timetablingAxiosInstance
             .get('/campuses')
             .then((res) => {
                 setCampuses(res.data);
+                setLinearDisplay('none');
             })
             .catch((error) => {
                 console.error(error);
                 alerts.showError(error.message);
+                setLinearDisplay('none');
             });
     }, []);
     programs.map((prog) => {
@@ -274,7 +274,7 @@ const ProgramCohorts = (): JSX.Element => {
     const fetchProgramCohorts = (): void => {
         setLinearDisplay('block');
         timetablingAxiosInstance
-            .get('/program-cohorts', { params: { loadExtras: 'programs' } })
+            .get('/program-cohorts', { params: { loadExtras: 'programs',includeDeactivated: true } })
             .then((res) => {
                 res.data.forEach((program) => {
                     program.name = getProgramName(res.data[0].programId);
@@ -283,17 +283,18 @@ const ProgramCohorts = (): JSX.Element => {
                 setData(res.data);
             })
             .catch((error) => {
-                console.error(error);
                 alerts.showError(error.message);
+                setLinearDisplay('none');
+                setLinearDisplay('none');
             });
     };
     const handleUpload = (): void => {
+        setLinearDisplay('block');
         const form = new FormData();
         form.append('fileUploaded', imageUploaded);
         const config = {
             headers: { 'content-type': 'multipart/form-data' }
         };
-        setLinearDisplay('block');
         timetablingAxiosInstance
             .post('/files', form, config)
             .then((res) => {
@@ -304,8 +305,8 @@ const ProgramCohorts = (): JSX.Element => {
                 toggleUploadModal();
             })
             .catch((error) => {
-                console.error(error);
                 alerts.showError(error.message);
+                setLinearDisplay('none');
             });
     };
 
@@ -314,18 +315,19 @@ const ProgramCohorts = (): JSX.Element => {
         timetablingAxiosInstance
             .put(`/program-cohorts/${cohortId}`, updates)
             .then(() => {
-                setLinearDisplay('none');
                 alerts.showSuccess('Successfully updated Cohort');
                 fetchProgramCohorts();
                 resetStateCloseModal();
+                setLinearDisplay('none');
             })
             .catch((error) => {
-                console.error(error);
                 alerts.showError(error.message);
+                setLinearDisplay('none');
             });
     };
     const handleEdit = (e): void => {
         e.preventDefault();
+        setLinearDisplay('block');
         const updates = {
             programId: programId === 0 ? selectedProgramCohort.pg_id : programId,
             campusId:
@@ -362,26 +364,26 @@ const ProgramCohorts = (): JSX.Element => {
     };
 
     function handleCancellation() {
+        setLinearDisplay('block');
         const cancelletionData = {
             status: 'canceled'
         };
         ProgramCohortService.cancelProgramCohort(cohortId, cancelletionData)
-            .then((res) => {
-                console.log(res);
+            .then(() => {
                 alerts.showSuccess('Successfully cancelled a program cohort');
                 toggleCancelModal();
                 toggleCloseConfirmModal();
+                setLinearDisplay('none');
             })
             .catch((error) => {
                 toggleCancelModal();
                 toggleCloseConfirmModal();
                 alerts.showError(error.response.data);
-                console.log(error);
+                setLinearDisplay('none');
             });
     }
 
     const createCohort = (cohortData): void => {
-        console.log(cohortData);
         setLinearDisplay('block');
         timetablingAxiosInstance
             .post('/program-cohorts', cohortData)
@@ -390,10 +392,12 @@ const ProgramCohorts = (): JSX.Element => {
                 setLinearDisplay('none');
                 alerts.showSuccess('Successfully created Program Cohort');
                 fetchProgramCohorts();
+                setLinearDisplay('none');
             })
             .catch((error) => {
                 resetStateCloseModal();
                 alerts.showError(error.message);
+                setLinearDisplay('none');
             });
     };
     const handleProgramChange = (programId) => {
