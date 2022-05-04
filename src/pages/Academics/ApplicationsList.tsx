@@ -1,13 +1,12 @@
 /* eslint-disable react/display-name */
 import React, {useEffect, useState} from 'react';
 import {MTableToolbar} from 'material-table';
-import {CountryDropdown} from 'react-country-region-selector';
 import {MenuItem, Select} from '@material-ui/core';
 import {Link} from 'react-router-dom';
 import Alert from '@material-ui/lab/Alert';
 import Breadcrumb from '../../App/components/Breadcrumb';
 import {Button, Card, Col, ListGroup, Modal, Row} from 'react-bootstrap';
-import {FileInput, SelectGroup, TextInput, ValidationForm} from 'react-bootstrap4-form-validation';
+import {FileInput, ValidationForm} from 'react-bootstrap4-form-validation';
 import {Alerts, ToastifyAlerts} from '../lib/Alert';
 import LinearProgress from '@mui/material/LinearProgress';
 import {TimetableService} from '../../services/TimetableService';
@@ -16,6 +15,7 @@ import {ACTION_GET_PROGRAM_COHORT_APPLICATIONS} from '../../authnz-library/sim-a
 import {simsAxiosInstance} from '../../utlis/interceptors/sims-interceptor';
 import {timetablingAxiosInstance} from '../../utlis/interceptors/timetabling-interceptor';
 import TableWrapper from '../../utlis/TableWrapper';
+import EditApplicationDetails from './Application/EditApplicationDetails';
 
 const alerts: Alerts = new ToastifyAlerts();
 const ApplicationsList = (): JSX.Element => {
@@ -63,24 +63,14 @@ const ApplicationsList = (): JSX.Element => {
     const [sponsor, setSponsor] = useState('');
     const [countryOfResidence, setCountryOfResidence] = useState('');
     const [documentsUrl, setDocumentsUrl] = useState('');
+    const [applicationData, setApplicationData] = useState([]);
     const [applicationId, setApplicationId] = useState('');
-    const [campuses, setCampuses] = useState([]);
     const [showUploadModal, setShowUploadModal] = useState(false);
     const [disabled, setDisabled] = useState(false);
 
     useEffect(() => {
         setLinearDisplay('block');
         fetchProgramCohortApplications();
-        timetablingAxiosInstance
-            .get('/campuses')
-            .then((res) => {
-                setCampuses(res.data);
-                setLinearDisplay('none');
-            })
-            .catch((error) => {
-                alerts.showError(error.message);
-                setLinearDisplay('none');
-            });
     }, [isAdmitted]);
 
     const fetchProgramCohortApplications = () => {
@@ -117,55 +107,6 @@ const ApplicationsList = (): JSX.Element => {
                 setLinearDisplay('none');
             });
     }
-    const handleEdit = (e) => {
-        e.preventDefault();
-        setLinearDisplay('block');
-        const updates = {
-            application: {
-                firstName: firstName,
-                lastName: lastName,
-                otherName: otherName,
-                nationality: nationality,
-                identification: identification,
-                gender: gender,
-                maritalStatus: maritalStatus,
-                religion: religion,
-                dateOfBirth: dateOfBirth,
-                placeofBirth: placeofBirth,
-                phoneNumber: phoneNumber,
-                emailAddress: emailAddress,
-                physicalChallenges: physicalChallenges,
-                courseStartDate: courseStartDate,
-                campus: campus,
-                sponsor: sponsor,
-                countryOfResidence: countryOfResidence,
-                programCohortId: programCohortId
-            },
-            nextOfKin: {
-                name: nextOfKinName,
-                nextOfKinPhoneNumber: nextOfKinPhoneNumber,
-                relation: nextOfKinRelation
-            },
-            supportingDocuments: {
-                documentUrl: documentsUrl
-            }
-        };
-        updateApplication(updates);
-    };
-    const updateApplication = (updates) => {
-        simsAxiosInstance
-            .put(`/program-cohort-applications/${applicationId}`, { modifiedProgramCohortApplication: updates })
-            .then(() => {
-                setLinearDisplay('none');
-                alerts.showSuccess('Successfully updated application details');
-                fetchProgramCohortApplications();
-                resetStateCloseModal();
-            })
-            .catch((error) => {
-                console.error(error);
-                alerts.showError(error.message);
-            });
-    };
     const handleAdmission = (e, admissionStatus: admissionStatus) => {
         e.preventDefault();
         setDisabled(true);
@@ -240,6 +181,7 @@ const ApplicationsList = (): JSX.Element => {
                                     columns={columns}
                                     onRowClick={(event, row) => {
                                         toggleCreateModal();
+                                        setApplicationData(row);
                                         setFirstName(row.applications_firstName);
                                         setLastName(row.applications_lastName);
                                         setOtherName(row.applications_otherName);
@@ -416,433 +358,7 @@ const ApplicationsList = (): JSX.Element => {
                     <Modal.Title id="contained-modal-title-vcenter">Edit Application Details</Modal.Title>
                 </Modal.Header>
                 <Modal.Body>
-                    <ValidationForm>
-                        <div className="form-group row">
-                            <div className="col-md-6">
-                                <label htmlFor="firstName">
-                                    <b>First Name</b>
-                                </label>
-                                <br />
-                                <br />
-                                <TextInput
-                                    name="firstName"
-                                    id="firstName"
-                                    type="text"
-                                    placeholder="Enter name"
-                                    required
-                                    defaultValue={firstName}
-                                    onChange={(e) => {
-                                        setFirstName(e.target.value);
-                                    }}
-                                />
-                                <br />
-                            </div>
-                            <div className="col-md-6">
-                                <label htmlFor="lastName">
-                                    <b>Last Name</b>
-                                </label>
-                                <br />
-                                <br />
-                                <TextInput
-                                    name="lastName"
-                                    id="lastName"
-                                    type="text"
-                                    placeholder="Enter Last name"
-                                    required
-                                    defaultValue={lastName}
-                                    onChange={(e) => {
-                                        setLastName(e.target.value);
-                                    }}
-                                />
-                            </div>
-                        </div>
-                        <div className="form-group row">
-                            <div className="col-md-6">
-                                <label htmlFor="otherName">
-                                    <b>Other Name</b>
-                                </label>
-                                <br />
-                                <br />
-                                <TextInput
-                                    name="otherName"
-                                    id="otherName"
-                                    type="text"
-                                    placeholder="Enter other name"
-                                    defaultValue={otherName}
-                                    onChange={(e) => {
-                                        setOtherName(e.target.value);
-                                    }}
-                                />
-                            </div>
-                            <div className="col-md-6">
-                                <label htmlFor="nationality">
-                                    <b>Nationality</b>
-                                </label>
-                                <br />
-                                <br />
-                                <TextInput
-                                    name="nationality"
-                                    id="nationality"
-                                    placeholder=" Kenyan"
-                                    required
-                                    defaultValue={nationality}
-                                    onChange={(e) => {
-                                        setNationality(e.target.value);
-                                    }}
-                                    type="text"
-                                />
-                            </div>
-                        </div>
-                        <div className="form-group row">
-                            <div className="col-md-6">
-                                <label htmlFor="identification">
-                                    <b>Identification</b>
-                                </label>
-                                <br />
-                                <br />
-                                <TextInput
-                                    name="identification"
-                                    id="identification"
-                                    placeholder=" 346678798"
-                                    defaultValue={identification}
-                                    required
-                                    onChange={(e) => {
-                                        setIdentification(e.target.value);
-                                    }}
-                                    type="text"
-                                />
-                            </div>
-                            <div className="col-md-6">
-                                <label htmlFor="gender">
-                                    <b>Gender</b>
-                                </label>
-                                <br />
-                                <br />
-                                <SelectGroup
-                                    name="gender"
-                                    id="gender"
-                                    defaultValue={gender}
-                                    onChange={(e) => {
-                                        setGender(e.target.value);
-                                    }}
-                                    required
-                                    errorMessage="Please select Gender"
-                                >
-                                    <option value="">--- Please select ---</option>
-                                    <option value="male">Male</option>
-                                    <option value="female">Female</option>
-                                    <option value="other">Other</option>
-                                </SelectGroup>
-                            </div>
-                        </div>
-                        <div className="form-group row">
-                            <div className="col-md-6">
-                                <label htmlFor="maritalStatus">
-                                    <b>Marital Status</b>
-                                </label>
-                                <br />
-                                <br />
-                                <SelectGroup
-                                    name="maritalStatus"
-                                    id="maritalStatus"
-                                    defaultValue={maritalStatus}
-                                    onChange={(e) => {
-                                        setMaritalStatus(e.target.value);
-                                    }}
-                                    required
-                                    errorMessage="Please select your status"
-                                >
-                                    <option value="">--- Please select ---</option>
-                                    <option value="single">Single</option>
-                                    <option value="married">Married</option>
-                                    <option value="divorced">Divorced</option>
-                                    <option value="separated">Separated</option>
-                                    <option value="widowed">widowed</option>
-                                </SelectGroup>
-                            </div>
-                            <div className="col-md-6">
-                                <label htmlFor="religion">
-                                    <b>Religion</b>
-                                </label>
-                                <br />
-                                <br />
-                                <SelectGroup
-                                    name="religion"
-                                    id="religion"
-                                    required
-                                    defaultValue={religion}
-                                    onChange={(e) => {
-                                        setReligion(e.target.value);
-                                    }}
-                                    errorMessage="Please select your religion"
-                                >
-                                    <option value="">-- Please select --</option>
-                                    <option value="Christianity">Christianity</option>
-                                    <option value="Islam">Islam</option>
-                                    <option value="Hinduism">Hinduism</option>
-                                    <option value="pagan">Pagan</option>
-                                    <option value="Other">Other</option>
-                                </SelectGroup>
-                            </div>
-                        </div>
-                        <div className="form-group row">
-                            <div className="col-md-6">
-                                <label htmlFor="dateOfBirth">
-                                    <b>Date of Birth</b>
-                                </label>
-                                <br />
-                                <br />
-                                <TextInput
-                                    name="dateOfBirth"
-                                    id="dateOfBirth"
-                                    required
-                                    defaultValue={dateOfBirth}
-                                    onChange={(e: { target: { value: React.SetStateAction<string> } }) => {
-                                        setDateOfBirth(e.target.value);
-                                    }}
-                                    type="date"
-                                />
-                            </div>
-                            <div className="col-md-6">
-                                <label htmlFor="placeofBirth">
-                                    <b>Place of Birth</b>
-                                </label>
-                                <br />
-                                <br />
-                                <TextInput
-                                    name="placeofBirth"
-                                    id="placeofBirth"
-                                    required
-                                    defaultValue={placeofBirth}
-                                    onChange={(e) => {
-                                        setPlaceOfBirth(e.target.value);
-                                    }}
-                                    type="text"
-                                />
-                            </div>
-                        </div>
-                        <div className="form-group row">
-                            <div className="col-md-6">
-                                <label htmlFor="phoneNumber">
-                                    <b>Phone Number</b>
-                                </label>
-                                <br />
-                                <br />
-                                <TextInput
-                                    name="phoneNumber"
-                                    id="phoneNumber"
-                                    defaultValue={phoneNumber}
-                                    required
-                                    onChange={(e) => {
-                                        setPhoneNumber(e.target.value);
-                                    }}
-                                    placeholder="+254 712 345 789"
-                                    type="text"
-                                />
-                            </div>
-                            <div className="col-md-6">
-                                <label htmlFor="emailAddress">
-                                    <b>Email Address</b>
-                                </label>
-                                <br />
-                                <br />
-                                <TextInput
-                                    name="emailAddress"
-                                    id="emailAddress"
-                                    required
-                                    defaultValue={emailAddress}
-                                    onChange={(e) => {
-                                        setEmailAddress(e.target.value);
-                                    }}
-                                    placeholder="Enter email address"
-                                    type="email"
-                                />
-                            </div>
-                        </div>
-                        <br />
-                        <br />
-                        <br />
-                        <br />
-                        <h5>
-                            <b>Next of Kin Details</b>
-                        </h5>
-                        <div className="form-group row">
-                            <div className="col-md-4">
-                                <label htmlFor="name">
-                                    <b>Name</b>
-                                </label>
-                                <br />
-                                <br />
-                                <TextInput
-                                    name="name"
-                                    placeholder="Enter name"
-                                    id="name"
-                                    defaultValue={nextOfKinName}
-                                    onChange={(e) => {
-                                        setNextOfKinName(e.target.value);
-                                    }}
-                                    type="text"
-                                />
-                            </div>
-                            <div className="col-md-4">
-                                <label htmlFor="phoneNumber">
-                                    <b>Phone Number</b>
-                                </label>
-                                <br />
-                                <br />
-                                <TextInput
-                                    name="phoneNumber"
-                                    placeholder="Enter phone number"
-                                    id="phoneNumber"
-                                    defaultValue={nextOfKinPhoneNumber}
-                                    onChange={(e) => {
-                                        setNextOfKinPhoneNumber(e.target.value);
-                                    }}
-                                    type="text"
-                                />
-                            </div>
-                            <div className="col-md-4">
-                                <label htmlFor="relation">
-                                    <b>Relation</b>
-                                </label>
-                                <br />
-                                <br />
-                                <TextInput
-                                    name="relation"
-                                    placeholder="Relation"
-                                    id="relation"
-                                    defaultValue={nextOfKinRelation}
-                                    onChange={(e) => {
-                                        setNextOfKinRelation(e.target.value);
-                                    }}
-                                    type="text"
-                                />
-                            </div>
-                        </div>
-                        <br />
-                        <br />
-                        <br />
-                        <br />
-                        <div className="form-group row">
-                            <div className="col-md-6">
-                                <label htmlFor="physicalChallenges">
-                                    <b>Physical Challenges</b>
-                                </label>
-                                <br />
-                                <br />
-                                <TextInput
-                                    name="physicalChallenges"
-                                    multiline
-                                    rows="3"
-                                    defaultValue={physicalChallenges}
-                                    id="physicalChallenges"
-                                    onChange={(e) => {
-                                        setPhysicalChallenges(e.target.value);
-                                    }}
-                                    type="text"
-                                />
-                            </div>
-                            <div className="col-md-6">
-                                <label htmlFor="courseStartDate">
-                                    <b>Course Start Date</b>
-                                </label>
-                                <br />
-                                <br />
-                                <TextInput
-                                    name="courseStartDate"
-                                    required
-                                    id="courseStartDate"
-                                    defaultValue={courseStartDate}
-                                    onChange={(e) => {
-                                        setCourseStartDate(e.target.value);
-                                    }}
-                                    type="date"
-                                />
-                            </div>
-                        </div>
-                        <div className="form-group row">
-                            <div className="col-md-6">
-                                <label htmlFor="campus">
-                                    <b>Campus</b>
-                                </label>
-                                <br />
-                                <br />
-                                <SelectGroup
-                                    name="campus"
-                                    id="campus"
-                                    onChange={(e) => {
-                                        setCampus(e.target.value);
-                                    }}
-                                    defaultValue={campus}
-                                    required
-                                    errorMessage="Please select campus"
-                                >
-                                    <option value="">- Please select -</option>
-                                    {campuses.map((camp) => {
-                                        return (
-                                            <option key={camp.name} value={camp.id}>
-                                                {camp.name}
-                                            </option>
-                                        );
-                                    })}
-                                </SelectGroup>
-                            </div>
-                            <div className="col-md-6">
-                                <label htmlFor="sponsor">
-                                    <b>Sponsor</b>
-                                </label>
-                                <br />
-                                <br />
-                                <TextInput
-                                    name="sponsor"
-                                    placeholder="Sponsor name"
-                                    id="sponsor"
-                                    defaultValue={sponsor}
-                                    required
-                                    onChange={(e) => {
-                                        setSponsor(e.target.value);
-                                    }}
-                                    type="text"
-                                />
-                            </div>
-                        </div>
-                        <div className="form-group row">
-                            <div className="col-md-6">
-                                <label htmlFor="countryOfResidence">
-                                    <b>Country Of Residence</b>
-                                </label>
-                                <br />
-                                <br />
-                                <CountryDropdown value={countryOfResidence} onChange={(val) => setCountryOfResidence(val)} />
-                            </div>
-                            <div className="col-md-6">
-                                <label htmlFor="countryOfResidence">
-                                    <b>Supporting Documents</b>
-                                </label>
-                                <br />
-                                <br />
-                                <button
-                                    className="btn btn-danger"
-                                    onClick={(e) => {
-                                        e.preventDefault();
-                                        setShowUploadModal(true);
-                                    }}
-                                >
-                                    Upload documents
-                                </button>
-                            </div>
-                        </div>
-                        <div className="form-group">
-                            <br />
-                            <br />
-                            <Button disabled={disabled} className="btn btn-primary" onClick={(e) => handleEdit(e)}>
-                                Submit
-                            </Button>
-                        </div>
-                    </ValidationForm>
-                    <Button disabled={disabled} className="btn btn-danger btn-rounded float-right" onClick={handleCloseModal}>
-                        Close
-                    </Button>
+                    <EditApplicationDetails application={applicationData} close={handleCloseModal}/>
                 </Modal.Body>
             </Modal>
             <Modal

@@ -14,6 +14,8 @@ import IconButton from '@material-ui/core/IconButton';
 import ArrowBackIcon from '@material-ui/icons/ArrowBack';
 import {simsAxiosInstance} from '../../utlis/interceptors/sims-interceptor';
 import TableWrapper from '../../utlis/TableWrapper';
+import { Link } from 'react-router-dom';
+import { MenuItem, Select} from '@material-ui/core';
 
 const alerts: Alerts = new ToastifyAlerts();
 
@@ -35,17 +37,31 @@ function ProgramCohortSemesters(props: { history: { goBack: () => void } }) {
         { title: 'Start Date', render: (rowData: { startDate: string | unknown[] }) => rowData?.startDate?.slice(0, 10) },
         { title: 'End Date', render: (rowData: { endDate: string | unknown[] }) => rowData?.endDate?.slice(0, 10) },
         {
-            title: 'Transcripts',
-            render: (rowData: { id: number }) => (
-                <a
-                    href="#"
-                    onClick={(e) => {
-                        fetchTranscript(parseInt(programCohortId), rowData?.id);
-                        e.stopPropagation();
-                    }}
-                >
-                    Download Transcript
-                </a>
+            title: 'Action',
+            render: (row) => (
+                <Select>
+                    <Link
+                        onClick={() => {
+                            setSemesterId(row.id);
+                            localStorage.setItem('programName', programName);
+                            localStorage.setItem('programCohortCode', programCohortCode);
+                            localStorage.setItem('semesterId', row.id);
+                            localStorage.setItem('programCohortSemesterId', row.programCohortSemesterId);
+                            localStorage.setItem('semStartDate', row.startDate.slice(0, 10));
+                            localStorage.setItem('semEndDate', row.endDate.slice(0, 10));
+                            localStorage.setItem('programCohortId', row.programCohortId);
+                        }}
+                        to={'/pcsdetails'}
+                    >
+                        <MenuItem value="view details">View Details</MenuItem>
+                    </Link>
+                    <a className="btn btn btn-link"
+                        onClick={() => {
+                            fetchTranscript(parseInt(programCohortId), row.id);
+                        }}>
+                        <MenuItem value="download">Download Transcript</MenuItem>
+                    </a>
+                </Select>
             )
         }
     ];
@@ -142,25 +158,6 @@ function ProgramCohortSemesters(props: { history: { goBack: () => void } }) {
                             title={`${programName} of ${anticipatedGraduation} semesters`}
                             columns={columns}
                             data={data}
-                            onRowClick={(event: any, row) => {
-                                console.log('semesterId called');
-                                console.log(row);
-                                if (event.target.innerHTML === 'Download Transcript') {
-                                    setSemesterId(row.id);
-                                    event.stopPropagation();
-                                }
-                                setSemesterId(row.id);
-                                console.log(row.id);
-                                window.location.href = '/pcsdetails';
-                                localStorage.setItem('programName', programName);
-                                localStorage.setItem('programCohortCode', programCohortCode);
-                                localStorage.setItem('semesterId', row.id);
-                                localStorage.setItem('programCohortSemesterId', row.programCohortSemesterId);
-                                localStorage.setItem('semStartDate', row.startDate.slice(0, 10));
-                                localStorage.setItem('semEndDate', row.endDate.slice(0, 10));
-                                localStorage.setItem('programCohortId', row.programCohortId);
-                                event.stopPropagation();
-                            }}
                             options={{}}
                         />
                     </Card>

@@ -2,14 +2,14 @@
 import React, {useEffect, useState} from 'react';
 import Alert from '@material-ui/lab/Alert';
 import Breadcrumb from '../../App/components/Breadcrumb';
-import {Card, Col, Row} from 'react-bootstrap';
+import {Card, Col, Button, Row} from 'react-bootstrap';
 import {Alerts, ToastifyAlerts} from '../lib/Alert';
 import LinearProgress from '@mui/material/LinearProgress';
 import {canPerformActions} from '../../services/ActionChecker';
 import {ACTION_GET_PROGRAM_COHORT_APPLICATIONS} from '../../authnz-library/sim-actions';
 import {simsAxiosInstance} from '../../utlis/interceptors/sims-interceptor';
 import TableWrapper from '../../utlis/TableWrapper';
-
+import { Link } from 'react-router-dom';
 const alerts: Alerts = new ToastifyAlerts();
 
 const StudentFeesManagement = (): JSX.Element => {
@@ -18,7 +18,20 @@ const StudentFeesManagement = (): JSX.Element => {
         { title: 'Name', render: (rowData) => rowData.applications_firstName + ' ' + rowData.applications_lastName },
         { title: 'Email', field: 'applications_emailAddress' },
         { title: 'Program', field: 'applications_programCohortId' },
-        { title: 'Admission Status', field: 'applications_status' }
+        { title: 'Admission Status', field: 'applications_status' },
+        {
+            title: 'Actions',
+            field: 'internal_action',
+            render: (row) => (
+                <Link
+                    to={`/studentfeesreport?studentId=${row.applications_studentId}&studentName=${
+                        row.applications_firstName + ' ' + row.applications_lastName
+                    }`}
+                >
+                    <Button variant="link" value="View semesters">View Details</Button>
+                </Link>
+            )
+        }
     ];
     const [data, setData] = useState([]);
     const [isError] = useState(false);
@@ -31,6 +44,7 @@ const StudentFeesManagement = (): JSX.Element => {
         setLinearDisplay('block');
         fetchProgramCohortApplications();
     }, [isAdmitted]);
+
 
     const fetchProgramCohortApplications = () => {
         setLinearDisplay('block');
@@ -68,15 +82,9 @@ const StudentFeesManagement = (): JSX.Element => {
                                     )}
                                 </div>
                                 <TableWrapper
-                                    title="Applications"
+                                    title="Student List"
                                     columns={columns}
                                     data={data}
-                                    onRowClick={(event, row) => {
-                                        window.location.href = `/studentfeesreport?studentId=${row.applications_studentId}&studentName=${
-                                            row.applications_firstName + ' ' + row.applications_lastName
-                                        }`;
-                                        event.stopPropagation();
-                                    }}
                                     options={{
                                         rowStyle: (rowData) => ({
                                             backgroundColor: selectedRow === rowData.tableData.id ? '#EEE' : '#FFF'

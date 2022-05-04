@@ -15,9 +15,12 @@ export const selectOptions = [
     { value: false, label: 'No' }
 ];
 export const certType = [
-    { value: 'Degree', label: 'Bachelors'},
-    { value: 'Diploma', label: 'Diploma' },
-    { value: 'Certificate', label: 'Certificate' }
+    { value: 'phd', label: 'PHD'},
+    { value: 'masters', label: 'Masters' },
+    { value: 'bachelors', label: 'Bachelors' },
+    { value: 'diploma', label: 'Diploma' },
+    { value: 'competencyBased', label: 'Competency based' },
+    { value: 'shortTerm', label: 'Short term' }
 ];
 export const trainerTypes = [
     { value: 'Lecturer', label: 'Lecturer'},
