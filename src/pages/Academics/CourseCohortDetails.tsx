@@ -75,24 +75,28 @@ const CourseCohortsDetails = (props: any): JSX.Element => {
 
     useEffect(() => {
         setLinearDisplay('block');
-        fetchcourseCohortsRegistrations();
         fetchProgramByCourseCohortId();
     }, []);
 
     const courseCohortId = props.match.params.id;
 
     const fetchProgramByCourseCohortId = () => {
+
+        const courseCohortIdArr = [parseInt(courseCohortId)];
+        
         setLinearDisplay('block');
         timetablingAxiosInstance
             .get('/programs', {
                 params: {
-                    courseCohortId: courseCohortId,
+                    courseCohortId: JSON.stringify(courseCohortIdArr),
                     loadExtras: 'program'
                 }
             })
             .then((res: any) => {
                 const program = res.data[0];
                 setCertificationType(program.certificationType);
+                
+                fetchcourseCohortsRegistrations(program.certificationType);
                 setLinearDisplay('none');
             })
             .catch((error) => {
@@ -101,14 +105,15 @@ const CourseCohortsDetails = (props: any): JSX.Element => {
             });
     };
 
-    const fetchcourseCohortsRegistrations = (): void => {
+    const fetchcourseCohortsRegistrations = (certificationTypeParam:string): void => {
         setLinearDisplay('block');
         simsAxiosInstance
-            .get('/course-cohort-registrations', { params: { loadExtras: 'marks', courseCohortIds: courseCohortId } })
+            .get('/course-cohort-registrations', { params: { loadExtras: 'marks', certificationType: certificationTypeParam, courseCohortIds: courseCohortId } })
             .then((res) => {
                 const ccData = res.data;
                 setData(ccData);
                 setLinearDisplay('none');
+
             });
     };
 
@@ -121,7 +126,7 @@ const CourseCohortsDetails = (props: any): JSX.Element => {
         simsAxiosInstance
             .put(`/course-cohort-registration-marks/${id}`, { marks: marks })
             .then(() => {
-                fetchcourseCohortsRegistrations();
+                fetchcourseCohortsRegistrations(certificationType);
                 alerts.showSuccess('Successfuly updated marks');
                 setLinearDisplay('none');
             })
@@ -150,7 +155,7 @@ const CourseCohortsDetails = (props: any): JSX.Element => {
                             <Row>
                                 <Col>
                                     <CreateMarksModal
-                                        fetchcourseCohortsRegistrations={fetchcourseCohortsRegistrations}
+                                        fetchcourseCohortsRegistrations={() => fetchcourseCohortsRegistrations(certificationType)}
                                         setLinearDisplay={setLinearDisplay}
                                         courseCohortId={courseCohortId}
                                         certificationType={certificationType}
