@@ -59,7 +59,7 @@ const ProgramCohorts = (): JSX.Element => {
     const [programName, setProgramName] = useState('');
     const [selectedGraduationDate] = useState();
     const [selectedDescription] = useState();
-    const [numberOfSlots, setNumberOfSlots] = useState();
+    const [numberOfSlots, setNumberOfSlots] = useState(0);
     const [showModal, setModal] = useState(false);
     const [cohortId, setCohortId] = useState(null);
     const [cohortName,] = useState('');
@@ -226,7 +226,6 @@ const ProgramCohorts = (): JSX.Element => {
                 setLinearDisplay('none');
             })
             .catch((error) => {
-                console.error(error);
                 alerts.showError(error.message);
                 setLinearDisplay('none');
             });
@@ -237,7 +236,6 @@ const ProgramCohorts = (): JSX.Element => {
                 setLinearDisplay('none');
             })
             .catch((error) => {
-                console.error(error);
                 alerts.showError(error.message);
                 setLinearDisplay('none');
             });
@@ -343,8 +341,8 @@ const ProgramCohorts = (): JSX.Element => {
                 description === ''
                     ? selectedProgramCohort.program_cohorts_advertDescription
                     : description,
-            bannerImageUrl: selectedProgramCohort.program_cohorts_bannerImageUrl
-
+            bannerImageUrl: selectedProgramCohort.program_cohorts_bannerImageUrl,
+            numberOfSlots: numberOfSlots === 0 ? selectedProgramCohort.program_cohorts_numberOfSlots : numberOfSlots
         };
         updateProgramCohort(cohortId, updates);
     };
