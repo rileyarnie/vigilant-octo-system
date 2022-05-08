@@ -217,6 +217,7 @@ const WorkFlows = (): JSX.Element => {
                 </Modal.Footer>
             </Modal>
             <ConfirmationModalWrapper
+                disabled={disabled}
                 submitButton
                 submitFunction={handleSubmitWorkFlow}
                 closeModal={toggleCloseConfirmModal}

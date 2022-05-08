@@ -254,6 +254,7 @@ const CourseCohortsDetails = (props: any): JSX.Element => {
                 <ProgramCohortGraduationList toggleGraduationList={toggleGraduationList} />
             )}
             <ConfirmationModalWrapper
+                disabled={!showMarksLockedModal}
                 show={showMarksLockedModal}
                 closeModal={() => setMarksLockedModal(false)}
                 //closeModal={() => setMarksLockedModal(false)}

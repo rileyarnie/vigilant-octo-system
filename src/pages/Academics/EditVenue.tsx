@@ -92,7 +92,7 @@ const EditVenue = (props): JSX.Element => {
                     </Col>
                 </Row>
             </div>
-            <ConfirmationModalWrapper submitButton submitFunction={handleSubmit} closeModal={toggleCloseConfirmModal} show={confirmModal}>
+            <ConfirmationModalWrapper disabled={disabled} submitButton submitFunction={handleSubmit} closeModal={toggleCloseConfirmModal} show={confirmModal}>
                 <h6 className="text-center">Are you sure you want to update {props.venue_name} ?</h6>
             </ConfirmationModalWrapper>
         </>

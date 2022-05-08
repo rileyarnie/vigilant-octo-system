@@ -1,21 +1,18 @@
 /* eslint-disable react/display-name */
-import React, {useEffect, useState} from 'react';
+import React, { useEffect, useState } from 'react';
 import Edit from '@material-ui/icons/Edit';
-import {LinearProgress, Switch} from '@material-ui/core';
+import { LinearProgress, Switch } from '@material-ui/core';
 import Alert from '@material-ui/lab/Alert';
 import Breadcrumb from '../../App/components/Breadcrumb';
-import {Button, Card, Col, Modal, Row} from 'react-bootstrap';
-import {TextInput, ValidationForm} from 'react-bootstrap4-form-validation';
-import {Alerts, ToastifyAlerts} from '../lib/Alert';
-import {canPerformActions} from '../../services/ActionChecker';
-import {
-    ACTION_CREATE_SEMESTERS,
-    ACTION_GET_SEMESTERS,
-    ACTION_UPDATE_SEMESTERS
-} from '../../authnz-library/timetabling-actions';
-import {timetablingAxiosInstance} from '../../utlis/interceptors/timetabling-interceptor';
+import { Button, Card, Col, Row } from 'react-bootstrap';
+import { TextInput, ValidationForm } from 'react-bootstrap4-form-validation';
+import { Alerts, ToastifyAlerts } from '../lib/Alert';
+import { canPerformActions } from '../../services/ActionChecker';
+import { ACTION_CREATE_SEMESTERS, ACTION_GET_SEMESTERS, ACTION_UPDATE_SEMESTERS } from '../../authnz-library/timetabling-actions';
+import { timetablingAxiosInstance } from '../../utlis/interceptors/timetabling-interceptor';
 import TableWrapper from '../../utlis/TableWrapper';
 import ConfirmationModalWrapper from '../../App/components/modal/ConfirmationModalWrapper';
+import ModalWrapper from '../../App/components/modal/ModalWrapper';
 
 const alerts: Alerts = new ToastifyAlerts();
 
@@ -42,7 +39,7 @@ const SemesterList = (): JSX.Element => {
                         <Switch
                             defaultChecked={row.activationStatus}
                             color="secondary"
-                            inputProps={{'aria-label': 'controlled'}}
+                            inputProps={{ 'aria-label': 'controlled' }}
                             onChange={(event) => {
                                 handleActivationStatusToggle(event, row);
                                 setRowData(row);
@@ -50,6 +47,7 @@ const SemesterList = (): JSX.Element => {
                             }}
                         />
                         <ConfirmationModalWrapper
+                            disabled={disabledButton}
                             submitButton
                             submitFunction={() => handleToggleStatusSubmit(row)}
                             closeModal={handleCloseModal}
@@ -82,7 +80,7 @@ const SemesterList = (): JSX.Element => {
     const today = new Date().toISOString().slice(0, 10);
     const [status, setStatus] = useState(false);
     let activationStatus: boolean;
-    const [, setDisabledButton] = useState(false);
+    const [disabledButton, setDisabledButton] = useState(false);
 
     const handleActivationStatusToggle = (event, row: Semester) => {
         setStatus(!row.activationStatus);
@@ -96,7 +94,6 @@ const SemesterList = (): JSX.Element => {
         timetablingAxiosInstance
             .put(`/semesters/${row.id}`, { body: semester })
             .then(() => {
-                setDisabledButton(false);
                 const msg = activationStatus ? 'Successfully activated semester' : 'Successfully Deactivated semester';
                 alerts.showSuccess(msg);
                 fetchSemesters();
@@ -104,7 +101,10 @@ const SemesterList = (): JSX.Element => {
             })
             .catch((error) => {
                 alerts.showError(error.message);
+            })
+            .finally(() => {
                 setLinearDisplay('none');
+                setDisabledButton(false);
             });
     };
     useEffect(() => {
@@ -143,7 +143,7 @@ const SemesterList = (): JSX.Element => {
     const fetchSemesters = () => {
         setLinearDisplay('block');
         timetablingAxiosInstance
-            .get('/semesters',{ params: { includeDeactivated: true } })
+            .get('/semesters', { params: { includeDeactivated: true } })
             .then((res) => {
                 setData(res.data);
                 setActivationModal(false);
@@ -157,7 +157,6 @@ const SemesterList = (): JSX.Element => {
     };
     const handleCreate = (e) => {
         e.preventDefault();
-        setLinearDisplay('block');
         const semester = {
             name: semesterName,
             startDate: startDate,
@@ -167,7 +166,6 @@ const SemesterList = (): JSX.Element => {
     };
     const handleEdit = (e) => {
         e.preventDefault();
-        setLinearDisplay('block');
         const updates = {
             name: semesterName === '' ? selectedSemesterName : semesterName,
             startDate: startDate == '' ? selectedStartDate : startDate,
@@ -176,6 +174,8 @@ const SemesterList = (): JSX.Element => {
         updateSemester(semesterId, updates);
     };
     const createSemester = (semesterData) => {
+        setLinearDisplay('block');
+        setDisabledButton(true);
         timetablingAxiosInstance
             .post('/semesters', semesterData)
             .then(() => {
@@ -187,7 +187,10 @@ const SemesterList = (): JSX.Element => {
             })
             .catch((error) => {
                 alerts.showError(error.message);
+            })
+            .finally(() => {
                 setLinearDisplay('none');
+                setDisabledButton(false);
             });
     };
 
@@ -200,9 +203,6 @@ const SemesterList = (): JSX.Element => {
 
     const toggleCreateModal = () => {
         showModal ? resetStateCloseModal() : setModal(true);
-    };
-    const handleClose = () => {
-        showModal ? resetStateCloseModal() : setModal(false);
     };
     const getName = (semesterName?: string, semesterId?: number) => {
         return semesterId ? semesterName : selectedSemesterName;
@@ -284,81 +284,67 @@ const SemesterList = (): JSX.Element => {
                 </>
             )}
 
-            <Modal
+            <ModalWrapper
                 show={showModal}
-                onHide={toggleCreateModal}
-                size="lg"
-                backdrop="static"
-                aria-labelledby="contained-modal-title-vcenter"
-                centered
+                modalSize="lg"
+                closeModal={toggleCreateModal}
+                title={semesterId ? `Edit ${getName(selectedSemester?.name, semesterId)}` : 'Create a Semester'}
+                submitButton
+                submitFunction={toggleConfirmModal}
             >
-                <Modal.Header closeButton>
-                    <Modal.Title id="contained-modal-title-vcenter">
-                        {semesterId ? `Edit ${getName(selectedSemester?.name, semesterId)}` : 'Create a Semester'}
-                    </Modal.Title>
-                </Modal.Header>
-                <Modal.Body>
-                    <ValidationForm>
-                        <div className="form-group">
-                            <label htmlFor="name">
-                                <b>Semester name</b>
-                            </label>
-                            <TextInput
-                                name="semesterName"
-                                id="semesterName"
-                                type="text"
-                                required
-                                defaultValue={getName(selectedSemester?.name, semesterId)}
-                                onChange={(e) => {
-                                    setSemesterName(e.target.value);
-                                }}
-                            />
-                            <br />
-                            <label htmlFor="Date">
-                                <b>Start Date</b>
-                            </label>
-                            <br />
-                            <TextInput
-                                name="startDate"
-                                id="startDate"
-                                type="date"
-                                min={today}
-                                required
-                                defaultValue={getStartDate(selectedSemester?.startDate, semesterId)}
-                                onChange={(e) => {
-                                    setStartDate(e.target.value);
-                                }}
-                            />
-                            <br />
-                            <label htmlFor="Date">
-                                <b>End Date</b>
-                            </label>
-                            <br />
-                            <TextInput
-                                name="endDate"
-                                id="endDate"
-                                type="date"
-                                min={today && startDate}
-                                required
-                                defaultValue={getEndDate(selectedSemester?.endDate, semesterId)}
-                                onChange={(e) => {
-                                    setEndDate(e.target.value);
-                                }}
-                            />
-                            <br />
-                        </div>
-                    </ValidationForm>
+                <ValidationForm>
                     <div className="form-group">
-                        <button className="btn btn-info float-right" onClick={toggleConfirmModal}>
-                            Submit
-                        </button>
-                        <button className="btn btn-danger float-left" onClick={handleClose}>
-                            Close
-                        </button>
+                        <label htmlFor="name">
+                            <b>Semester name</b>
+                        </label>
+                        <TextInput
+                            name="semesterName"
+                            id="semesterName"
+                            type="text"
+                            required
+                            defaultValue={getName(selectedSemester?.name, semesterId)}
+                            onChange={(e) => {
+                                setSemesterName(e.target.value);
+                            }}
+                        />
+                        <br />
+                        <label htmlFor="Date">
+                            <b>Start Date</b>
+                        </label>
+                        <br />
+                        <TextInput
+                            name="startDate"
+                            id="startDate"
+                            type="date"
+                            min={today}
+                            required
+                            defaultValue={getStartDate(selectedSemester?.startDate, semesterId)}
+                            onChange={(e) => {
+                                setStartDate(e.target.value);
+                            }}
+                        />
+                        <br />
+                        <label htmlFor="Date">
+                            <b>End Date</b>
+                        </label>
+                        <br />
+                        <TextInput
+                            name="endDate"
+                            id="endDate"
+                            type="date"
+                            min={today && startDate}
+                            required
+                            defaultValue={getEndDate(selectedSemester?.endDate, semesterId)}
+                            onChange={(e) => {
+                                setEndDate(e.target.value);
+                            }}
+                        />
+                        <br />
                     </div>
-                </Modal.Body>
-            </Modal>
+                </ValidationForm>
+            </ModalWrapper>
             <ConfirmationModalWrapper
+                disabled={disabledButton}
                 submitButton
                 submitFunction={(e) => (semesterId ? handleEdit(e) : handleCreate(e))}
                 closeModal={toggleCloseConfirmModal}

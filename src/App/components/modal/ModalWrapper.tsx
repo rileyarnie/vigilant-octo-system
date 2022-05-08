@@ -9,7 +9,8 @@ interface Props {
     title: string;
     modalSize: string;
     submitButton?: boolean;
-    submitFunction?: () => void
+    submitFunction?: () => void;
+    noFooter?: boolean;
 }
 const ModalWrapper: React.FunctionComponent<Props> = (props) => {
     return (
@@ -17,22 +18,24 @@ const ModalWrapper: React.FunctionComponent<Props> = (props) => {
             show={props.show}
             backdrop="static"
             centered
-            size={`${props.modalSize === 'sm' ? 'sm' : props.modalSize === 'lg' ? 'lg' : 'xl'}`}
+            size={`${props.modalSize === 'sm' ? 'sm' : props.modalSize === 'lg' ? 'lg' : props.modalSize === 'xl' ? 'xl' : null}`}
         >
             <Modal.Header closeButton onHide={props.closeModal}>
                 <Modal.Title id="contained-modal-title-vcenter">{props.title}</Modal.Title>
             </Modal.Header>
             <Modal.Body>{props.children}</Modal.Body>
-            <Modal.Footer>
-                <Button variant="danger" onClick={props.closeModal}>
-                    Close
-                </Button>
-                {props.submitButton && props.submitFunction && (
-                    <Button variant="info" onClick={props.submitFunction}>
-                        Submit
+            {!props.noFooter && (
+                <Modal.Footer style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                    <Button variant="danger" onClick={props.closeModal}>
+                        Close
                     </Button>
-                )}
-            </Modal.Footer>
+                    {props.submitButton && props.submitFunction && (
+                        <Button variant="info" onClick={props.submitFunction}>
+                            Submit
+                        </Button>
+                    )}
+                </Modal.Footer>
+            )}
         </Modal>
     );
 };

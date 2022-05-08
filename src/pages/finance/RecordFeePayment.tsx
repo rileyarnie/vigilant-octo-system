@@ -176,7 +176,7 @@ const RecordFeePayment: React.FunctionComponent<Props> = (props) => {
                     </Modal.Footer>
                 </Modal.Dialog>
             </Modal>
-            <ConfirmationModalWrapper submitButton submitFunction={handleSubmit} closeModal={toggleCloseConfirmModal} show={confirmModal}>
+            <ConfirmationModalWrapper disabled={disabled} submitButton submitFunction={handleSubmit} closeModal={toggleCloseConfirmModal} show={confirmModal}>
                 <h6 className="text-center">Are you sure you want to add a fee record ?</h6>
             </ConfirmationModalWrapper>
         </>

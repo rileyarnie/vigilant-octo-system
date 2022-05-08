@@ -1,20 +1,21 @@
 /* eslint-disable react/display-name */
-import React, {useEffect, useState} from 'react';
+import React, { useEffect, useState } from 'react';
 import Alert from '@material-ui/lab/Alert';
 import Department from '../services/Department';
 import Breadcrumb from '../../App/components/Breadcrumb';
-import {Button, Card, Col, Dropdown, DropdownButton, Modal, Row} from 'react-bootstrap';
-import {ValidationForm} from 'react-bootstrap4-form-validation';
-import {Alerts, ToastifyAlerts} from '../lib/Alert';
+import { Button, Card, Col, Dropdown, DropdownButton, Row } from 'react-bootstrap';
+import { ValidationForm } from 'react-bootstrap4-form-validation';
+import { Alerts, ToastifyAlerts } from '../lib/Alert';
 import LinearProgress from '@mui/material/LinearProgress';
-import {canPerformActions} from '../../services/ActionChecker';
-import {ACTION_CREATE_TRAINER, ACTION_UPDATE_TRAINER} from '../../authnz-library/timetabling-actions';
-import {timetablingAxiosInstance} from '../../utlis/interceptors/timetabling-interceptor';
+import { canPerformActions } from '../../services/ActionChecker';
+import { ACTION_CREATE_TRAINER, ACTION_UPDATE_TRAINER } from '../../authnz-library/timetabling-actions';
+import { timetablingAxiosInstance } from '../../utlis/interceptors/timetabling-interceptor';
 import TableWrapper from '../../utlis/TableWrapper';
-import {customSelectTheme, trainerTypes} from '../lib/SelectThemes';
+import { customSelectTheme, trainerTypes } from '../lib/SelectThemes';
 import Select from 'react-select';
 import ConfirmationModalWrapper from '../../App/components/modal/ConfirmationModalWrapper';
-import {DepartmentService} from '../services/DepartmentService';
+import { DepartmentService } from '../services/DepartmentService';
+import ModalWrapper from '../../App/components/modal/ModalWrapper';
 
 const alerts: Alerts = new ToastifyAlerts();
 
@@ -26,7 +27,7 @@ const TrainerList = (): JSX.Element => {
         { title: 'Department ID', field: 'tr_departmentId' },
         {
             title: ' Actions',
-            render: (row: { tr_departmentId: number, tr_trainerType: string, tr_id: number, tr_staffId:number, stf_name:string }) => (
+            render: (row: { tr_departmentId: number; tr_trainerType: string; tr_id: number; tr_staffId: number; stf_name: string }) => (
                 <DropdownButton id="dropdown-basic-button" variant="Secondary" title="Actions">
                     {canPerformActions(ACTION_UPDATE_TRAINER.name) && (
                         <div
@@ -76,12 +77,18 @@ const TrainerList = (): JSX.Element => {
     const [errorMessages] = useState([]);
     const [trainerId, setTrainerId] = useState(0);
     const [selectedTrainerId, setSelectedTrainerId] = useState(0);
-    const [selectedTrainer, setSelectedTrainer] = useState<{ tr_departmentId: number, tr_trainerType: string, tr_id: number, tr_staffId:number, stf_name:string }>();
+    const [selectedTrainer, setSelectedTrainer] = useState<{
+        tr_departmentId: number;
+        tr_trainerType: string;
+        tr_id: number;
+        tr_staffId: number;
+        stf_name: string;
+    }>();
     const [selectedStaffId, setSelectedStaffId] = useState(0);
     const [linearDisplay, setLinearDisplay] = useState('none');
     const [showDeleteModal, setDeleteModal] = useState(false);
     const [showCantDeleteModal, setCantDeleteModal] = useState(false);
-    const [departmentsWithHoDTrainer,setDepartmentsWithHoDTrainer] = useState<Department>();
+    const [departmentsWithHoDTrainer, setDepartmentsWithHoDTrainer] = useState<Department>();
     const [disabled, setDisabled] = useState(false);
 
     useEffect(() => {
@@ -168,7 +175,6 @@ const TrainerList = (): JSX.Element => {
         editTrainer(updates, selectedTrainerId);
     };
 
-
     const handleDelete = async (trainerId: number) => {
         const departmentsWithHoDTrainer = await DepartmentService.getDepartmentByHODTrainerId(trainerId);
         setDepartmentsWithHoDTrainer(departmentsWithHoDTrainer);
@@ -184,17 +190,17 @@ const TrainerList = (): JSX.Element => {
         timetablingAxiosInstance
             .post('/trainers', trainerData)
             .then(() => {
-                setDisabled(false);
                 alerts.showSuccess('Trainer created successfully');
                 fetchTrainers();
                 setModal(false);
-                setConfirmModal(false);
-                setLinearDisplay('none');
             })
             .catch((error) => {
-                setDisabled(false);
                 alerts.showError(error.message);
+            })
+            .finally(() => {
+                setDisabled(false);
                 setLinearDisplay('none');
+                setConfirmModal(false);
             });
     };
 
@@ -204,9 +210,15 @@ const TrainerList = (): JSX.Element => {
             .patch(`/trainers/${trainerId}`, updates)
             .then(() => {
                 alerts.showSuccess('Succesfully edited trainer');
-                toggleEditModal();
-                toggleConfirmModal();
                 fetchTrainers();
+            })
+            .catch((error) => {
+                alerts.showError(error.message);
+            })
+            .finally(() => {
+                toggleEditModal();
+                setConfirmModal(false);
+                setDisabled(false);
                 setLinearDisplay('none');
             });
     };
@@ -217,15 +229,17 @@ const TrainerList = (): JSX.Element => {
         timetablingAxiosInstance
             .delete(`trainers/${trainerId}`)
             .then(() => {
-                setDisabled(false);
                 alerts.showSuccess('Succesfully removed trainer');
                 toggleDeleteModal();
                 fetchTrainers();
-                setLinearDisplay('none');
             })
             .catch((error) => {
-                setDisabled(false);
                 alerts.showError(error.message);
+            })
+            .finally(() => {
+                toggleDeleteModal();
+                setDisabled(false);
+                setLinearDisplay('none');
             });
     };
 
@@ -298,156 +312,116 @@ const TrainerList = (): JSX.Element => {
                     )}
                 </Col>
             </Row>
-            <Modal
-                show={showModal}
-                onHide={toggleCreateModal}
-                onBackdropClick={toggleCreateModal}
-                size="lg"
-                backdrop="static"
-                aria-labelledby="contained-modal-title-vcenter"
-                centered
-            >
-                <Modal.Header closeButton>
-                    <Modal.Title id="contained-modal-title-vcenter">Create a trainer</Modal.Title>
-                </Modal.Header>
-                <Modal.Body>
-                    <ValidationForm>
-                        <div className="form-group">
-                            <label htmlFor="user">Select staff</label>
-                            <Select
-                                theme={customSelectTheme}
-                                defaultValue=""
-                                options={staffOptions}
-                                isMulti={false}
-                                placeholder="Select a user."
-                                noOptionsMessage={() => 'No users available'}
-                                isClearable
-                                onChange={handleUser}
-                            />
-                            <br />
-                        </div>
-                        <div className="form-group">
-                            <label htmlFor="department">Select a department</label>
-                            <Select
-                                theme={customSelectTheme}
-                                defaultValue=""
-                                options={departmentOptions}
-                                isMulti={false}
-                                isClearable
-                                placeholder="Select a department."
-                                noOptionsMessage={() => 'No department available'}
-                                onChange={handleChange}
-                            />
-                            <br />
-                        </div>
+            <ModalWrapper show={showModal} closeModal={toggleCreateModal} modalSize="lg" title="Create a trainer" noFooter>
+                <ValidationForm>
+                    <div className="form-group">
+                        <label htmlFor="user">Select staff</label>
+                        <Select
+                            theme={customSelectTheme}
+                            defaultValue=""
+                            options={staffOptions}
+                            isMulti={false}
+                            placeholder="Select a user."
+                            noOptionsMessage={() => 'No users available'}
+                            isClearable
+                            onChange={handleUser}
+                        />
+                        <br />
+                    </div>
+                    <div className="form-group">
+                        <label htmlFor="department">Select a department</label>
+                        <Select
+                            theme={customSelectTheme}
+                            defaultValue=""
+                            options={departmentOptions}
+                            isMulti={false}
+                            isClearable
+                            placeholder="Select a department."
+                            noOptionsMessage={() => 'No department available'}
+                            onChange={handleChange}
+                        />
+                        <br />
+                    </div>
 
-                        <div className="form-group">
-                            <label htmlFor="trainerType">Select Trainer type</label>
-                            <Select
-                                theme={customSelectTheme}
-                                defaultValue=""
-                                options={trainerTypeOptions}
-                                isMulti={false}
-                                isClearable
-                                placeholder="Select trainer type."
-                                noOptionsMessage={() => 'No types available'}
-                                onChange={handleTrainerType}
-                            />
-                            <br />
-                        </div>
-                    </ValidationForm>
-                    <Col>
-                        <button className="btn btn-info float-right" onClick={toggleConfirmModal}>
-                            Submit
-                        </button>
-                        <button className="btn btn-danger float-left" onClick={handleCloseModal}>
-                            Cancel
-                        </button>
-                    </Col>
-                </Modal.Body>
-            </Modal>
-            <Modal
-                show={showEditModal}
-                onHide={toggleEditModal}
-                size="lg"
-                backdrop="static"
-                aria-labelledby="contained-modal-title-vcenter"
-                centered
-            >
-                <Modal.Header closeButton>
-                    <Modal.Title id="contained-modal-title-vcenter">Edit Trainer</Modal.Title>
-                </Modal.Header>
-                <Modal.Body>
-                    <ValidationForm>
-                        <div className="form-group">
-                            <label htmlFor="staff">Select a staff</label>
-                            <Select
-                                theme={customSelectTheme}
-                                defaultValue={!selectedTrainer ? '' : selectedTrainer.stf_name}
-                                options={staffOptions}
-                                isMulti={false}
-                                placeholder={!selectedTrainer ? 'Select a staff.' : selectedTrainer.stf_name}
-                                noOptionsMessage={() => 'No staff available'}
-                                onChange={handleEditStaff}
-                            /><br/>
-                        </div>
-
-                        <div className="form-group">
-                            <label htmlFor="department">Select a department</label>
-                            <Select
-                                theme={customSelectTheme}
-                                defaultValue=""
-                                options={departmentOptions}
-                                isMulti={false}
-                                placeholder='Select a department.'
-                                noOptionsMessage={() => 'No Departments available'}
-                                onChange={handleChange}
-                            />
-                            <br />
-                        </div>
-
-                        <div className="form-group">
-                            <label htmlFor="trainerType">Select Trainer type</label>
-                            <Select
-                                theme={customSelectTheme}
-                                defaultValue={!selectedTrainer ? '' : trainerType}
-                                options={trainerTypeOptions}
-                                isMulti={false}
-                                placeholder={!selectedTrainer ? 'Select trainer type.' : trainerType}
-                                noOptionsMessage={() => 'No types available'}
-                                onChange={handleTrainerType}
-                            />
-                            <br />
-                        </div>
-                    </ValidationForm>
-                    <button className="btn btn-danger float-left" onClick={toggleEditModal}>Close</button>
+                    <div className="form-group">
+                        <label htmlFor="trainerType">Select Trainer type</label>
+                        <Select
+                            theme={customSelectTheme}
+                            defaultValue=""
+                            options={trainerTypeOptions}
+                            isMulti={false}
+                            isClearable
+                            placeholder="Select trainer type."
+                            noOptionsMessage={() => 'No types available'}
+                            onChange={handleTrainerType}
+                        />
+                        <br />
+                    </div>
+                </ValidationForm>
+                <Col>
                     <button className="btn btn-info float-right" onClick={toggleConfirmModal}>
-                            Submit
+                        Submit
                     </button>
-                </Modal.Body>
-            </Modal>
-            <Modal
-                show={showCantDeleteModal}
-                onHide={toggleCantDeleteModal}
-                size="lg"
-                backdrop="static"
-                onBackdropClick={toggleCantDeleteModal}
-                aria-labelledby="contained-modal-title-vcenter"
-                centered
-            >
-                <Modal.Header closeButton>
-                    <Modal.Title>Remove trainer</Modal.Title>
-                </Modal.Header>
-                <Modal.Body>
-                    <p>Please change the HoD for {departmentsWithHoDTrainer?.name} before attempting to remove this trainer</p>
-                </Modal.Body>
-                <Modal.Footer>
-                    <Button disabled={disabled} variant="primary" onClick={() => toggleCantDeleteModal()}>
-                        Close
-                    </Button>
-                </Modal.Footer>
-            </Modal>
-            <ConfirmationModalWrapper
+                    <button className="btn btn-danger float-left" onClick={handleCloseModal}>
+                        Cancel
+                    </button>
+                </Col>
+            </ModalWrapper>
+            <ModalWrapper title="Edit Trainer" show={showEditModal} closeModal={toggleEditModal} modalSize="lg" noFooter>
+                <ValidationForm>
+                    <div className="form-group">
+                        <label htmlFor="staff">Select a staff</label>
+                        <Select
+                            theme={customSelectTheme}
+                            defaultValue={!selectedTrainer ? '' : selectedTrainer.stf_name}
+                            options={staffOptions}
+                            isMulti={false}
+                            placeholder={!selectedTrainer ? 'Select a staff.' : selectedTrainer.stf_name}
+                            noOptionsMessage={() => 'No staff available'}
+                            onChange={handleEditStaff}
+                        />
+                        <br />
+                    </div>
+
+                    <div className="form-group">
+                        <label htmlFor="department">Select a department</label>
+                        <Select
+                            theme={customSelectTheme}
+                            defaultValue=""
+                            options={departmentOptions}
+                            isMulti={false}
+                            placeholder="Select a department."
+                            noOptionsMessage={() => 'No Departments available'}
+                            onChange={handleChange}
+                        />
+                        <br />
+                    </div>
+
+                    <div className="form-group">
+                        <label htmlFor="trainerType">Select Trainer type</label>
+                        <Select
+                            theme={customSelectTheme}
+                            defaultValue={!selectedTrainer ? '' : trainerType}
+                            options={trainerTypeOptions}
+                            isMulti={false}
+                            placeholder={!selectedTrainer ? 'Select trainer type.' : trainerType}
+                            noOptionsMessage={() => 'No types available'}
+                            onChange={handleTrainerType}
+                        />
+                        <br />
+                    </div>
+                </ValidationForm>
+                <button className="btn btn-danger float-left" onClick={toggleEditModal}>
+                    Close
+                </button>
+                <button className="btn btn-info float-right" onClick={toggleConfirmModal}>
+                    Submit
+                </button>
+            </ModalWrapper>
+            <ModalWrapper show={showCantDeleteModal} title="Remove Trainer" modalSize="lg" closeModal={toggleCantDeleteModal}>
+                <p>Please change the HoD for {departmentsWithHoDTrainer?.name} before attempting to remove this trainer</p>
+            </ModalWrapper>
+            <ConfirmationModalWrapper disabled={disabled}
                 title="Remove trainer"
                 submitButton
                 submitFunction={() => deleteTrainer(trainerId)}
@@ -459,18 +433,16 @@ const TrainerList = (): JSX.Element => {
                     that they are assigned to
                 </p>{' '}
             </ConfirmationModalWrapper>
-            <ConfirmationModalWrapper
+            <ConfirmationModalWrapper disabled={disabled}
                 submitButton
-                submitFunction={(e) => selectedTrainer ?  handleEdit(e) : handleSubmit(e)}
+                submitFunction={(e) => (selectedTrainer ? handleEdit(e) : handleSubmit(e))}
                 closeModal={toggleCloseConfirmModal}
                 show={confirmModal}
             >
                 <p>
-                    {
-                        selectedTrainer ? `Are you sure you want to edit trainer ${selectedTrainer.stf_name}?`
-                            :
-                            'Are you sure you want to create a new trainer'
-                    }
+                    {selectedTrainer
+                        ? `Are you sure you want to edit trainer ${selectedTrainer.stf_name}?`
+                        : 'Are you sure you want to create a new trainer'}
                 </p>
             </ConfirmationModalWrapper>
         </>

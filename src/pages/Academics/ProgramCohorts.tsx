@@ -1,23 +1,24 @@
 /* eslint-disable react/display-name */
-import React, {useEffect, useState} from 'react';
+import React, { useEffect, useState } from 'react';
 import Card from '@material-ui/core/Card';
 import Alert from '@material-ui/lab/Alert';
 import Breadcrumb from '../../App/components/Breadcrumb';
-import {Button, Col, Dropdown, DropdownButton, Modal, Row} from 'react-bootstrap';
-import {Switch} from '@material-ui/core';
-import {FileInput, TextInput, ValidationForm} from 'react-bootstrap4-form-validation';
+import { Button, Col, Dropdown, DropdownButton, Modal, Row } from 'react-bootstrap';
+import { Switch } from '@material-ui/core';
+import { FileInput, TextInput, ValidationForm } from 'react-bootstrap4-form-validation';
 import CardPreview from './CardPreview';
-import {Link} from 'react-router-dom';
-import {Alerts, ToastifyAlerts} from '../lib/Alert';
-import {LinearProgress} from '@mui/material';
-import {ProgramCohortService} from '../services/ProgramCohortService';
-import {canPerformActions} from '../../services/ActionChecker';
-import {ACTION_CREATE_PROGRAM_COHORT, ACTION_GET_PROGRAM_COHORTS} from '../../authnz-library/timetabling-actions';
-import {timetablingAxiosInstance} from '../../utlis/interceptors/timetabling-interceptor';
+import { Link } from 'react-router-dom';
+import { Alerts, ToastifyAlerts } from '../lib/Alert';
+import { LinearProgress } from '@mui/material';
+import { ProgramCohortService } from '../services/ProgramCohortService';
+import { canPerformActions } from '../../services/ActionChecker';
+import { ACTION_CREATE_PROGRAM_COHORT, ACTION_GET_PROGRAM_COHORTS } from '../../authnz-library/timetabling-actions';
+import { timetablingAxiosInstance } from '../../utlis/interceptors/timetabling-interceptor';
 import TableWrapper from '../../utlis/TableWrapper';
 import Select from 'react-select';
-import {customSelectTheme} from '../lib/SelectThemes';
+import { customSelectTheme } from '../lib/SelectThemes';
 import ConfirmationModalWrapper from '../../App/components/modal/ConfirmationModalWrapper';
+import ModalWrapper from '../../App/components/modal/ModalWrapper';
 
 const alerts: Alerts = new ToastifyAlerts();
 
@@ -62,7 +63,7 @@ const ProgramCohorts = (): JSX.Element => {
     const [numberOfSlots, setNumberOfSlots] = useState(0);
     const [showModal, setModal] = useState(false);
     const [cohortId, setCohortId] = useState(null);
-    const [cohortName,] = useState('');
+    const [cohortName] = useState('');
     const [errorMessages] = useState([]);
     const [showUploadModal, setShowUploadModal] = useState(false);
     const [cancelModal, setCancelModal] = useState(false);
@@ -73,7 +74,7 @@ const ProgramCohorts = (): JSX.Element => {
     const month = graduationDate.slice(5, 7);
     const [activationModal, setActivationModal] = useState(false);
     const [, setRowData] = useState<programCohort>();
-    const [, setDisabledButton] = useState(false);
+    const [disabledButton, setDisabledButton] = useState(false);
 
     const handleActivationStatusToggle = (event, row: programCohort) => {
         setDisabled(true);
@@ -135,7 +136,7 @@ const ProgramCohorts = (): JSX.Element => {
                     <Switch
                         defaultChecked={row.program_cohorts_status !== 'canceled'}
                         color="secondary"
-                        inputProps={{'aria-label': 'controlled'}}
+                        inputProps={{ 'aria-label': 'controlled' }}
                         onChange={(event) => {
                             handleActivationStatusToggle(event, row);
                             setRowData(row);
@@ -143,6 +144,7 @@ const ProgramCohorts = (): JSX.Element => {
                         }}
                     />
                     <ConfirmationModalWrapper
+                        disabled={disabledButton}
                         submitButton
                         submitFunction={() => handleToggleStatusSubmit(row)}
                         closeModal={handleCloseModal}
@@ -272,7 +274,7 @@ const ProgramCohorts = (): JSX.Element => {
     const fetchProgramCohorts = (): void => {
         setLinearDisplay('block');
         timetablingAxiosInstance
-            .get('/program-cohorts', { params: { loadExtras: 'programs',includeDeactivated: true } })
+            .get('/program-cohorts', { params: { loadExtras: 'programs', includeDeactivated: true } })
             .then((res) => {
                 res.data.forEach((program) => {
                     program.name = getProgramName(res.data[0].programId);
@@ -310,37 +312,31 @@ const ProgramCohorts = (): JSX.Element => {
 
     const updateProgramCohort = (cohortId, updates): void => {
         setLinearDisplay('block');
+        setDisabledButton(true);
         timetablingAxiosInstance
             .put(`/program-cohorts/${cohortId}`, updates)
             .then(() => {
                 alerts.showSuccess('Successfully updated Cohort');
                 fetchProgramCohorts();
                 resetStateCloseModal();
-                setLinearDisplay('none');
             })
             .catch((error) => {
                 alerts.showError(error.message);
+            })
+            .finally(() => {
                 setLinearDisplay('none');
+                setDisabledButton(false);
             });
     };
     const handleEdit = (e): void => {
         e.preventDefault();
-        setLinearDisplay('block');
         const updates = {
             programId: programId === 0 ? selectedProgramCohort.pg_id : programId,
-            campusId:
-                campusId === 0 ? selectedProgramCohort.program_cohorts_campusId
-                    : campusId,
-            startDate:
-                startDate === ''
-                    ? selectedProgramCohort.program_cohorts_startDate
-                    : startDate,
-            anticipatedGraduationYear:year === '' ? selectedProgramCohort.program_cohorts_anticipatedGraduationYear: year,
-            anticipatedGraduationMonth:month === '' ? selectedProgramCohort.program_cohorts_anticipatedGraduationMonth: month,
-            advertDescription:
-                description === ''
-                    ? selectedProgramCohort.program_cohorts_advertDescription
-                    : description,
+            campusId: campusId === 0 ? selectedProgramCohort.program_cohorts_campusId : campusId,
+            startDate: startDate === '' ? selectedProgramCohort.program_cohorts_startDate : startDate,
+            anticipatedGraduationYear: year === '' ? selectedProgramCohort.program_cohorts_anticipatedGraduationYear : year,
+            anticipatedGraduationMonth: month === '' ? selectedProgramCohort.program_cohorts_anticipatedGraduationMonth : month,
+            advertDescription: description === '' ? selectedProgramCohort.program_cohorts_advertDescription : description,
             bannerImageUrl: selectedProgramCohort.program_cohorts_bannerImageUrl,
             numberOfSlots: numberOfSlots === 0 ? selectedProgramCohort.program_cohorts_numberOfSlots : numberOfSlots
         };
@@ -383,19 +379,22 @@ const ProgramCohorts = (): JSX.Element => {
 
     const createCohort = (cohortData): void => {
         setLinearDisplay('block');
+        setDisabledButton(true);
         timetablingAxiosInstance
             .post('/program-cohorts', cohortData)
             .then(() => {
                 resetStateCloseModal();
-                setLinearDisplay('none');
                 alerts.showSuccess('Successfully created Program Cohort');
                 fetchProgramCohorts();
-                setLinearDisplay('none');
             })
             .catch((error) => {
                 resetStateCloseModal();
                 alerts.showError(error.message);
                 setLinearDisplay('none');
+            })
+            .finally(() => {
+                setLinearDisplay('none');
+                setDisabledButton(false);
             });
     };
     const handleProgramChange = (programId) => {
@@ -492,175 +491,165 @@ const ProgramCohorts = (): JSX.Element => {
                     </Row>
                 </>
             )}
-            <Modal
-                backdrop="static"
+            <ModalWrapper
+                noFooter
                 show={showModal}
-                onHide={toggleCreateModal}
-                size="lg"
-                aria-labelledby="contained-modal-title-vcenter"
-                centered
+                closeModal={toggleCreateModal}
+                modalSize="lg"
+                title={
+                    cohortId
+                        ? `Edit: ${getProgramCohortFields(cohortId).pg_name} ${getProgramCohortFields(cohortId).program_cohorts_code}`
+                        : 'Create a Program Cohort'
+                }
             >
-                <Modal.Header closeButton>
-                    <Modal.Title id="contained-modal-title-vcenter">
-                        {cohortId
-                            ? `Edit: ${getProgramCohortFields(cohortId).pg_name} ${getProgramCohortFields(cohortId).program_cohorts_code}`
-                            : 'Create a Program Cohort'}
-                    </Modal.Title>
-                </Modal.Header>
-                <Modal.Body>
-                    <Row>
-                        <Col sm={8}>
-                            <ValidationForm>
-                                <div className="form-group">
-                                    <label htmlFor="cohortName">
-                                        <b>{cohortId ? 'Select a program' : 'Select a new program for this cohort'}</b>
-                                    </label>
-                                    <Select
-                                        theme={customSelectTheme}
-                                        defaultValue={programAssigned}
-                                        options={programOptions}
-                                        isMulti={false}
-                                        placeholder="Select a Program."
-                                        noOptionsMessage={() => 'No Programs available'}
-                                        onChange={(e) => handleProgramChange(e)}
-                                    /><br/>
-                                    <label htmlFor="cohortName">
-                                        <b>{cohortId ? 'Select a campus' : 'Select a new campus for this cohort'}</b>
-                                    </label>
-                                    <Select
-                                        theme={customSelectTheme}
-                                        defaultValue={campusAssigned}
-                                        options={campusOptions}
-                                        isMulti={false}
-                                        placeholder="Select a Campus."
-                                        noOptionsMessage={() => 'No campus available'}
-                                        onChange={(e) => handleCampusChange(e)}
-                                    /><br/>
-                                    <label htmlFor="Date">
-                                        <b>Start Date</b>
-                                    </label>
-                                    <br />
-                                    <TextInput
-                                        name="startDate"
-                                        id="startDate"
-                                        type="date"
-                                        required
-                                        defaultValue={
-                                            cohortId ? selectedProgramCohort.program_cohorts_startDate.slice(0, 10) : startDate
-                                        }
-                                        onChange={(e) => {
-                                            setStartDate(e.target.value);
-                                        }}
-                                    />
-                                    <br />
-                                    <label htmlFor="Date">
-                                        <b>Anticipated Graduation Date</b>
-                                    </label>
-                                    <br />
-                                    <TextInput
-                                        name="graduationDate"
-                                        id="graduationDate"
-                                        type="month"
-                                        required
-                                        defaultValue={
-                                            cohortId
-                                                ? getMonthYear(
-                                                    selectedProgramCohort.program_cohorts_anticipatedGraduationMonth,
-                                                    selectedProgramCohort.program_cohorts_anticipatedGraduationYear
-                                                )
-                                                : selectedGraduationDate
-                                        }
-                                        onChange={(e) => {
-                                            setGraduationDate(e.target.value);
-                                        }}
-                                    />
-                                    <br />
-                                    <label htmlFor="cohortName">
-                                        <b>Description</b>
-                                    </label>
-                                    <TextInput
-                                        name="description"
-                                        minLength="4"
-                                        id="description"
-                                        defaultValue={
-                                            cohortId ? selectedProgramCohort.program_cohorts_advertDescription : selectedDescription
-                                        }
-                                        type="text"
-                                        placeholder={cohortId ? setDescription : description}
-                                        required
-                                        multiline
-                                        rows="3"
-                                        onChange={(e) => {
-                                            setDescription(e.target.value);
-                                        }}
-                                    />
-                                    <br />
-                                    <label htmlFor="numOfSlots">
-                                        <b>Number of slots</b>
-                                    </label>
-                                    <TextInput
-                                        name="numberOfSlots"
-                                        id="numberOfSlots"
-                                        defaultValue={
-                                            cohortId ? selectedProgramCohort.program_cohorts_numberOfSlots : numberOfSlots
-                                        }
-                                        type="text"
-                                        placeholder={'number Of slots'}
-                                        required
-                                        onChange={(e) => {
-                                            setNumberOfSlots(e.target.value);
-                                        }}
-                                    />
-                                    <br />
-                                    <label htmlFor="cohortName">
-                                        <b>Banner Image</b>
-                                    </label>
-                                    <br />
-                                    <button
-                                        className="btn btn-primary"
-                                        onClick={(e) => {
-                                            e.preventDefault();
-                                            setShowUploadModal(true);
-                                        }}
-                                    >
-                                        Add image
-                                    </button>
-                                </div>
-                                <input name="banner" id="banner" type="hidden" required value={banner} />
-                                <br />
-                            </ValidationForm>
+                <Row>
+                    <Col sm={8}>
+                        <ValidationForm>
                             <div className="form-group">
-                                <button className="btn btn-info float-right" onClick={toggleConfirmModal}>
-                                    Submit
-                                </button>
+                                <label htmlFor="cohortName">
+                                    <b>{cohortId ? 'Select a program' : 'Select a new program for this cohort'}</b>
+                                </label>
+                                <Select
+                                    theme={customSelectTheme}
+                                    defaultValue={programAssigned}
+                                    options={programOptions}
+                                    isMulti={false}
+                                    placeholder="Select a Program."
+                                    noOptionsMessage={() => 'No Programs available'}
+                                    onChange={(e) => handleProgramChange(e)}
+                                />
+                                <br />
+                                <label htmlFor="cohortName">
+                                    <b>{cohortId ? 'Select a campus' : 'Select a new campus for this cohort'}</b>
+                                </label>
+                                <Select
+                                    theme={customSelectTheme}
+                                    defaultValue={campusAssigned}
+                                    options={campusOptions}
+                                    isMulti={false}
+                                    placeholder="Select a Campus."
+                                    noOptionsMessage={() => 'No campus available'}
+                                    onChange={(e) => handleCampusChange(e)}
+                                />
+                                <br />
+                                <label htmlFor="Date">
+                                    <b>Start Date</b>
+                                </label>
+                                <br />
+                                <TextInput
+                                    name="startDate"
+                                    id="startDate"
+                                    type="date"
+                                    required
+                                    defaultValue={cohortId ? selectedProgramCohort.program_cohorts_startDate.slice(0, 10) : startDate}
+                                    onChange={(e) => {
+                                        setStartDate(e.target.value);
+                                    }}
+                                />
+                                <br />
+                                <label htmlFor="Date">
+                                    <b>Anticipated Graduation Date</b>
+                                </label>
+                                <br />
+                                <TextInput
+                                    name="graduationDate"
+                                    id="graduationDate"
+                                    type="month"
+                                    required
+                                    defaultValue={
+                                        cohortId
+                                            ? getMonthYear(
+                                                selectedProgramCohort.program_cohorts_anticipatedGraduationMonth,
+                                                selectedProgramCohort.program_cohorts_anticipatedGraduationYear
+                                            )
+                                            : selectedGraduationDate
+                                    }
+                                    onChange={(e) => {
+                                        setGraduationDate(e.target.value);
+                                    }}
+                                />
+                                <br />
+                                <label htmlFor="cohortName">
+                                    <b>Description</b>
+                                </label>
+                                <TextInput
+                                    name="description"
+                                    minLength="4"
+                                    id="description"
+                                    defaultValue={cohortId ? selectedProgramCohort.program_cohorts_advertDescription : selectedDescription}
+                                    type="text"
+                                    placeholder={cohortId ? setDescription : description}
+                                    required
+                                    multiline
+                                    rows="3"
+                                    onChange={(e) => {
+                                        setDescription(e.target.value);
+                                    }}
+                                />
+                                <br />
+                                <label htmlFor="numOfSlots">
+                                    <b>Number of slots</b>
+                                </label>
+                                <TextInput
+                                    name="numberOfSlots"
+                                    id="numberOfSlots"
+                                    defaultValue={cohortId ? selectedProgramCohort.program_cohorts_numberOfSlots : numberOfSlots}
+                                    type="text"
+                                    placeholder={'number Of slots'}
+                                    required
+                                    onChange={(e) => {
+                                        setNumberOfSlots(e.target.value);
+                                    }}
+                                />
+                                <br />
+                                <label htmlFor="cohortName">
+                                    <b>Banner Image</b>
+                                </label>
+                                <br />
                                 <button
-                                    className="btn btn-danger float-left"
-                                    onClick={() => {
-                                        toggleCreateModal();
+                                    className="btn btn-primary"
+                                    onClick={(e) => {
+                                        e.preventDefault();
+                                        setShowUploadModal(true);
                                     }}
                                 >
-                                    Cancel
+                                    Add image
                                 </button>
                             </div>
-                        </Col>
-                        <Col sm={4}>
-                            <CardPreview
-                                programName={cohortId ? selectedProgramCohort.pg_name : programName}
-                                description={cohortId ? selectedProgramCohort.program_cohorts_advertDescription : description}
-                                startDate={cohortId ? selectedProgramCohort.program_cohorts_startDate.slice(0, 10) : startDate}
-                                graduationDate={
-                                    cohortId
-                                        ? selectedProgramCohort.program_cohorts_anticipatedGraduationYear +
-                                          ' - ' +
-                                          selectedProgramCohort.program_cohorts_anticipatedGraduationMonth
-                                        : graduationDate
-                                }
-                                bannerImage={cohortId ? selectedProgramCohort.program_cohorts_bannerImageUrl : banner}
-                            />
-                        </Col>
-                    </Row>
-                </Modal.Body>
-            </Modal>
+                            <input name="banner" id="banner" type="hidden" required value={banner} />
+                            <br />
+                        </ValidationForm>
+                        <div className="form-group">
+                            <button className="btn btn-info float-right" onClick={toggleConfirmModal}>
+                                Submit
+                            </button>
+                            <button
+                                className="btn btn-danger float-left"
+                                onClick={() => {
+                                    toggleCreateModal();
+                                }}
+                            >
+                                Cancel
+                            </button>
+                        </div>
+                    </Col>
+                    <Col sm={4}>
+                        <CardPreview
+                            programName={cohortId ? selectedProgramCohort.pg_name : programName}
+                            description={cohortId ? selectedProgramCohort.program_cohorts_advertDescription : description}
+                            startDate={cohortId ? selectedProgramCohort.program_cohorts_startDate.slice(0, 10) : startDate}
+                            graduationDate={
+                                cohortId
+                                    ? selectedProgramCohort.program_cohorts_anticipatedGraduationYear +
+                                      ' - ' +
+                                      selectedProgramCohort.program_cohorts_anticipatedGraduationMonth
+                                    : graduationDate
+                            }
+                            bannerImage={cohortId ? selectedProgramCohort.program_cohorts_bannerImageUrl : banner}
+                        />
+                    </Col>
+                </Row>
+            </ModalWrapper>
             <Modal backdrop="static" show={showUploadModal} onHide={toggleUploadModal} size="sm" centered>
                 <Modal.Header closeButton>
                     <Modal.Title>Add image</Modal.Title>
@@ -701,32 +690,15 @@ const ProgramCohorts = (): JSX.Element => {
                     </Button>
                 </Modal.Footer>
             </Modal>
-            <Modal backdrop="static" show={cancelModal} onHide={toggleCancelModal} size="sm" centered>
-                <Modal.Header closeButton>
-                    <Modal.Title>Cancel program cohort</Modal.Title>
-                </Modal.Header>
-                <Modal.Body>
-                    <ValidationForm>
-                        <p className="text-centre">
-                            You are about to cancel : {cohortName} Click <b>confirm</b> to proceed
-                        </p>
-                    </ValidationForm>
-                </Modal.Body>
-                <Modal.Footer style={{ display: 'flex', justifyContent: 'space-between' }}>
-                    <Button variant="btn btn-danger btn-rounded" onClick={toggleCancelModal}>
-                        Close
-                    </Button>
-                    <Button
-                        variant="btn btn-info btn-rounded"
-                        onClick={() => {
-                            handleCancellation();
-                        }}
-                    >
-                        Confirm
-                    </Button>
-                </Modal.Footer>
-            </Modal>
+            <ModalWrapper show={cancelModal} closeModal={toggleCancelModal} modalSize="md" title="Cancel program cohort" submitButton submitFunction={handleCancellation}>
+                <ValidationForm>
+                    <p className="text-centre">
+                        You are about to cancel : {cohortName} Click <b>confirm</b> to proceed
+                    </p>
+                </ValidationForm>
+            </ModalWrapper>
             <ConfirmationModalWrapper
+                disabled={disabledButton}
                 submitButton
                 submitFunction={(e) => {
                     cohortId ? handleEdit(e) : handleCreate(e);

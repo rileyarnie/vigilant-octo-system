@@ -1,21 +1,22 @@
 /* eslint-disable react/display-name */
-import React, {useEffect, useState} from 'react';
+import React, { useEffect, useState } from 'react';
 import Edit from '@material-ui/icons/Edit';
 import Alert from '@material-ui/lab/Alert';
 import Breadcrumb from '../../App/components/Breadcrumb';
-import {Button, Card, Col, Modal, Row} from 'react-bootstrap';
+import { Button, Card, Col,  Row } from 'react-bootstrap';
 import CreateVenue from './CreateVenue';
 import EditVenue from './EditVenue';
-import {Alerts, ToastifyAlerts} from '../lib/Alert';
-import {LinearProgress} from '@mui/material';
-import {canPerformActions} from '../../services/ActionChecker';
-import {ACTION_CREATE_VENUE, ACTION_GET_VENUE, ACTION_UPDATE_VENUE} from '../../authnz-library/timetabling-actions';
-import {timetablingAxiosInstance} from '../../utlis/interceptors/timetabling-interceptor';
+import { Alerts, ToastifyAlerts } from '../lib/Alert';
+import { LinearProgress } from '@mui/material';
+import { canPerformActions } from '../../services/ActionChecker';
+import { ACTION_CREATE_VENUE, ACTION_GET_VENUE, ACTION_UPDATE_VENUE } from '../../authnz-library/timetabling-actions';
+import { timetablingAxiosInstance } from '../../utlis/interceptors/timetabling-interceptor';
 import TableWrapper from '../../utlis/TableWrapper';
+import ModalWrapper from '../../App/components/modal/ModalWrapper';
 
 const alerts: Alerts = new ToastifyAlerts();
 
-const VenueList = (props): JSX.Element => {
+const VenueList = (): JSX.Element => {
     const columns = [
         { title: 'ID', field: 'venue_id' },
         { title: 'Venue name', field: 'venue_name' },
@@ -89,7 +90,7 @@ const VenueList = (props): JSX.Element => {
                                     title="Venues"
                                     columns={columns}
                                     data={data}
-                                    options={{ actionsColumnIndex: -1,}}
+                                    options={{ actionsColumnIndex: -1 }}
                                     actions={
                                         canPerformActions(ACTION_UPDATE_VENUE.name)
                                             ? [
@@ -110,39 +111,27 @@ const VenueList = (props): JSX.Element => {
                     </Row>
                 </>
             )}
-            <Modal {...props} size="lg" aria-labelledby="contained-modal-title-vcenter" centered show={showModal} backdrop="static">
-                <Modal.Header>
-                    <Modal.Title id="contained-modal-title-vcenter">Create Venue</Modal.Title>
-                </Modal.Header>
-                <Modal.Body>
-                    <CreateVenue
-                        setModal={setModal}
-                        setLinearDisplay={setLinearDisplay}
-                        linearDisplay={linearDisplay}
-                        fetchVenues={fetchVenues}
-                    >
-                        {' '}
-                    </CreateVenue>
-                </Modal.Body>
-            </Modal>
-            <Modal {...props} size="lg" aria-labelledby="contained-modal-title-vcenter" centered show={showEditModal}>
-                <Modal.Header>
-                    <Modal.Title id="contained-modal-title-vcenter">Edit {selectedVenue.venue_name} </Modal.Title>
-                </Modal.Header>
-                <Modal.Body>
-                    <EditVenue
-                        {...selectedVenue}
-                        linearDisplay={linearDisplay}
-                        setLinearDisplay={setLinearDisplay}
-                        setData={setData}
-                        data={data}
-                        setEditModal={setEditModal}
-                        fetchVenues={fetchVenues}
-                    >
-                        {' '}
-                    </EditVenue>
-                </Modal.Body>
-            </Modal>
+            <ModalWrapper show={showModal} modalSize="lg" closeModal={toggleCreateModal} title="Create Venue" noFooter={true}>
+                <CreateVenue
+                    setModal={setModal}
+                    setLinearDisplay={setLinearDisplay}
+                    linearDisplay={linearDisplay}
+                    fetchVenues={fetchVenues}
+                ></CreateVenue>
+            </ModalWrapper>
+            <ModalWrapper show={showEditModal} title={`Edit ${selectedVenue.venue_name}`} modalSize='lg' noFooter closeModal={toggleEditModal} >
+                <EditVenue
+                    {...selectedVenue}
+                    linearDisplay={linearDisplay}
+                    setLinearDisplay={setLinearDisplay}
+                    setData={setData}
+                    data={data}
+                    setEditModal={setEditModal}
+                    fetchVenues={fetchVenues}
+                >
+                    {' '}
+                </EditVenue>
+            </ModalWrapper>
         </>
     );
 };

@@ -76,7 +76,7 @@ const CoursesList = (): JSX.Element => {
                                 toggleActivationModal();
                             }}
                         />
-                        <ConfirmationModalWrapper
+                        <ConfirmationModalWrapper disabled={disabled}
                             submitButton
                             submitFunction={() => handleToggleStatusSubmit(row)}
                             closeModal={handleCloseModal}

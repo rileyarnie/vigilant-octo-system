@@ -99,6 +99,7 @@ export const AssignRoleModal = (props: IProps): JSX.Element => {
                 </Modal.Footer>
             </Modal>
             <ConfirmationModalWrapper
+                disabled={disabled}
                 submitButton
                 submitFunction={handlePostRoles}
                 closeModal={toggleCloseConfirmModal}

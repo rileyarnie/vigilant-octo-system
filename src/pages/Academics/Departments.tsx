@@ -1,24 +1,21 @@
 /* eslint-disable react/display-name */
-import React, {useEffect, useState} from 'react';
+import React, { useEffect, useState } from 'react';
 import Edit from '@material-ui/icons/Edit';
 import Alert from '@material-ui/lab/Alert';
 import Breadcrumb from '../../App/components/Breadcrumb';
-import {Button, Card, Col, Modal, Row} from 'react-bootstrap';
-import {TextInput, ValidationForm} from 'react-bootstrap4-form-validation';
-import {Switch} from '@material-ui/core';
-import {Alerts, ToastifyAlerts} from '../lib/Alert';
+import { Button, Card, Col, Row } from 'react-bootstrap';
+import { TextInput, ValidationForm } from 'react-bootstrap4-form-validation';
+import { Switch } from '@material-ui/core';
+import { Alerts, ToastifyAlerts } from '../lib/Alert';
 import LinearProgress from '@mui/material/LinearProgress';
-import {canPerformActions} from '../../services/ActionChecker';
-import {
-    ACTION_CREATE_DEPARTMENT,
-    ACTION_GET_DEPARTMENTS,
-    ACTION_UPDATE_DEPARTMENT
-} from '../../authnz-library/timetabling-actions';
-import {timetablingAxiosInstance} from '../../utlis/interceptors/timetabling-interceptor';
+import { canPerformActions } from '../../services/ActionChecker';
+import { ACTION_CREATE_DEPARTMENT, ACTION_GET_DEPARTMENTS, ACTION_UPDATE_DEPARTMENT } from '../../authnz-library/timetabling-actions';
+import { timetablingAxiosInstance } from '../../utlis/interceptors/timetabling-interceptor';
 import TableWrapper from '../../utlis/TableWrapper';
-import {customSelectTheme} from '../lib/SelectThemes';
+import { customSelectTheme } from '../lib/SelectThemes';
 import Select from 'react-select';
 import ConfirmationModalWrapper from '../../App/components/modal/ConfirmationModalWrapper';
+import ModalWrapper from '../../App/components/modal/ModalWrapper';
 
 const alerts: Alerts = new ToastifyAlerts();
 
@@ -30,9 +27,9 @@ const Department = (): JSX.Element => {
     }
 
     const columns = [
-        {title: 'ID', field: 'id', hidden: true},
-        {title: 'Department name', field: 'name'},
-        {title: 'HOD', field: 'hodTrainerId'},
+        { title: 'ID', field: 'id', hidden: true },
+        { title: 'Department name', field: 'name' },
+        { title: 'HOD', field: 'hodTrainerId' },
         {
             title: 'Activation Status',
             field: 'isActive',
@@ -41,13 +38,14 @@ const Department = (): JSX.Element => {
                     <Switch
                         defaultChecked={row.isActive}
                         color="secondary"
-                        inputProps={{'aria-label': 'controlled'}}
+                        inputProps={{ 'aria-label': 'controlled' }}
                         onChange={(event) => {
                             handleActivationStatusToggle(event, row);
                             toggleActivationModal();
                         }}
                     />
                     <ConfirmationModalWrapper
+                        disabled={disabledButton}
                         submitButton
                         submitFunction={() => handleToggleStatusSubmit(row)}
                         closeModal={() => fetchDepartments()}
@@ -114,7 +112,7 @@ const Department = (): JSX.Element => {
     useEffect(() => {
         setLinearDisplay('block');
         timetablingAxiosInstance
-            .get('/departments',{ params: { includeDeactivated: true } })
+            .get('/departments', { params: { includeDeactivated: true } })
             .then((res) => {
                 setLinearDisplay('none');
                 setData(res.data);
@@ -136,29 +134,31 @@ const Department = (): JSX.Element => {
             });
     }, []);
     users.map((hod) => {
-        return options.push({value: hod.tr_id, label: hod.stf_name});
+        return options.push({ value: hod.tr_id, label: hod.stf_name });
     });
     const updateDepartment = (deptId, updates) => {
         setLinearDisplay('block');
+        setDisabledButton(true);
         timetablingAxiosInstance
             .put(`/departments/${deptId}`, updates)
             .then(() => {
-                setLinearDisplay('none');
                 alerts.showSuccess('Successfully updated department');
                 fetchDepartments();
                 resetStateCloseModal();
                 setLinearDisplay('none');
             })
             .catch((error) => {
-                setLinearDisplay('block');
                 alerts.showError(error.message);
+            })
+            .finally(() => {
+                setDisabledButton(false);
                 setLinearDisplay('none');
             });
     };
     const fetchDepartments = () => {
         setLinearDisplay('block');
         timetablingAxiosInstance
-            .get('/departments',{ params: { includeDeactivated: true } })
+            .get('/departments', { params: { includeDeactivated: true } })
             .then((res) => {
                 setData(res.data);
                 setLinearDisplay('none');
@@ -193,19 +193,21 @@ const Department = (): JSX.Element => {
     };
     const createDepartment = (departmentData) => {
         setLinearDisplay('block');
+        setDisabledButton(true);
+
         timetablingAxiosInstance
             .post('/departments', departmentData)
             .then(() => {
-                setLinearDisplay('block');
                 fetchDepartments();
                 alerts.showSuccess('Successfully created Department');
                 resetStateCloseModal();
-                setLinearDisplay('none');
             })
             .catch((error) => {
-                setLinearDisplay('block');
                 alerts.showError(error.message);
+            })
+            .finally(() => {
                 setLinearDisplay('none');
+                setDisabledButton(false);
             });
     };
     const handleChange = (hod) => {
@@ -234,7 +236,7 @@ const Department = (): JSX.Element => {
         <>
             <Row className="align-items-center page-header">
                 <Col>
-                    <Breadcrumb/>
+                    <Breadcrumb />
                 </Col>
                 <Col>
                     {canPerformActions(ACTION_CREATE_DEPARTMENT.name) && (
@@ -246,7 +248,7 @@ const Department = (): JSX.Element => {
             </Row>
             {canPerformActions(ACTION_GET_DEPARTMENTS.name) && (
                 <>
-                    <LinearProgress style={{display: linearDisplay}}/>
+                    <LinearProgress style={{ display: linearDisplay }} />
                     <Row>
                         <Col>
                             <Card>
@@ -263,7 +265,7 @@ const Department = (): JSX.Element => {
                                     title="Departments"
                                     columns={columns}
                                     data={data}
-                                    options={{actionsColumnIndex: -1}}
+                                    options={{ actionsColumnIndex: -1 }}
                                     actions={
                                         canPerformActions(ACTION_UPDATE_DEPARTMENT.name)
                                             ? [
@@ -287,53 +289,51 @@ const Department = (): JSX.Element => {
                     </Row>
                 </>
             )}
-            <Modal
-                backdrop="static"
+            <ModalWrapper
                 show={showModal}
-                onHide={toggleCreateModal}
-                size="lg"
-                aria-labelledby="contained-modal-title-vcenter"
-                centered
+                title={deptId ? 'Edit epartment' : 'Create a department'}
+                closeModal={toggleCreateModal}
+                modalSize="lg"
+                noFooter={true}
             >
-                <Modal.Header closeButton>
-                    <Modal.Title
-                        id="contained-modal-title-vcenter">{deptId ? 'Edit department' : 'Create a department'}</Modal.Title>
-                </Modal.Header>
-                <Modal.Body>
-                    <ValidationForm>
-                        <div className="form-group">
-                            <label htmlFor="departmentName">Department name</label>
-                            <TextInput
-                                name="departmentName"
-                                id="departmentName"
-                                type="text"
-                                value={deptId ? selectedDeptName : deptname}
-                                placeholder={deptId ? selectedDeptName : 'Enter department name'}
-                                onChange={(e) => (deptId ? setSelectedDeptName(e.target.value) : setDeptName(e.target.value))}
-                                required
-                            />
-                            <br/>
-                        </div>
-                        <div className="form-group">
-                            <label htmlFor="trainerType">Select a HoD</label>
-                            <Select
-                                theme={customSelectTheme}
-                                defaultValue=""
-                                options={options}
-                                isMulti={false}
-                                placeholder="Select a HOD."
-                                noOptionsMessage={() => 'No HODs available'}
-                                onChange={handleChange}
-                            />
-                        </div>
-                    </ValidationForm>
-                    <Col>
-                        <button disabled={disabledButton} className="btn btn-danger float-left" onClick={() => toggleCreateModal()}>Cancel</button>
-                        <button disabled={disabledButton} className="btn btn-info float-right" onClick={toggleConfirmModal}>Submit</button>
-                    </Col>
-                </Modal.Body>
-            </Modal>
+                <ValidationForm>
+                    <div className="form-group">
+                        <label htmlFor="departmentName">Department name</label>
+                        <TextInput
+                            name="departmentName"
+                            id="departmentName"
+                            type="text"
+                            value={deptId ? selectedDeptName : deptname}
+                            placeholder={deptId ? selectedDeptName : 'Enter department name'}
+                            onChange={(e) => (deptId ? setSelectedDeptName(e.target.value) : setDeptName(e.target.value))}
+                            required
+                        />
+                        <br />
+                    </div>
+                    <div className="form-group">
+                        <label htmlFor="trainerType">Select a HoD</label>
+                        <Select
+                            theme={customSelectTheme}
+                            defaultValue=""
+                            options={options}
+                            isMulti={false}
+                            placeholder="Select a HOD."
+                            noOptionsMessage={() => 'No HODs available'}
+                            onChange={handleChange}
+                        />
+                    </div>
+                </ValidationForm>
+                <Col>
+                    <button disabled={disabledButton} className="btn btn-danger float-left" onClick={() => toggleCreateModal()}>
+                        Cancel
+                    </button>
+                    <button disabled={disabledButton} className="btn btn-info float-right" onClick={toggleConfirmModal}>
+                        Submit
+                    </button>
+                </Col>
+            </ModalWrapper>
             <ConfirmationModalWrapper
+                disabled={disabledButton}
                 submitButton
                 submitFunction={(e) => (deptId ? handleEdit(e) : handleCreate(e))}
                 closeModal={toggleCloseConfirmModal}

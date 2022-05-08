@@ -117,6 +117,7 @@ const CreateRole = (props: IProps): JSX.Element => {
                 </Modal.Footer>
             </Modal>
             <ConfirmationModalWrapper
+                disabled={disabled}
                 submitButton
                 submitFunction={handleRoleSubmit}
                 closeModal={toggleCloseConfirmModal}
