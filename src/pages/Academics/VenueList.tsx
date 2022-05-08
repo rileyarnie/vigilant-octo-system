@@ -41,7 +41,7 @@ const VenueList = (props): JSX.Element => {
     const fetchVenues = () => {
         setLinearDisplay('block');
         timetablingAxiosInstance
-            .get('/venues')
+            .get('/venues',{ params: { includeDeactivated: true }})
             .then((res) => {
                 setData(res.data);
                 setLinearDisplay('none');

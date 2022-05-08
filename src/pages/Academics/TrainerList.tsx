@@ -18,12 +18,6 @@ import {DepartmentService} from '../services/DepartmentService';
 
 const alerts: Alerts = new ToastifyAlerts();
 
-// enum TrainerType {
-//     Lecturer = 'LECTURER',
-//     Trainer = 'TRAINER',
-//     Assistant = 'ASSISTANT'
-// }
-
 const TrainerList = (): JSX.Element => {
     const columns = [
         { title: 'ID', field: 'tr_id', hidden: false },
@@ -93,7 +87,7 @@ const TrainerList = (): JSX.Element => {
     useEffect(() => {
         setLinearDisplay('block');
         timetablingAxiosInstance
-            .get('/trainers')
+            .get('/trainers', { params: { includeDeactivated: true }})
             .then((res) => {
                 setLinearDisplay('none');
                 console.log(res.data);

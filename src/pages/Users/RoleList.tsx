@@ -25,7 +25,7 @@ const alerts: Alerts = new ToastifyAlerts();
 
 interface Role {
     id: number;
-    created_on: string;
+    createdOn: string;
     name: string;
     RoleName: string;
 }
@@ -34,8 +34,8 @@ function roleList(): JSX.Element {
         { title: 'ID', field: 'id', editable: 'never' as const },
         { title: 'Role Name', field: 'name', editable: 'always' as const },
         { title: 'Role Description', field: 'description', editable: 'always' as const },
-        { title: 'Activation Status', field: 'activation_status', editable: 'never' as const },
-        { title: 'Created On', render: (row: Role): string => row.created_on.slice(0, 10), editable: 'never' as const },
+        { title: 'Activation Status', field: 'activationStatus', editable: 'never' as const },
+        { title: 'Created On', render: (row: Role): string => row.createdOn.slice(0, 10), editable: 'never' as const },
         {
             title: ' Actions',
             render: (row: Role) => (
@@ -91,7 +91,7 @@ function roleList(): JSX.Element {
     function fetchRoles(): void {
         setLinearDisplay('block');
         authnzAxiosInstance
-            .get('/roles')
+            .get('/roles', { params: { includeDeactivated: true }})
             .then((res: { data: [] }) => {
                 setData(res.data);
                 setLinearDisplay('none');

@@ -35,7 +35,7 @@ const UserList = (props: IProps): JSX.Element => {
     const fetchUsers = () => {
         setLinearDisplay('block');
         authnzAxiosInstance
-            .get('/users')
+            .get('/users',{ params: { includeDeactivated: true }})
             .then((res) => {
                 setData(res.data);
                 setLinearDisplay('none');

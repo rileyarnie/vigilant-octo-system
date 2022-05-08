@@ -34,7 +34,7 @@ const StaffList = (): JSX.Element => {
     const fetchStaff = () => {
         setLinearDisplay('block');
         timetablingAxiosInstance
-            .get('/staff')
+            .get('/staff', { params: { includeDeactivated: true }})
             .then((res) => {
                 setData(res.data);
                 setLinearDisplay('none');
