@@ -15,6 +15,7 @@ interface ISelectedRow {
 
 interface IProps {
     onHide: () => void;
+    toggleModal: () => void;
     show: boolean;
     selectedrowprops: ISelectedRow;
     assignedroles?: Array<{ value: number; label: string }>;
@@ -93,6 +94,9 @@ export const AssignRoleModal = (props: IProps): JSX.Element => {
                     />
                 </Modal.Body>
                 <Modal.Footer>
+                    <Button disabled={disabled} variant="primary" onClick={() => props.toggleModal()}>
+                        Cancel
+                    </Button>
                     <Button disabled={disabled} variant="danger" onClick={toggleConfirmModal}>
                         Save
                     </Button>

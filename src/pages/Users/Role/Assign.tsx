@@ -11,6 +11,10 @@ export const Assign = (props): JSX.Element => {
     const [modalShow, setModalShow] = React.useState(false);
     const [assignedRoles, setAssignedRoles] = useState([]);
 
+    function toggleModal() {
+        modalShow ? setModalShow(false) : setModalShow(true); 
+    }
+
     function fetchUserRoles() {
         setAssignedRoles([]);
         authnzAxiosInstance
@@ -47,7 +51,7 @@ export const Assign = (props): JSX.Element => {
             >
                 Assign Role
             </Button>
-            <AssignRoleModal show={modalShow} onHide={() => setModalShow(false)} selectedrowprops={props} assignedroles={assignedRoles} />
+            <AssignRoleModal show={modalShow} toggleModal={toggleModal} onHide={() => setModalShow(false)} selectedrowprops={props} assignedroles={assignedRoles} />
         </>
     );
 };
