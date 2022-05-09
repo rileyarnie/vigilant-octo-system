@@ -50,12 +50,12 @@ const SemesterList = (): JSX.Element => {
                         <ConfirmationModalWrapper
                             disabled={disabledButton}
                             submitButton
-                            submitFunction={() => handleToggleStatusSubmit(row)}
+                            submitFunction={() => handleToggleStatusSubmit()}
                             closeModal={handleCloseModal}
                             show={activationModal}
                         >
                             <h6 className="text-center">
-                                A you sure you want to change the status of <>{row.name}</> ?
+                                A you sure you want to change the status of <>{selectedRow ? selectedRow.name : ''}</> ?
                             </h6>
                         </ConfirmationModalWrapper>
                     </>
@@ -77,7 +77,7 @@ const SemesterList = (): JSX.Element => {
     const [selectedSemester, setSelectedSemester] = useState<Semester>();
     const [linearDisplay, setLinearDisplay] = useState('none');
     const [activationModal, setActivationModal] = useState(false);
-    const [, setRowData] = useState<Semester>();
+    const [selectedRow, setRowData] = useState<Semester>();
     const today = new Date().toISOString().slice(0, 10);
     const [status, setStatus] = useState(false);
     let activationStatus: boolean;
@@ -86,14 +86,14 @@ const SemesterList = (): JSX.Element => {
     const handleActivationStatusToggle = (event, row: Semester) => {
         setStatus(!row.activationStatus);
     };
-    const handleToggleStatusSubmit = (row: Semester) => {
+    const handleToggleStatusSubmit = () => {
         setLinearDisplay('block');
         const semester = {
             activationStatus: status
         };
         setDisabledButton(true);
         timetablingAxiosInstance
-            .put(`/semesters/${row.id}`, { body: semester })
+            .put(`/semesters/${selectedRow.id}`, { body: semester })
             .then(() => {
                 const msg = activationStatus ? 'Successfully activated semester' : 'Successfully Deactivated semester';
                 alerts.showSuccess(msg);
@@ -106,20 +106,12 @@ const SemesterList = (): JSX.Element => {
             .finally(() => {
                 setLinearDisplay('none');
                 setDisabledButton(false);
+                setRowData(null);
             });
     };
     useEffect(() => {
         setLinearDisplay('block');
-        timetablingAxiosInstance
-            .get('/semesters')
-            .then((res) => {
-                setData(res.data);
-                setLinearDisplay('none');
-            })
-            .catch((error) => {
-                alerts.showError(error.message);
-                setLinearDisplay('none');
-            });
+        fetchSemesters();
     }, []);
     const updateSemester = (semesterId, updates) => {
         setLinearDisplay('block');
@@ -146,11 +138,11 @@ const SemesterList = (): JSX.Element => {
             .get('/semesters', { params: { includeDeactivated: true } })
             .then((res) => {
                 setData(res.data);
-                setActivationModal(false);
-                setLinearDisplay('none');
             })
             .catch((error) => {
                 alerts.showError(error.message);
+            })
+            .finally(() => {
                 setActivationModal(false);
                 setLinearDisplay('none');
             });

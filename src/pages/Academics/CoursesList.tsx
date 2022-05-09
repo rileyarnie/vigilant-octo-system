@@ -25,7 +25,7 @@ const CoursesList = (): JSX.Element => {
         trainingHours: number;
         isTimetableable: boolean;
         needsTechnicalAssistant: boolean;
-        activation_status: boolean;
+        activationStatus: boolean;
         approval_status: boolean;
         isElective: boolean;
     }
@@ -52,8 +52,10 @@ const CoursesList = (): JSX.Element => {
     const [errorMessages] = useState([]);
     const [linearDisplay, setLinearDisplay] = useState('none');
     const [activationModal, setActivationModal] = useState(false);
+    const [editModal, setEditModal] = useState(false);
     const [rowData] = useState<Course>();
     const [status, setStatus] = useState(true);
+    const [selectedRow, setSelectedRow] = useState<Course>();
     let isElective: boolean;
     let msg: string;
     const [disabled, setDisabled] = useState(false);
@@ -68,22 +70,23 @@ const CoursesList = (): JSX.Element => {
                 canPerformActions(ACTION_UPDATE_COURSE.name) && (
                     <>
                         <CustomSwitch
-                            defaultChecked={row.activation_status}
+                            defaultChecked={row.activationStatus}
                             color="secondary"
                             inputProps={{'aria-label': 'controlled'}}
                             onChange={(event) => {
                                 handleActivationStatusToggle(event, row);
+                                setSelectedRow(row);
                                 toggleActivationModal();
                             }}
                         />
                         <ConfirmationModalWrapper disabled={disabled}
                             submitButton
-                            submitFunction={() => handleToggleStatusSubmit(row)}
+                            submitFunction={() => handleToggleStatusSubmit()}
                             closeModal={handleCloseModal}
                             show={activationModal}
                         >
                             <h6 className="text-center">
-                                Are you sure you want to change the status of <>{row.name}</> ?
+                                Are you sure you want to change the status of <>{!selectedRow ? '' : selectedRow.name}</> ?
                             </h6>
                         </ConfirmationModalWrapper>
                     </>
@@ -91,34 +94,40 @@ const CoursesList = (): JSX.Element => {
         }
     ];
     const handleActivationStatusToggle = (event, row: Course) => {
-        setStatus(!row.activation_status);
+        setStatus(!row.activationStatus);
     };
-    const handleToggleStatusSubmit = (row: Course) => {
+    const handleToggleStatusSubmit = () => {
         const course = {
-            activation_status: status,
+            activationStatus: status,
             isElective: isElective
         };
         setLinearDisplay('block');
         setDisabled(true);
         timetablingAxiosInstance
-            .put(`/courses/${row.id}`, course)
+            .put(`/courses/${selectedRow.id}`, course)
             .then(() => {
+                msg = status ? 'Course activated successfully' : 'Course deactivated successfully';
                 setDisabled(false);
                 alerts.showSuccess(msg);
                 fetchCourses();
-                setLinearDisplay('none');
             })
             .catch((error) => {
                 setDisabled(false);
                 alerts.showError(error.message);
+            })
+            .finally(() => {
+                setSelectedRow(null);
                 setLinearDisplay('none');
             });
     };
     const toggleCreateModal = () => {
         showModal ? setModal(false) : setModal(true);
     };
+    const toggleEditModal = () => {
+        editModal ? setEditModal(false) : setEditModal(true);
+    };
     const toggleActivationModal = () => {
-        setActivationModal(true);
+        activationModal ? setActivationModal(false) : setActivationModal(true);
     };
     const handleCloseModal = () => {
         fetchCourses();
@@ -176,8 +185,8 @@ const CoursesList = (): JSX.Element => {
             </Modal>
             <Modal
                 backdrop="static"
-                show={activationModal}
-                onHide={toggleActivationModal}
+                show={editModal}
+                onHide={toggleEditModal}
                 size="sm"
                 aria-labelledby="contained-modal-title-vcenter"
                 centered
@@ -188,13 +197,13 @@ const CoursesList = (): JSX.Element => {
                 <Modal.Body>
                     <ValidationForm>
                         <p className="text-center">Are you sure you want to change the status of {rowData?.name} ?</p>
-                        <Button disabled={disabled} className="btn btn-danger float-left" onClick={handleCloseModal}>
+                        <Button disabled={disabled} className="btn btn-danger float-left" onClick={toggleEditModal}>
                             Cancel
                         </Button>
                         <Button disabled={disabled}
                             className="btn btn-primary float-right"
                             onClick={() => {
-                                handleToggleStatusSubmit(rowData);
+                                handleToggleStatusSubmit();
                             }}
                         >
                             Confirm

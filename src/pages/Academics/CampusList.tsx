@@ -33,9 +33,9 @@ const CampusList = (): JSX.Element => {
     const [activationModal, setActivationModal] = useState(false);
     const [campusId, setCampusId] = useState(null);
     const [selectedCampusName, setSelectedCampusName] = useState('');
+    const [selectedRow, setSelectedRow] = useState<Campus>();
     const [selectedDescription, setSelectedDescription] = useState('');
     const [linearDisplay, setLinearDisplay] = useState('none');
-    const [, setRowData] = useState<Campus>();
     const [, setDisabled] = useState(false);
     let activationStatus: boolean;
     const [disabledButton, setDisabledButton] = useState(false);
@@ -44,20 +44,21 @@ const CampusList = (): JSX.Element => {
         setStatus(!row.activationStatus);
         setDisabled(true);
     };
-    const handleToggleStatusSubmit = (row: Campus) => {
+    const handleToggleStatusSubmit = () => {
         setDisabledButton(true);
         setLinearDisplay('block');
         const campus = {
             activationStatus: status
         };
         timetablingAxiosInstance
-            .put(`/campuses/${row.id}`, campus)
+            .put(`/campuses/${selectedRow.id}`, campus)
             .then(() => {
                 setDisabledButton(false);
                 const msg = activationStatus ? 'Successfully activated campus' : 'Successfully Deactivated campus';
                 alerts.showSuccess(msg);
                 fetchCampuses();
                 setActivationModal(false);
+                setSelectedRow(null);
                 setLinearDisplay('none');
                 setDisabled(false);
             })
@@ -87,19 +88,19 @@ const CampusList = (): JSX.Element => {
                             inputProps={{ 'aria-label': 'controlled' }}
                             onChange={(event) => {
                                 handleActivationStatusToggle(event, row);
-                                setRowData(row);
+                                setSelectedRow(row);
                                 toggleActivationModal();
                             }}
                         />
                         <ConfirmationModalWrapper
                             disabled={disabledButton}
                             submitButton
-                            submitFunction={() => handleToggleStatusSubmit(row)}
+                            submitFunction={() => handleToggleStatusSubmit()}
                             closeModal={handleCloseModal}
                             show={activationModal}
                         >
                             <h6 className="text-center">
-                                Are you sure you want to change the status of <>{row.name}</> ?
+                                Are you sure you want to change the status of <>{!selectedRow ? '' : selectedRow.name}</> ?
                             </h6>
                         </ConfirmationModalWrapper>
                     </>

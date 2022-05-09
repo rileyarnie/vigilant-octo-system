@@ -33,6 +33,7 @@ const ProgramCohorts = (): JSX.Element => {
         pg_name: string;
         program_cohorts_bannerImageUrl: string;
         program_cohorts_numberOfSlots: number;
+        program_cohorts_activationStatus: boolean;
         pg_id: number;
         bannerImageUrl: string;
         program_cohorts_campusId: number;
@@ -69,48 +70,49 @@ const ProgramCohorts = (): JSX.Element => {
     const [cancelModal, setCancelModal] = useState(false);
     const [selectedProgramCohort, setSelectedProgramCohort] = useState<programCohort>();
     const [linearDisplay, setLinearDisplay] = useState('none');
-    const [activationStatus, setStatus] = useState('');
+    const [activationStatus, setStatus] = useState(false);
     const year = graduationDate.split('').slice(0, 4).join('');
     const month = graduationDate.slice(5, 7);
     const [activationModal, setActivationModal] = useState(false);
-    const [, setRowData] = useState<programCohort>();
+    const [selectedRow, setRowData] = useState<programCohort>();
     const [disabledButton, setDisabledButton] = useState(false);
 
     const handleActivationStatusToggle = (event, row: programCohort) => {
         setDisabled(true);
-        if (row.program_cohorts_status === 'active') {
-            setStatus('canceled');
+        if (row.program_cohorts_activationStatus) {
+            setStatus(false);
             toggleActivationModal();
         }
-        if (row.program_cohorts_status === 'canceled') {
-            setStatus('active');
+        if (row.program_cohorts_activationStatus === false) {
+            setStatus(true);
             toggleActivationModal();
         }
     };
-    const handleToggleStatusSubmit = (row: programCohort) => {
+    const handleToggleStatusSubmit = () => {
         const cohortStatus = {
-            status: activationStatus
+            activationStatus: activationStatus
         };
         setDisabledButton(true);
         setLinearDisplay('block');
         timetablingAxiosInstance
-            .put(`/program-cohorts/${row.program_cohorts_id}`, cohortStatus)
+            .put(`/program-cohorts/${selectedRow.program_cohorts_id}`, cohortStatus)
             .then(() => {
                 setDisabledButton(false);
                 const msg =
-                    activationStatus === 'canceled' ? 'Successfully Deactivated Program Cohorts' : 'Successfully activated Program Cohort';
+                    !activationStatus ? 'Successfully Deactivated Program Cohorts' : 'Successfully activated Program Cohort';
                 alerts.showSuccess(msg);
                 fetchProgramCohorts();
-                setDisabled(false);
                 setActivationModal(false);
                 setLinearDisplay('none');
             })
             .catch((error) => {
                 setDisabledButton(false);
-                console.error(error);
                 alerts.showError(error.message);
-                setDisabled(false);
+            })
+            .finally(() => {
                 setLinearDisplay('none');
+                setRowData(null);
+                setDisabled(false);
             });
     };
 
@@ -134,7 +136,7 @@ const ProgramCohorts = (): JSX.Element => {
             render: (row: programCohort) => (
                 <>
                     <CustomSwitch
-                        defaultChecked={row.program_cohorts_status !== 'canceled'}
+                        defaultChecked={row.program_cohorts_activationStatus}
                         color="secondary"
                         inputProps={{ 'aria-label': 'controlled' }}
                         onChange={(event) => {
@@ -146,12 +148,12 @@ const ProgramCohorts = (): JSX.Element => {
                     <ConfirmationModalWrapper
                         disabled={disabledButton}
                         submitButton
-                        submitFunction={() => handleToggleStatusSubmit(row)}
+                        submitFunction={() => handleToggleStatusSubmit()}
                         closeModal={handleCloseModal}
                         show={activationModal}
                     >
                         <h6 className="text-center">
-                            A you sure you want to change the status of <>{row.pg_name}</> ?
+                            A you sure you want to change the status of <>{selectedRow ? selectedRow.pg_name : ''}</> ?
                         </h6>
                     </ConfirmationModalWrapper>
                 </>

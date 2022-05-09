@@ -22,15 +22,15 @@ const alerts: Alerts = new ToastifyAlerts();
 
 const Programs = (): JSX.Element => {
     interface Program {
-        name: string;
-        id: number;
-        description: string;
-        prerequisiteDocumentation: number;
-        requiresClearance: boolean;
-        certificationType: string;
-        activationStatus: boolean;
-        approval_status: boolean;
-        duration: string;
+        name?: string;
+        id?: number;
+        description?: string;
+        prerequisiteDocumentation?: number;
+        requiresClearance?: boolean;
+        certificationType?: string;
+        activationStatus?: boolean;
+        approval_status?: boolean;
+        duration?: string;
     }
 
     const [data, setData] = useState([]);
@@ -48,6 +48,7 @@ const Programs = (): JSX.Element => {
     const [departments, setDepartments] = useState([]);
     const [linearDisplay, setLinearDisplay] = useState('none');
     const [showModal, setModal] = useState(false);
+    const [selectedRow, setSelectedRow] = useState<Program>();
     const [, setProgramId] = useState(null);
     const [, setDisabled] = useState(false);
     const [activationModal, setActivationModal] = useState(false);
@@ -56,19 +57,21 @@ const Programs = (): JSX.Element => {
     const [disabledButton, setDisabledButton] = useState(false);
     const [status, setStatus] = useState(false);
     const handleActivationStatusToggle = (event, row: Program) => {
+        console.log('selected row ', row);
         setStatus(!row.activationStatus);
     };
-    const handleToggleStatusSubmit = (row: Program) => {
+    const handleToggleStatusSubmit = () => {
         const program = {
             activationStatus: status
         };
         setDisabledButton(true);
         setLinearDisplay('block');
         timetablingAxiosInstance
-            .put(`/programs/${row.id}`, program)
+            .put(`/programs/${selectedRow.id}`, program)
             .then(() => {
                 const msg = activationStatus ? 'Successfully activated program' : 'Successfully Deactivated program';
                 alerts.showSuccess(msg);
+                setSelectedRow(null);
                 fetchPrograms();
                 toggleCloseConfirmModal();
             })
@@ -96,18 +99,19 @@ const Programs = (): JSX.Element => {
                         inputProps={{ 'aria-label': 'controlled' }}
                         onChange={(event) => {
                             handleActivationStatusToggle(event, row);
+                            setSelectedRow(row);
                             toggleActivationModal();
                         }}
                     />
                     <ConfirmationModalWrapper
                         disabled={disabledButton}
                         submitButton
-                        submitFunction={() => handleToggleStatusSubmit(row)}
+                        submitFunction={() => handleToggleStatusSubmit()}
                         closeModal={handleCloseModal}
                         show={activationModal}
                     >
                         <h6 className="text-center">
-                            A you sure you want to change the status of <>{row.name}</> ?
+                            A you sure you want to change the status of <>{!selectedRow ? '' : selectedRow.name}</> ?
                         </h6>
                     </ConfirmationModalWrapper>
                 </>
@@ -137,17 +141,7 @@ const Programs = (): JSX.Element => {
     const [errorMessages] = useState([]);
     useEffect(() => {
         setLinearDisplay('block');
-        timetablingAxiosInstance
-            .get('/programs', { params: { includeDeactivated: true } })
-            .then((res) => {
-                setData(res.data);
-                setLinearDisplay('none');
-            })
-            .catch((error) => {
-                alerts.showError(error.message);
-                setLinearDisplay('none');
-            });
-
+        fetchPrograms();
         timetablingAxiosInstance
             .get('/departments')
             .then((res) => {
@@ -170,7 +164,7 @@ const Programs = (): JSX.Element => {
     const fetchPrograms = () => {
         setLinearDisplay('block');
         timetablingAxiosInstance
-            .get('/programs')
+            .get('/programs', { params: { includeDeactivated: true } })
             .then((res) => {
                 setLinearDisplay('none');
                 setData(res.data);

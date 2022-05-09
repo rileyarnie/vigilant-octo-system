@@ -24,6 +24,7 @@ const Department = (): JSX.Element => {
         name: string;
         id: number;
         isActive: boolean;
+        activationStatus: boolean;
     }
 
     const columns = [
@@ -36,23 +37,24 @@ const Department = (): JSX.Element => {
             render: (row: department) => (
                 <>
                     <CustomSwitch
-                        defaultChecked={row.isActive}
+                        defaultChecked={row.activationStatus}
                         color="secondary"
                         inputProps={{ 'aria-label': 'controlled' }}
                         onChange={(event) => {
                             handleActivationStatusToggle(event, row);
-                            toggleActivationModal();
+                            setSelectedRow(row);
+                            toggleConfirmModal();
                         }}
                     />
                     <ConfirmationModalWrapper
                         disabled={disabledButton}
                         submitButton
-                        submitFunction={() => handleToggleStatusSubmit(row)}
+                        submitFunction={() => handleToggleStatusSubmit()}
                         closeModal={() => fetchDepartments()}
-                        show={activationModal}
+                        show={confirmModal}
                     >
                         <h6 className="text-center">
-                            A you sure you want to change the status of <>{row.name}</> ?
+                            A you sure you want to change the status of <>{!selectedRow ? '' : selectedRow.name}</> ?
                         </h6>
                     </ConfirmationModalWrapper>
                 </>
@@ -71,41 +73,43 @@ const Department = (): JSX.Element => {
     const [selectedDeptName, setSelectedDeptName] = useState('');
     const [selectedHoD, setSelectedHoD] = useState(null);
     const [users, setUsers] = useState([]);
+    const [editConfirm, setEditConfirm] = useState(false);
     const [isActive, setIsActive] = useState(false);
+    const [selectedRow, setSelectedRow] = useState<department>();
     const [errorMessages] = useState([]);
     const [, setDisabled] = useState(false);
-    const [activationModal, setActivationModal] = useState(false);
     const [linearDisplay, setLinearDisplay] = useState('none');
     let activationStatus: boolean;
     const [disabledButton, setDisabledButton] = useState(false);
     const handleActivationStatusToggle = (event, row: department) => {
-        setStatus(!row.isActive);
-        toggleActivationModal();
+        setStatus(!row.activationStatus);
+        // toggleConfirmModal();
     };
-    const handleToggleStatusSubmit = (row: department) => {
+    const handleToggleStatusSubmit = () => {
         setLinearDisplay('block');
         const departmentStatus = {
-            name: row.name,
-            status
+            activationStatus: status
         };
         setDisabledButton(true);
 
         timetablingAxiosInstance
-            .put(`/departments/${row.id}`, departmentStatus)
+            .put(`/departments/${selectedRow.id}`, departmentStatus)
             .then(() => {
                 setDisabledButton(false);
                 const msg = isActive ? 'Department activated successfully' : 'Department deactivated successfully';
                 alerts.showSuccess(msg);
-                setActivationModal(false);
+                setConfirmModal(false);
                 setDisabled(false);
                 fetchDepartments();
-                setLinearDisplay('none');
             })
             .catch((error) => {
                 setDisabledButton(false);
                 console.error(error);
                 alerts.showError(error.message);
                 setDisabled(false);
+            })
+            .finally(() => {
+                setSelectedRow(null);
                 setLinearDisplay('none');
             });
     };
@@ -169,7 +173,7 @@ const Department = (): JSX.Element => {
                 setLinearDisplay('none');
             })
             .finally(() => {
-                setActivationModal(false);
+                setConfirmModal(false);
             });
     };
     const handleCreate = (e) => {
@@ -211,7 +215,7 @@ const Department = (): JSX.Element => {
             });
     };
     const handleChange = (hod) => {
-        setHod(hod);
+        setHod(hod.value);
     };
     const resetStateCloseModal = () => {
         setDeptId(null);
@@ -223,14 +227,13 @@ const Department = (): JSX.Element => {
     const toggleCreateModal = () => {
         showModal ? resetStateCloseModal() : setModal(true);
     };
-    const toggleActivationModal = () => {
-        activationModal ? resetStateCloseModal() : setActivationModal(true);
-    };
+
     const toggleConfirmModal = () => {
-        setConfirmModal(true);
+        confirmModal ? setConfirmModal(false) : setConfirmModal(true);
     };
-    const toggleCloseConfirmModal = () => {
-        setConfirmModal(false);
+
+    const toggleEditConfirmModal = () => {
+        editConfirm ? setEditConfirm(false) : setEditConfirm(true);
     };
     return (
         <>
@@ -327,7 +330,7 @@ const Department = (): JSX.Element => {
                     <button disabled={disabledButton} className="btn btn-danger float-left" onClick={() => toggleCreateModal()}>
                         Cancel
                     </button>
-                    <button disabled={disabledButton} className="btn btn-info float-right" onClick={toggleConfirmModal}>
+                    <button disabled={disabledButton} className="btn btn-info float-right" onClick={toggleEditConfirmModal}>
                         Submit
                     </button>
                 </Col>
@@ -336,8 +339,8 @@ const Department = (): JSX.Element => {
                 disabled={disabledButton}
                 submitButton
                 submitFunction={(e) => (deptId ? handleEdit(e) : handleCreate(e))}
-                closeModal={toggleCloseConfirmModal}
-                show={confirmModal}
+                closeModal={() => setEditConfirm(false)}
+                show={editConfirm}
             >
                 {deptId ? `Are you sure you want to edit ${selectedDeptName} ?` : 'Are you sure you want to create a new department ?'}
             </ConfirmationModalWrapper>

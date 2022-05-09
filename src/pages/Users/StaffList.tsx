@@ -16,19 +16,30 @@ import { authnzAxiosInstance } from '../../utlis/interceptors/authnz-interceptor
 import CustomSwitch from '../../assets/switch/CustomSwitch';
 
 const alerts: Alerts = new ToastifyAlerts();
-
+interface Staff {
+    activationStatus: boolean,
+    approvalFlowId: number,
+    approvalStatus: boolean,
+    email: string,
+    id: number,
+    identification: string,
+    identificationType: string,
+    name: string,
+    userId: 19
+}
 const StaffList = (): JSX.Element => {
     const [disabled, setDisabled] = useState(false);
     const [switchStatus,setSwitchStatus] = useState<boolean>();
     const [activationModal, setActivationModal] = useState(false);
+    const [selectedRow, setSelectedRow] = useState<Staff>();
     const handleCloseActivationModal = () => {
         setActivationModal(false);
     };
 
-    const updateStaff = (staffId,updates) => {
+    const updateStaff = (updates) => {
         setDisabled(true);
         timetablingAxiosInstance
-            .put(`/staff/${staffId}`, updates)
+            .put(`/staff/${selectedRow.id}`, updates)
             .then(() => {
                 alerts.showSuccess('successfully updated staff');
                 fetchStaff();
@@ -49,7 +60,7 @@ const StaffList = (): JSX.Element => {
         {
             title: 'Activation Status',
             field: 'internal_action',
-            render: (row) =>
+            render: (row: Staff) =>
                 (
                     <>
                         <CustomSwitch
@@ -57,26 +68,25 @@ const StaffList = (): JSX.Element => {
                             color="secondary"
                             inputProps={{'aria-label': 'controlled'}}
                             checked={row.activationStatus}
-                            onChange={(event) => {
+                            onChange={() => {
                                 setActivationModal(true);
-                                setSwitchStatus(event.target.checked);
-                                
+                                setSelectedRow(row);
+                                setSwitchStatus(!row.activationStatus);                                
                             }}
                         />
                         <ConfirmationModalWrapper
                             disabled={disabled}
                             submitButton
-                            submitFunction={() => updateStaff(row.id,{activationStatus:switchStatus})}
+                            submitFunction={() => updateStaff({activationStatus:switchStatus})}
                             closeModal={handleCloseActivationModal}
                             show={activationModal}
                         >
                             <h6 className="text-center">
-                                Are you sure you want to change the status of <>{row.name}</> ?
+                                Are you sure you want to change the status of <>{selectedRow ? selectedRow.name : ''}</> ?
                             </h6>
                         </ConfirmationModalWrapper>
                     </>
                 )
-           
         }
     ];
     const [data, setData] = useState([]);
