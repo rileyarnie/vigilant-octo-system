@@ -2,9 +2,10 @@
 import React, { Component } from 'react';
 import { Row, Col, Card } from 'react-bootstrap';
 import { ValidationForm } from 'react-bootstrap4-form-validation';
-import { Switch, FormGroup, FormControlLabel } from '@material-ui/core';
+import { FormGroup, FormControlLabel } from '@material-ui/core';
 import { Alerts, ToastifyAlerts } from '../lib/Alert';
 import { timetablingAxiosInstance } from '../../utlis/interceptors/timetabling-interceptor';
+import CustomSwitch from '../../assets/switch/CustomSwitch';
 const alerts: Alerts = new ToastifyAlerts();
 interface Props extends React.HTMLAttributes<Element> {
     setEditModal: (boolean) => void;
@@ -82,7 +83,7 @@ class EditCourse extends Component<Props> {
                                                 <FormGroup className="align-items-center">
                                                     <FormControlLabel
                                                         control={
-                                                            <Switch
+                                                            <CustomSwitch
                                                                 defaultChecked={this.state.activation_status}
                                                                 name="activationStatus"
                                                                 onClick={() => this.handleActivationStatusToggle()}
@@ -92,7 +93,7 @@ class EditCourse extends Component<Props> {
                                                     />
                                                     <FormControlLabel
                                                         control={
-                                                            <Switch
+                                                            <CustomSwitch
                                                                 name="approvalStatus"
                                                                 defaultChecked={this.state.approval_status}
                                                                 onClick={() => this.handleApprovalStatusToggle()}

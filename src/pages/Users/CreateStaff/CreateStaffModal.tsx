@@ -1,7 +1,6 @@
 /* eslint-disable react/prop-types */
 import React, { useEffect, useState } from 'react';
-import { Modal } from 'react-bootstrap';
-import { Row, Col } from 'react-bootstrap';
+import { Row, Col, Modal } from 'react-bootstrap';
 import { ValidationForm, TextInput } from 'react-bootstrap4-form-validation';
 import validator from 'validator';
 import Select from 'react-select';
@@ -19,11 +18,11 @@ const CreateStaffModal = (props): JSX.Element => {
     const [email, setEmail] = useState('');
     const [userId, setUserId] = useState('');
     const [users, setUsers] = useState([]);
-    
+
     useEffect(() => {
         fetchUsers();
     }, []);
-    
+
     const fetchUsers = () => {
         authnzAxiosInstance
             .get('/users')
@@ -103,10 +102,11 @@ const CreateStaffModal = (props): JSX.Element => {
                                                             value: user.id,
                                                             label: user.aadAlias
                                                         }))}
-                                                        isMulti={false}
+                                                        isClearable={true}
+                                                        isSearchable={true}
                                                         placeholder="Select User"
                                                         noOptionsMessage={() => 'No available users'}
-                                                        onChange={(e) => handleSelect(e)}
+                                                        onChange={handleSelect}
                                                     />
                                                 </div>
                                             </Col>
@@ -179,12 +179,12 @@ const CreateStaffModal = (props): JSX.Element => {
                                         </Row>
 
                                         <div className="form-group">
+                                            <button className="btn btn-danger float-left" onClick={() => props.onHide()}>
+                                            Cancel
+                                            </button>
                                             <button className="btn btn-info float-right">Submit</button>
                                         </div>
                                     </ValidationForm>
-                                    <button className="btn btn-danger float-left" onClick={() => props.onHide()}>
-                                        Cancel
-                                    </button>
                                 </Col>
                             </Row>
                         </Col>

@@ -6,6 +6,8 @@ import UpdateStaffModal from './UpdateStaffModal';
 
 interface IProps {
     fetchStaff?: () => void;
+    fetchUsers?: () => void;
+    users: never[];
     data: Record<string, unknown>;
 }
 const UpdateStaff = (props: IProps): JSX.Element => {
@@ -15,7 +17,11 @@ const UpdateStaff = (props: IProps): JSX.Element => {
         <>
             {canPerformActions(ACTION_CREATE_USERS.name) && (
                 <Select>
-                    <div className="" onClick={() => setModalShow(true)}>
+                    <div className="" onClick={() => {
+                        props.fetchUsers();
+                        setModalShow(true);
+                    }
+                    }>
                         <MenuItem value="Edit">Edit</MenuItem>
                     </div>
                     <div className="" onClick={() => console.log('deactivate users')}>
@@ -29,6 +35,7 @@ const UpdateStaff = (props: IProps): JSX.Element => {
                 onHide={() => setModalShow(false)}
                 setModalShow={setModalShow}
                 fetchStaff={props.fetchStaff}
+                users={props.users}
                 data={props.data}
             />
         </>

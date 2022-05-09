@@ -15,6 +15,7 @@ interface ISelectedRow {
 
 interface IProps {
     onHide: () => void;
+    toggleModal: () => void;
     show: boolean;
     selectedrowprops: ISelectedRow;
     assignedroles?: Array<{ value: number; label: string }>;
@@ -75,6 +76,7 @@ export const AssignRoleModal = (props: IProps): JSX.Element => {
     const toggleCloseConfirmModal = () => {
         setConfirmModal(false);
     };
+
     return (
         <>
             <Modal {...props} size="lg" aria-labelledby="contained-modal-title-vcenter" centered>
@@ -93,12 +95,16 @@ export const AssignRoleModal = (props: IProps): JSX.Element => {
                     />
                 </Modal.Body>
                 <Modal.Footer>
+                    <Button disabled={disabled} variant="primary" onClick={() => props.toggleModal()}>
+                        Cancel
+                    </Button>
                     <Button disabled={disabled} variant="danger" onClick={toggleConfirmModal}>
                         Save
                     </Button>
                 </Modal.Footer>
             </Modal>
             <ConfirmationModalWrapper
+                disabled={disabled}
                 submitButton
                 submitFunction={handlePostRoles}
                 closeModal={toggleCloseConfirmModal}

@@ -1,26 +1,90 @@
 /* eslint-disable react/display-name */
-import React, {useEffect, useState} from 'react';
+import React, { useEffect, useState } from 'react';
 import Edit from '@material-ui/icons/Edit';
 import Alert from '@material-ui/lab/Alert';
 import Breadcrumb from '../../App/components/Breadcrumb';
-import {Button, Card, Col, Modal, Row} from 'react-bootstrap';
+import { Button, Card, Col,  Row } from 'react-bootstrap';
 import CreateVenue from './CreateVenue';
 import EditVenue from './EditVenue';
-import {Alerts, ToastifyAlerts} from '../lib/Alert';
-import {LinearProgress} from '@mui/material';
-import {canPerformActions} from '../../services/ActionChecker';
-import {ACTION_CREATE_VENUE, ACTION_GET_VENUE, ACTION_UPDATE_VENUE} from '../../authnz-library/timetabling-actions';
-import {timetablingAxiosInstance} from '../../utlis/interceptors/timetabling-interceptor';
+import { Alerts, ToastifyAlerts } from '../lib/Alert';
+import { LinearProgress } from '@mui/material';
+import { canPerformActions } from '../../services/ActionChecker';
+import { ACTION_CREATE_VENUE, ACTION_GET_VENUE, ACTION_UPDATE_VENUE } from '../../authnz-library/timetabling-actions';
+import { timetablingAxiosInstance } from '../../utlis/interceptors/timetabling-interceptor';
 import TableWrapper from '../../utlis/TableWrapper';
+import ConfirmationModalWrapper from '../../App/components/modal/ConfirmationModalWrapper';
+import ModalWrapper from '../../App/components/modal/ModalWrapper';
+import CustomSwitch from '../../assets/switch/CustomSwitch';
 
 const alerts: Alerts = new ToastifyAlerts();
 
-const VenueList = (props): JSX.Element => {
+const VenueList = (): JSX.Element => {
+    const [disabled, setDisabled] = useState(false);
+    const [switchStatus,setSwitchStatus] = useState<boolean>();
+    const [activationModal, setActivationModal] = useState(false);
+    const [selectedRow,setselectedRow] = useState<{venue_name:string,venue_id:number}>();
+    const handleCloseModal = () => {
+        setActivationModal(false);
+    };
+    const updateVenue = (venueId, updates) => {
+        setDisabled(true);
+        setLinearDisplay('block');
+        timetablingAxiosInstance
+            .put(`/venues/${venueId}`, { Venue: updates })
+            .then(() => {
+                alerts.showSuccess('Successfully updated venue');
+                fetchVenues();            
+            })
+            .catch((error) => {
+                console.error(error);
+                alerts.showError(error.message);
+                    
+            })
+            .finally(() => {
+                setLinearDisplay('none');
+                setActivationModal(false);
+                setDisabled(false);
+            });
+    };
+    
     const columns = [
         { title: 'ID', field: 'venue_id' },
         { title: 'Venue name', field: 'venue_name' },
         { title: 'Capacity', field: 'venue_capacity' },
-        { title: 'Campus', field: 'campus_name' }
+        { title: 'Campus', field: 'campus_name' },
+        {
+            title: 'Activation Status',
+            field: 'internal_action',
+            render: (row) =>
+                (
+                    <>
+                        <CustomSwitch
+                            defaultChecked={row.venue_activationStatus}
+                            color="secondary"
+                            inputProps={{'aria-label': 'controlled'}}
+                            checked={row.venue_activationStatus}
+                            onChange={(event) => {
+                                setselectedRow(row);
+                                setActivationModal(true);
+                                setSwitchStatus(event.target.checked);
+                                
+                            }}
+                        />
+                        <ConfirmationModalWrapper
+                            disabled={disabled}
+                            submitButton
+                            submitFunction={() => updateVenue(selectedRow?.venue_id,{activationStatus:switchStatus})}
+                            closeModal={handleCloseModal}
+                            show={activationModal}
+                        >
+                            <h6 className="text-center">
+                                Are you sure you want to change the status of <>{selectedRow?.venue_name}</> ?
+                            </h6>
+                        </ConfirmationModalWrapper>
+                    </>
+                )
+        }
+
     ];
     interface venue {
         venue_name: string;
@@ -41,7 +105,7 @@ const VenueList = (props): JSX.Element => {
     const fetchVenues = () => {
         setLinearDisplay('block');
         timetablingAxiosInstance
-            .get('/venues')
+            .get('/venues',{ params: { includeDeactivated: true }})
             .then((res) => {
                 setData(res.data);
                 setLinearDisplay('none');
@@ -89,7 +153,7 @@ const VenueList = (props): JSX.Element => {
                                     title="Venues"
                                     columns={columns}
                                     data={data}
-                                    options={{ actionsColumnIndex: -1,}}
+                                    options={{ actionsColumnIndex: -1 }}
                                     actions={
                                         canPerformActions(ACTION_UPDATE_VENUE.name)
                                             ? [
@@ -110,40 +174,29 @@ const VenueList = (props): JSX.Element => {
                     </Row>
                 </>
             )}
-            <Modal {...props} size="lg" aria-labelledby="contained-modal-title-vcenter" centered show={showModal} backdrop="static">
-                <Modal.Header>
-                    <Modal.Title id="contained-modal-title-vcenter">Create Venue</Modal.Title>
-                </Modal.Header>
-                <Modal.Body>
-                    <CreateVenue
-                        setModal={setModal}
-                        setLinearDisplay={setLinearDisplay}
-                        linearDisplay={linearDisplay}
-                        fetchVenues={fetchVenues}
-                    >
-                        {' '}
-                    </CreateVenue>
-                </Modal.Body>
-            </Modal>
-            <Modal {...props} size="lg" aria-labelledby="contained-modal-title-vcenter" centered show={showEditModal}>
-                <Modal.Header>
-                    <Modal.Title id="contained-modal-title-vcenter">Edit {selectedVenue.venue_name} </Modal.Title>
-                </Modal.Header>
-                <Modal.Body>
-                    <EditVenue
-                        {...selectedVenue}
-                        linearDisplay={linearDisplay}
-                        setLinearDisplay={setLinearDisplay}
-                        setData={setData}
-                        data={data}
-                        setEditModal={setEditModal}
-                        fetchVenues={fetchVenues}
-                    >
-                        {' '}
-                    </EditVenue>
-                </Modal.Body>
-            </Modal>
+            <ModalWrapper show={showModal} modalSize="lg" closeModal={toggleCreateModal} title="Create Venue" noFooter={true}>
+                <CreateVenue
+                    setModal={setModal}
+                    setLinearDisplay={setLinearDisplay}
+                    linearDisplay={linearDisplay}
+                    fetchVenues={fetchVenues}
+                ></CreateVenue>
+            </ModalWrapper>
+            <ModalWrapper show={showEditModal} title={`Edit ${selectedVenue.venue_name}`} modalSize='lg' noFooter closeModal={toggleEditModal} >
+                <EditVenue
+                    {...selectedVenue}
+                    linearDisplay={linearDisplay}
+                    setLinearDisplay={setLinearDisplay}
+                    setData={setData}
+                    data={data}
+                    setEditModal={setEditModal}
+                    fetchVenues={fetchVenues}
+                >
+                    {' '}
+                </EditVenue>
+            </ModalWrapper>
         </>
     );
 };
+
 export default VenueList;

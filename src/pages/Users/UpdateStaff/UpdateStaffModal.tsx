@@ -6,6 +6,7 @@ import { ValidationForm, TextInput } from 'react-bootstrap4-form-validation';
 import validator from 'validator';
 import { timetablingAxiosInstance } from '../../../utlis/interceptors/timetabling-interceptor';
 import { Alerts, ToastifyAlerts } from '../../lib/Alert';
+import Select from 'react-select';
 
 const alerts: Alerts = new ToastifyAlerts();
 
@@ -14,6 +15,7 @@ const UpdateStaffModal = (props): JSX.Element => {
     const [identification, setIdentification] = useState(props.data.identification);
     const [name, setName] = useState(props.data.name);
     const [userId, setUserId] = useState(props.data.id);
+    const [selectedUserId, setSelectedUserId] = useState();
     const [email, setEmail] = useState(props.data.email);
 
     const handleIdentificationTypeChange = (event) => {
@@ -30,13 +32,19 @@ const UpdateStaffModal = (props): JSX.Element => {
     const handleNameChange = (event) => {
         setName(event.target.value);
     };
-
+    
     const handleSubmit = (e) => {
         e.preventDefault();
         //submit function here
-        const data = { name, identification, identificationType, email };
+        console.log('update data ', {});
         timetablingAxiosInstance
-            .put(`/staff/${userId}`, data)
+            .put(`/staff/${userId}`, {
+                name: name,
+                identification: identification,
+                identificationType: identificationType,
+                email: email,
+                userId: selectedUserId ? selectedUserId : userId
+            })
             .then(() => {
                 alerts.showSuccess('successfully updated staff');
                 setEmail('');
@@ -47,15 +55,15 @@ const UpdateStaffModal = (props): JSX.Element => {
                 props.fetchStaff();
                 props.onHide();
             })
-            .catch((err) => console.log('err', err));
+            .catch((err) => err);
     };
 
     const handleErrorSubmit = (e, _formData, errorInputs) => {
         console.error(errorInputs);
     };
-    // const handleSelect = (e) => {
-    //     setUserId(e.value);
-    // };
+    const handleSelect = (selectedUser) => {
+        setSelectedUserId(selectedUser.value);
+    };
 
     return (
         <Modal {...props} size="lg" aria-labelledby="contained-modal-title-vcenter" centered backdrop="static">
@@ -73,24 +81,22 @@ const UpdateStaffModal = (props): JSX.Element => {
                                 <Col md={12}>
                                     <ValidationForm onSubmit={handleSubmit} onErrorSubmit={handleErrorSubmit}>
                                         <Row style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                                            {/* <Col sm={6}>
-                                                <div className="form-group">
-                                                    <label htmlFor="user">
-                                                        <b>User</b>
-                                                    </label>
-                                                    <Select
-                                                        options={[
-                                                            { value: 'user 1', label: 'user 1' },
-                                                            { value: 'user 2', label: 'user 2' },
-                                                            { value: 'user 3', label: 'user 3' }
-                                                        ]}
-                                                        isMulti={false}
-                                                        placeholder="Select User"
-                                                        noOptionsMessage={() => 'No available users'}
-                                                        onChange={(e) => handleSelect(e)}
-                                                    />
-                                                </div>
-                                            </Col> */}
+                                            <Col>
+                                                <label htmlFor="user">
+                                                    <b>User</b>
+                                                </label>
+                                                <Select
+                                                    options={props.users ? props.users.map(user => ({
+                                                        value: user.id,
+                                                        label: user.aadAlias
+                                                    })) : []}
+                                                    isClearable={true}
+                                                    isSearchable={true}
+                                                    placeholder="Select User"
+                                                    noOptionsMessage={() => 'No available users'}
+                                                    onChange={handleSelect}
+                                                />
+                                            </Col>
                                             <Col sm={6}>
                                                 <div className="form-group">
                                                     <label htmlFor="email">

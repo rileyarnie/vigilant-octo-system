@@ -11,30 +11,110 @@ import TableWrapper from '../../utlis/TableWrapper';
 import CreateStaff from './CreateStaff/CreateStaff';
 import {timetablingAxiosInstance} from '../../utlis/interceptors/timetabling-interceptor';
 import UpdateStaff from './UpdateStaff/UpdateStaff';
+import ConfirmationModalWrapper from '../../App/components/modal/ConfirmationModalWrapper';
+import { authnzAxiosInstance } from '../../utlis/interceptors/authnz-interceptor';
+import CustomSwitch from '../../assets/switch/CustomSwitch';
 
 const alerts: Alerts = new ToastifyAlerts();
-
+interface Staff {
+    activationStatus: boolean,
+    approvalFlowId: number,
+    approvalStatus: boolean,
+    email: string,
+    id: number,
+    identification: string,
+    identificationType: string,
+    name: string,
+    userId: 19
+}
 const StaffList = (): JSX.Element => {
+    const [disabled, setDisabled] = useState(false);
+    const [switchStatus,setSwitchStatus] = useState<boolean>();
+    const [activationModal, setActivationModal] = useState(false);
+    const [selectedRow, setSelectedRow] = useState<Staff>();
+    const handleCloseActivationModal = () => {
+        setActivationModal(false);
+    };
+
+    const updateStaff = (updates) => {
+        setDisabled(true);
+        timetablingAxiosInstance
+            .put(`/staff/${selectedRow.id}`, updates)
+            .then(() => {
+                alerts.showSuccess('successfully updated staff');
+                fetchStaff();
+            })
+            .catch((err) => console.log('err', err))
+            .finally(() => {
+                setDisabled(false);
+            });
+    };
     const columns = [
         { title: 'SN', field: 'id' },
         { title: 'Name', field: 'name' },
         { title: 'User', field: 'email' },
         {
             title: 'Actions',
-            render: (row) => <UpdateStaff fetchStaff={fetchStaff} data={row} />
+            render: (row) => <UpdateStaff fetchStaff={fetchStaff} data={row} fetchUsers={fetchUsers} users={users} />
+        },
+        {
+            title: 'Activation Status',
+            field: 'internal_action',
+            render: (row: Staff) =>
+                (
+                    <>
+                        <CustomSwitch
+                            defaultChecked={row.activationStatus}
+                            color="secondary"
+                            inputProps={{'aria-label': 'controlled'}}
+                            checked={row.activationStatus}
+                            onChange={() => {
+                                setActivationModal(true);
+                                setSelectedRow(row);
+                                setSwitchStatus(!row.activationStatus);                                
+                            }}
+                        />
+                        <ConfirmationModalWrapper
+                            disabled={disabled}
+                            submitButton
+                            submitFunction={() => updateStaff({activationStatus:switchStatus})}
+                            closeModal={handleCloseActivationModal}
+                            show={activationModal}
+                        >
+                            <h6 className="text-center">
+                                Are you sure you want to change the status of <>{selectedRow ? selectedRow.name : ''}</> ?
+                            </h6>
+                        </ConfirmationModalWrapper>
+                    </>
+                )
         }
     ];
     const [data, setData] = useState([]);
+    const [users,setUsers] = useState<never[]>();
     const [linearDisplay, setLinearDisplay] = useState('none');
 
     useEffect(() => {
         fetchStaff();
     }, []);
-
+    const fetchUsers = () => {
+        setLinearDisplay('block');
+        authnzAxiosInstance
+            .get('/users')
+            .then((res) => {
+                setUsers(res.data);
+                setLinearDisplay('none');
+            })
+            .catch((error) => {
+                alerts.showError(error.message);
+            })
+            .finally(() => {
+                setLinearDisplay('none');
+            });
+    };
     const fetchStaff = () => {
         setLinearDisplay('block');
         timetablingAxiosInstance
-            .get('/staff')
+            .get('/staff', { params: { includeDeactivated: true }})
             .then((res) => {
                 setData(res.data);
                 setLinearDisplay('none');

@@ -175,7 +175,7 @@ class CreateVenue extends Component<Props> {
                         </Card>
                     </Col>
                 </Row>
-                <ConfirmationModalWrapper
+                <ConfirmationModalWrapper disabled={this.state.disabled}
                     submitButton
                     submitFunction={this.handleSubmit}
                     closeModal={this.toggleCloseConfirmModal}

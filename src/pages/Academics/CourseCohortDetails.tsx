@@ -14,6 +14,7 @@ import ProgramCohortGraduationList from './ProgramCohortGraduationList';
 import {simsAxiosInstance} from '../../utlis/interceptors/sims-interceptor';
 import {timetablingAxiosInstance} from '../../utlis/interceptors/timetabling-interceptor';
 import TableWrapper from '../../utlis/TableWrapper';
+import ConfirmationModalWrapper from '../../App/components/modal/ConfirmationModalWrapper';
 
 const alerts: Alerts = new ToastifyAlerts();
 
@@ -25,6 +26,9 @@ const CourseCohortsDetails = (props: any): JSX.Element => {
     const [linearDisplay, setLinearDisplay] = useState('block');
     const [certificationType, setCertificationType] = useState('');
     const [showGraduating, setShowGraduating] = useState(false);
+    const [courseCohort, setCourseCohort] = useState([]);
+    const [isMarkEntryUnlocked, setIsMarkEntryUnlocked] = useState(false);
+    const [showMarksLockedModal, setMarksLockedModal] = useState(false);
     let enterredMarks;
     let selectedMarks;
     const shortTermMarks = [
@@ -76,12 +80,46 @@ const CourseCohortsDetails = (props: any): JSX.Element => {
     useEffect(() => {
         setLinearDisplay('block');
         fetchProgramByCourseCohortId();
+        fetchCourseCohortById();
     }, []);
 
     const courseCohortId = props.match.params.id;
 
-    const fetchProgramByCourseCohortId = () => {
+    const handleMarksEntryUnlockedEdit = (id: number, isMarkEntryUnlocked: boolean,courseCohort) => {
+        setLinearDisplay('block');
+        timetablingAxiosInstance
+            .patch(`/course-cohorts/${id}`, {
+                isMarksEntryUnlocked: isMarkEntryUnlocked,
+                programCohortId: courseCohort.programCohortId
+            })
+            .then(res => {
+                alerts.showSuccess('Successfuly updated marks entry lock status');
+                setLinearDisplay('none');
+                return res.data;
+            })
+            .catch(err => {
+                console.log(err);
+                setLinearDisplay('none');
+                alerts.showError('Error updating marks entry lock status');
+            });
+    };
 
+    const fetchCourseCohortById = () => {
+        timetablingAxiosInstance
+            .get('/course-cohorts', {
+                params: {
+                    courseCohortIds: courseCohortId,
+                    loadExtras: 'semester'
+                }
+            })
+            .then(res => {
+                console.log('gotten course cohort ', res.data);
+                setCourseCohort(res.data[0]);
+                setIsMarkEntryUnlocked(res.data[0].isMarkEntryUnlocked);
+            })
+            .catch(err => err);
+    };
+    const fetchProgramByCourseCohortId = () => {
         const courseCohortIdArr = [parseInt(courseCohortId)];
         
         setLinearDisplay('block');
@@ -154,6 +192,17 @@ const CourseCohortsDetails = (props: any): JSX.Element => {
                         <Col>
                             <Row>
                                 <Col>
+                                    <Button
+                                        className="float-right"
+                                        variant="primary"
+                                        onClick={() => {
+                                            isMarkEntryUnlocked ? handleMarksEntryUnlockedEdit(courseCohortId, false,courseCohort ) : handleMarksEntryUnlockedEdit(courseCohortId, true,courseCohort); 
+                                        }}
+                                    >
+                                        {isMarkEntryUnlocked ? 'Lock Marks Entry' : 'Unlock Marks Entry'} 
+                                    </Button>
+                                </Col>
+                                <Col>
                                     <CreateMarksModal
                                         fetchcourseCohortsRegistrations={() => fetchcourseCohortsRegistrations(certificationType)}
                                         setLinearDisplay={setLinearDisplay}
@@ -204,6 +253,14 @@ const CourseCohortsDetails = (props: any): JSX.Element => {
             ) : (
                 <ProgramCohortGraduationList toggleGraduationList={toggleGraduationList} />
             )}
+            <ConfirmationModalWrapper
+                disabled={!showMarksLockedModal}
+                show={showMarksLockedModal}
+                closeModal={() => setMarksLockedModal(false)}
+                //closeModal={() => setMarksLockedModal(false)}
+            >
+                <p>Marks entry is locked. Please unlock mark entry to continue.</p>
+            </ConfirmationModalWrapper>
         </>
     );
 };

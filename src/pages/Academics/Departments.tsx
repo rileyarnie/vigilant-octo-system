@@ -1,24 +1,21 @@
 /* eslint-disable react/display-name */
-import React, {useEffect, useState} from 'react';
+import React, { useEffect, useState } from 'react';
 import Edit from '@material-ui/icons/Edit';
 import Alert from '@material-ui/lab/Alert';
 import Breadcrumb from '../../App/components/Breadcrumb';
-import {Button, Card, Col, Modal, Row} from 'react-bootstrap';
+import {Button, Card, Col, Row} from 'react-bootstrap';
 import {TextInput, ValidationForm} from 'react-bootstrap4-form-validation';
-import {Switch} from '@material-ui/core';
 import {Alerts, ToastifyAlerts} from '../lib/Alert';
 import LinearProgress from '@mui/material/LinearProgress';
-import {canPerformActions} from '../../services/ActionChecker';
-import {
-    ACTION_CREATE_DEPARTMENT,
-    ACTION_GET_DEPARTMENTS,
-    ACTION_UPDATE_DEPARTMENT
-} from '../../authnz-library/timetabling-actions';
-import {timetablingAxiosInstance} from '../../utlis/interceptors/timetabling-interceptor';
+import { canPerformActions } from '../../services/ActionChecker';
+import { ACTION_CREATE_DEPARTMENT, ACTION_GET_DEPARTMENTS, ACTION_UPDATE_DEPARTMENT } from '../../authnz-library/timetabling-actions';
+import { timetablingAxiosInstance } from '../../utlis/interceptors/timetabling-interceptor';
 import TableWrapper from '../../utlis/TableWrapper';
-import {customSelectTheme} from '../lib/SelectThemes';
+import { customSelectTheme } from '../lib/SelectThemes';
 import Select from 'react-select';
 import ConfirmationModalWrapper from '../../App/components/modal/ConfirmationModalWrapper';
+import CustomSwitch from '../../assets/switch/CustomSwitch';
+import ModalWrapper from '../../App/components/modal/ModalWrapper';
 
 const alerts: Alerts = new ToastifyAlerts();
 
@@ -27,34 +24,37 @@ const Department = (): JSX.Element => {
         name: string;
         id: number;
         isActive: boolean;
+        activationStatus: boolean;
     }
 
     const columns = [
-        {title: 'ID', field: 'id', hidden: true},
-        {title: 'Department name', field: 'name'},
-        {title: 'HOD', field: 'hodTrainerId'},
+        { title: 'ID', field: 'id', hidden: true },
+        { title: 'Department name', field: 'name' },
+        { title: 'HOD', field: 'hodTrainerId' },
         {
             title: 'Activation Status',
             field: 'isActive',
             render: (row: department) => (
                 <>
-                    <Switch
-                        defaultChecked={row.isActive}
+                    <CustomSwitch
+                        defaultChecked={row.activationStatus}
                         color="secondary"
-                        inputProps={{'aria-label': 'controlled'}}
+                        inputProps={{ 'aria-label': 'controlled' }}
                         onChange={(event) => {
                             handleActivationStatusToggle(event, row);
-                            toggleActivationModal();
+                            setSelectedRow(row);
+                            toggleConfirmModal();
                         }}
                     />
                     <ConfirmationModalWrapper
+                        disabled={disabledButton}
                         submitButton
-                        submitFunction={() => handleToggleStatusSubmit(row)}
+                        submitFunction={() => handleToggleStatusSubmit()}
                         closeModal={() => fetchDepartments()}
-                        show={activationModal}
+                        show={confirmModal}
                     >
                         <h6 className="text-center">
-                            A you sure you want to change the status of <>{row.name}</> ?
+                            A you sure you want to change the status of <>{!selectedRow ? '' : selectedRow.name}</> ?
                         </h6>
                     </ConfirmationModalWrapper>
                 </>
@@ -73,48 +73,50 @@ const Department = (): JSX.Element => {
     const [selectedDeptName, setSelectedDeptName] = useState('');
     const [selectedHoD, setSelectedHoD] = useState(null);
     const [users, setUsers] = useState([]);
+    const [editConfirm, setEditConfirm] = useState(false);
     const [isActive, setIsActive] = useState(false);
+    const [selectedRow, setSelectedRow] = useState<department>();
     const [errorMessages] = useState([]);
     const [, setDisabled] = useState(false);
-    const [activationModal, setActivationModal] = useState(false);
     const [linearDisplay, setLinearDisplay] = useState('none');
     let activationStatus: boolean;
     const [disabledButton, setDisabledButton] = useState(false);
     const handleActivationStatusToggle = (event, row: department) => {
-        setStatus(!row.isActive);
-        toggleActivationModal();
+        setStatus(!row.activationStatus);
+        // toggleConfirmModal();
     };
-    const handleToggleStatusSubmit = (row: department) => {
+    const handleToggleStatusSubmit = () => {
         setLinearDisplay('block');
         const departmentStatus = {
-            name: row.name,
-            status
+            activationStatus: status
         };
         setDisabledButton(true);
 
         timetablingAxiosInstance
-            .put(`/departments/${row.id}`, departmentStatus)
+            .put(`/departments/${selectedRow.id}`, departmentStatus)
             .then(() => {
                 setDisabledButton(false);
                 const msg = isActive ? 'Department activated successfully' : 'Department deactivated successfully';
                 alerts.showSuccess(msg);
-                setActivationModal(false);
+                setConfirmModal(false);
                 setDisabled(false);
                 fetchDepartments();
-                setLinearDisplay('none');
             })
             .catch((error) => {
                 setDisabledButton(false);
                 console.error(error);
                 alerts.showError(error.message);
                 setDisabled(false);
+            })
+            .finally(() => {
+                setSelectedRow(null);
                 setLinearDisplay('none');
             });
     };
     useEffect(() => {
         setLinearDisplay('block');
         timetablingAxiosInstance
-            .get('/departments',{ params: { includeDeactivated: true } })
+            .get('/departments', { params: { includeDeactivated: true } })
             .then((res) => {
                 setLinearDisplay('none');
                 setData(res.data);
@@ -136,29 +138,31 @@ const Department = (): JSX.Element => {
             });
     }, []);
     users.map((hod) => {
-        return options.push({value: hod.tr_id, label: hod.stf_name});
+        return options.push({ value: hod.tr_id, label: hod.stf_name });
     });
     const updateDepartment = (deptId, updates) => {
         setLinearDisplay('block');
+        setDisabledButton(true);
         timetablingAxiosInstance
             .put(`/departments/${deptId}`, updates)
             .then(() => {
-                setLinearDisplay('none');
                 alerts.showSuccess('Successfully updated department');
                 fetchDepartments();
-                resetStateCloseModal();
                 setLinearDisplay('none');
             })
             .catch((error) => {
-                setLinearDisplay('block');
                 alerts.showError(error.message);
+            })
+            .finally(() => {
+                setDisabledButton(false);
                 setLinearDisplay('none');
+                resetStateCloseModal();
             });
     };
     const fetchDepartments = () => {
         setLinearDisplay('block');
         timetablingAxiosInstance
-            .get('/departments',{ params: { includeDeactivated: true } })
+            .get('/departments', { params: { includeDeactivated: true } })
             .then((res) => {
                 setData(res.data);
                 setLinearDisplay('none');
@@ -169,7 +173,7 @@ const Department = (): JSX.Element => {
                 setLinearDisplay('none');
             })
             .finally(() => {
-                setActivationModal(false);
+                setConfirmModal(false);
             });
     };
     const handleCreate = (e) => {
@@ -193,23 +197,25 @@ const Department = (): JSX.Element => {
     };
     const createDepartment = (departmentData) => {
         setLinearDisplay('block');
+        setDisabledButton(true);
+
         timetablingAxiosInstance
             .post('/departments', departmentData)
             .then(() => {
-                setLinearDisplay('block');
                 fetchDepartments();
                 alerts.showSuccess('Successfully created Department');
                 resetStateCloseModal();
-                setLinearDisplay('none');
             })
             .catch((error) => {
-                setLinearDisplay('block');
                 alerts.showError(error.message);
+            })
+            .finally(() => {
                 setLinearDisplay('none');
+                setDisabledButton(false);
             });
     };
     const handleChange = (hod) => {
-        setHod(hod);
+        setHod(hod.value);
     };
     const resetStateCloseModal = () => {
         setDeptId(null);
@@ -221,20 +227,19 @@ const Department = (): JSX.Element => {
     const toggleCreateModal = () => {
         showModal ? resetStateCloseModal() : setModal(true);
     };
-    const toggleActivationModal = () => {
-        activationModal ? resetStateCloseModal() : setActivationModal(true);
-    };
+
     const toggleConfirmModal = () => {
-        setConfirmModal(true);
+        confirmModal ? setConfirmModal(false) : setConfirmModal(true);
     };
-    const toggleCloseConfirmModal = () => {
-        setConfirmModal(false);
+
+    const toggleEditConfirmModal = () => {
+        editConfirm ? setEditConfirm(false) : setEditConfirm(true);
     };
     return (
         <>
             <Row className="align-items-center page-header">
                 <Col>
-                    <Breadcrumb/>
+                    <Breadcrumb />
                 </Col>
                 <Col>
                     {canPerformActions(ACTION_CREATE_DEPARTMENT.name) && (
@@ -246,7 +251,7 @@ const Department = (): JSX.Element => {
             </Row>
             {canPerformActions(ACTION_GET_DEPARTMENTS.name) && (
                 <>
-                    <LinearProgress style={{display: linearDisplay}}/>
+                    <LinearProgress style={{ display: linearDisplay }} />
                     <Row>
                         <Col>
                             <Card>
@@ -263,7 +268,7 @@ const Department = (): JSX.Element => {
                                     title="Departments"
                                     columns={columns}
                                     data={data}
-                                    options={{actionsColumnIndex: -1}}
+                                    options={{ actionsColumnIndex: -1 }}
                                     actions={
                                         canPerformActions(ACTION_UPDATE_DEPARTMENT.name)
                                             ? [
@@ -287,57 +292,55 @@ const Department = (): JSX.Element => {
                     </Row>
                 </>
             )}
-            <Modal
-                backdrop="static"
+            <ModalWrapper
                 show={showModal}
-                onHide={toggleCreateModal}
-                size="lg"
-                aria-labelledby="contained-modal-title-vcenter"
-                centered
+                title={deptId ? 'Edit epartment' : 'Create a department'}
+                closeModal={toggleCreateModal}
+                modalSize="lg"
+                noFooter={true}
             >
-                <Modal.Header closeButton>
-                    <Modal.Title
-                        id="contained-modal-title-vcenter">{deptId ? 'Edit department' : 'Create a department'}</Modal.Title>
-                </Modal.Header>
-                <Modal.Body>
-                    <ValidationForm>
-                        <div className="form-group">
-                            <label htmlFor="departmentName">Department name</label>
-                            <TextInput
-                                name="departmentName"
-                                id="departmentName"
-                                type="text"
-                                value={deptId ? selectedDeptName : deptname}
-                                placeholder={deptId ? selectedDeptName : 'Enter department name'}
-                                onChange={(e) => (deptId ? setSelectedDeptName(e.target.value) : setDeptName(e.target.value))}
-                                required
-                            />
-                            <br/>
-                        </div>
-                        <div className="form-group">
-                            <label htmlFor="trainerType">Select a HoD</label>
-                            <Select
-                                theme={customSelectTheme}
-                                defaultValue=""
-                                options={options}
-                                isMulti={false}
-                                placeholder="Select a HOD."
-                                noOptionsMessage={() => 'No HODs available'}
-                                onChange={handleChange}
-                            />
-                        </div>
-                    </ValidationForm>
-                    <Col>
-                        <button disabled={disabledButton} className="btn btn-danger float-left" onClick={() => toggleCreateModal()}>Cancel</button>
-                        <button disabled={disabledButton} className="btn btn-info float-right" onClick={toggleConfirmModal}>Submit</button>
-                    </Col>
-                </Modal.Body>
-            </Modal>
+                <ValidationForm>
+                    <div className="form-group">
+                        <label htmlFor="departmentName">Department name</label>
+                        <TextInput
+                            name="departmentName"
+                            id="departmentName"
+                            type="text"
+                            value={deptId ? selectedDeptName : deptname}
+                            placeholder={deptId ? selectedDeptName : 'Enter department name'}
+                            onChange={(e) => (deptId ? setSelectedDeptName(e.target.value) : setDeptName(e.target.value))}
+                            required
+                        />
+                        <br />
+                    </div>
+                    <div className="form-group">
+                        <label htmlFor="trainerType">Select a HoD</label>
+                        <Select
+                            theme={customSelectTheme}
+                            defaultValue=""
+                            options={options}
+                            isMulti={false}
+                            placeholder="Select a HOD."
+                            noOptionsMessage={() => 'No HODs available'}
+                            onChange={handleChange}
+                        />
+                    </div>
+                </ValidationForm>
+                <Col>
+                    <button disabled={disabledButton} className="btn btn-danger float-left" onClick={() => toggleCreateModal()}>
+                        Cancel
+                    </button>
+                    <button disabled={disabledButton} className="btn btn-info float-right" onClick={toggleEditConfirmModal}>
+                        Submit
+                    </button>
+                </Col>
+            </ModalWrapper>
             <ConfirmationModalWrapper
+                disabled={disabledButton}
                 submitButton
                 submitFunction={(e) => (deptId ? handleEdit(e) : handleCreate(e))}
-                closeModal={toggleCloseConfirmModal}
-                show={confirmModal}
+                closeModal={() => setEditConfirm(false)}
+                show={editConfirm}
             >
                 {deptId ? `Are you sure you want to edit ${selectedDeptName} ?` : 'Are you sure you want to create a new department ?'}
             </ConfirmationModalWrapper>

@@ -20,6 +20,7 @@ const ActionApprovals = () => {
     const alerts: Alerts = new ToastifyAlerts();
     const [approveModal, setApproveModal] = useState(false);
     const [rejectModal, setRejectModal] = useState(false);
+    const[disabled,setDisabled] = useState(false);
     const columns = [
         { title: 'Id', field: 'id' },
         { title: 'Action Name', field: 'approvingRole.action.name' },
@@ -65,12 +66,10 @@ const ActionApprovals = () => {
                 setLinearDisplay('none');
             })
             .catch((err) => {
-                console.log('err', err);
                 alerts.showError(err.message);
             });
     }
     const handleApprove = (actionApprovalId:number) => {
-        setLinearDisplay('block');
         const approvalStatus = {
             approvalStatus: 'approved'
         };
@@ -78,15 +77,18 @@ const ActionApprovals = () => {
             .then(() => {
                 alerts.showSuccess('Action approved successfully');
                 fetchApprovals();
-                setLinearDisplay('none');
             })
             .catch((err) => {
                 alerts.showError(err.message);
                 toggleCloseApproveModal();
+            }).finally(()=>{
+                setLinearDisplay('none');
+                setDisabled(false);
             });
     };
     const handleReject = (actionApprovalId:number) => {
         setLinearDisplay('block');
+        setDisabled(true);
         const approvalStatus = {
             approvalStatus: 'rejected'
         };
@@ -94,12 +96,13 @@ const ActionApprovals = () => {
             .then(() => {
                 alerts.showSuccess('Action rejected Successfully');
                 fetchApprovals();
-                setLinearDisplay('none');
             })
             .catch((err) => {
                 alerts.showError(err.message);
                 toggleCloseApproveModal();
+            }).finally(()=>{
                 setLinearDisplay('none');
+                setDisabled(false);
             });
     };
     const toggleApproveModal = () => {
@@ -129,7 +132,7 @@ const ActionApprovals = () => {
                     </Card>
                 </Col>
             </Row>
-            <ConfirmationModalWrapper
+            <ConfirmationModalWrapper disabled={disabled}
                 submitButton
                 submitFunction={() => {handleApprove(actionApprovalId);
                 }}
@@ -139,7 +142,7 @@ const ActionApprovals = () => {
                 <h6 className="text-center">Are you sure you want to Approve ?</h6>
             </ConfirmationModalWrapper>
 
-            <ConfirmationModalWrapper
+            <ConfirmationModalWrapper disabled={disabled}
                 submitButton
                 submitFunction={() => {handleReject(actionApprovalId);
                 }}

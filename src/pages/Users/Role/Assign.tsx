@@ -11,13 +11,16 @@ export const Assign = (props): JSX.Element => {
     const [modalShow, setModalShow] = React.useState(false);
     const [assignedRoles, setAssignedRoles] = useState([]);
 
+    function toggleModal() {
+        modalShow ? setModalShow(false) : setModalShow(true); 
+    }
+
     function fetchUserRoles() {
         setAssignedRoles([]);
         authnzAxiosInstance
             .get('/roles', { params: { userId: props.id } })
             .then((res) => {
                 const assignedRoles = res['data'];
-                console.log('from axios response', assignedRoles);
                 const roles = assignedRoles.map((assignedRole: { id: number; name: string }) => ({
                     value: assignedRole.id,
                     label: assignedRole.name
@@ -25,8 +28,7 @@ export const Assign = (props): JSX.Element => {
                 setAssignedRoles(roles);
                 setModalShow(true);
             })
-            .catch((err) => {
-                console.log('err', err);
+            .catch(() => {
                 alerts.showError(
                     `We couldn’t fetch the existing roles for ${props.aadAlias}, reopening the dialog should fix this.`
                 );
@@ -40,14 +42,11 @@ export const Assign = (props): JSX.Element => {
                 variant="danger mr-2"
                 onClick={() => {
                     fetchUserRoles();
-                    console.log('assign role clicked');
-                    console.log('from button click', assignedRoles);
-                    console.log('from button click', props);
                 }}
             >
                 Assign Role
             </Button>
-            <AssignRoleModal show={modalShow} onHide={() => setModalShow(false)} selectedrowprops={props} assignedroles={assignedRoles} />
+            <AssignRoleModal show={modalShow} toggleModal={toggleModal} onHide={() => setModalShow(false)} selectedrowprops={props} assignedroles={assignedRoles} />
         </>
     );
 };

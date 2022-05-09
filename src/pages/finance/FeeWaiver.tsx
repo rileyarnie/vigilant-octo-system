@@ -1,29 +1,32 @@
-import React, {useState} from 'react';
-import { Col, Form, FormControl, Row} from 'react-bootstrap';
+import React, { useState } from 'react';
+import { Col, Form, FormControl, Row } from 'react-bootstrap';
 import ConfirmationModalWrapper from '../../App/components/modal/ConfirmationModalWrapper';
 import ModalWrapper from '../../App/components/modal/ModalWrapper';
-import {StudentFeesManagementService} from '../../services/StudentFeesManagementService';
-import {Alerts, ToastifyAlerts} from '../lib/Alert';
+import { StudentFeesManagementService } from '../../services/StudentFeesManagementService';
+import { Alerts, ToastifyAlerts } from '../lib/Alert';
 
 const alerts: Alerts = new ToastifyAlerts();
 
 interface Props {
     show: boolean;
     closeModal: () => void;
-    studentId: number
+    studentId: number;
 }
 
 const FeeWaiver: React.FunctionComponent<Props> = (props) => {
     const [amount, setAmount] = useState('');
     const [confirmModal, setConfirmModal] = useState(false);
     const [narrative, setNarrative] = useState('');
+    const [disabled, setDisabled] = useState(false);
+
     const handleSubmit = () => {
+        setDisabled(true);
         const waiver = {
             studentId: props.studentId,
             narrative: narrative,
             amount: parseInt(amount)
         };
-        StudentFeesManagementService.applyWaiver({...waiver})
+        StudentFeesManagementService.applyWaiver({ ...waiver })
             .then(() => {
                 alerts.showSuccess('Fee Record created successfully');
                 toggleCloseConfirmModal();
@@ -33,7 +36,8 @@ const FeeWaiver: React.FunctionComponent<Props> = (props) => {
                 props.closeModal();
                 toggleCloseConfirmModal();
                 alerts.showError(error.response.data);
-            });
+            })
+            .finally(() => setDisabled(false));
     };
     const toggleConfirmModal = () => {
         setConfirmModal(true);
@@ -88,7 +92,7 @@ const FeeWaiver: React.FunctionComponent<Props> = (props) => {
                     </ModalWrapper>
                 </div>
             </div>
-            <ConfirmationModalWrapper submitButton submitFunction={handleSubmit} closeModal={toggleCloseConfirmModal} show={confirmModal}>
+            <ConfirmationModalWrapper disabled={disabled} submitButton submitFunction={handleSubmit} closeModal={toggleCloseConfirmModal} show={confirmModal}>
                 <h6 className="text-center">Are you sure you want to add a fee waiver ?</h6>
             </ConfirmationModalWrapper>
         </>

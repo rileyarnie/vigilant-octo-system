@@ -8,25 +8,22 @@ interface Props {
     title?: string;
     submitButton?: boolean;
     submitFunction?: (e?: unknown) => void;
+    disabled:boolean
 }
 const ConfirmationModalWrapper: React.FunctionComponent<Props> = (props) => {
     return (
-        <Modal
-            show={props.show}
-            backdrop="static"
-            centered
-            size="sm"
-        >
+        <Modal show={props.show} backdrop="static" centered size="sm">
             <Modal.Header closeButton onHide={props.closeModal}>
                 <Modal.Title id="contained-modal-title-vcenter">{props.title}</Modal.Title>
             </Modal.Header>
             <Modal.Body>{props.children}</Modal.Body>
-            <Modal.Footer>
-                <Button variant="danger" onClick={props.closeModal}>
+            <Modal.Footer style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                {' '}
+                <Button disabled={props.disabled} variant="danger" onClick={props.closeModal}>
                     Close
                 </Button>
                 {props.submitButton && props.submitFunction && (
-                    <Button variant="info" onClick={props.submitFunction}>
+                    <Button disabled={props.disabled} variant="info" onClick={props.submitFunction}>
                         Confirm
                     </Button>
                 )}

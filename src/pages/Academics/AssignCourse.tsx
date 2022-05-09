@@ -146,7 +146,7 @@ const AssignCourse = (): JSX.Element => {
                     >
                         Assign courses
                     </Button>
-                    <ConfirmationModalWrapper
+                    <ConfirmationModalWrapper disabled={disabled}
                         submitButton
                         submitFunction={assignSelectedCoursesToProgram}
                         closeModal={toggleCloseConfirmModal}

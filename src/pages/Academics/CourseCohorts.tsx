@@ -12,8 +12,11 @@ import {canPerformActions} from '../../services/ActionChecker';
 import {ACTION_GET_COURSE_COHORTS} from '../../authnz-library/timetabling-actions';
 import {timetablingAxiosInstance} from '../../utlis/interceptors/timetabling-interceptor';
 import TableWrapper from '../../utlis/TableWrapper';
+import ConfirmationModalWrapper from '../../App/components/modal/ConfirmationModalWrapper';
+import {Alerts, ToastifyAlerts} from '../lib/Alert';
+import CustomSwitch from '../../assets/switch/CustomSwitch';
 
-
+const alerts: Alerts = new ToastifyAlerts();
 const CourseCohorts = (): JSX.Element => {
     const [data, setData] = useState([]);
     const [trainersData, setTrainers] = useState([]);
@@ -21,6 +24,31 @@ const CourseCohorts = (): JSX.Element => {
     const [isError] = useState(false);
     const [errorMessages] = useState([]);
     const [linearDisplay, setLinearDisplay] = useState('none');
+    const [switchStatus,setSwitchStatus] = useState<boolean>();
+    const [activationModal, setActivationModal] = useState(false);
+    const handleCloseActivationModal = () => {
+        setActivationModal(false);
+    };
+    const [selectedRow,setselectedRow] = useState<{id:number}>();
+    const [disabled, setDisabled] = useState(false);
+
+    function updateCourseCohort(courseCohortId: number, updates:unknown){
+        setDisabled(true);
+        return timetablingAxiosInstance
+            .patch(`/course-cohorts/${courseCohortId}`,updates)
+            .then(() => {
+                alerts.showSuccess('Successfully updated course cohort');
+                fetchcourseCohorts();                
+                setLinearDisplay('none');
+            })
+            .catch((error) => {
+                alerts.showError(error.message);                
+            })
+            .finally(() => {
+                setDisabled(false);
+                setActivationModal(false);
+            });
+    }
 
     const columns = [
         { title: 'Course cohort ID', field: 'id', hidden: false },
@@ -36,6 +64,38 @@ const CourseCohorts = (): JSX.Element => {
                     </Link>
                 </Select>
             )
+        },
+        {
+            title: 'Activation Status',
+            field: 'internal_action',
+            render: (row) =>
+                (
+                    <>
+                        <CustomSwitch
+                            defaultChecked={row.activationStatus}
+                            color="secondary"
+                            inputProps={{'aria-label': 'controlled'}}
+                            checked={row.activationStatus}
+                            onChange={(event) => {
+                                setselectedRow(row);
+                                setActivationModal(true);
+                                setSwitchStatus(event.target.checked);
+                                
+                            }}
+                        />
+                        <ConfirmationModalWrapper
+                            disabled={disabled}
+                            submitButton
+                            submitFunction={() => updateCourseCohort(selectedRow?.id,{activationStatus:switchStatus})}
+                            closeModal={handleCloseActivationModal}
+                            show={activationModal}
+                        >
+                            <h6 className="text-center">
+                                Are you sure you want to change the status of Course Cohort Id: <>{selectedRow?.id}</> ?
+                            </h6>
+                        </ConfirmationModalWrapper>
+                    </>
+                )
         }
     ];
     useEffect(() => {

@@ -1,21 +1,18 @@
 /* eslint-disable react/display-name */
-import React, {useEffect, useState} from 'react';
+import React, { useEffect, useState } from 'react';
 import Edit from '@material-ui/icons/Edit';
-import {LinearProgress, Switch} from '@material-ui/core';
+import {LinearProgress} from '@material-ui/core';
 import Alert from '@material-ui/lab/Alert';
 import Breadcrumb from '../../App/components/Breadcrumb';
-import {Button, Card, Col, Modal, Row} from 'react-bootstrap';
-import {TextInput, ValidationForm} from 'react-bootstrap4-form-validation';
-import {Alerts, ToastifyAlerts} from '../lib/Alert';
-import {canPerformActions} from '../../services/ActionChecker';
-import {
-    ACTION_CREATE_CAMPUS,
-    ACTION_GET_CAMPUSES,
-    ACTION_UPDATE_CAMPUS
-} from '../../authnz-library/timetabling-actions';
-import {timetablingAxiosInstance} from '../../utlis/interceptors/timetabling-interceptor';
+import { Button, Card, Col, Modal, Row } from 'react-bootstrap';
+import { TextInput, ValidationForm } from 'react-bootstrap4-form-validation';
+import { Alerts, ToastifyAlerts } from '../lib/Alert';
+import { canPerformActions } from '../../services/ActionChecker';
+import { ACTION_CREATE_CAMPUS, ACTION_GET_CAMPUSES, ACTION_UPDATE_CAMPUS } from '../../authnz-library/timetabling-actions';
+import { timetablingAxiosInstance } from '../../utlis/interceptors/timetabling-interceptor';
 import TableWrapper from '../../utlis/TableWrapper';
 import ConfirmationModalWrapper from '../../App/components/modal/ConfirmationModalWrapper';
+import CustomSwitch from '../../assets/switch/CustomSwitch';
 
 const alerts: Alerts = new ToastifyAlerts();
 const CampusList = (): JSX.Element => {
@@ -36,31 +33,32 @@ const CampusList = (): JSX.Element => {
     const [activationModal, setActivationModal] = useState(false);
     const [campusId, setCampusId] = useState(null);
     const [selectedCampusName, setSelectedCampusName] = useState('');
+    const [selectedRow, setSelectedRow] = useState<Campus>();
     const [selectedDescription, setSelectedDescription] = useState('');
     const [linearDisplay, setLinearDisplay] = useState('none');
-    const [, setRowData] = useState<Campus>();
     const [, setDisabled] = useState(false);
     let activationStatus: boolean;
-    const [, setDisabledButton] = useState(false);
+    const [disabledButton, setDisabledButton] = useState(false);
     const [status, setStatus] = useState(false);
     const handleActivationStatusToggle = (event, row: Campus) => {
         setStatus(!row.activationStatus);
         setDisabled(true);
     };
-    const handleToggleStatusSubmit = (row: Campus) => {
+    const handleToggleStatusSubmit = () => {
         setDisabledButton(true);
         setLinearDisplay('block');
         const campus = {
             activationStatus: status
         };
         timetablingAxiosInstance
-            .put(`/campuses/${row.id}`, campus)
+            .put(`/campuses/${selectedRow.id}`, campus)
             .then(() => {
                 setDisabledButton(false);
                 const msg = activationStatus ? 'Successfully activated campus' : 'Successfully Deactivated campus';
                 alerts.showSuccess(msg);
                 fetchCampuses();
                 setActivationModal(false);
+                setSelectedRow(null);
                 setLinearDisplay('none');
                 setDisabled(false);
             })
@@ -84,24 +82,25 @@ const CampusList = (): JSX.Element => {
             render: (row: Campus) =>
                 canPerformActions(ACTION_UPDATE_CAMPUS.name) && (
                     <>
-                        <Switch
+                        <CustomSwitch
                             defaultChecked={row.activationStatus}
                             color="secondary"
-                            inputProps={{'aria-label': 'controlled'}}
+                            inputProps={{ 'aria-label': 'controlled' }}
                             onChange={(event) => {
                                 handleActivationStatusToggle(event, row);
-                                setRowData(row);
+                                setSelectedRow(row);
                                 toggleActivationModal();
                             }}
                         />
                         <ConfirmationModalWrapper
+                            disabled={disabledButton}
                             submitButton
-                            submitFunction={() => handleToggleStatusSubmit(row)}
+                            submitFunction={() => handleToggleStatusSubmit()}
                             closeModal={handleCloseModal}
                             show={activationModal}
                         >
                             <h6 className="text-center">
-                                Are you sure you want to change the status of <>{row.name}</> ?
+                                Are you sure you want to change the status of <>{!selectedRow ? '' : selectedRow.name}</> ?
                             </h6>
                         </ConfirmationModalWrapper>
                     </>
@@ -113,13 +112,12 @@ const CampusList = (): JSX.Element => {
     useEffect(() => {
         setLinearDisplay('block');
         timetablingAxiosInstance
-            .get('/campuses',{ params: { includeDeactivated: true } })
+            .get('/campuses', { params: { includeDeactivated: true } })
             .then((res) => {
                 setData(res.data);
                 setLinearDisplay('none');
             })
             .catch((error) => {
-                console.error(error);
                 alerts.showError(error.message);
                 setLinearDisplay('none');
             });
@@ -132,31 +130,30 @@ const CampusList = (): JSX.Element => {
             .then(() => {
                 alerts.showSuccess('Successfully updated Campus');
                 fetchCampuses();
-                resetStateCloseModal();
-                setLinearDisplay('none');
             })
             .catch((error) => {
-                console.error(error);
                 alerts.showError(error.message);
-                setLinearDisplay('none');
+            })
+            .finally(() => {
+                setDisabledButton(true);
+                setLinearDisplay('block');
+                resetStateCloseModal();
             });
     };
     const fetchCampuses = () => {
         setLinearDisplay('block');
         timetablingAxiosInstance
-            .get('/campuses',{ params: { includeDeactivated: true } })
+            .get('/campuses', { params: { includeDeactivated: true } })
             .then((res) => {
                 setData(res.data);
                 setLinearDisplay('none');
             })
             .catch((error) => {
-                console.error(error);
                 alerts.showError(error.message);
                 setLinearDisplay('none');
             });
     };
     const handleAdd = () => {
-        setLinearDisplay('block');
         const campus = {
             name: campusName,
             description: description
@@ -165,7 +162,6 @@ const CampusList = (): JSX.Element => {
         createCampus(campus);
     };
     const handleEdit = () => {
-        setLinearDisplay('block');
         const updates = {
             name: campusName === '' ? selectedCampusName : campusName,
             description: description === '' ? selectedDescription : description
@@ -173,19 +169,21 @@ const CampusList = (): JSX.Element => {
         updateCampus(campusId, updates);
     };
     const createCampus = (campusData) => {
-        console.log(campusData);
+        setDisabledButton(true);
         setLinearDisplay('block');
         timetablingAxiosInstance
             .post('/campuses', campusData)
             .then(() => {
                 alerts.showSuccess('Successfully created Campus');
                 fetchCampuses();
-                setLinearDisplay('none');
                 resetStateCloseModal();
             })
             .catch((error) => {
                 alerts.showError(error.message);
-                setLinearDisplay('none');
+            })
+            .finally(() => {
+                setDisabledButton(true);
+                setLinearDisplay('block');
             });
     };
     const resetStateCloseModal = () => {
@@ -325,7 +323,7 @@ const CampusList = (): JSX.Element => {
                     </Col>
                 </Modal.Body>
             </Modal>
-            <ConfirmationModalWrapper
+            <ConfirmationModalWrapper disabled={disabledButton}
                 submitButton
                 submitFunction={campusId ? handleEdit : handleAdd}
                 closeModal={toggleCloseConfirmModal}
