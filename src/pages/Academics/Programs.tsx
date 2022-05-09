@@ -1,7 +1,7 @@
 /* eslint-disable react/react-in-jsx-scope */
 /* eslint-disable react/display-name */
-import React, {useEffect, useState} from 'react';
-import {Alerts, ToastifyAlerts} from '../lib/Alert';
+import React, { useEffect, useState } from 'react';
+import { Alerts, ToastifyAlerts } from '../lib/Alert';
 import Alert from '@material-ui/lab/Alert';
 import Breadcrumb from '../../App/components/Breadcrumb';
 import { Button, Card, Col, Row } from 'react-bootstrap';
@@ -68,17 +68,17 @@ const Programs = (): JSX.Element => {
             .put(`/programs/${row.id}`, program)
             .then(() => {
                 const msg = activationStatus ? 'Successfully activated program' : 'Successfully Deactivated program';
-                setLinearDisplay('none');
                 alerts.showSuccess(msg);
                 fetchPrograms();
-                setDisabled(false);
+                toggleCloseConfirmModal();
             })
             .catch((error) => {
-                setLinearDisplay('block');
-                console.error(error);
                 alerts.showError(error.message);
+            })
+            .finally(() => {
                 setDisabled(false);
                 setLinearDisplay('none');
+                setDisabledButton(false);
             });
     };
 
