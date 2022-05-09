@@ -5,7 +5,7 @@ import Card from '@material-ui/core/Card';
 import Alert from '@material-ui/lab/Alert';
 import Breadcrumb from '../../App/components/Breadcrumb';
 import {Col, Row} from 'react-bootstrap';
-import {InputLabel, MenuItem, Select, Switch} from '@material-ui/core';
+import {InputLabel, MenuItem, Select} from '@material-ui/core';
 import {Link} from 'react-router-dom';
 import {LinearProgress} from '@mui/material';
 import {canPerformActions} from '../../services/ActionChecker';
@@ -14,6 +14,7 @@ import {timetablingAxiosInstance} from '../../utlis/interceptors/timetabling-int
 import TableWrapper from '../../utlis/TableWrapper';
 import ConfirmationModalWrapper from '../../App/components/modal/ConfirmationModalWrapper';
 import {Alerts, ToastifyAlerts} from '../lib/Alert';
+import CustomSwitch from '../../assets/switch/CustomSwitch';
 
 const alerts: Alerts = new ToastifyAlerts();
 const CourseCohorts = (): JSX.Element => {
@@ -70,7 +71,7 @@ const CourseCohorts = (): JSX.Element => {
             render: (row) =>
                 (
                     <>
-                        <Switch
+                        <CustomSwitch
                             defaultChecked={row.activationStatus}
                             color="secondary"
                             inputProps={{'aria-label': 'controlled'}}

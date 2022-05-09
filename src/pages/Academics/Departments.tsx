@@ -3,10 +3,9 @@ import React, { useEffect, useState } from 'react';
 import Edit from '@material-ui/icons/Edit';
 import Alert from '@material-ui/lab/Alert';
 import Breadcrumb from '../../App/components/Breadcrumb';
-import { Button, Card, Col, Row } from 'react-bootstrap';
-import { TextInput, ValidationForm } from 'react-bootstrap4-form-validation';
-import { Switch } from '@material-ui/core';
-import { Alerts, ToastifyAlerts } from '../lib/Alert';
+import {Button, Card, Col, Row} from 'react-bootstrap';
+import {TextInput, ValidationForm} from 'react-bootstrap4-form-validation';
+import {Alerts, ToastifyAlerts} from '../lib/Alert';
 import LinearProgress from '@mui/material/LinearProgress';
 import { canPerformActions } from '../../services/ActionChecker';
 import { ACTION_CREATE_DEPARTMENT, ACTION_GET_DEPARTMENTS, ACTION_UPDATE_DEPARTMENT } from '../../authnz-library/timetabling-actions';
@@ -15,6 +14,7 @@ import TableWrapper from '../../utlis/TableWrapper';
 import { customSelectTheme } from '../lib/SelectThemes';
 import Select from 'react-select';
 import ConfirmationModalWrapper from '../../App/components/modal/ConfirmationModalWrapper';
+import CustomSwitch from '../../assets/switch/CustomSwitch';
 import ModalWrapper from '../../App/components/modal/ModalWrapper';
 
 const alerts: Alerts = new ToastifyAlerts();
@@ -35,7 +35,7 @@ const Department = (): JSX.Element => {
             field: 'isActive',
             render: (row: department) => (
                 <>
-                    <Switch
+                    <CustomSwitch
                         defaultChecked={row.isActive}
                         color="secondary"
                         inputProps={{ 'aria-label': 'controlled' }}

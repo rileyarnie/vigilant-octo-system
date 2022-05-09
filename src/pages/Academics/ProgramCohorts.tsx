@@ -3,9 +3,8 @@ import React, { useEffect, useState } from 'react';
 import Card from '@material-ui/core/Card';
 import Alert from '@material-ui/lab/Alert';
 import Breadcrumb from '../../App/components/Breadcrumb';
-import { Button, Col, Dropdown, DropdownButton, Modal, Row } from 'react-bootstrap';
-import { Switch } from '@material-ui/core';
-import { FileInput, TextInput, ValidationForm } from 'react-bootstrap4-form-validation';
+import {Button, Col, Dropdown, DropdownButton, Modal, Row} from 'react-bootstrap';
+import {FileInput, TextInput, ValidationForm} from 'react-bootstrap4-form-validation';
 import CardPreview from './CardPreview';
 import { Link } from 'react-router-dom';
 import { Alerts, ToastifyAlerts } from '../lib/Alert';
@@ -18,6 +17,7 @@ import TableWrapper from '../../utlis/TableWrapper';
 import Select from 'react-select';
 import { customSelectTheme } from '../lib/SelectThemes';
 import ConfirmationModalWrapper from '../../App/components/modal/ConfirmationModalWrapper';
+import CustomSwitch from '../../assets/switch/CustomSwitch';
 import ModalWrapper from '../../App/components/modal/ModalWrapper';
 
 const alerts: Alerts = new ToastifyAlerts();
@@ -133,7 +133,7 @@ const ProgramCohorts = (): JSX.Element => {
             field: 'internal_action',
             render: (row: programCohort) => (
                 <>
-                    <Switch
+                    <CustomSwitch
                         defaultChecked={row.program_cohorts_status !== 'canceled'}
                         color="secondary"
                         inputProps={{ 'aria-label': 'controlled' }}

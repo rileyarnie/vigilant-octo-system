@@ -3,7 +3,6 @@ import React, {useEffect, useState} from 'react';
 import Alert from '@material-ui/lab/Alert';
 import Breadcrumb from '../../App/components/Breadcrumb';
 import {Button, Card, Col, Modal, Row} from 'react-bootstrap';
-import {Switch} from '@material-ui/core';
 import CourseCreation from './CreateCourse';
 import {Alerts, ToastifyAlerts} from '../lib/Alert';
 import LinearProgress from '@mui/material/LinearProgress';
@@ -13,6 +12,7 @@ import {timetablingAxiosInstance} from '../../utlis/interceptors/timetabling-int
 import {ValidationForm} from 'react-bootstrap4-form-validation';
 import TableWrapper from '../../utlis/TableWrapper';
 import ConfirmationModalWrapper from '../../App/components/modal/ConfirmationModalWrapper';
+import CustomSwitch from '../../assets/switch/CustomSwitch';
 
 const alerts: Alerts = new ToastifyAlerts();
 
@@ -67,7 +67,7 @@ const CoursesList = (): JSX.Element => {
             render: (row: Course) =>
                 canPerformActions(ACTION_UPDATE_COURSE.name) && (
                     <>
-                        <Switch
+                        <CustomSwitch
                             defaultChecked={row.activation_status}
                             color="secondary"
                             inputProps={{'aria-label': 'controlled'}}

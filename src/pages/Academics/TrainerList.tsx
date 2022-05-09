@@ -15,8 +15,8 @@ import { customSelectTheme, trainerTypes } from '../lib/SelectThemes';
 import Select from 'react-select';
 import ConfirmationModalWrapper from '../../App/components/modal/ConfirmationModalWrapper';
 import {DepartmentService} from '../services/DepartmentService';
-import { Switch } from '@material-ui/core';
 import ModalWrapper from '../../App/components/modal/ModalWrapper';
+import CustomSwitch from '../../assets/switch/CustomSwitch';
 
 const alerts: Alerts = new ToastifyAlerts();
 
@@ -94,7 +94,7 @@ const TrainerList = (): JSX.Element => {
             render: (row) =>
                 (
                     <>
-                        <Switch
+                        <CustomSwitch
                             defaultChecked={row.tr_activationStatus}
                             color="secondary"
                             inputProps={{'aria-label': 'controlled'}}

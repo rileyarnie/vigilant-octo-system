@@ -12,9 +12,9 @@ import { canPerformActions } from '../../services/ActionChecker';
 import { ACTION_CREATE_VENUE, ACTION_GET_VENUE, ACTION_UPDATE_VENUE } from '../../authnz-library/timetabling-actions';
 import { timetablingAxiosInstance } from '../../utlis/interceptors/timetabling-interceptor';
 import TableWrapper from '../../utlis/TableWrapper';
-import { Switch } from '@material-ui/core';
 import ConfirmationModalWrapper from '../../App/components/modal/ConfirmationModalWrapper';
 import ModalWrapper from '../../App/components/modal/ModalWrapper';
+import CustomSwitch from '../../assets/switch/CustomSwitch';
 
 const alerts: Alerts = new ToastifyAlerts();
 
@@ -58,7 +58,7 @@ const VenueList = (): JSX.Element => {
             render: (row) =>
                 (
                     <>
-                        <Switch
+                        <CustomSwitch
                             defaultChecked={row.venue_activationStatus}
                             color="secondary"
                             inputProps={{'aria-label': 'controlled'}}

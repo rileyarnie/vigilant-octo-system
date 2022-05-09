@@ -11,9 +11,9 @@ import TableWrapper from '../../utlis/TableWrapper';
 import CreateStaff from './CreateStaff/CreateStaff';
 import {timetablingAxiosInstance} from '../../utlis/interceptors/timetabling-interceptor';
 import UpdateStaff from './UpdateStaff/UpdateStaff';
-import { Switch } from '@material-ui/core';
 import ConfirmationModalWrapper from '../../App/components/modal/ConfirmationModalWrapper';
 import { authnzAxiosInstance } from '../../utlis/interceptors/authnz-interceptor';
+import CustomSwitch from '../../assets/switch/CustomSwitch';
 
 const alerts: Alerts = new ToastifyAlerts();
 
@@ -52,7 +52,7 @@ const StaffList = (): JSX.Element => {
             render: (row) =>
                 (
                     <>
-                        <Switch
+                        <CustomSwitch
                             defaultChecked={row.activationStatus}
                             color="secondary"
                             inputProps={{'aria-label': 'controlled'}}

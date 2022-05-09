@@ -5,11 +5,12 @@ import Breadcrumb from '../../App/components/Breadcrumb';
 import {Card, Col, Row} from 'react-bootstrap';
 import CreateUser from './CreateUserModal/CreateUser';
 import {Alerts, ToastifyAlerts} from '../lib/Alert';
-import {LinearProgress, Switch} from '@mui/material';
+import {LinearProgress} from '@mui/material';
 import {ACTION_ASSIGN_ROLES, ACTION_GET_USERS} from '../../authnz-library/authnz-actions';
 import {authnzAxiosInstance} from '../../utlis/interceptors/authnz-interceptor';
 import {canPerformActions} from '../../services/ActionChecker';
 import TableWrapper from '../../utlis/TableWrapper';import ConfirmationModalWrapper from '../../App/components/modal/ConfirmationModalWrapper';
+import CustomSwitch from '../../assets/switch/CustomSwitch';
 
 const alerts: Alerts = new ToastifyAlerts();
 
@@ -34,7 +35,7 @@ const UserList = (props: IProps): JSX.Element => {
             render: (row) =>
                 (
                     <>
-                        <Switch
+                        <CustomSwitch
                             defaultChecked={row.activationStatus}
                             color="secondary"
                             inputProps={{'aria-label': 'controlled'}}

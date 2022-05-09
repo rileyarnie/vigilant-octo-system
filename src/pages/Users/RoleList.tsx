@@ -9,7 +9,7 @@ import {AddActions} from './AddActionsModal/AddActions';
 import CreateRole from './Role/CreateRole';
 import {Alerts, ToastifyAlerts} from '../lib/Alert';
 import {LinearProgress} from '@mui/material';
-import {MenuItem, Select, Switch} from '@material-ui/core';
+import {MenuItem, Select} from '@material-ui/core';
 import {VerticalModal} from './ActionsByRole/VerticalModal';
 import {AddActionsModal} from './AddActionsModal/AddActionsModal';
 import {canPerformActions} from '../../services/ActionChecker';
@@ -21,6 +21,7 @@ import {
 import {authnzAxiosInstance} from '../../utlis/interceptors/authnz-interceptor';
 import TableWrapper from '../../utlis/TableWrapper';
 import ConfirmationModalWrapper from '../../App/components/modal/ConfirmationModalWrapper';
+import CustomSwitch from '../../assets/switch/CustomSwitch';
 
 const alerts: Alerts = new ToastifyAlerts();
 
@@ -79,7 +80,7 @@ function roleList(): JSX.Element {
             render: (row) =>
                 (
                     <>
-                        <Switch
+                        <CustomSwitch
                             defaultChecked={row.activationStatus}
                             color="secondary"
                             inputProps={{'aria-label': 'controlled'}}

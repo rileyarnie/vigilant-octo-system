@@ -1,7 +1,7 @@
 /* eslint-disable react/display-name */
 import React, { useEffect, useState } from 'react';
 import Edit from '@material-ui/icons/Edit';
-import { LinearProgress, Switch } from '@material-ui/core';
+import {LinearProgress} from '@material-ui/core';
 import Alert from '@material-ui/lab/Alert';
 import Breadcrumb from '../../App/components/Breadcrumb';
 import { Button, Card, Col, Row } from 'react-bootstrap';
@@ -12,6 +12,7 @@ import { ACTION_CREATE_SEMESTERS, ACTION_GET_SEMESTERS, ACTION_UPDATE_SEMESTERS 
 import { timetablingAxiosInstance } from '../../utlis/interceptors/timetabling-interceptor';
 import TableWrapper from '../../utlis/TableWrapper';
 import ConfirmationModalWrapper from '../../App/components/modal/ConfirmationModalWrapper';
+import CustomSwitch from '../../assets/switch/CustomSwitch';
 import ModalWrapper from '../../App/components/modal/ModalWrapper';
 
 const alerts: Alerts = new ToastifyAlerts();
@@ -36,7 +37,7 @@ const SemesterList = (): JSX.Element => {
             render: (row: Semester) =>
                 canPerformActions(ACTION_UPDATE_SEMESTERS.name) && (
                     <>
-                        <Switch
+                        <CustomSwitch
                             defaultChecked={row.activationStatus}
                             color="secondary"
                             inputProps={{ 'aria-label': 'controlled' }}

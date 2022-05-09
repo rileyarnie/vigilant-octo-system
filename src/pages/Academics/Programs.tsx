@@ -1,8 +1,7 @@
 /* eslint-disable react/react-in-jsx-scope */
 /* eslint-disable react/display-name */
-import React, { useEffect, useState } from 'react';
-import { Alerts, ToastifyAlerts } from '../lib/Alert';
-import { Switch } from '@material-ui/core';
+import React, {useEffect, useState} from 'react';
+import {Alerts, ToastifyAlerts} from '../lib/Alert';
 import Alert from '@material-ui/lab/Alert';
 import Breadcrumb from '../../App/components/Breadcrumb';
 import { Button, Card, Col, Row } from 'react-bootstrap';
@@ -16,6 +15,7 @@ import TableWrapper from '../../utlis/TableWrapper';
 import { certType, customSelectTheme, selectOptions } from '../lib/SelectThemes';
 import Select from 'react-select';
 import ConfirmationModalWrapper from '../../App/components/modal/ConfirmationModalWrapper';
+import CustomSwitch from '../../assets/switch/CustomSwitch';
 import ModalWrapper from '../../App/components/modal/ModalWrapper';
 
 const alerts: Alerts = new ToastifyAlerts();
@@ -90,7 +90,7 @@ const Programs = (): JSX.Element => {
             field: 'internal_action',
             render: (row: Program) => (
                 <>
-                    <Switch
+                    <CustomSwitch
                         defaultChecked={row.activationStatus}
                         color="secondary"
                         inputProps={{ 'aria-label': 'controlled' }}

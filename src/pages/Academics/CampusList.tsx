@@ -1,7 +1,7 @@
 /* eslint-disable react/display-name */
 import React, { useEffect, useState } from 'react';
 import Edit from '@material-ui/icons/Edit';
-import { LinearProgress, Switch } from '@material-ui/core';
+import {LinearProgress} from '@material-ui/core';
 import Alert from '@material-ui/lab/Alert';
 import Breadcrumb from '../../App/components/Breadcrumb';
 import { Button, Card, Col, Modal, Row } from 'react-bootstrap';
@@ -12,6 +12,7 @@ import { ACTION_CREATE_CAMPUS, ACTION_GET_CAMPUSES, ACTION_UPDATE_CAMPUS } from 
 import { timetablingAxiosInstance } from '../../utlis/interceptors/timetabling-interceptor';
 import TableWrapper from '../../utlis/TableWrapper';
 import ConfirmationModalWrapper from '../../App/components/modal/ConfirmationModalWrapper';
+import CustomSwitch from '../../assets/switch/CustomSwitch';
 
 const alerts: Alerts = new ToastifyAlerts();
 const CampusList = (): JSX.Element => {
@@ -80,7 +81,7 @@ const CampusList = (): JSX.Element => {
             render: (row: Campus) =>
                 canPerformActions(ACTION_UPDATE_CAMPUS.name) && (
                     <>
-                        <Switch
+                        <CustomSwitch
                             defaultChecked={row.activationStatus}
                             color="secondary"
                             inputProps={{ 'aria-label': 'controlled' }}
