@@ -11,6 +11,7 @@ import TableWrapper from '../../utlis/TableWrapper';
 import CreateStaff from './CreateStaff/CreateStaff';
 import {timetablingAxiosInstance} from '../../utlis/interceptors/timetabling-interceptor';
 import UpdateStaff from './UpdateStaff/UpdateStaff';
+import { authnzAxiosInstance } from '../../utlis/interceptors/authnz-interceptor';
 
 const alerts: Alerts = new ToastifyAlerts();
 
@@ -21,16 +22,31 @@ const StaffList = (): JSX.Element => {
         { title: 'User', field: 'email' },
         {
             title: 'Actions',
-            render: (row) => <UpdateStaff fetchStaff={fetchStaff} data={row} />
+            render: (row) => <UpdateStaff fetchStaff={fetchStaff} data={row} fetchUsers={fetchUsers} users={users} />
         }
     ];
     const [data, setData] = useState([]);
+    const [users,setUsers] = useState<never[]>();
     const [linearDisplay, setLinearDisplay] = useState('none');
 
     useEffect(() => {
         fetchStaff();
     }, []);
-
+    const fetchUsers = () => {
+        setLinearDisplay('block');
+        authnzAxiosInstance
+            .get('/users')
+            .then((res) => {
+                setUsers(res.data);
+                setLinearDisplay('none');
+            })
+            .catch((error) => {
+                alerts.showError(error.message);
+            })
+            .finally(() => {
+                setLinearDisplay('none');
+            });
+    };
     const fetchStaff = () => {
         setLinearDisplay('block');
         timetablingAxiosInstance
