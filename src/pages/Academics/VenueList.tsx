@@ -12,16 +12,79 @@ import { canPerformActions } from '../../services/ActionChecker';
 import { ACTION_CREATE_VENUE, ACTION_GET_VENUE, ACTION_UPDATE_VENUE } from '../../authnz-library/timetabling-actions';
 import { timetablingAxiosInstance } from '../../utlis/interceptors/timetabling-interceptor';
 import TableWrapper from '../../utlis/TableWrapper';
+import { Switch } from '@material-ui/core';
+import ConfirmationModalWrapper from '../../App/components/modal/ConfirmationModalWrapper';
 import ModalWrapper from '../../App/components/modal/ModalWrapper';
 
 const alerts: Alerts = new ToastifyAlerts();
 
 const VenueList = (): JSX.Element => {
+    const [disabled, setDisabled] = useState(false);
+    const [switchStatus,setSwitchStatus] = useState<boolean>();
+    const [activationModal, setActivationModal] = useState(false);
+    const [selectedRow,setselectedRow] = useState<{venue_name:string,venue_id:number}>();
+    const handleCloseModal = () => {
+        setActivationModal(false);
+    };
+    const updateVenue = (venueId, updates) => {
+        setDisabled(true);
+        setLinearDisplay('block');
+        timetablingAxiosInstance
+            .put(`/venues/${venueId}`, { Venue: updates })
+            .then(() => {
+                alerts.showSuccess('Successfully updated venue');
+                fetchVenues();            
+            })
+            .catch((error) => {
+                console.error(error);
+                alerts.showError(error.message);
+                    
+            })
+            .finally(() => {
+                setLinearDisplay('none');
+                setActivationModal(false);
+                setDisabled(false);
+            });
+    };
+    
     const columns = [
         { title: 'ID', field: 'venue_id' },
         { title: 'Venue name', field: 'venue_name' },
         { title: 'Capacity', field: 'venue_capacity' },
-        { title: 'Campus', field: 'campus_name' }
+        { title: 'Campus', field: 'campus_name' },
+        {
+            title: 'Activation Status',
+            field: 'internal_action',
+            render: (row) =>
+                (
+                    <>
+                        <Switch
+                            defaultChecked={row.venue_activationStatus}
+                            color="secondary"
+                            inputProps={{'aria-label': 'controlled'}}
+                            checked={row.venue_activationStatus}
+                            onChange={(event) => {
+                                setselectedRow(row);
+                                setActivationModal(true);
+                                setSwitchStatus(event.target.checked);
+                                
+                            }}
+                        />
+                        <ConfirmationModalWrapper
+                            disabled={disabled}
+                            submitButton
+                            submitFunction={() => updateVenue(selectedRow?.venue_id,{activationStatus:switchStatus})}
+                            closeModal={handleCloseModal}
+                            show={activationModal}
+                        >
+                            <h6 className="text-center">
+                                Are you sure you want to change the status of <>{selectedRow?.venue_name}</> ?
+                            </h6>
+                        </ConfirmationModalWrapper>
+                    </>
+                )
+        }
+
     ];
     interface venue {
         venue_name: string;
@@ -135,4 +198,5 @@ const VenueList = (): JSX.Element => {
         </>
     );
 };
+
 export default VenueList;

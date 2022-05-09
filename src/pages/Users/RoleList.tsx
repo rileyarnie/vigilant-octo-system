@@ -9,7 +9,7 @@ import {AddActions} from './AddActionsModal/AddActions';
 import CreateRole from './Role/CreateRole';
 import {Alerts, ToastifyAlerts} from '../lib/Alert';
 import {LinearProgress} from '@mui/material';
-import {MenuItem, Select} from '@material-ui/core';
+import {MenuItem, Select, Switch} from '@material-ui/core';
 import {VerticalModal} from './ActionsByRole/VerticalModal';
 import {AddActionsModal} from './AddActionsModal/AddActionsModal';
 import {canPerformActions} from '../../services/ActionChecker';
@@ -20,6 +20,7 @@ import {
 } from '../../authnz-library/authnz-actions';
 import {authnzAxiosInstance} from '../../utlis/interceptors/authnz-interceptor';
 import TableWrapper from '../../utlis/TableWrapper';
+import ConfirmationModalWrapper from '../../App/components/modal/ConfirmationModalWrapper';
 
 const alerts: Alerts = new ToastifyAlerts();
 
@@ -30,6 +31,10 @@ interface Role {
     RoleName: string;
 }
 function roleList(): JSX.Element {
+    const [switchStatus,setSwitchStatus] = useState<boolean>();
+    const [activationModal, setActivationModal] = useState(false);
+    const [selectedRow,setselectedRow] = useState<{name:string,id:number}>();
+    const [disabled, setDisabled] = useState(false);
     const columns = [
         { title: 'ID', field: 'id', editable: 'never' as const },
         { title: 'Role Name', field: 'name', editable: 'always' as const },
@@ -67,6 +72,38 @@ function roleList(): JSX.Element {
                     )}
                 </Select>
             )
+        },
+        {
+            title: 'Activation Status',
+            field: 'internal_action',
+            render: (row) =>
+                (
+                    <>
+                        <Switch
+                            defaultChecked={row.activationStatus}
+                            color="secondary"
+                            inputProps={{'aria-label': 'controlled'}}
+                            checked={row.activationStatus}
+                            onChange={(event) => {
+                                setselectedRow(row);
+                                setActivationModal(true);
+                                setSwitchStatus(event.target.checked);
+                                
+                            }}
+                        />
+                        <ConfirmationModalWrapper
+                            disabled={disabled}
+                            submitButton
+                            submitFunction={() => updateRole(selectedRow?.id,{activationStatus:switchStatus})}
+                            closeModal={handleCloseModal}
+                            show={activationModal}
+                        >
+                            <h6 className="text-center">
+                                Are you sure you want to change the status of <>{selectedRow?.name}</> ?
+                            </h6>
+                        </ConfirmationModalWrapper>
+                    </>
+                )
         }
     ];
     const actionColumns = [
@@ -88,6 +125,11 @@ function roleList(): JSX.Element {
     useEffect(() => {
         fetchRoles();
     }, []);
+
+    const handleCloseModal = () => {
+        setActivationModal(false);
+    };
+
     function fetchRoles(): void {
         setLinearDisplay('block');
         authnzAxiosInstance
@@ -136,6 +178,27 @@ function roleList(): JSX.Element {
             });
     };
 
+    const updateRole = (roleId, updates) => {
+        setDisabled(true);
+        setLinearDisplay('block');
+        authnzAxiosInstance
+            .put(`/roles/${roleId}`, updates)
+            .then(() => {                
+                fetchRoles();                
+                setLinearDisplay('none');
+                alerts.showSuccess('Successfully updated role');
+            })
+            .catch((error) => {
+                console.error(error);
+                alerts.showError(error.message);
+                
+            })
+            .finally(() => {
+                setLinearDisplay('none');
+                setActivationModal(false);
+                setDisabled(false);
+            });
+    };
 
     const selectedRowProps = {
         id: id,

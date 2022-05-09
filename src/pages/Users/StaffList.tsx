@@ -11,11 +11,33 @@ import TableWrapper from '../../utlis/TableWrapper';
 import CreateStaff from './CreateStaff/CreateStaff';
 import {timetablingAxiosInstance} from '../../utlis/interceptors/timetabling-interceptor';
 import UpdateStaff from './UpdateStaff/UpdateStaff';
+import { Switch } from '@material-ui/core';
+import ConfirmationModalWrapper from '../../App/components/modal/ConfirmationModalWrapper';
 import { authnzAxiosInstance } from '../../utlis/interceptors/authnz-interceptor';
 
 const alerts: Alerts = new ToastifyAlerts();
 
 const StaffList = (): JSX.Element => {
+    const [disabled, setDisabled] = useState(false);
+    const [switchStatus,setSwitchStatus] = useState<boolean>();
+    const [activationModal, setActivationModal] = useState(false);
+    const handleCloseActivationModal = () => {
+        setActivationModal(false);
+    };
+
+    const updateStaff = (staffId,updates) => {
+        setDisabled(true);
+        timetablingAxiosInstance
+            .put(`/staff/${staffId}`, updates)
+            .then(() => {
+                alerts.showSuccess('successfully updated staff');
+                fetchStaff();
+            })
+            .catch((err) => console.log('err', err))
+            .finally(() => {
+                setDisabled(false);
+            });
+    };
     const columns = [
         { title: 'SN', field: 'id' },
         { title: 'Name', field: 'name' },
@@ -23,6 +45,38 @@ const StaffList = (): JSX.Element => {
         {
             title: 'Actions',
             render: (row) => <UpdateStaff fetchStaff={fetchStaff} data={row} fetchUsers={fetchUsers} users={users} />
+        },
+        {
+            title: 'Activation Status',
+            field: 'internal_action',
+            render: (row) =>
+                (
+                    <>
+                        <Switch
+                            defaultChecked={row.activationStatus}
+                            color="secondary"
+                            inputProps={{'aria-label': 'controlled'}}
+                            checked={row.activationStatus}
+                            onChange={(event) => {
+                                setActivationModal(true);
+                                setSwitchStatus(event.target.checked);
+                                
+                            }}
+                        />
+                        <ConfirmationModalWrapper
+                            disabled={disabled}
+                            submitButton
+                            submitFunction={() => updateStaff(row.id,{activationStatus:switchStatus})}
+                            closeModal={handleCloseActivationModal}
+                            show={activationModal}
+                        >
+                            <h6 className="text-center">
+                                Are you sure you want to change the status of <>{row.name}</> ?
+                            </h6>
+                        </ConfirmationModalWrapper>
+                    </>
+                )
+           
         }
     ];
     const [data, setData] = useState([]);

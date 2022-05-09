@@ -14,12 +14,40 @@ import TableWrapper from '../../utlis/TableWrapper';
 import { customSelectTheme, trainerTypes } from '../lib/SelectThemes';
 import Select from 'react-select';
 import ConfirmationModalWrapper from '../../App/components/modal/ConfirmationModalWrapper';
-import { DepartmentService } from '../services/DepartmentService';
+import {DepartmentService} from '../services/DepartmentService';
+import { Switch } from '@material-ui/core';
 import ModalWrapper from '../../App/components/modal/ModalWrapper';
 
 const alerts: Alerts = new ToastifyAlerts();
 
 const TrainerList = (): JSX.Element => {
+    const [switchStatus,setSwitchStatus] = useState<boolean>();
+    const [activationModal, setActivationModal] = useState(false);
+    const [selectedRow,setselectedRow] = useState<{tr_id:number}>();
+    const handleCloseActivationModal = () => {
+        setActivationModal(false);
+    };
+
+    const updateTrainer = (trainerId, updates) => {
+        setDisabled(true);
+        setLinearDisplay('block');
+        timetablingAxiosInstance
+            .patch(`/trainers/${trainerId}`, updates)
+            .then(() => {
+                alerts.showSuccess('Successfully updated trainer');
+                fetchTrainers();         
+            })
+            .catch((error) => {
+                console.error(error);
+                alerts.showError(error.message);
+                
+            })
+            .finally(() => {
+                setLinearDisplay('none');
+                setActivationModal(false);
+                setDisabled(false);
+            });
+    };
     const columns = [
         { title: 'ID', field: 'tr_id', hidden: false },
         { title: 'Trainer AADAlias', render: (rowData) => rowData.stf_email },
@@ -59,6 +87,38 @@ const TrainerList = (): JSX.Element => {
                     )}
                 </DropdownButton>
             )
+        },
+        {
+            title: 'Activation Status',
+            field: 'internal_action',
+            render: (row) =>
+                (
+                    <>
+                        <Switch
+                            defaultChecked={row.tr_activationStatus}
+                            color="secondary"
+                            inputProps={{'aria-label': 'controlled'}}
+                            checked={row.tr_activationStatus}
+                            onChange={(event) => {
+                                setselectedRow(row);
+                                setActivationModal(true);
+                                setSwitchStatus(event.target.checked);
+                                
+                            }}
+                        />
+                        <ConfirmationModalWrapper
+                            disabled={disabled}
+                            submitButton
+                            submitFunction={() => updateTrainer(selectedRow?.tr_id,{activationStatus:switchStatus})}
+                            closeModal={handleCloseActivationModal}
+                            show={activationModal}
+                        >
+                            <h6 className="text-center">
+                                Are you sure you want to change the status of Trainer Id: <>{selectedRow?.tr_id}</> ?
+                            </h6>
+                        </ConfirmationModalWrapper>
+                    </>
+                )
         }
     ];
     const staffOptions = [];

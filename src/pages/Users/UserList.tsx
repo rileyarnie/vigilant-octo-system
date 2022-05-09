@@ -5,11 +5,11 @@ import Breadcrumb from '../../App/components/Breadcrumb';
 import {Card, Col, Row} from 'react-bootstrap';
 import CreateUser from './CreateUserModal/CreateUser';
 import {Alerts, ToastifyAlerts} from '../lib/Alert';
-import {LinearProgress} from '@mui/material';
-import {canPerformActions} from '../../services/ActionChecker';
+import {LinearProgress, Switch} from '@mui/material';
 import {ACTION_ASSIGN_ROLES, ACTION_GET_USERS} from '../../authnz-library/authnz-actions';
 import {authnzAxiosInstance} from '../../utlis/interceptors/authnz-interceptor';
-import TableWrapper from '../../utlis/TableWrapper';
+import {canPerformActions} from '../../services/ActionChecker';
+import TableWrapper from '../../utlis/TableWrapper';import ConfirmationModalWrapper from '../../App/components/modal/ConfirmationModalWrapper';
 
 const alerts: Alerts = new ToastifyAlerts();
 
@@ -21,9 +21,45 @@ interface IProps {
 }
 
 const UserList = (props: IProps): JSX.Element => {
+    const [disabled, setDisabled] = useState(false);
+    const [switchStatus,setSwitchStatus] = useState<boolean>();
+    const [activationModal, setActivationModal] = useState(false);
+    const [selectedRow,setselectedRow] = useState<{aadAlias:string,id:number}>();
     const columns = [
         { title: 'ID', field: 'id' },
-        { title: 'AAD Alias', field: 'aadAlias' }
+        { title: 'AAD Alias', field: 'aadAlias' },
+        {
+            title: 'Activation Status',
+            field: 'internal_action',
+            render: (row) =>
+                (
+                    <>
+                        <Switch
+                            defaultChecked={row.activationStatus}
+                            color="secondary"
+                            inputProps={{'aria-label': 'controlled'}}
+                            checked={row.activationStatus}
+                            onChange={(event) => {
+                                setselectedRow(row);
+                                setSwitchStatus(event.target.checked); 
+                                setActivationModal(true);
+                                                               
+                            }}
+                        />
+                        <ConfirmationModalWrapper
+                            disabled={disabled}
+                            submitButton
+                            submitFunction={() => updateUser(selectedRow?.id,{activationStatus:switchStatus})}
+                            closeModal={handleCloseModal}
+                            show={activationModal}
+                        >
+                            <h6 className="text-center">
+                                Are you sure you want to change the status of <>{selectedRow?.aadAlias}</> ?
+                            </h6>
+                        </ConfirmationModalWrapper>
+                    </>
+                )
+        }
     ];
     const [data, setData] = useState([]);
     const [linearDisplay, setLinearDisplay] = useState('none');
@@ -31,6 +67,10 @@ const UserList = (props: IProps): JSX.Element => {
     useEffect(() => {
         fetchUsers();
     }, []);
+
+    const handleCloseModal = () => {
+        setActivationModal(false);
+    };
 
     const fetchUsers = () => {
         setLinearDisplay('block');
@@ -42,6 +82,28 @@ const UserList = (props: IProps): JSX.Element => {
             })
             .catch((error) => {
                 alerts.showError(error.message);
+            });
+    };
+
+    const updateUser = (userId, updates) => {
+        setDisabled(true);
+        setLinearDisplay('block');
+        authnzAxiosInstance
+            .put(`/users/${userId}`, {userUpdateRequest:updates})
+            .then(() => {
+                alerts.showSuccess('Successfully updated user');
+                fetchUsers();                
+                setLinearDisplay('none');
+            })
+            .catch((error) => {
+                console.error(error);
+                alerts.showError(error.message);
+                
+            })
+            .finally(() => {
+                setLinearDisplay('none');
+                setActivationModal(false);
+                setDisabled(false);
             });
     };
     const handleRouteChange = () => {
