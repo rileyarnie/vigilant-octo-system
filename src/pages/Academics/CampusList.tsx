@@ -116,7 +116,6 @@ const CampusList = (): JSX.Element => {
                 setLinearDisplay('none');
             })
             .catch((error) => {
-                console.error(error);
                 alerts.showError(error.message);
                 setLinearDisplay('none');
             });
@@ -129,15 +128,14 @@ const CampusList = (): JSX.Element => {
             .then(() => {
                 alerts.showSuccess('Successfully updated Campus');
                 fetchCampuses();
-                resetStateCloseModal();
             })
             .catch((error) => {
-                console.error(error);
                 alerts.showError(error.message);
             })
             .finally(() => {
                 setDisabledButton(true);
                 setLinearDisplay('block');
+                resetStateCloseModal();
             });
     };
     const fetchCampuses = () => {
@@ -149,7 +147,6 @@ const CampusList = (): JSX.Element => {
                 setLinearDisplay('none');
             })
             .catch((error) => {
-                console.error(error);
                 alerts.showError(error.message);
                 setLinearDisplay('none');
             });

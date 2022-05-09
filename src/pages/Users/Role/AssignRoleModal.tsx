@@ -76,6 +76,7 @@ export const AssignRoleModal = (props: IProps): JSX.Element => {
     const toggleCloseConfirmModal = () => {
         setConfirmModal(false);
     };
+
     return (
         <>
             <Modal {...props} size="lg" aria-labelledby="contained-modal-title-vcenter" centered>

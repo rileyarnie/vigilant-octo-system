@@ -21,7 +21,6 @@ const ActionApprovals = () => {
     const [approveModal, setApproveModal] = useState(false);
     const [rejectModal, setRejectModal] = useState(false);
     const[disabled,setDisabled] = useState(false);
-
     const columns = [
         { title: 'Id', field: 'id' },
         { title: 'Action Name', field: 'approvingRole.action.name' },
@@ -67,7 +66,6 @@ const ActionApprovals = () => {
                 setLinearDisplay('none');
             })
             .catch((err) => {
-                console.log('err', err);
                 alerts.showError(err.message);
             });
     }

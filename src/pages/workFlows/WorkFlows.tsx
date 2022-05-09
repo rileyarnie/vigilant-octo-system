@@ -20,9 +20,7 @@ import {LinearProgress} from '@material-ui/core';
 import {canPerformActions} from '../../services/ActionChecker';
 import TableWrapper from '../../utlis/TableWrapper';
 import ConfirmationModalWrapper from '../../App/components/modal/ConfirmationModalWrapper';
-
 const alerts: Alerts = new ToastifyAlerts();
-
 const WorkFlows = (): JSX.Element => {
     const columns = [
         {title: 'Name', field: 'name'},
@@ -79,14 +77,13 @@ const WorkFlows = (): JSX.Element => {
                     return {value: it.role.id, label: it.role.name};
                 });
                 setApprovers(roles);
-                setLinearDisplay('none');
             })
             .catch(() => {
                 alerts.showError(`We couldn’t fetch the existing approving roles for ${actionName}, reopening the modal should fix this.`);
                 toggleCreateModal();
-                setLinearDisplay('none');
             })
             .finally(() => {
+                setLinearDisplay('none');
                 toggleCreateModal();
             });
     }
@@ -97,21 +94,19 @@ const WorkFlows = (): JSX.Element => {
             .then((res) => {
                 const roles = res['data'];
                 setRoles(roles);
-                setLinearDisplay('none');
             })
             .catch((error) => {
                 alerts.showError(error.message);
+            }).finally(() => {
                 setLinearDisplay('none');
             });
     }
-
     roles.map((role) => {
         return options.push({value: role.id, label: role.name});
     });
     const handleChange = (selectedOptions) => {
         setSelectedOptions(selectedOptions);
     };
-
     function handleSubmitWorkFlow() {
         setDisabled(true);
         setLinearDisplay('block');
@@ -126,22 +121,23 @@ const WorkFlows = (): JSX.Element => {
         toggleCloseConfirmModal();
         WorkFlowService.handleSubmitWorkFlow(actionName, approvingRoles)
             .then(() => {
-                setDisabled(false);
                 alerts.showSuccess('Successfully created a workflow');
-                setConfirmLinearDisplay('none');
                 handleClose();
-                setLinearDisplay('none');
             })
             .catch((error) => {
-                setDisabled(false);
-                setConfirmLinearDisplay('none');
-                setLinearDisplay('none');
                 alerts.showError(error.message);
+            }).finally(() => {
+                setModal(false);
+                setDisabled(false);
+                setLinearDisplay('none');
+                setConfirmLinearDisplay('none');
+                setConfirmModal(false);
+                resetStateCloseModal();
             });
     }
-
     const resetStateCloseModal = () => {
         setModal(false);
+        setConfirmModal(false);
     };
     const toggleCreateModal = () => {
         showModal ? resetStateCloseModal() : setModal(true);

@@ -358,7 +358,7 @@ const ApplicationsList = (): JSX.Element => {
                     <Modal.Title id="contained-modal-title-vcenter">Edit Application Details</Modal.Title>
                 </Modal.Header>
                 <Modal.Body>
-                    <EditApplicationDetails application={applicationData} close={handleCloseModal}/>
+                    <EditApplicationDetails application={applicationData} close={resetStateCloseModal}/>
                 </Modal.Body>
             </Modal>
             <Modal

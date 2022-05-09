@@ -176,7 +176,6 @@ const Programs = (): JSX.Element => {
                 setData(res.data);
             })
             .catch((error) => {
-                console.error(error);
                 alerts.showError(error.message);
             });
     };
@@ -202,7 +201,6 @@ const Programs = (): JSX.Element => {
             .then(() => {
                 alerts.showSuccess('Program created succesfully');
                 fetchPrograms();
-                resetStateCloseModal();
             })
             .catch((error) => {
                 alerts.showError(error.message);
@@ -210,6 +208,7 @@ const Programs = (): JSX.Element => {
             .finally(() => {
                 setLinearDisplay('none');
                 setDisabledButton(false);
+                resetStateCloseModal();
             });
     };
     const resetStateCloseModal = () => {
@@ -237,7 +236,6 @@ const Programs = (): JSX.Element => {
     };
     const toggleActivationModal = () => {
         activationModal ? resetStateCloseModal() : setActivationModal(true);
-        console.log('CHANGED STATUS', status);
     };
     const handleCloseModal = () => {
         fetchPrograms();

@@ -144,7 +144,6 @@ const Department = (): JSX.Element => {
             .then(() => {
                 alerts.showSuccess('Successfully updated department');
                 fetchDepartments();
-                resetStateCloseModal();
                 setLinearDisplay('none');
             })
             .catch((error) => {
@@ -153,6 +152,7 @@ const Department = (): JSX.Element => {
             .finally(() => {
                 setDisabledButton(false);
                 setLinearDisplay('none');
+                resetStateCloseModal();
             });
     };
     const fetchDepartments = () => {

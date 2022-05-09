@@ -112,7 +112,6 @@ const SemesterList = (): JSX.Element => {
         timetablingAxiosInstance
             .get('/semesters')
             .then((res) => {
-                console.log(res.data);
                 setData(res.data);
                 setLinearDisplay('none');
             })
@@ -130,14 +129,14 @@ const SemesterList = (): JSX.Element => {
                 setDisabledButton(false);
                 alerts.showSuccess('Successfully updated Semester');
                 fetchSemesters();
-                resetStateCloseModal();
                 toggleCloseConfirmModal();
-                setLinearDisplay('none');
             })
             .catch((error) => {
-                setDisabledButton(false);
                 alerts.showError(error.message);
+            }).finally(() => {
                 setLinearDisplay('none');
+                setDisabledButton(false);
+                resetStateCloseModal();
             });
     };
     const fetchSemesters = () => {
@@ -181,7 +180,6 @@ const SemesterList = (): JSX.Element => {
             .then(() => {
                 alerts.showSuccess('Successfully created semesters');
                 fetchSemesters();
-                resetStateCloseModal();
                 toggleCloseConfirmModal();
                 setLinearDisplay('none');
             })
@@ -191,6 +189,7 @@ const SemesterList = (): JSX.Element => {
             .finally(() => {
                 setLinearDisplay('none');
                 setDisabledButton(false);
+                resetStateCloseModal();
             });
     };
 
