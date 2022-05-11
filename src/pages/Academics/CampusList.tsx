@@ -281,23 +281,21 @@ const CampusList = (): JSX.Element => {
                     <Modal.Title id="contained-modal-title-vcenter">{campusId ? 'Edit Campus' : 'Create a Campus'}</Modal.Title>
                 </Modal.Header>
                 <Modal.Body>
-                    <ValidationForm>
+                    <ValidationForm onSubmit={(e) => { e.preventDefault();toggleConfirmModal();}}>
                         <div className="form-group">
-                            <label htmlFor="departmentName">Campus Name</label>
+                            <label htmlFor="departmentName"><b>Campus Name<span className="text-danger">*</span></b></label>
                             <TextInput
                                 name="campusName"
                                 id="campusName"
                                 type="text"
+                                required
                                 value={campusId ? selectedCampusName : campusName}
                                 placeholder={campusId ? selectedCampusName : campusName}
                                 onChange={(e) => (campusId ? setSelectedCampusName(e.target.value) : setCampusName(e.target.value))}
-                                required
                             />
-                            <br />
-                            <label htmlFor="description">
-                                <b>Description</b>
-                            </label>
-                            <br />
+                            <br/>
+                            <label htmlFor="description"><b>Description<span className="text-danger">*</span></b></label>
+                            <br/>
                             <TextInput
                                 name="description"
                                 minLength="4"
@@ -310,17 +308,15 @@ const CampusList = (): JSX.Element => {
                                 rows="5"
                                 onChange={(e) => (campusId ? setSelectedDescription(e.target.value) : setDescription(e.target.value))}
                             />
-                            <br />
+                            <br/>
+                        </div>
+                        <div className="form-group">
+                            <button className="btn btn-info float-right">Submit</button>
+                            <button className="btn btn-danger float-left" onClick={handleClose}>
+                                Close
+                            </button>
                         </div>
                     </ValidationForm>
-                    <Col>
-                        <button className="btn btn-info float-right" onClick={toggleConfirmModal}>
-                            Submit
-                        </button>
-                        <button className="btn btn-danger float-left" onClick={handleClose}>
-                            Close
-                        </button>
-                    </Col>
                 </Modal.Body>
             </Modal>
             <ConfirmationModalWrapper disabled={disabledButton}

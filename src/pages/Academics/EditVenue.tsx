@@ -55,10 +55,10 @@ const EditVenue = (props): JSX.Element => {
                             <Card.Body>
                                 <Row>
                                     <Col md={12}>
-                                        <ValidationForm>
+                                        <ValidationForm onSubmit={(e) => { e.preventDefault();toggleConfirmModal();}}>
                                             <div className="form-group">
                                                 <label htmlFor="email">
-                                                    <b>Enter new venue name</b>
+                                                    <b>Enter new venue name<span className="text-danger">*</span></b>
                                                 </label>
                                                 <TextInput
                                                     name="name"
@@ -72,19 +72,19 @@ const EditVenue = (props): JSX.Element => {
                                                 />
                                                 &nbsp;&nbsp;&nbsp;
                                             </div>
+                                            <div className="form-group">
+                                                <button disabled={disabled} className="btn btn-info float-right">
+                                                    Submit
+                                                </button>
+                                                <button
+                                                    disabled={disabled}
+                                                    className="btn btn-danger float-left"
+                                                    onClick={() => props.setEditModal(false)}
+                                                >
+                                                    Cancel
+                                                </button>
+                                            </div>
                                         </ValidationForm>
-                                        <div className="form-group">
-                                            <button disabled={disabled} className="btn btn-info float-right" onClick={toggleConfirmModal}>
-                                                Submit
-                                            </button>
-                                            <button
-                                                disabled={disabled}
-                                                className="btn btn-danger float-left"
-                                                onClick={() => props.setEditModal(false)}
-                                            >
-                                                Cancel
-                                            </button>
-                                        </div>
                                     </Col>
                                 </Row>
                             </Card.Body>

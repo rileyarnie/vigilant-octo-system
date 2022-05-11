@@ -83,7 +83,6 @@ const Department = (): JSX.Element => {
     const [disabledButton, setDisabledButton] = useState(false);
     const handleActivationStatusToggle = (event, row: department) => {
         setStatus(!row.activationStatus);
-        // toggleConfirmModal();
     };
     const handleToggleStatusSubmit = () => {
         setLinearDisplay('block');
@@ -101,6 +100,7 @@ const Department = (): JSX.Element => {
                 setConfirmModal(false);
                 setDisabled(false);
                 fetchDepartments();
+                setLinearDisplay('none');
             })
             .catch((error) => {
                 setDisabledButton(false);
@@ -223,6 +223,7 @@ const Department = (): JSX.Element => {
         setSelectedHoD(null);
         setModal(false);
         setConfirmModal(false);
+        setEditConfirm(false);
     };
     const toggleCreateModal = () => {
         showModal ? resetStateCloseModal() : setModal(true);
@@ -294,14 +295,14 @@ const Department = (): JSX.Element => {
             )}
             <ModalWrapper
                 show={showModal}
-                title={deptId ? 'Edit epartment' : 'Create a department'}
+                title={deptId ? 'Edit department' : 'Create a department'}
                 closeModal={toggleCreateModal}
                 modalSize="lg"
                 noFooter={true}
             >
-                <ValidationForm>
+                <ValidationForm onSubmit={(e) => { e.preventDefault();toggleEditConfirmModal();}}>
                     <div className="form-group">
-                        <label htmlFor="departmentName">Department name</label>
+                        <label htmlFor="departmentName"><b>Department name<span className="text-danger">*</span></b></label>
                         <TextInput
                             name="departmentName"
                             id="departmentName"
@@ -314,7 +315,7 @@ const Department = (): JSX.Element => {
                         <br />
                     </div>
                     <div className="form-group">
-                        <label htmlFor="trainerType">Select a HoD</label>
+                        <label htmlFor="trainerType"><b>Select a HoD<span className="text-danger">*</span></b></label>
                         <Select
                             theme={customSelectTheme}
                             defaultValue=""
@@ -325,15 +326,24 @@ const Department = (): JSX.Element => {
                             onChange={handleChange}
                         />
                     </div>
+                    <div className="form-group">
+                        <button disabled={disabledButton} className="btn btn-info float-right">
+                            Submit
+                        </button>
+                        <button className="btn btn-danger float-left" onClick={(e) => { e.preventDefault();toggleCreateModal();}}>
+                            Cancel
+                        </button>
+                    </div>
                 </ValidationForm>
-                <Col>
-                    <button disabled={disabledButton} className="btn btn-danger float-left" onClick={() => toggleCreateModal()}>
-                        Cancel
-                    </button>
-                    <button disabled={disabledButton} className="btn btn-info float-right" onClick={toggleEditConfirmModal}>
-                        Submit
-                    </button>
-                </Col>
+                {/*<Col>*/}
+                {/*    <button disabled={disabledButton} className="btn btn-danger float-left" onClick={() => toggleCreateModal()}>*/}
+                {/*        Cancel*/}
+                {/*    </button>*/}
+                {/*    <button disabled={disabledButton} className="btn btn-info float-right" onClick={toggleEditConfirmModal}>*/}
+                {/*        Submit*/}
+                {/*    </button>*/}
+                {/*</Col>*/}
+
             </ModalWrapper>
             <ConfirmationModalWrapper
                 disabled={disabledButton}

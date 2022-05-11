@@ -5,7 +5,7 @@ import { Button, Modal } from 'react-bootstrap';
 interface Props {
     children: any;
     show: boolean;
-    closeModal: () => void;
+    closeModal?: () => void;
     title: string;
     modalSize: string;
     submitButton?: boolean;

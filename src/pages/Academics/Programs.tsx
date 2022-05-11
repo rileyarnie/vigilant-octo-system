@@ -279,28 +279,30 @@ const Programs = (): JSX.Element => {
                 </>
             )}
             <ModalWrapper show={showModal} closeModal={toggleCreateModal} modalSize="lg" title="Create a program" noFooter>
-                <ValidationForm>
+                <ValidationForm onSubmit={(e) => { e.preventDefault();toggleConfirmModal();}}>
                     <div className="form-group">
                         <label htmlFor="name">
-                            <b>Program Name</b>
+                            <b>Program Name<span className="text-danger">*</span></b>
                         </label>
                         <TextInput
                             name="name"
                             id="name"
                             value={programName}
+                            required
                             type="text"
                             placeholder="Enter name"
                             onChange={(e) => setProgramName(e.target.value)}
                         />
                         <br />
                         <label htmlFor="description">
-                            <b>Description</b>
+                            <b>Description<span className="text-danger">*</span></b>
                         </label>
                         <TextInput
                             name="description"
                             id="desc"
                             multiline
                             rows="3"
+                            required
                             type="text"
                             value={description}
                             placeholder="enter description"
@@ -308,13 +310,14 @@ const Programs = (): JSX.Element => {
                         />
                         <br />
                         <label htmlFor="cou">
-                            <b>Prerequisite Documentation</b>
+                            <b>Prerequisite Documentation<span className="text-danger">*</span></b>
                         </label>
                         <TextInput
                             name="prerequisiteDocumentation"
                             id="prerequisiteDocumentation"
                             multiline
                             rows="3"
+                            required
                             value={prerequisiteDocumentation}
                             onChange={(e) => setPrerequisiteDocumentation(e.target.value)}
                             type="textarea"
@@ -322,7 +325,7 @@ const Programs = (): JSX.Element => {
                         />
                         <br />
                         <label htmlFor="certificationType">
-                            <b>Certification Type</b>
+                            <b>Certification Type<span className="text-danger">*</span></b>
                         </label>
                         <br />
                         <Select
@@ -337,7 +340,7 @@ const Programs = (): JSX.Element => {
                         />
                         <br />
                         <label htmlFor="tiimetablelable">
-                            <b>Department</b>
+                            <b>Department<span className="text-danger">*</span></b>
                         </label>
                         <br />
                         <Select
@@ -352,7 +355,7 @@ const Programs = (): JSX.Element => {
                         />
                         <br />
                         <label htmlFor="requiresClearance">
-                            <b>Requires Clearance</b>
+                            <b>Requires Clearance<span className="text-danger">*</span></b>
                         </label>
                         <br />
                         <Select
@@ -368,12 +371,13 @@ const Programs = (): JSX.Element => {
                         <br />
                         <br />
                         <label htmlFor="duration">
-                            <b>Program duration</b>
+                            <b>Program duration<span className="text-danger">*</span></b>
                         </label>
                         <br />
                         <TextInput
                             name="duration"
                             value={duration}
+                            required
                             id="programDuration"
                             type="textarea"
                             placeholder="Enter program duration e.g 4w2d"
@@ -382,15 +386,13 @@ const Programs = (): JSX.Element => {
                         <br />
                         <br />
                     </div>
+                    <div className="form-group">
+                        <button className="btn btn-info float-right">Submit</button>
+                        <button className="btn btn-danger float-left" onClick={handleClose}>
+                            Close
+                        </button>
+                    </div>
                 </ValidationForm>
-                <Col>
-                    <button className="btn btn-info float-right" onClick={toggleConfirmModal}>
-                        Submit
-                    </button>
-                    <button className="btn btn-danger float-danger" onClick={handleClose}>
-                        Close
-                    </button>
-                </Col>
             </ModalWrapper>
             <ConfirmationModalWrapper
                 disabled={disabledButton}

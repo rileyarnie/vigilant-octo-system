@@ -375,7 +375,7 @@ const TrainerList = (): JSX.Element => {
             <ModalWrapper show={showModal} closeModal={toggleCreateModal} modalSize="lg" title="Create a trainer" noFooter>
                 <ValidationForm>
                     <div className="form-group">
-                        <label htmlFor="user">Select staff</label>
+                        <label htmlFor="user">Select staff<span className="text-danger">*</span></label>
                         <Select
                             theme={customSelectTheme}
                             defaultValue=""
@@ -389,7 +389,7 @@ const TrainerList = (): JSX.Element => {
                         <br />
                     </div>
                     <div className="form-group">
-                        <label htmlFor="department">Select a department</label>
+                        <label htmlFor="department">Select a department<span className="text-danger">*</span></label>
                         <Select
                             theme={customSelectTheme}
                             defaultValue=""
@@ -404,7 +404,7 @@ const TrainerList = (): JSX.Element => {
                     </div>
 
                     <div className="form-group">
-                        <label htmlFor="trainerType">Select Trainer type</label>
+                        <label htmlFor="trainerType">Select Trainer type<span className="text-danger">*</span></label>
                         <Select
                             theme={customSelectTheme}
                             defaultValue=""
@@ -430,7 +430,7 @@ const TrainerList = (): JSX.Element => {
             <ModalWrapper title="Edit Trainer" show={showEditModal} closeModal={toggleEditModal} modalSize="lg" noFooter>
                 <ValidationForm>
                     <div className="form-group">
-                        <label htmlFor="staff">Select a staff</label>
+                        <label htmlFor="staff">Select a staff<span className="text-danger">*</span></label>
                         <Select
                             theme={customSelectTheme}
                             defaultValue={!selectedTrainer ? '' : selectedTrainer.stf_name}
@@ -444,7 +444,7 @@ const TrainerList = (): JSX.Element => {
                     </div>
 
                     <div className="form-group">
-                        <label htmlFor="department">Select a department</label>
+                        <label htmlFor="department">Select a department<span className="text-danger">*</span></label>
                         <Select
                             theme={customSelectTheme}
                             defaultValue=""
@@ -458,7 +458,7 @@ const TrainerList = (): JSX.Element => {
                     </div>
 
                     <div className="form-group">
-                        <label htmlFor="trainerType">Select Trainer type</label>
+                        <label htmlFor="trainerType">Select Trainer type<span className="text-danger">*</span></label>
                         <Select
                             theme={customSelectTheme}
                             defaultValue={!selectedTrainer ? '' : trainerType}

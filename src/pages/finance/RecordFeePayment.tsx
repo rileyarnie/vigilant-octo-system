@@ -1,7 +1,6 @@
 import React, {useState} from 'react';
-import {Button, Col, Form, FormControl, Modal, Row} from 'react-bootstrap';
-import ModalWrapper from '../../App/components/modal/ModalWrapper';
-import {FileInput, ValidationForm} from 'react-bootstrap4-form-validation';
+import {Button, Modal} from 'react-bootstrap';
+import {FileInput, TextInput, ValidationForm} from 'react-bootstrap4-form-validation';
 import {Alerts, ToastifyAlerts} from '../lib/Alert';
 import {StudentFeesManagementService} from '../../services/StudentFeesManagementService';
 import ConfirmationModalWrapper from '../../App/components/modal/ConfirmationModalWrapper';
@@ -35,7 +34,6 @@ const RecordFeePayment: React.FunctionComponent<Props> = (props) => {
                 setEvidenceUrl(res['data']);
             })
             .catch((error) => {
-                console.log(error);
                 alerts.showError(error.message);
             });
     };
@@ -60,7 +58,6 @@ const RecordFeePayment: React.FunctionComponent<Props> = (props) => {
                 toggleCloseConfirmModal();
                 alerts.showError(error.response.data);
             });
-        console.log('Data to be sent', createFeeRecord);
     };
     const toggleUploadModal = () => {
         showUploadModal ? setShowUploadModal(false) : setShowUploadModal(true);
@@ -73,64 +70,66 @@ const RecordFeePayment: React.FunctionComponent<Props> = (props) => {
     };
     return (
         <>
-            <ModalWrapper
+            <Modal
                 show={props.show}
-                closeModal={props.closeModal}
-                title="Record Fee Item"
-                modalSize="lg"
-                submitButton
-                submitFunction={toggleConfirmModal}
+                onHide={props.closeModal}
+                size="lg"
+                backdrop="static"
+                aria-labelledby="contained-modal-title-vcenter"
+                centered
             >
-                <Form>
-                    <Form.Group controlId="formAmount">
-                        <Row style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                            <Col sm={3}>Amount:</Col>
-                            <Col sm={9}>
-                                <FormControl
-                                    type="number"
-                                    onChange={(e) => {
-                                        setAmount(e.target.value);
-                                    }}
-                                    placeholder="Enter Amount"
-                                />
-                            </Col>
-                        </Row>
-                    </Form.Group>
-                    <Form.Group controlId="formAmount">
-                        <Row style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                            <Col sm={3}>Narrative:</Col>
-                            <Col sm={9}>
-                                <FormControl
-                                    type="text"
-                                    as="textarea"
-                                    onChange={(e) => {
-                                        setNarrative(e.target.value);
-                                    }}
-                                    placeholder="Enter Narrative"
-                                />
-                            </Col>
-                        </Row>
-                    </Form.Group>
-                    <Form.Group controlId="formAmount">
-                        <Row style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                            <Col sm={3}>Supporting Documents:</Col>
-                            <Col sm={9}>
-                                <Button
-                                    className="btn btn-danger"
-                                    onClick={(e) => {
-                                        e.preventDefault();
-                                        setShowUploadModal(true);
-                                    }}
-                                >
-                                    {' '}
-                                    Add Document
-                                </Button>
-                                <br />
-                            </Col>
-                        </Row>
-                    </Form.Group>
-                </Form>
-            </ModalWrapper>
+                <Modal.Header closeButton>
+                    <Modal.Title id="contained-modal-title-vcenter"><h6>Record Fee Item</h6></Modal.Title>
+                </Modal.Header>
+                <Modal.Body>
+                    <ValidationForm onSubmit={(e) => { e.preventDefault();toggleConfirmModal();}}>
+                        <div className="form-group">
+                            <label htmlFor="Amount"><b>Amount<span className="text-danger">*</span></b></label>
+                            <TextInput
+                                name="campusName"
+                                id="campusName"
+                                type="text"
+                                required
+                                onChange={(e) => {
+                                    setAmount(e.target.value);
+                                }}
+                                placeholder="Enter Amount"
+                            />
+                            <br/>
+                            <label htmlFor="Amount"><b>Narrative<span className="text-danger">*</span></b></label>
+                            <TextInput
+                                name="Narrative"
+                                id="Narrative"
+                                type="text"
+                                required
+                                onChange={(e) => {
+                                    setNarrative(e.target.value);
+                                }}
+                                placeholder="Enter Narrative"
+                            />
+                            <br/>
+                            <label htmlFor="Amount"><b>Narrative<span className="text-danger">*</span></b></label><br/>
+                            <Button
+                                className="btn btn-danger"
+                                onClick={(e) => {
+                                    e.preventDefault();
+                                    setShowUploadModal(true);
+                                }}
+                            >
+                                {' '}
+                                Add Document
+                            </Button>
+                            <br />
+                        </div>
+                        <div className="form-group">
+                            <button className="btn btn-info float-right">Submit</button>
+                            <button className="btn btn-danger float-left" onClick={props.closeModal}>
+                                Close
+                            </button>
+                        </div>
+                    </ValidationForm>
+                </Modal.Body>
+            </Modal>
             <Modal
                 backdrop="static"
                 show={showUploadModal}

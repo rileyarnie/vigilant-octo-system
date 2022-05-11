@@ -79,10 +79,8 @@ class CreateVenue extends Component<Props> {
                 this.toggleCloseConfirmModal();
             })
             .catch((error) => {
-                //handle error using logging library
                 this.setState({ disabled: false });
                 this.toggleCloseConfirmModal();
-                console.error(error);
                 alerts.showError(error.message);
             });
     };
@@ -105,10 +103,10 @@ class CreateVenue extends Component<Props> {
                             <Card.Body>
                                 <Row>
                                     <Col md={12}>
-                                        <ValidationForm onErrorSubmit={this.handleErrorSubmit}>
+                                        <ValidationForm onSubmit={(e) => { e.preventDefault();this.toggleConfirmModal();}}>
                                             <div className="form-group">
                                                 <label htmlFor="name">
-                                                    <b>Name of Venue</b>
+                                                    <b>Name of Venue<span className="text-danger">*</span></b>
                                                 </label>
                                                 <TextInput
                                                     name="name"
@@ -120,7 +118,7 @@ class CreateVenue extends Component<Props> {
                                                 />
                                                 <br />
                                                 <label htmlFor="description">
-                                                    <b>Description</b>
+                                                    <b>Description<span className="text-danger">*</span></b>
                                                 </label>
                                                 <br />
                                                 <TextInput
@@ -134,7 +132,7 @@ class CreateVenue extends Component<Props> {
                                                 <br />
                                                 <br />
                                                 <label htmlFor="description">
-                                                    <b>Capacity</b>
+                                                    <b>Capacity<span className="text-danger">*</span></b>
                                                 </label>
                                                 <TextInput
                                                     name="capacity"
@@ -148,7 +146,7 @@ class CreateVenue extends Component<Props> {
                                                 />
                                                 <br />
                                                 <label htmlFor="name">
-                                                    <b>Campus</b>
+                                                    <b>Campus<span className="text-danger">*</span></b>
                                                 </label>
                                                 <Select
                                                     theme={customSelectTheme}
@@ -160,15 +158,13 @@ class CreateVenue extends Component<Props> {
                                                 />
                                                 &nbsp;&nbsp;&nbsp;
                                             </div>
+                                            <div className="form-group">
+                                                <button disabled={this.state.disabled} className="btn btn-info float-right">Submit</button>
+                                                <button disabled={this.state.disabled} className="btn btn-danger float-left" onClick={() => this.props.setModal(false)}>
+                                                    Cancel
+                                                </button>
+                                            </div>
                                         </ValidationForm>
-                                        <Col>
-                                            <button disabled={this.state.disabled} className="btn btn-info float-right" onClick={this.toggleConfirmModal}>
-                                                Submit
-                                            </button>
-                                            <button disabled={this.state.disabled} className="btn btn-danger float-left" onClick={() => this.props.setModal(false)}>
-                                                Cancel
-                                            </button>
-                                        </Col>
                                     </Col>
                                 </Row>
                             </Card.Body>

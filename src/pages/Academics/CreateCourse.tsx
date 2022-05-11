@@ -179,10 +179,10 @@ class CourseCreation extends Component<Props> {
                             <Card.Body>
                                 <Row>
                                     <Col md={12}>
-                                        <ValidationForm onErrorSubmit={this.handleErrorSubmit}>
+                                        <ValidationForm onSubmit={(e) => { e.preventDefault();this.toggleConfirmModal();}}>
                                             <div className="form-group">
                                                 <label htmlFor="name">
-                                                    <b>Name of course</b>
+                                                    <b>Name of course<span className="text-danger">*</span></b>
                                                 </label>
                                                 <TextInput
                                                     name="name"
@@ -207,7 +207,7 @@ class CourseCreation extends Component<Props> {
                                                 />
                                                 <p />
                                                 <label htmlFor="description">
-                                                    <b>Description</b>
+                                                    <b>Description<span className="text-danger">*</span></b>
                                                 </label>
                                                 <TextInput
                                                     name="description"
@@ -222,7 +222,7 @@ class CourseCreation extends Component<Props> {
                                                 />
                                                 <br />
                                                 <label htmlFor="department">
-                                                    <b>Department</b>
+                                                    <b>Department<span className="text-danger">*</span></b>
                                                 </label>
                                                 <br />
                                                 <Select
@@ -237,7 +237,7 @@ class CourseCreation extends Component<Props> {
                                                 />
                                                 <br />
                                                 <label htmlFor="trainingHours">
-                                                    <b>Training Hours</b>
+                                                    <b>Training Hours<span className="text-danger">*</span></b>
                                                 </label>
                                                 <TextInput
                                                     name="trainingHours"
@@ -250,7 +250,7 @@ class CourseCreation extends Component<Props> {
                                                 />
                                                 <br />
                                                 <label htmlFor="courseOutline">
-                                                    <b>Course outline</b>
+                                                    <b>Course outline<span className="text-danger">*</span></b>
                                                 </label>
                                                 <Editor
                                                     // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
@@ -260,7 +260,7 @@ class CourseCreation extends Component<Props> {
                                                     onEditorStateChange={this.onEditorStateChange}
                                                 />
                                                 <label htmlFor="timetablelable">
-                                                    <b>Timetablable?</b>
+                                                    <b>Timetablable?<span className="text-danger">*</span></b>
                                                 </label>
                                                 <br />
                                                 <br />
@@ -271,7 +271,7 @@ class CourseCreation extends Component<Props> {
                                                 </SelectGroup>
                                                 <br />
                                                 <label htmlFor="needsTechnicalAssistant">
-                                                    <b>Needs Technical Assistant?</b>
+                                                    <b>Needs Technical Assistant?<span className="text-danger">*</span></b>
                                                 </label>
                                                 <br />
                                                 <Select
@@ -286,7 +286,7 @@ class CourseCreation extends Component<Props> {
                                                 />
                                                 <br />
                                                 <label htmlFor="isElective">
-                                                    <b>Is Elective?</b>
+                                                    <b>Is Elective?<span className="text-danger">*</span></b>
                                                 </label>
                                                 <br />
                                                 <Select
@@ -301,23 +301,17 @@ class CourseCreation extends Component<Props> {
                                                 />
                                                 <br />
                                             </div>
+                                            <div className="form-group">
+                                                <button className="btn btn-info float-right">Submit</button>
+                                                <button
+                                                    disabled={this.state.disabled}
+                                                    className="btn btn-danger float-left"
+                                                    onClick={(e) =>{e.preventDefault(); this.props.setModal(false);}}
+                                                >
+                                                    Cancel
+                                                </button>
+                                            </div>
                                         </ValidationForm>
-                                        <Col>
-                                            <button
-                                                disabled={this.state.disabled}
-                                                className="btn btn-info float-right"
-                                                onClick={this.toggleConfirmModal}
-                                            >
-                                                Submit
-                                            </button>
-                                            <button
-                                                disabled={this.state.disabled}
-                                                className="btn btn-danger float-left"
-                                                onClick={() => this.props.setModal(false)}
-                                            >
-                                                Cancel
-                                            </button>
-                                        </Col>
                                     </Col>
                                 </Row>
                             </Card.Body>
