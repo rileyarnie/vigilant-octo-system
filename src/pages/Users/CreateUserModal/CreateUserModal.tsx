@@ -1,10 +1,8 @@
 /* eslint-disable react/prop-types */
 import React, { useState } from 'react';
-import { Button, Modal } from 'react-bootstrap';
+import { Modal } from 'react-bootstrap';
 import { Row, Col } from 'react-bootstrap';
 import { ValidationForm, TextInput } from 'react-bootstrap4-form-validation';
-import validator from 'validator';
-
 import { Alerts, ToastifyAlerts } from '../../lib/Alert';
 import { authnzAxiosInstance } from '../../../utlis/interceptors/authnz-interceptor';
 import ConfirmationModalWrapper from '../../../App/components/modal/ConfirmationModalWrapper';
@@ -43,10 +41,6 @@ const CreateUserModal = (props): JSX.Element => {
                 alerts.showError(error.message);
             });
     };
-
-    const handleErrorSubmit = (e, _formData, errorInputs) => {
-        console.error(errorInputs);
-    };
     const toggleConfirmModal = () => {
         setConfirmModal(true);
     };
@@ -68,38 +62,29 @@ const CreateUserModal = (props): JSX.Element => {
                             <Col>
                                 <Row>
                                     <Col md={12}>
-                                        <ValidationForm onErrorSubmit={handleErrorSubmit}>
+                                        <ValidationForm onSubmit={(e) => { e.preventDefault();toggleConfirmModal();}}>
                                             <div className="form-group">
                                                 <label htmlFor="email">
-                                                    <b>Enter AAD Alias</b>
+                                                    <b>Enter AAD Alias<span className="text-danger">*</span></b>
                                                 </label>
                                                 <TextInput
                                                     name="email"
                                                     id="email"
                                                     type="email"
-                                                    placeholder="user@miog.co.ke"
-                                                    validator={validator.isEmail}
+                                                    required
+                                                    placeholder="user@kpc.co.ke"
                                                     errorMessage={{ validator: 'Please enter a valid email' }}
                                                     value={email}
                                                     onChange={handleChange}
-                                                />
-                                                &nbsp;&nbsp;&nbsp;
+                                                /><br/><br/>
                                             </div>
-
                                             <div className="form-group">
-                                                <Button
-                                                    disabled={disabled}
-                                                    className="float-right"
-                                                    variant="info"
-                                                    onClick={toggleConfirmModal}
-                                                >
-                                                    Submit
-                                                </Button>
+                                                <button disabled={disabled} className="btn btn-info float-right">Submit</button>
+                                                <button disabled={disabled} className="btn btn-danger float-left" onClick={(e) =>{ e.preventDefault();props.onHide();}}>
+                                                    Cancel
+                                                </button>
                                             </div>
                                         </ValidationForm>
-                                        <button disabled={disabled} className="btn btn-danger float-left" onClick={() => props.onHide()}>
-                                            Cancel
-                                        </button>
                                     </Col>
                                 </Row>
                             </Col>

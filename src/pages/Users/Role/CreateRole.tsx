@@ -14,7 +14,6 @@ const alerts: Alerts = new ToastifyAlerts();
 interface IProps {
     fetchRoles: () => void;
 }
-
 const CreateRole = (props: IProps): JSX.Element => {
     const [confirmModal, setConfirmModal] = useState(false);
     const [roleName, setRoleName] = useState('');
@@ -69,7 +68,7 @@ const CreateRole = (props: IProps): JSX.Element => {
                     <div>
                         <Row>
                             <Col md={12}>
-                                <ValidationForm onSubmit={handleRoleSubmit}>
+                                <ValidationForm onSubmit={(e) => { e.preventDefault();toggleConfirmModal();}}>
                                     <div className="form-group">
                                         <label htmlFor="email">
                                             <b>Enter Role Name</b>
@@ -78,6 +77,7 @@ const CreateRole = (props: IProps): JSX.Element => {
                                             name="name"
                                             id="name"
                                             type="text"
+                                            required
                                             placeholder="Role name"
                                             validator={validator.isAlphanumeric}
                                             errorMessage={{ validator: 'Please enter a valid Role name' }}
@@ -93,12 +93,21 @@ const CreateRole = (props: IProps): JSX.Element => {
                                             name="description"
                                             id="description"
                                             type="text"
+                                            required
+                                            multiline
+                                            rows="3"
                                             placeholder="Role description"
                                             validator={!validator.isAlphanumeric}
                                             errorMessage={{ validator: 'Please enter a valid Role description' }}
                                             value={roleDescription}
                                             onChange={(e) => handleRoleChange(e, 'description')}
                                         />
+                                    </div>
+                                    <div className="form-group">
+                                        <button disabled={disabled} className="btn btn-info float-right">Submit</button>
+                                        <button disabled={disabled} className="btn btn-danger float-left" onClick={(e) => { e.preventDefault();setShowCreateModal(false);}}>
+                                            Cancel
+                                        </button>
                                     </div>
                                 </ValidationForm>
                             </Col>
@@ -107,12 +116,12 @@ const CreateRole = (props: IProps): JSX.Element => {
                 </Modal.Body>
                 <Modal.Footer>
                     <Col>
-                        <Button disabled={disabled} className="float-right" variant="info" onClick={toggleConfirmModal}>
-                            Submit
-                        </Button>
-                        <Button disabled={disabled} className="float-left" variant="danger" onClick={() => setShowCreateModal(false)}>
-                            Cancel
-                        </Button>
+                        {/*<Button disabled={disabled} className="float-right" variant="info" onClick={toggleConfirmModal}>*/}
+                        {/*    Submit*/}
+                        {/*</Button>*/}
+                        {/*<Button disabled={disabled} className="float-left" variant="danger" onClick={() => setShowCreateModal(false)}>*/}
+                        {/*    Cancel*/}
+                        {/*</Button>*/}
                     </Col>
                 </Modal.Footer>
             </Modal>

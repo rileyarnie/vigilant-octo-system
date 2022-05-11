@@ -16,7 +16,6 @@ const CreateUser = (props: IProps): JSX.Element => {
                     Create User
                 </Button>
             )}
-
             <CreateUserModal
                 show={modalShow}
                 onHide={() => setModalShow(false)}

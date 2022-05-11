@@ -155,7 +155,7 @@ export function EditApplicationDetails(props) {
                         <div className="col-md-2"> </div>
                         <div className="col-md-4">
                             <label htmlFor="firstName">
-                                <b>First Name</b>
+                                <b>First Name<span className="text-danger">*</span></b>
                             </label>
                             <br />
                             <TextInput
@@ -171,7 +171,7 @@ export function EditApplicationDetails(props) {
                             />
                             <br />
                             <label htmlFor="lastName">
-                                <b>Last Name</b>
+                                <b>Last Name<span className="text-danger">*</span></b>
                             </label>
                             <br />
                             <TextInput
@@ -204,7 +204,7 @@ export function EditApplicationDetails(props) {
                         </div>
                         <div className="col-md-4">
                             <label htmlFor="phoneNumber">
-                                <b>Phone Number</b>
+                                <b>Phone Number<span className="text-danger">*</span></b>
                             </label>
                             <br />
                             <TextInput
@@ -220,7 +220,7 @@ export function EditApplicationDetails(props) {
                             />
                             <br />
                             <label htmlFor="identificationType">
-                                <b>Identification Type</b>
+                                <b>Identification Type<span className="text-danger">*</span></b>
                             </label>
                             <br />
                             <SelectGroup
@@ -242,7 +242,7 @@ export function EditApplicationDetails(props) {
                             </SelectGroup>
                             <br />
                             <label htmlFor="identification">
-                                <b>Identification Number</b>
+                                <b>Identification Number<span className="text-danger">*</span></b>
                             </label>
                             <br />
                             <TextInput
@@ -256,6 +256,10 @@ export function EditApplicationDetails(props) {
                                 }}
                                 type="text"
                             />
+                            <br />
+                            <label htmlFor="email">
+                                <b>Email Address<span className="text-danger">*</span></b>
+                            </label>
                             <br />
                             <TextInput
                                 name="Email"
@@ -280,7 +284,7 @@ export function EditApplicationDetails(props) {
                         <div className="col-md-2"> </div>
                         <div className="col-md-4">
                             <label htmlFor="gender">
-                                <b>Gender</b>
+                                <b>Gender<span className="text-danger">*</span></b>
                             </label>
                             <SelectGroup
                                 defaultValue={gender}
@@ -299,7 +303,7 @@ export function EditApplicationDetails(props) {
                             </SelectGroup>
                             <br />
                             <label htmlFor="religion">
-                                <b>Religion</b>
+                                <b>Religion<span className="text-danger">*</span></b>
                             </label>
                             <br />
                             <SelectGroup
@@ -321,7 +325,7 @@ export function EditApplicationDetails(props) {
                             </SelectGroup>
                             <br />
                             <label htmlFor="maritalStatus">
-                                <b>Marital Status</b>
+                                <b>Marital Status<span className="text-danger">*</span></b>
                             </label>
                             <br />
                             <SelectGroup
@@ -345,7 +349,7 @@ export function EditApplicationDetails(props) {
                         </div>
                         <div className="col-md-4">
                             <label htmlFor="nationality">
-                                <b>Nationality</b>
+                                <b>Nationality<span className="text-danger">*</span></b>
                             </label>
                             <br />
                             <SelectGroup
@@ -556,7 +560,7 @@ export function EditApplicationDetails(props) {
                             {nationality === 'kenyan' ? (
                                 <>
                                     <label htmlFor="maritalStatus">
-                                        <b>County of Residence</b>
+                                        <b>County of Residence<span className="text-danger">*</span></b>
                                     </label>
                                     <br />
                                     <SelectGroup
@@ -624,7 +628,7 @@ export function EditApplicationDetails(props) {
                             )}
                             <br />
                             <label htmlFor="dateOfBirth">
-                                <b>Date of Birth</b>
+                                <b>Date of Birth<span className="text-danger">*</span></b>
                             </label>
                             <br />
                             <TextInput
@@ -650,7 +654,7 @@ export function EditApplicationDetails(props) {
                         <div className="col-md-2"> </div>
                         <div className="col-md-4">
                             <label htmlFor="name">
-                                <b>Name</b>
+                                <b>Name<span className="text-danger">*</span></b>
                             </label>
                             <br />
                             <br />
@@ -666,7 +670,7 @@ export function EditApplicationDetails(props) {
                             />
                             <br />
                             <label htmlFor="phoneNumber">
-                                <b>Phone Number</b>
+                                <b>Phone Number<span className="text-danger">*</span></b>
                             </label>
                             <br />
                             <br />
@@ -684,7 +688,7 @@ export function EditApplicationDetails(props) {
                         </div>
                         <div className="col-md-4">
                             <label htmlFor="relation">
-                                <b>Relation</b>
+                                <b>Relation<span className="text-danger">*</span></b>
                             </label>
                             <br />
                             <br />
@@ -710,7 +714,7 @@ export function EditApplicationDetails(props) {
                         <div className="col-md-2"> </div>
                         <div className="col-md-4">
                             <label htmlFor="courseStartDate">
-                                <b>Preferred Start Date</b>
+                                <b>Preferred Start Date<span className="text-danger">*</span></b>
                             </label>
                             <br />
                             <br />
@@ -726,7 +730,7 @@ export function EditApplicationDetails(props) {
                             />
                             <br />
                             <label htmlFor="campus">
-                                <b>Preferred Campus</b>
+                                <b>Preferred Campus<span className="text-danger">*</span></b>
                             </label>
                             <br />
                             <SelectGroup
@@ -752,7 +756,7 @@ export function EditApplicationDetails(props) {
                         </div>
                         <div className="col-md-4">
                             <label htmlFor="campus">
-                                <b>Sponsor</b>
+                                <b>Sponsor<span className="text-danger">*</span></b>
                             </label>
                             <br />
                             <SelectGroup
@@ -772,7 +776,7 @@ export function EditApplicationDetails(props) {
                             </SelectGroup>
                             <br />
                             <label htmlFor="physicalChallenges">
-                                <b>Physical Challenges</b>
+                                <b>Physical Challenges<span className="text-danger">*</span></b>
                             </label>
                             <br />
                             <TextInput
@@ -788,7 +792,7 @@ export function EditApplicationDetails(props) {
                             />
                             <br />
                             <label htmlFor="countryOfResidence">
-                                <b>Supporting Documents</b>
+                                <b>Supporting Documents<span className="text-danger">*</span></b>
                             </label>
                             <br />
                             <br />

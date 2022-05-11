@@ -17,7 +17,6 @@ import ModalWrapper from '../../App/components/modal/ModalWrapper';
 import CustomSwitch from '../../assets/switch/CustomSwitch';
 
 const alerts: Alerts = new ToastifyAlerts();
-
 const VenueList = (): JSX.Element => {
     const [disabled, setDisabled] = useState(false);
     const [switchStatus,setSwitchStatus] = useState<boolean>();

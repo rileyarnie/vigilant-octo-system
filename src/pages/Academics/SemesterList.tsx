@@ -4,7 +4,7 @@ import Edit from '@material-ui/icons/Edit';
 import {LinearProgress} from '@material-ui/core';
 import Alert from '@material-ui/lab/Alert';
 import Breadcrumb from '../../App/components/Breadcrumb';
-import { Button, Card, Col, Row } from 'react-bootstrap';
+import { Button, Card, Col, Modal, Row } from 'react-bootstrap';
 import { TextInput, ValidationForm } from 'react-bootstrap4-form-validation';
 import { Alerts, ToastifyAlerts } from '../lib/Alert';
 import { canPerformActions } from '../../services/ActionChecker';
@@ -13,7 +13,6 @@ import { timetablingAxiosInstance } from '../../utlis/interceptors/timetabling-i
 import TableWrapper from '../../utlis/TableWrapper';
 import ConfirmationModalWrapper from '../../App/components/modal/ConfirmationModalWrapper';
 import CustomSwitch from '../../assets/switch/CustomSwitch';
-import ModalWrapper from '../../App/components/modal/ModalWrapper';
 
 const alerts: Alerts = new ToastifyAlerts();
 
@@ -192,7 +191,6 @@ const SemesterList = (): JSX.Element => {
         setSelectedSemesterName('');
         setModal(false);
     };
-
     const toggleCreateModal = () => {
         showModal ? resetStateCloseModal() : setModal(true);
     };
@@ -275,66 +273,76 @@ const SemesterList = (): JSX.Element => {
                     </Row>
                 </>
             )}
-
-            <ModalWrapper
+            <Modal
                 show={showModal}
-                modalSize="lg"
-                closeModal={toggleCreateModal}
-                title={semesterId ? `Edit ${getName(selectedSemester?.name, semesterId)}` : 'Create a Semester'}
-                submitButton
-                submitFunction={toggleConfirmModal}
+                onHide={toggleCreateModal}
+                size="lg"
+                backdrop="static"
+                aria-labelledby="contained-modal-title-vcenter"
+                centered
             >
-                <ValidationForm>
-                    <div className="form-group">
-                        <label htmlFor="name">
-                            <b>Semester name</b>
-                        </label>
-                        <TextInput
-                            name="semesterName"
-                            id="semesterName"
-                            type="text"
-                            required
-                            defaultValue={getName(selectedSemester?.name, semesterId)}
-                            onChange={(e) => {
-                                setSemesterName(e.target.value);
-                            }}
-                        />
-                        <br />
-                        <label htmlFor="Date">
-                            <b>Start Date</b>
-                        </label>
-                        <br />
-                        <TextInput
-                            name="startDate"
-                            id="startDate"
-                            type="date"
-                            min={today}
-                            required
-                            defaultValue={getStartDate(selectedSemester?.startDate, semesterId)}
-                            onChange={(e) => {
-                                setStartDate(e.target.value);
-                            }}
-                        />
-                        <br />
-                        <label htmlFor="Date">
-                            <b>End Date</b>
-                        </label>
-                        <br />
-                        <TextInput
-                            name="endDate"
-                            id="endDate"
-                            type="date"
-                            min={today && startDate}
-                            required
-                            defaultValue={getEndDate(selectedSemester?.endDate, semesterId)}
-                            onChange={(e) => {
-                                setEndDate(e.target.value);
-                            }}
-                        />
-                        <br />
-                    </div>
-                </ValidationForm>
-            </ModalWrapper>
+                <Modal.Header closeButton>
+                    <Modal.Title id="contained-modal-title-vcenter">{semesterId ? `Edit ${getName(selectedSemester?.name, semesterId)}` : 'Create a Semester'}</Modal.Title>
+                </Modal.Header>
+                <Modal.Body>
+                    <ValidationForm onSubmit={(e) => { e.preventDefault();toggleConfirmModal();}}>
+                        <div className="form-group">
+                            <label htmlFor="name">
+                                <b>Semester name <span className="text-danger">*</span></b>
+                            </label>
+                            <TextInput
+                                name="semesterName"
+                                id="semesterName"
+                                type="text"
+                                required
+                                defaultValue={getName(selectedSemester?.name, semesterId)}
+                                onChange={(e) => {
+                                    setSemesterName(e.target.value);
+                                }}
+                            />
+                            <br />
+                            <label htmlFor="Date">
+                                <b>Start Date<span className="text-danger">*</span></b>
+                            </label>
+                            <br />
+                            <TextInput
+                                name="startDate"
+                                id="startDate"
+                                type="date"
+                                min={today}
+                                required
+                                defaultValue={getStartDate(selectedSemester?.startDate, semesterId)}
+                                onChange={(e) => {
+                                    setStartDate(e.target.value);
+                                }}
+                            />
+                            <br />
+                            <label htmlFor="Date">
+                                <b>End Date<span className="text-danger">*</span></b>
+                            </label>
+                            <br />
+                            <TextInput
+                                name="endDate"
+                                id="endDate"
+                                type="date"
+                                min={today && startDate}
+                                required
+                                defaultValue={getEndDate(selectedSemester?.endDate, semesterId)}
+                                onChange={(e) => {
+                                    setEndDate(e.target.value);
+                                }}
+                            />
+                            <br />
+                        </div>
+                        <div className="form-group">
+                            <button className="btn btn-info float-right">Submit</button>
+                            <button className="btn btn-danger float-left" onClick={(e) => { e.preventDefault();toggleCreateModal();}}>
+                            Cancel
+                            </button>
+                        </div>
+                    </ValidationForm>
+                </Modal.Body>
+            </Modal>
             <ConfirmationModalWrapper
                 disabled={disabledButton}
                 submitButton
