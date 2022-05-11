@@ -1,7 +1,14 @@
+import Config from '../../config';
+import getAccessToken from '../../pages/lib/getToken';
+import publicClientApplication from '../../pages/lib/initializeMSAL';
+
 import handleLogout from '../Logout';
 
-export function onRequestMade(requestConfig) {
-    requestConfig.headers.authorization = `Bearer ${sessionStorage.getItem('idToken')}`;
+export async function onRequestMade(requestConfig) {
+    const idToken = await getAccessToken(publicClientApplication, Config.scopes);
+    const tokenFromStorage = sessionStorage.getItem('idToken');
+    const accessToken = tokenFromStorage === idToken ? idToken : tokenFromStorage;
+    requestConfig.headers.authorization = `Bearer ${accessToken}`;
     return requestConfig;
 }
 
