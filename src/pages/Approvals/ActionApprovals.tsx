@@ -6,7 +6,6 @@ import {Alerts, ToastifyAlerts} from '../lib/Alert';
 import {WorkFlowService} from '../../services/WorkFlowService';
 import TableWrapper from '../../utlis/TableWrapper';
 import ConfirmationModalWrapper from '../../App/components/modal/ConfirmationModalWrapper';
-
 interface Approval {
     id: number;
     action_name: string;
@@ -71,7 +70,7 @@ const ActionApprovals = () => {
     }
     const handleApprove = (actionApprovalId:number) => {
         const approvalStatus = {
-            approvalStatus: 'approved'
+            actionApprovalStatus: 'approved'
         };
         WorkFlowService.handleApprovals(actionApprovalId, approvalStatus)
             .then(() => {
@@ -90,7 +89,7 @@ const ActionApprovals = () => {
         setLinearDisplay('block');
         setDisabled(true);
         const approvalStatus = {
-            approvalStatus: 'rejected'
+            actionApprovalStatus: 'rejected'
         };
         WorkFlowService.handleApprovals(actionApprovalId, approvalStatus)
             .then(() => {
