@@ -41,7 +41,7 @@ function roleList(): JSX.Element {
         { title: 'Role Name', field: 'name', editable: 'always' as const },
         { title: 'Role Description', field: 'description', editable: 'always' as const },
         { title: 'Activation Status', field: 'activationStatus', editable: 'never' as const },
-        { title: 'Created On', render: (row: Role): string => row.createdOn.slice(0,10), editable: 'never' as const },
+        { title: 'Created On', render: (row: Role): string => row.createdOn?.slice(0,10), editable: 'never' as const },
         {
             title: ' Actions',
             render: (row: Role) => (

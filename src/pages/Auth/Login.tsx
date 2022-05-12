@@ -2,7 +2,6 @@
 /* eslint-disable camelcase */
 // eslint-disable-next-line no-use-before-define
 import React, { useContext, useState, useEffect } from 'react';
-import { PublicClientApplication } from '@azure/msal-browser';
 import { Alerts, ToastifyAlerts } from '../lib/Alert';
 import { getAADUserDetails } from '../lib/GraphService';
 import { AuthContext } from '../../App/context/AuthContext';
@@ -12,6 +11,8 @@ import LinearProgress from '@mui/material/LinearProgress';
 import background from '../../assets/images/staffbg.jpg';
 import logo from '../../assets/images/logo-dark.png';
 import Config from '../../config';
+import publicClientApplication from '../lib/initializeMSAL';
+import getAccessToken from '../lib/getToken';
 
 const alerts: Alerts = new ToastifyAlerts();
 const Login = () => {
@@ -36,20 +37,6 @@ const Login = () => {
         }
     }, [userInfo]);
 
-    // Initialize MSAL Object
-    const publicClientApplication = new PublicClientApplication({
-        auth: {
-            clientId: Config.appId,
-            redirectUri: Config.redirectUri,
-            authority: Config.authority,
-            navigateToLoginRequestUrl: false
-        },
-        cache: {
-            cacheLocation: 'localStorage',
-            storeAuthStateInCookie: true
-        }
-    });
-
     const login = async () => {
         setLinearDisplay('block');
         setDisabled(true);
@@ -60,7 +47,6 @@ const Login = () => {
             alerts.showError(err.message);
             setLinearDisplay('none');
             setDisabled(false);
-            console.log(err);
         }
     };
 
@@ -80,39 +66,6 @@ const Login = () => {
             console.log('error from login AAD function', error);
             throw new Error('We received an error from AAD, please ensure pop ups are enabled and try again');
         }
-    };
-
-    const getAccessToken = async (publicClientApplication: PublicClientApplication, scopes: any) => {
-        try {
-            const silentResult = await publicClientApplication.acquireTokenSilent({
-                account: publicClientApplication.getAllAccounts()[0],
-                scopes: scopes
-            });
-            sessionStorage.setItem('idToken', silentResult.idToken);
-            return silentResult.accessToken;
-        } catch (err) {
-            if (isInteractionRequired(err)) {
-                console.log('error fetching access token from AAD. Retrying interactively', err);
-                const interactiveResult = await publicClientApplication.acquireTokenPopup({
-                    scopes: scopes
-                });
-                sessionStorage.setItem('idToken', interactiveResult.idToken);
-                return interactiveResult.accessToken;
-            }
-            throw new Error('AAD failed to provide the token for your session. Please try again');
-        }
-    };
-
-    const isInteractionRequired = (error: any) => {
-        if (!error.message || error.message.length <= 0) {
-            return false;
-        }
-        return (
-            error.message.indexOf('constent_required') > -1 ||
-            error.message.indexOf('interaction_required') > -1 ||
-            error.message.indexOf('login_required') > -1 ||
-            error.message.indexOf('no_account_in_silent_request') > -1
-        );
     };
 
     const fetchUserDetails: any = async () => {
