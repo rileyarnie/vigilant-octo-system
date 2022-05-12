@@ -320,12 +320,12 @@ const ProgramCohorts = (): JSX.Element => {
             .then(() => {
                 alerts.showSuccess('Successfully updated Cohort');
                 fetchProgramCohorts();
-                resetStateCloseModal();
             })
             .catch((error) => {
                 alerts.showError(error.message);
             })
             .finally(() => {
+                resetStateCloseModal();
                 setLinearDisplay('none');
                 setDisabledButton(false);
             });
@@ -367,15 +367,14 @@ const ProgramCohorts = (): JSX.Element => {
         ProgramCohortService.cancelProgramCohort(cohortId, cancelletionData)
             .then(() => {
                 alerts.showSuccess('Successfully cancelled a program cohort');
-                toggleCancelModal();
-                toggleCloseConfirmModal();
-                setLinearDisplay('none');
             })
             .catch((error) => {
+
+                alerts.showError(error.response.data);
+            }).finally(() =>{
+                setLinearDisplay('none');
                 toggleCancelModal();
                 toggleCloseConfirmModal();
-                alerts.showError(error.response.data);
-                setLinearDisplay('none');
             });
     }
 
@@ -506,10 +505,10 @@ const ProgramCohorts = (): JSX.Element => {
             >
                 <Row>
                     <Col sm={8}>
-                        <ValidationForm>
+                        <ValidationForm onSubmit={(e) => { e.preventDefault();toggleConfirmModal();}}>
                             <div className="form-group">
                                 <label htmlFor="cohortName">
-                                    <b>{cohortId ? 'Select a program' : 'Select a new program for this cohort'}</b>
+                                    <b>{cohortId ? 'Select a program' : 'Select a new program for this cohort'}<span className="text-danger">*</span></b>
                                 </label>
                                 <Select
                                     theme={customSelectTheme}
@@ -522,7 +521,7 @@ const ProgramCohorts = (): JSX.Element => {
                                 />
                                 <br />
                                 <label htmlFor="cohortName">
-                                    <b>{cohortId ? 'Select a campus' : 'Select a new campus for this cohort'}</b>
+                                    <b>{cohortId ? 'Select a campus' : 'Select a new campus for this cohort'}<span className="text-danger">*</span></b>
                                 </label>
                                 <Select
                                     theme={customSelectTheme}
@@ -535,7 +534,7 @@ const ProgramCohorts = (): JSX.Element => {
                                 />
                                 <br />
                                 <label htmlFor="Date">
-                                    <b>Start Date</b>
+                                    <b>Start Date<span className="text-danger">*</span></b>
                                 </label>
                                 <br />
                                 <TextInput
@@ -550,7 +549,7 @@ const ProgramCohorts = (): JSX.Element => {
                                 />
                                 <br />
                                 <label htmlFor="Date">
-                                    <b>Anticipated Graduation Date</b>
+                                    <b>Anticipated Graduation Date<span className="text-danger">*</span></b>
                                 </label>
                                 <br />
                                 <TextInput
@@ -572,7 +571,7 @@ const ProgramCohorts = (): JSX.Element => {
                                 />
                                 <br />
                                 <label htmlFor="cohortName">
-                                    <b>Description</b>
+                                    <b>Description<span className="text-danger">*</span></b>
                                 </label>
                                 <TextInput
                                     name="description"
@@ -590,7 +589,7 @@ const ProgramCohorts = (): JSX.Element => {
                                 />
                                 <br />
                                 <label htmlFor="numOfSlots">
-                                    <b>Number of slots</b>
+                                    <b>Number of slots<span className="text-danger">*</span></b>
                                 </label>
                                 <TextInput
                                     name="numberOfSlots"
@@ -605,7 +604,7 @@ const ProgramCohorts = (): JSX.Element => {
                                 />
                                 <br />
                                 <label htmlFor="cohortName">
-                                    <b>Banner Image</b>
+                                    <b>Banner Image<span className="text-danger">*</span></b>
                                 </label>
                                 <br />
                                 <button
@@ -620,20 +619,15 @@ const ProgramCohorts = (): JSX.Element => {
                             </div>
                             <input name="banner" id="banner" type="hidden" required value={banner} />
                             <br />
+                            <div className="form-group">
+                                <button className="btn btn-info float-right">
+                                    Submit
+                                </button>
+                                <button className="btn btn-danger float-left" onClick={(e) => { e.preventDefault();toggleCreateModal();}}>
+                                    Cancel
+                                </button>
+                            </div>
                         </ValidationForm>
-                        <div className="form-group">
-                            <button className="btn btn-info float-right" onClick={toggleConfirmModal}>
-                                Submit
-                            </button>
-                            <button
-                                className="btn btn-danger float-left"
-                                onClick={() => {
-                                    toggleCreateModal();
-                                }}
-                            >
-                                Cancel
-                            </button>
-                        </div>
                     </Col>
                     <Col sm={4}>
                         <CardPreview

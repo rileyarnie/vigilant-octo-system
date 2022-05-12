@@ -39,10 +39,19 @@ const TableWrapper = ({ title, data, columns, options, ...props }): JSX.Element 
             data={data}
             columns={columns}
             icons={tableIcons}
-            options={{ ...options, pageSize: 50, headerStyle: { backgroundColor: '#242e3e', color: '#b5bdca', fontWeight: 'bold' } }}
+            options={{
+                ...options,
+                emptyRowsWhenPaging: false,
+                pageSize: 10,
+                // eslint-disable-next-line react/prop-types
+                pageSizeOptions: [5, 10, 20, 50, { value: data?.length, label: 'View All' }],
+                headerStyle: { backgroundColor: '#242e3e', color: '#b5bdca', fontWeight: 'bold' }
+            }}
             {...props}
         />
     );
 };
 
 export default TableWrapper;
+
+

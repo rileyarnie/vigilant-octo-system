@@ -20,7 +20,7 @@ export class WorkFlowService {
         return await authnzAxiosInstance.get('/action-approvals/mine', {params:{actionApprovalStatus: 'pending'}});
     }
 
-    static async handleApprovals(actionApprovalId: number, approvalStatus: Approval): Promise<void> {
-        return await authnzAxiosInstance.put(`/action-approvals/${actionApprovalId}`, approvalStatus);
+    static async handleApprovals(actionApprovalId: number, actionApprovalStatus: Approval): Promise<void> {
+        return await authnzAxiosInstance.put(`/action-approvals/${actionApprovalId}`, actionApprovalStatus);
     }
 }
