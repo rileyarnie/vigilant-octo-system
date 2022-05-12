@@ -32,7 +32,7 @@ const UpdateStaffModal = (props): JSX.Element => {
     const handleNameChange = (event) => {
         setName(event.target.value);
     };
-    
+
     const handleSubmit = (e) => {
         e.preventDefault();
         //submit function here
@@ -67,6 +67,7 @@ const UpdateStaffModal = (props): JSX.Element => {
 
     return (
         <Modal {...props} size="lg" aria-labelledby="contained-modal-title-vcenter" centered backdrop="static">
+            {console.log('props', props)}
             <Modal.Header closeButton>
                 <Modal.Title id="contained-modal-title-vcenter">Update Staff</Modal.Title>
             </Modal.Header>
@@ -86,10 +87,14 @@ const UpdateStaffModal = (props): JSX.Element => {
                                                     <b>User</b>
                                                 </label>
                                                 <Select
-                                                    options={props.users ? props.users.map(user => ({
-                                                        value: user.id,
-                                                        label: user.aadAlias
-                                                    })) : []}
+                                                    options={
+                                                        props.users
+                                                            ? props.users.map((user) => ({
+                                                                value: user.id,
+                                                                label: user.aadAlias
+                                                            }))
+                                                            : []
+                                                    }
                                                     isClearable={true}
                                                     isSearchable={true}
                                                     placeholder="Select User"
