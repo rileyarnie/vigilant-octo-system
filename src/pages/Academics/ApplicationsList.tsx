@@ -196,7 +196,7 @@ const ApplicationsList = (): JSX.Element => {
                                         setNationality(row.applications_nationality);
                                         setPhysicalChallenges(row.applications_physicalChallenges);
                                         setCourseStartDate(row.applications_courseStartDate.slice(0, 10));
-                                        setCampus(row.applications_campus);
+                                        setCampus(row.campus[0]?.name);
                                         setSponsor(row.applications_sponsor);
                                         setCountryOfResidence(row.applications_countryOfResidence);
                                         setProgramCohortId(row.applications_programCohortId);
