@@ -25,6 +25,8 @@ const Department = (): JSX.Element => {
         id: number;
         isActive: boolean;
         activationStatus: boolean;
+        hodTrainerId: number
+
     }
 
     const columns = [
@@ -61,6 +63,7 @@ const Department = (): JSX.Element => {
             )
         }
     ];
+    const deptAssigned = [];
     const options = [];
     const [status, setStatus] = useState(false);
     const [confirmModal, setConfirmModal] = useState(false);
@@ -69,9 +72,9 @@ const Department = (): JSX.Element => {
     const [deptname, setDeptName] = useState('');
     const [showModal, setModal] = useState(false);
     const [deptId, setDeptId] = useState(null);
-    const [hod, setHod] = useState(null);
+    const [hod, setHod] = useState(0);
     const [selectedDeptName, setSelectedDeptName] = useState('');
-    const [selectedHoD, setSelectedHoD] = useState(null);
+    const [selectedHoD, setSelectedHoD] = useState(0);
     const [users, setUsers] = useState([]);
     const [editConfirm, setEditConfirm] = useState(false);
     const [isActive, setIsActive] = useState(false);
@@ -84,6 +87,12 @@ const Department = (): JSX.Element => {
     const handleActivationStatusToggle = (event, row: department) => {
         setStatus(!row.activationStatus);
     };
+    const assignedDept: { hodTrainerId: number }[] = [
+        { hodTrainerId: selectedHoD}
+    ];
+    assignedDept.map((dpt) => {
+        return deptAssigned.push({ value: dpt.hodTrainerId, label: dpt.hodTrainerId });
+    });
     const handleToggleStatusSubmit = () => {
         setLinearDisplay('block');
         const departmentStatus = {
@@ -104,7 +113,6 @@ const Department = (): JSX.Element => {
             })
             .catch((error) => {
                 setDisabledButton(false);
-                console.error(error);
                 alerts.showError(error.message);
                 setDisabled(false);
             })
@@ -122,7 +130,6 @@ const Department = (): JSX.Element => {
                 setData(res.data);
             })
             .catch((error) => {
-                console.error(error);
                 alerts.showError(error.message);
                 setLinearDisplay('none');
             });
@@ -190,7 +197,7 @@ const Department = (): JSX.Element => {
         e.preventDefault();
         const updates = {
             name: deptname === '' ? selectedDeptName : deptname,
-            hodTrainerID: selectedHoD,
+            hodTrainerId: hod === 0 ? selectedHoD : hod,
             isActive: isActive
         };
         updateDepartment(deptId, updates);
@@ -315,10 +322,10 @@ const Department = (): JSX.Element => {
                         <br />
                     </div>
                     <div className="form-group">
-                        <label htmlFor="trainerType"><b>Select a HoD<span className="text-danger">*</span></b></label>
+                        <label htmlFor="trainerType"><b>Select a HoD</b></label>
                         <Select
                             theme={customSelectTheme}
-                            defaultValue=""
+                            defaultValue={deptAssigned}
                             options={options}
                             isMulti={false}
                             placeholder="Select a HOD."
@@ -335,15 +342,6 @@ const Department = (): JSX.Element => {
                         </button>
                     </div>
                 </ValidationForm>
-                {/*<Col>*/}
-                {/*    <button disabled={disabledButton} className="btn btn-danger float-left" onClick={() => toggleCreateModal()}>*/}
-                {/*        Cancel*/}
-                {/*    </button>*/}
-                {/*    <button disabled={disabledButton} className="btn btn-info float-right" onClick={toggleEditConfirmModal}>*/}
-                {/*        Submit*/}
-                {/*    </button>*/}
-                {/*</Col>*/}
-
             </ModalWrapper>
             <ConfirmationModalWrapper
                 disabled={disabledButton}
