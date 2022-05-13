@@ -135,7 +135,7 @@ const CampusList = (): JSX.Element => {
                 alerts.showError(error.message);
             })
             .finally(() => {
-                setDisabledButton(true);
+                setDisabledButton(false);
                 setLinearDisplay('block');
                 resetStateCloseModal();
             });
@@ -182,7 +182,7 @@ const CampusList = (): JSX.Element => {
                 alerts.showError(error.message);
             })
             .finally(() => {
-                setDisabledButton(true);
+                setDisabledButton(false);
                 setLinearDisplay('block');
             });
     };
