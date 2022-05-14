@@ -126,6 +126,8 @@ class CreateVenue extends Component<Props> {
                                                     id="description"
                                                     type="textarea"
                                                     required
+                                                    multiline
+                                                    rows="3"
                                                     placeholder="Enter description"
                                                     onChange={this.handleChange}
                                                 />
