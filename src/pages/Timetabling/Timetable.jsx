@@ -42,7 +42,7 @@ const priorities = [
         id: 2,
         color: '#ff9747',
     },
-];
+]
 
 class Timetable extends React.Component {
     courseCohortData = []
@@ -78,14 +78,14 @@ class Timetable extends React.Component {
             timeTabledUnitErrors: [],
             timetableDataWithErrors: [],
             itemsWithColor: [],
-            priorityId: 2
-
+            priorityId: 2,
+            disablePublishButton: false
         }
         this.onAppointmentRemove = this.onAppointmentRemove.bind(this)
         this.onAppointmentFormOpening = this.onAppointmentFormOpening.bind(this)
         this.onAppointmentAdd = this.onAppointmentAdd.bind(this)
         this.timeTabledUnitsWithErrors = this.timeTabledUnitsWithErrors.bind(this)
-        //this.onVenueChanged = this.onVenueChanged.bind(this);
+        //this.onVenueChanged = this.onVenueChanged.bind(this)
         //this.handleEdit()
         //this.courseCohortData
 
@@ -99,14 +99,24 @@ class Timetable extends React.Component {
     }
     componentDidUpdate(prevProps, prevState) {
         if (prevState.timeTabledUnitErrors !== this.state.timeTabledUnitErrors || prevState.timetableData !== this.state.timetableData) {
-            this.timeTabledUnitsWithErrors(this.state.timetableData, this.state.timeTabledUnitErrors);
+            this.timeTabledUnitsWithErrors(this.state.timetableData, this.state.timeTabledUnitErrors)
         }
     }
+
+    /** Check if timetable has errors */
+    checkTimeTableErrors() {
+        // find if timetable has errors and disable publish button
+        const conflictFound = this.state.timeTabledUnitErrors.find(error => error?.errors?.length > 0)
+
+        this.setState({ disablePublishButton: conflictFound ? true : false })
+    }
+
     fetchTimetableUnitErrors = (semesterId) => {
         TimetableService.getTimetableUnitErrors(semesterId)
             .then((res) => {
                 const errors = res.data
                 this.setState({ timeTabledUnitErrors: errors })
+                this.checkTimeTableErrors() // check timetable for errors/conflicts
             })
     }
     fetchCourseCohorts = (loadExtras, semesterId) => {
@@ -148,7 +158,7 @@ class Timetable extends React.Component {
                 console.error(error)
                 alerts.showError(error.message)
             })
-    };
+    }
 
 
     timeTabledUnitsWithErrors(timeTabledUnits, timeTabledUnitErrors) {
@@ -160,7 +170,7 @@ class Timetable extends React.Component {
         // const itemsWithColor=items.map(item=>item.errors.length>0?({...item,item.color:"#ff0000"}):({{...item,item.color:"#000ff0"}})}
         for (let i = 0; i < items.length; i++) {
             if (items[i].errors?.length > 0) {
-                itemsWithColor.push({ ...items[i], color: "#ff97471" })
+                itemsWithColor.push({ ...items[i], color: '#ff97471' })
             }
             else {
                 itemsWithColor.push({ ...items[i], priorityId: 2 })
@@ -179,7 +189,7 @@ class Timetable extends React.Component {
                 console.error(error)
                 alerts.showError(error.message)
             })
-    };
+    }
     sumNumSession = () => {
         return this.state.courseCohort.map(t => {
             t.totalNumSessions = 0
@@ -194,6 +204,7 @@ class Timetable extends React.Component {
         if (index >= 0) {
             this.state.timetableDataWithErrors.splice(index, 1)
             this.state.courseCohort.push(e.itemData)
+            this.checkTimeTableErrors() // check timetable for errors/conflicts
             this.setState({
                 courseCohort: [...this.state.courseCohort],
                 timetableDataWithErrors: [...this.state.timetableDataWithErrors]
@@ -216,7 +227,7 @@ class Timetable extends React.Component {
             colorId: this.state.colorId,
         }
 
-        this.state.tempTimetableUnit.push(timetableUnit); // push to temporally array
+        this.state.tempTimetableUnit.push(timetableUnit) // push to temporally array
 
         // save timetableUnit to the database
         TimetableService.createTimetableUnit(timetableUnit).then(() => {
@@ -235,7 +246,7 @@ class Timetable extends React.Component {
         const totalDurationInHours = (totalDurationBeforeLatestAdd / 60)
 
         // check if all hours have been exhausted on the timetable
-        const removeCoursesFromList = expectedTrainingHours === totalDurationInHours || totalDurationInHours > expectedTrainingHours;
+        const removeCoursesFromList = expectedTrainingHours === totalDurationInHours || totalDurationInHours > expectedTrainingHours
         if (!removeCoursesFromList) { console.log('Don\'t remove courses from the side, add more units') }
 
         // remove the course from the side list only if all hours have been met
@@ -250,6 +261,9 @@ class Timetable extends React.Component {
             timetableUnits: [...this.state.courseCohort],
             timetableDataWithErrors: [...this.state.timetableDataWithErrors]
         })
+
+        // check timetable for errors/conflicts
+        this.checkTimeTableErrors()
     }
 
     async onAppointmentFormOpening(e) {
@@ -295,7 +309,7 @@ class Timetable extends React.Component {
                 },
                 dataField: 'startDate',
                 editorType: 'dxDateBox',
-                itemTemplate: "TestTextInput",
+                itemTemplate: 'TestTextInput',
                 editorOptions: {
                     width: '100%',
                     type: 'time',
@@ -377,11 +391,12 @@ class Timetable extends React.Component {
         TimetableService.updateTimetableUnit(updatedTimetablingUnit)
             .then(() => {
                 alerts.showSuccess('Timetable updated successfully')
+                this.checkTimeTableErrors() // check timetable for errors/conflicts
             })
             .catch((error) => {
                 console.error(error)
                 // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
-                alerts.showError('Couldnt update Timetable')
+                alerts.showError('Couldn\'t update Timetable')
             })
     }
     onListDragStart(e) {
@@ -424,7 +439,14 @@ class Timetable extends React.Component {
     render() {
         return (
             <React.Fragment>
-                {this.state.semesterId ? <Button onClick={() => this.publishTimetable()} className="float-right" variant="danger" style={{ transform: `translateX(${-40}px)` }} >Publish Timetable</Button> : ''}
+                {this.state.semesterId ?
+                    <Button
+                        disabled={this.state.disablePublishButton}
+                        onClick={() => this.publishTimetable()}
+                        className="float-right" variant="danger"
+                        style={{ transform: `translateX(${-40}px)` }}> Publish Timetable</Button>
+                    : ''
+                }
                 <div className="option">
                     <span className="text-center"><b>Select a semester</b></span>
                     <SelectBox
