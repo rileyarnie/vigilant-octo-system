@@ -471,10 +471,11 @@ class Timetable extends React.Component {
                     views={['day', 'week', 'workWeek']}
                     defaultCurrentView="week"
                     firstDayOfWeek={1}
+                    cellDuration={60}
                     defaultCurrentDate={currentDate}
                     height={600}
-                    startDayHour={0}
-                    endDayHour={24}
+                    startDayHour={8}
+                    endDayHour={17}
                     editing={true}
                     appointmentTooltipComponent={AppointmentTooltip}
                     onAppointmentFormOpening={this.onAppointmentFormOpening}
