@@ -16,6 +16,7 @@ import {simsAxiosInstance} from '../../utlis/interceptors/sims-interceptor';
 import TableWrapper from '../../utlis/TableWrapper';
 import { Link } from 'react-router-dom';
 import { MenuItem, Select} from '@material-ui/core';
+import ChangeExamCutOffModal from './ChangeExamCutOffModal';
 import CustomSwitch from '../../assets/switch/CustomSwitch';
 import ConfirmationModalWrapper from '../../App/components/modal/ConfirmationModalWrapper';
 
@@ -32,13 +33,15 @@ const useStyles = makeStyles((theme: Theme) =>
     })
 );
 function ProgramCohortSemesters(props: { history: { goBack: () => void } }) {
-    const [selectedRow,setselectedRow] = useState<{id:number}>();
+    const [selectedRow,setselectedRow] = useState<{id:number, programCohortSemesterId:number, programCohortSemester:{id:number}}>();
     const [disabled, setDisabled] = useState(false);
     const [activationModal, setActivationModal] = useState(false);
     const [switchStatus,setSwitchStatus] = useState<boolean>();
+    const [showCutOffModal, setShowCutOffModal] = useState<boolean>();
     function handleCloseActivationModal () {
         setActivationModal(false);
     }
+    const [programCohortSemesterId, setProgramCohortSemesterId] = useState(0);
 
     
     async function updatePCS(pcsId: number, updates:unknown){
@@ -89,6 +92,15 @@ function ProgramCohortSemesters(props: { history: { goBack: () => void } }) {
                             fetchTranscript(parseInt(programCohortId), row.id);
                         }}>
                         <MenuItem value="download">Download Transcript</MenuItem>
+                    </a>
+                    <br></br>
+                    <a className="btn btn btn-link"
+                        onClick={() => {
+                            setselectedRow(row);
+                            setProgramCohortSemesterId(row.programCohortSemesterId);
+                            setShowCutOffModal(true);
+                        }}>
+                        <MenuItem value="download">Change Exam Cut Off Date</MenuItem>
                     </a>
                 </Select>
             )
@@ -145,17 +157,17 @@ function ProgramCohortSemesters(props: { history: { goBack: () => void } }) {
                 const ccData = res['data'];
                 setLinearDisplay('none');
                 const uniqueSemIds = ccData
-                    .map((v: CourseCohort) => v.programCohortSemester?.semesterId)
+                    .map((v: CourseCohort) => v?.programCohortSemester?.semesterId)
                     .filter((value: any, index: any, self: string | any[]) => self.indexOf(value) === index);
                 const semesterData = uniqueSemIds.map((semId: number) => {
-                    const cc = ccData.filter((v: CourseCohort) => v.programCohortSemester?.semester.id === semId)[0];
+                    const cc = ccData.filter((v: CourseCohort) => v?.programCohortSemester?.semester?.id === semId)[0];
                     return {
-                        id: cc.programCohortSemester?.semester.id,
-                        name: cc.programCohortSemester?.semester.name,
-                        startDate: cc.programCohortSemester?.semester.startDate,
-                        endDate: cc.programCohortSemester?.semester.endDate,
-                        programCohortId: cc.programCohortId,
-                        programCohortSemesterId: cc.programCohortSemesterId
+                        id: cc?.programCohortSemester?.semester.id,
+                        name: cc?.programCohortSemester?.semester.name,
+                        startDate: cc?.programCohortSemester?.semester.startDate,
+                        endDate: cc?.programCohortSemester?.semester.endDate,
+                        programCohortId: cc?.programCohortId,
+                        programCohortSemesterId: cc?.programCohortSemesterId,
                     };
                 });
                 setData(semesterData);
@@ -224,6 +236,14 @@ function ProgramCohortSemesters(props: { history: { goBack: () => void } }) {
                     </Card>
                 </Col>
             </Row>
+
+            <ChangeExamCutOffModal 
+                programCohortSemesterId={programCohortSemesterId}
+                showCutOffModal={showCutOffModal}         
+                setShowModal = {setShowCutOffModal}    
+                modalTitle= {`Change ${programName} of ${anticipatedGraduation} semester Exam Cut Off Date`}
+            >                
+            </ChangeExamCutOffModal>
         </>
     );
 }
