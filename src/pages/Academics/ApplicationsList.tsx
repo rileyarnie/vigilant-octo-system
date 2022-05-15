@@ -112,15 +112,8 @@ const ApplicationsList = (): JSX.Element => {
         const message = admissionStatus === 'ADMITTED' ? 'The application has been accepted' : 'The application has been rejected';
         setDisabled(true);
         setLinearDisplay('block');
-        const admissionsPayload = {
-            modifiedProgramCohortApplication: {
-                application: {
-                    status: admissionStatus
-                }
-            }
-        };
         simsAxiosInstance
-            .put(`/program-cohort-applications/${applicationId}`, admissionsPayload)
+            .put(`/program-cohort-applications/${applicationId}/status`, {status: admissionStatus})
             .then(() => {
                 setDisabled(false);
                 setLinearDisplay('none');
