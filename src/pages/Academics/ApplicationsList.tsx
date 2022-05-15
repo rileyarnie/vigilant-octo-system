@@ -1,19 +1,19 @@
 /* eslint-disable react/display-name */
-import React, {useEffect, useState} from 'react';
-import {MTableToolbar} from 'material-table';
-import {MenuItem, Select} from '@material-ui/core';
-import {Link} from 'react-router-dom';
+import React, { useEffect, useState } from 'react';
+import { MTableToolbar } from 'material-table';
+import { MenuItem, Select } from '@material-ui/core';
+import { Link } from 'react-router-dom';
 import Alert from '@material-ui/lab/Alert';
 import Breadcrumb from '../../App/components/Breadcrumb';
-import {Button, Card, Col, ListGroup, Modal, Row} from 'react-bootstrap';
-import {FileInput, ValidationForm} from 'react-bootstrap4-form-validation';
-import {Alerts, ToastifyAlerts} from '../lib/Alert';
+import { Button, Card, Col, ListGroup, Modal, Row } from 'react-bootstrap';
+import { FileInput, ValidationForm } from 'react-bootstrap4-form-validation';
+import { Alerts, ToastifyAlerts } from '../lib/Alert';
 import LinearProgress from '@mui/material/LinearProgress';
-import {TimetableService} from '../../services/TimetableService';
-import {canPerformActions} from '../../services/ActionChecker';
-import {ACTION_GET_PROGRAM_COHORT_APPLICATIONS} from '../../authnz-library/sim-actions';
-import {simsAxiosInstance} from '../../utlis/interceptors/sims-interceptor';
-import {timetablingAxiosInstance} from '../../utlis/interceptors/timetabling-interceptor';
+import { TimetableService } from '../../services/TimetableService';
+import { canPerformActions } from '../../services/ActionChecker';
+import { ACTION_GET_PROGRAM_COHORT_APPLICATIONS } from '../../authnz-library/sim-actions';
+import { simsAxiosInstance } from '../../utlis/interceptors/sims-interceptor';
+import { timetablingAxiosInstance } from '../../utlis/interceptors/timetabling-interceptor';
 import TableWrapper from '../../utlis/TableWrapper';
 import EditApplicationDetails from './Application/EditApplicationDetails';
 
@@ -45,24 +45,23 @@ const ApplicationsList = (): JSX.Element => {
     const [otherName, setOtherName] = useState('');
     const [nationality, setNationality] = useState('');
     const [identification, setIdentification] = useState('');
-    const [identificationType, setIdentificationType] = useState('');
     const [gender, setGender] = useState('');
     const [maritalStatus, setMaritalStatus] = useState('');
     const [religion, setReligion] = useState('');
     const [dateOfBirth, setDateOfBirth] = useState('');
+    const [placeofBirth, setPlaceOfBirth] = useState('');
     const [phoneNumber, setPhoneNumber] = useState('');
     const [emailAddress, setEmailAddress] = useState('');
     const [nextOfKinName, setNextOfKinName] = useState('');
     const [nextOfKinPhoneNumber, setNextOfKinPhoneNumber] = useState('');
     const [nextOfKinRelation, setNextOfKinRelation] = useState('');
     const [physicalChallenges, setPhysicalChallenges] = useState('');
-    const [physicalChallengesDetails, setPhysicalChallengesDetails] = useState('');
-    const [preferredStartDate, setPreferredStartDate] = useState('');
+    const [courseStartDate, setCourseStartDate] = useState('');
     const [campus, setCampus] = useState('');
     const [fileUploaded, setFileUploaded] = useState('');
     const [programCohortId, setProgramCohortId] = useState('');
     const [sponsor, setSponsor] = useState('');
-    const [countyOfResidence, setCountyOfResidence] = useState('');
+    const [countryOfResidence, setCountryOfResidence] = useState('');
     const [documentsUrl, setDocumentsUrl] = useState('');
     const [applicationData, setApplicationData] = useState([]);
     const [applicationId, setApplicationId] = useState('');
@@ -110,6 +109,7 @@ const ApplicationsList = (): JSX.Element => {
     }
     const handleAdmission = (e, admissionStatus: admissionStatus) => {
         e.preventDefault();
+        const message = admissionStatus === 'ADMITTED' ? 'The application has been accepted' : 'The application has been rejected';
         setDisabled(true);
         setLinearDisplay('block');
         const admissionsPayload = {
@@ -124,7 +124,7 @@ const ApplicationsList = (): JSX.Element => {
             .then(() => {
                 setDisabled(false);
                 setLinearDisplay('none');
-                alerts.showSuccess('Successfully updated application details');
+                alerts.showSuccess(message);
                 fetchProgramCohortApplications();
                 resetStateCloseModal();
             })
@@ -187,20 +187,19 @@ const ApplicationsList = (): JSX.Element => {
                                         setLastName(row.applications_lastName);
                                         setOtherName(row.applications_otherName);
                                         setIdentification(row.applications_identification);
-                                        setIdentificationType(row.applications_identificationType);
                                         setGender(row.applications_gender);
                                         setMaritalStatus(row.applications_maritalStatus);
                                         setReligion(row.applications_religion);
                                         setDateOfBirth(row.applications_dateOfBirth.slice(0, 10));
+                                        setPlaceOfBirth(row.applications_placeofBirth);
                                         setPhoneNumber(row.applications_phoneNumber);
                                         setEmailAddress(row.applications_emailAddress);
                                         setNationality(row.applications_nationality);
                                         setPhysicalChallenges(row.applications_physicalChallenges);
-                                        setPhysicalChallengesDetails(row.applications_physicalChallengesDetails);
-                                        setPreferredStartDate(row.applications_courseStartDate.slice(0, 10));
-                                        setCampus(row.campus[0]?.name);
+                                        setCourseStartDate(row.applications_courseStartDate.slice(0, 10));
+                                        setCampus(row.applications_campus);
                                         setSponsor(row.applications_sponsor);
-                                        setCountyOfResidence(row.applications_countyOfResidence);
+                                        setCountryOfResidence(row.applications_countryOfResidence);
                                         setProgramCohortId(row.applications_programCohortId);
                                         setIsAdmitted(row.applications_status);
                                         setNextOfKinName(row.nkd_name);
@@ -210,6 +209,7 @@ const ApplicationsList = (): JSX.Element => {
                                         setDocumentsUrl(row.sdocs_documentUrl);
                                     }}
                                     data={data}
+                                    //
                                     options={{
                                         rowStyle: (rowData) => ({
                                             backgroundColor: selectedRow === rowData.tableData.id ? '#EEE' : '#FFF'
@@ -302,7 +302,6 @@ const ApplicationsList = (): JSX.Element => {
                                 <ListGroup.Item>Last Name: {lastName}</ListGroup.Item>
                                 <ListGroup.Item>Other Name: {otherName}</ListGroup.Item>
                                 <ListGroup.Item>Nationality: {nationality}</ListGroup.Item>
-                                <ListGroup.Item>Identification Type: {identificationType}</ListGroup.Item>
                                 <ListGroup.Item>Identification: {identification}</ListGroup.Item>
                                 <ListGroup.Item>Gender: {gender}</ListGroup.Item>
                                 <ListGroup.Item>Marital Status: {maritalStatus}</ListGroup.Item>
@@ -312,14 +311,14 @@ const ApplicationsList = (): JSX.Element => {
                         </div>
                         <div className="col-md-6">
                             <ListGroup>
+                                <ListGroup.Item>Place of Birth: {placeofBirth}</ListGroup.Item>
                                 <ListGroup.Item>Phone Number: {phoneNumber}</ListGroup.Item>
                                 <ListGroup.Item>Email Address: {emailAddress}</ListGroup.Item>
                                 <ListGroup.Item>Physical Challenges: {physicalChallenges}</ListGroup.Item>
-                                <ListGroup.Item>Physical Challenges Details: {physicalChallengesDetails}</ListGroup.Item>
-                                <ListGroup.Item>Preferred Start Date: {preferredStartDate}</ListGroup.Item>
+                                <ListGroup.Item>Course Start Date: {courseStartDate}</ListGroup.Item>
                                 <ListGroup.Item>Campus: {campus}</ListGroup.Item>
                                 <ListGroup.Item>Sponsor: {sponsor}</ListGroup.Item>
-                                <ListGroup.Item>County Of Residence: {countyOfResidence}</ListGroup.Item>
+                                <ListGroup.Item>Country Of Residence: {countryOfResidence}</ListGroup.Item>
                             </ListGroup>
                         </div>
                     </Row>
@@ -360,7 +359,7 @@ const ApplicationsList = (): JSX.Element => {
                     <Modal.Title id="contained-modal-title-vcenter">Edit Application Details</Modal.Title>
                 </Modal.Header>
                 <Modal.Body>
-                    <EditApplicationDetails application={applicationData} close={resetStateCloseModal}/>
+                    <EditApplicationDetails application={applicationData} close={resetStateCloseModal} />
                 </Modal.Body>
             </Modal>
             <Modal
@@ -381,19 +380,18 @@ const ApplicationsList = (): JSX.Element => {
                             <FileInput
                                 name="fileUploaded"
                                 id="image"
-                                required
                                 encType="multipart/form-data"
                                 fileType={['pdf', 'doc', 'docx']}
-                                maxFileSize="2mb"
+                                maxFileSize="10mb"
                                 onInput={(e) => {
                                     setFileUploaded(() => {
                                         return e.target.files[0];
                                     });
                                 }}
                                 errorMessage={{
-                                    required: 'Please upload a (pdf) document',
-                                    fileType: 'Only pdf is allowed',
-                                    maxFileSize: 'Max file size is 2MB'
+                                    required: 'Please upload a document',
+                                    fileType: 'Only document is allowed',
+                                    maxFileSize: 'Max file size is 10MB'
                                 }}
                             />
                         </ValidationForm>
