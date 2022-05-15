@@ -16,6 +16,8 @@ import {simsAxiosInstance} from '../../utlis/interceptors/sims-interceptor';
 import TableWrapper from '../../utlis/TableWrapper';
 import { Link } from 'react-router-dom';
 import { MenuItem, Select} from '@material-ui/core';
+import CustomSwitch from '../../assets/switch/CustomSwitch';
+import ConfirmationModalWrapper from '../../App/components/modal/ConfirmationModalWrapper';
 
 const alerts: Alerts = new ToastifyAlerts();
 
@@ -30,12 +32,39 @@ const useStyles = makeStyles((theme: Theme) =>
     })
 );
 function ProgramCohortSemesters(props: { history: { goBack: () => void } }) {
+    const [selectedRow,setselectedRow] = useState<{id:number}>();
+    const [disabled, setDisabled] = useState(false);
+    const [activationModal, setActivationModal] = useState(false);
+    const [switchStatus,setSwitchStatus] = useState<boolean>();
+    function handleCloseActivationModal () {
+        setActivationModal(false);
+    }
+
+    
+    async function updatePCS(pcsId: number, updates:unknown){
+        setDisabled(true);
+        try {
+            try {
+                await simsAxiosInstance
+                    .put(`/program-cohort-semesters/${pcsId}/activation`, updates);
+                alerts.showSuccess('Successfully updated course cohort');
+                fetchProgramCohortSemester('semester', programCohortId);
+                setLinearDisplay('none');
+            } catch (error) {
+                alerts.showError((error as Error).message);
+            }
+        } finally {
+            setDisabled(false);
+            setActivationModal(false);
+        }
+    }
     const classes = useStyles();
     const columns = [
         { title: 'ID', field: 'id', editable: 'never' as const },
         { title: 'Name', field: 'name' },
         { title: 'Start Date', render: (rowData: { startDate: string | unknown[] }) => rowData?.startDate?.slice(0, 10) },
         { title: 'End Date', render: (rowData: { endDate: string | unknown[] }) => rowData?.endDate?.slice(0, 10) },
+
         {
             title: 'Action',
             render: (row) => (
@@ -63,6 +92,38 @@ function ProgramCohortSemesters(props: { history: { goBack: () => void } }) {
                     </a>
                 </Select>
             )
+        },
+        {
+            title: 'Activation Status',
+            field: 'internal_action',
+            render: (row) =>
+                (
+                    <>
+                        <CustomSwitch
+                            defaultChecked={row.activationStatus}
+                            color="secondary"
+                            inputProps={{'aria-label': 'controlled'}}
+                            checked={row.activationStatus}
+                            onChange={(event) => {
+                                setselectedRow(row);
+                                setActivationModal(true);
+                                setSwitchStatus(event.target.checked);
+                                
+                            }}
+                        />
+                        <ConfirmationModalWrapper
+                            disabled={disabled}
+                            submitButton
+                            submitFunction={() => updatePCS(selectedRow?.id,{activationStatus:switchStatus})}
+                            closeModal={handleCloseActivationModal}
+                            show={activationModal}
+                        >
+                            <h6 className="text-center">
+                                Are you sure you want to change the status of Program Cohort Semester Id: <>{selectedRow?.id}</> ?
+                            </h6>
+                        </ConfirmationModalWrapper>
+                    </>
+                )
         }
     ];
     const [errorMessages] = useState([]);
