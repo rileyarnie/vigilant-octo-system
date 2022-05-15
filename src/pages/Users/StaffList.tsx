@@ -90,6 +90,8 @@ const StaffList = (): JSX.Element => {
         { title: 'SN', field: 'id' },
         { title: 'Name', field: 'name' },
         { title: 'User', field: 'email' },
+        { title: 'Identification', field: 'identification' },
+        { title: 'Identification Type', field: 'identificationType' },
         {
             title: 'Actions',
             render: (row) => (
@@ -217,7 +219,6 @@ const StaffList = (): JSX.Element => {
     };
 
     const updateStaffHandler = () => {
-        console.log('submitting update details...');
         updateStaff({
             name: name,
             identification: identification,

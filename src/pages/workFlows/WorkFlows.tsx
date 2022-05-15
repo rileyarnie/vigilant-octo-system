@@ -9,10 +9,11 @@ import { getSimServiceActions } from '../../authnz-library/sim-actions';
 import { getFinanceServiceActions } from '../../authnz-library/finance-actions';
 import { getTimetablingServiceActions } from '../../authnz-library/timetabling-actions';
 import { WorkFlowService } from '../../services/WorkFlowService';
-import { LinearProgress } from '@material-ui/core';
+import { LinearProgress, MenuItem, Select } from '@material-ui/core';
 import { canPerformActions } from '../../services/ActionChecker';
 import TableWrapper from '../../utlis/TableWrapper';
 import ConfirmationModalWrapper from '../../App/components/modal/ConfirmationModalWrapper';
+import ModalWrapper from '../../App/components/modal/ModalWrapper';
 const alerts: Alerts = new ToastifyAlerts();
 
 const WorkFlows = (): JSX.Element => {
@@ -23,18 +24,28 @@ const WorkFlows = (): JSX.Element => {
             title: 'Actions',
             render: (row) =>
                 canPerformActions(ACTION_GET_ACTIONS_BY_ROLE_ID.name) && (
-                    <>
-                        <Button
-                            className="btn btn-info"
-                            size="sm"
-                            onClick={() => {
-                                setActionName(row.name);
-                                fetchActionApprovers(row.name);
-                            }}
-                        >
-                            Create Workflow
-                        </Button>
-                    </>
+                    <div>
+                        <Select defaultValue="" value="" labelId="demo-simple-select-label" id="demo-simple-select" style={{ width: 100 }}>
+                            <MenuItem
+                                onClick={() => {
+                                    setActionName(row.name);
+                                    fetchActionApprovers(row.name, 'create');
+                                }}
+                                value="createWorkflow"
+                            >
+                                Create Workflow
+                            </MenuItem>
+                            <MenuItem
+                                onClick={() => {
+                                    setActionName(row.name);
+                                    fetchActionApprovers(row.name, 'view');
+                                }}
+                                value="viewWorkflow"
+                            >
+                                View Workflow
+                            </MenuItem>
+                        </Select>
+                    </div>
                 )
         }
     ];
@@ -44,6 +55,7 @@ const WorkFlows = (): JSX.Element => {
         { title: 'Name', field: 'name' },
         { title: 'Description', field: 'description' }
     ];
+
     const options = [];
     const [iserror] = useState(false);
     const [actionName, setActionName] = useState('');
@@ -63,12 +75,13 @@ const WorkFlows = (): JSX.Element => {
     const [defaultValuesId, setDefaultValuesId] = useState([]);
     const [defaultCheckedRows, setDefaultCheckedRows] = useState([]);
     const [selectedRows, setSelectedRows] = useState([]);
+    const [showWorkflowModal, setShowWorkflowModal] = useState(false);
 
     useEffect(() => {
         fetchRoles();
     }, []);
 
-    function fetchActionApprovers(actionName: string) {
+    function fetchActionApprovers(actionName: string, type: string) {
         setLinearDisplay('block');
         setApprovers([]);
         WorkFlowService.fetchActionApprovers(actionName)
@@ -78,7 +91,7 @@ const WorkFlows = (): JSX.Element => {
                     return { value: it.role.id, label: it.role.name };
                 });
                 setApprovers(roles);
-                toggleCreateModal();
+                type === 'create' ? toggleCreateModal() : toggleWorkflowModal();
             })
             .catch(() => {
                 alerts.showError(`We couldn’t fetch the existing approving roles for ${actionName}, kindly try again.`);
@@ -175,6 +188,9 @@ const WorkFlows = (): JSX.Element => {
     const toggleCloseConfirmModal = () => {
         setConfirmModal(false);
     };
+
+    const toggleWorkflowModal = () => setShowWorkflowModal(!showWorkflowModal);
+
     return (
         <>
             <div>
@@ -236,6 +252,19 @@ const WorkFlows = (): JSX.Element => {
                     </Col>
                 </Modal.Footer>
             </Modal>
+            <ModalWrapper
+                title={`Actions assigned to ${actionName}`}
+                modalSize="lg"
+                show={showWorkflowModal}
+                closeModal={toggleWorkflowModal}
+            >
+                <TableWrapper
+                    title={`Assign actions to ${actionName}`}
+                    columns={modalColumns}
+                    data={defaultCheckedRows}
+                    options={{ showTextRowsSelected: false }}
+                />
+            </ModalWrapper>
             <ConfirmationModalWrapper
                 disabled={disabled}
                 submitButton
