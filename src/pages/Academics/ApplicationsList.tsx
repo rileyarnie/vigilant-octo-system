@@ -183,13 +183,13 @@ const ApplicationsList = (): JSX.Element => {
                                         setGender(row.applications_gender);
                                         setMaritalStatus(row.applications_maritalStatus);
                                         setReligion(row.applications_religion);
-                                        setDateOfBirth(row.applications_dateOfBirth.slice(0, 10));
+                                        setDateOfBirth(row?.applications_dateOfBirth?.slice(0, 10));
                                         setPlaceOfBirth(row.applications_placeofBirth);
                                         setPhoneNumber(row.applications_phoneNumber);
                                         setEmailAddress(row.applications_emailAddress);
                                         setNationality(row.applications_nationality);
                                         setPhysicalChallenges(row.applications_physicalChallenges);
-                                        setCourseStartDate(row.applications_courseStartDate.slice(0, 10));
+                                        setCourseStartDate(row?.applications_courseStartDate?.slice(0, 10));
                                         setCampus(row.applications_campus);
                                         setSponsor(row.applications_sponsor);
                                         setCountryOfResidence(row.applications_countryOfResidence);
