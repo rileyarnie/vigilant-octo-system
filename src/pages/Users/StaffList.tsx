@@ -174,6 +174,7 @@ const StaffList = (): JSX.Element => {
         setIdentification('');
         setName('');
         toggleUpdateStaffModal();
+        setDisabled(false);
     };
 
     const fetchUsers = () => {
