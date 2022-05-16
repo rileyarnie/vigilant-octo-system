@@ -22,7 +22,7 @@ const CoursesList = (): JSX.Element => {
     interface Course {
         name: string;
         id: number;
-        code: string;
+        codePrefix: string;
         prerequisiteCourses: string;
         description: string;
         trainingHours: number;
@@ -245,7 +245,7 @@ const CoursesList = (): JSX.Element => {
                 <Row>
                     <div className="col-md-6">
                         <ListGroup>
-                            <ListGroup.Item>Course Code: {`${selectedRow?.code}`}</ListGroup.Item>
+                            <ListGroup.Item>Course Code: {`${selectedRow?.codePrefix}-${selectedRow?.id}`}</ListGroup.Item>
                             <ListGroup.Item>Course Name: {`${selectedRow?.name}`}</ListGroup.Item>
                             <ListGroup.Item>Department: {`${selectedRow?.department?.name}`}</ListGroup.Item>
                             <ListGroup.Item>Course Description: {`${selectedRow?.description}`}</ListGroup.Item>
@@ -254,7 +254,7 @@ const CoursesList = (): JSX.Element => {
                     </div>
                     <div className="col-md-6">
                         <ListGroup>
-                            <ListGroup.Item>Approval Status Code: {`${selectedRow?.approval_status}`}</ListGroup.Item>
+                            <ListGroup.Item>Approval Status: {`${selectedRow?.approval_status?'Approved':'Not Approved'}`}</ListGroup.Item>
                             <ListGroup.Item>
                                 Needs Techincal Assistant: {`${selectedRow?.needsTechnicalAssistant ? 'Yes' : 'No'}`}
                             </ListGroup.Item>
