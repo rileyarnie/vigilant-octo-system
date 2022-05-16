@@ -1,18 +1,20 @@
 /* eslint-disable react/display-name */
-import React, {useEffect, useState} from 'react';
+import React, { useEffect, useState } from 'react';
 import Alert from '@material-ui/lab/Alert';
 import Breadcrumb from '../../App/components/Breadcrumb';
-import {Button, Card, Col, Modal, Row} from 'react-bootstrap';
+import { Button, Card, Col, ListGroup, Modal, Row } from 'react-bootstrap';
 import CourseCreation from './CreateCourse';
-import {Alerts, ToastifyAlerts} from '../lib/Alert';
+import { Alerts, ToastifyAlerts } from '../lib/Alert';
 import LinearProgress from '@mui/material/LinearProgress';
-import {canPerformActions} from '../../services/ActionChecker';
-import {ACTION_CREATE_COURSE, ACTION_GET_COURSES, ACTION_UPDATE_COURSE} from '../../authnz-library/timetabling-actions';
-import {timetablingAxiosInstance} from '../../utlis/interceptors/timetabling-interceptor';
-import {ValidationForm} from 'react-bootstrap4-form-validation';
+import { canPerformActions } from '../../services/ActionChecker';
+import { ACTION_CREATE_COURSE, ACTION_GET_COURSES, ACTION_UPDATE_COURSE } from '../../authnz-library/timetabling-actions';
+import { timetablingAxiosInstance } from '../../utlis/interceptors/timetabling-interceptor';
+import { ValidationForm } from 'react-bootstrap4-form-validation';
 import TableWrapper from '../../utlis/TableWrapper';
 import ConfirmationModalWrapper from '../../App/components/modal/ConfirmationModalWrapper';
 import CustomSwitch from '../../assets/switch/CustomSwitch';
+import ModalWrapper from '../../App/components/modal/ModalWrapper';
+import { Interweave } from 'interweave';
 
 const alerts: Alerts = new ToastifyAlerts();
 
@@ -20,6 +22,7 @@ const CoursesList = (): JSX.Element => {
     interface Course {
         name: string;
         id: number;
+        code: string;
         prerequisiteCourses: string;
         description: string;
         trainingHours: number;
@@ -28,6 +31,8 @@ const CoursesList = (): JSX.Element => {
         activationStatus: boolean;
         approval_status: boolean;
         isElective: boolean;
+        courseOutline: string;
+        department: { name: string };
     }
     useEffect(() => {
         fetchCourses();
@@ -36,7 +41,7 @@ const CoursesList = (): JSX.Element => {
     const fetchCourses = () => {
         setLinearDisplay('block');
         timetablingAxiosInstance
-            .get('/courses',{ params: { includeDeactivated: true } })
+            .get('/courses', { params: { includeDeactivated: true, loadExtras: 'semsters,departments' } })
             .then((res) => {
                 setLinearDisplay('none');
                 setData(res.data);
@@ -59,9 +64,10 @@ const CoursesList = (): JSX.Element => {
     let isElective: boolean;
     let msg: string;
     const [disabled, setDisabled] = useState(false);
+    const [courseDetailsModal, setCourseDetailsModal] = useState(false);
 
     const columns = [
-        { title: 'ID', field: 'id' },
+        { title: 'Code', render: (row) => `${row.codePrefix}-${row.id}` },
         { title: 'Course name', field: 'name' },
         {
             title: 'Toggle Activation Status',
@@ -72,14 +78,15 @@ const CoursesList = (): JSX.Element => {
                         <CustomSwitch
                             defaultChecked={row.activationStatus}
                             color="secondary"
-                            inputProps={{'aria-label': 'controlled'}}
+                            inputProps={{ 'aria-label': 'controlled' }}
                             onChange={(event) => {
                                 handleActivationStatusToggle(event, row);
                                 setSelectedRow(row);
                                 toggleActivationModal();
                             }}
                         />
-                        <ConfirmationModalWrapper disabled={disabled}
+                        <ConfirmationModalWrapper
+                            disabled={disabled}
                             submitButton
                             submitFunction={() => handleToggleStatusSubmit()}
                             closeModal={handleCloseModal}
@@ -91,6 +98,21 @@ const CoursesList = (): JSX.Element => {
                         </ConfirmationModalWrapper>
                     </>
                 )
+        },
+        {
+            title: 'Actions',
+            render: (row) => (
+                <Button
+                    className="btn btn-info"
+                    size="sm"
+                    onClick={() => {
+                        setSelectedRow(row);
+                        toggleCourseDetailsModal();
+                    }}
+                >
+                    View Course Details
+                </Button>
+            )
         }
     ];
     const handleActivationStatusToggle = (event, row: Course) => {
@@ -133,6 +155,8 @@ const CoursesList = (): JSX.Element => {
         fetchCourses();
         setActivationModal(false);
     };
+
+    const toggleCourseDetailsModal = () => setCourseDetailsModal(!courseDetailsModal);
     return (
         <>
             <Row className="align-items-center page-header">
@@ -200,7 +224,8 @@ const CoursesList = (): JSX.Element => {
                         <Button disabled={disabled} className="btn btn-danger float-left" onClick={toggleEditModal}>
                             Cancel
                         </Button>
-                        <Button disabled={disabled}
+                        <Button
+                            disabled={disabled}
                             className="btn btn-primary float-right"
                             onClick={() => {
                                 handleToggleStatusSubmit();
@@ -211,6 +236,52 @@ const CoursesList = (): JSX.Element => {
                     </ValidationForm>
                 </Modal.Body>
             </Modal>
+            <ModalWrapper
+                show={courseDetailsModal}
+                title={`Details for ${selectedRow?.name}`}
+                modalSize="lg"
+                closeModal={toggleCourseDetailsModal}
+            >
+                <Row>
+                    <div className="col-md-6">
+                        <ListGroup>
+                            <ListGroup.Item>Course Code: {`${selectedRow?.code}`}</ListGroup.Item>
+                            <ListGroup.Item>Course Name: {`${selectedRow?.name}`}</ListGroup.Item>
+                            <ListGroup.Item>Department: {`${selectedRow?.department?.name}`}</ListGroup.Item>
+                            <ListGroup.Item>Course Description: {`${selectedRow?.description}`}</ListGroup.Item>
+                            <ListGroup.Item>Training Hours: {`${selectedRow?.trainingHours}`}</ListGroup.Item>
+                        </ListGroup>
+                    </div>
+                    <div className="col-md-6">
+                        <ListGroup>
+                            <ListGroup.Item>Approval Status Code: {`${selectedRow?.approval_status}`}</ListGroup.Item>
+                            <ListGroup.Item>
+                                Needs Techincal Assistant: {`${selectedRow?.needsTechnicalAssistant ? 'Yes' : 'No'}`}
+                            </ListGroup.Item>
+                            <ListGroup.Item>Is Elective: {`${selectedRow?.isElective ? 'Yes' : 'No'}`}</ListGroup.Item>
+                            <ListGroup.Item>is TimeTabelable: {`${selectedRow?.isTimetableable ? 'Yes' : 'No'}`}</ListGroup.Item>
+                        </ListGroup>
+                    </div>
+                    {selectedRow?.courseOutline && (
+                        <div>
+                            <h5 style={{ marginTop: '0.8rem' }}>Course Outline</h5>
+                            <Interweave content={selectedRow?.courseOutline} />
+                        </div>
+                    )}
+                    {selectedRow?.prerequisiteCourses && (
+                        <div>
+                            <h5 style={{ marginTop: '0.8rem' }}>Prerequisite Courses</h5>
+                            {/* <ul>
+                                {selectedRow?.prerequisiteCourses.map((course) => (
+                                    <li key={course.id}>
+                                        {course.name} - {course.code}
+                                    </li>
+                                ))}
+                            </ul> */}
+                        </div>
+                    )}
+                </Row>
+            </ModalWrapper>
         </>
     );
 };

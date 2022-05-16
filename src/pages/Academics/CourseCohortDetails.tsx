@@ -251,7 +251,7 @@ const CourseCohortsDetails = (props: any): JSX.Element => {
                     </Row>
                 </div>
             ) : (
-                <ProgramCohortGraduationList toggleGraduationList={toggleGraduationList} />
+                <ProgramCohortGraduationList toggleGraduationList={toggleGraduationList} programCohortId={props.location.state.programCohortId} />
             )}
             <ConfirmationModalWrapper
                 disabled={!showMarksLockedModal}

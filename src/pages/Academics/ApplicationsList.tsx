@@ -1,19 +1,19 @@
 /* eslint-disable react/display-name */
-import React, {useEffect, useState} from 'react';
-import {MTableToolbar} from 'material-table';
-import {MenuItem, Select} from '@material-ui/core';
-import {Link} from 'react-router-dom';
+import React, { useEffect, useState } from 'react';
+import { MTableToolbar } from 'material-table';
+import { MenuItem, Select } from '@material-ui/core';
+import { Link } from 'react-router-dom';
 import Alert from '@material-ui/lab/Alert';
 import Breadcrumb from '../../App/components/Breadcrumb';
-import {Button, Card, Col, ListGroup, Modal, Row} from 'react-bootstrap';
-import {FileInput, ValidationForm} from 'react-bootstrap4-form-validation';
-import {Alerts, ToastifyAlerts} from '../lib/Alert';
+import { Button, Card, Col, ListGroup, Modal, Row } from 'react-bootstrap';
+import { FileInput, ValidationForm } from 'react-bootstrap4-form-validation';
+import { Alerts, ToastifyAlerts } from '../lib/Alert';
 import LinearProgress from '@mui/material/LinearProgress';
-import {TimetableService} from '../../services/TimetableService';
-import {canPerformActions} from '../../services/ActionChecker';
-import {ACTION_GET_PROGRAM_COHORT_APPLICATIONS} from '../../authnz-library/sim-actions';
-import {simsAxiosInstance} from '../../utlis/interceptors/sims-interceptor';
-import {timetablingAxiosInstance} from '../../utlis/interceptors/timetabling-interceptor';
+import { TimetableService } from '../../services/TimetableService';
+import { canPerformActions } from '../../services/ActionChecker';
+import { ACTION_GET_PROGRAM_COHORT_APPLICATIONS } from '../../authnz-library/sim-actions';
+import { simsAxiosInstance } from '../../utlis/interceptors/sims-interceptor';
+import { timetablingAxiosInstance } from '../../utlis/interceptors/timetabling-interceptor';
 import TableWrapper from '../../utlis/TableWrapper';
 import EditApplicationDetails from './Application/EditApplicationDetails';
 
@@ -109,21 +109,15 @@ const ApplicationsList = (): JSX.Element => {
     }
     const handleAdmission = (e, admissionStatus: admissionStatus) => {
         e.preventDefault();
+        const message = admissionStatus === 'ADMITTED' ? 'The application has been accepted' : 'The application has been rejected';
         setDisabled(true);
         setLinearDisplay('block');
-        const admissionsPayload = {
-            modifiedProgramCohortApplication: {
-                application: {
-                    status: admissionStatus
-                }
-            }
-        };
         simsAxiosInstance
-            .put(`/program-cohort-applications/${applicationId}`, admissionsPayload)
+            .put(`/program-cohort-applications/${applicationId}/status`, {status: admissionStatus})
             .then(() => {
                 setDisabled(false);
                 setLinearDisplay('none');
-                alerts.showSuccess('Successfully updated application details');
+                alerts.showSuccess(message);
                 fetchProgramCohortApplications();
                 resetStateCloseModal();
             })
@@ -358,7 +352,7 @@ const ApplicationsList = (): JSX.Element => {
                     <Modal.Title id="contained-modal-title-vcenter">Edit Application Details</Modal.Title>
                 </Modal.Header>
                 <Modal.Body>
-                    <EditApplicationDetails application={applicationData} close={resetStateCloseModal}/>
+                    <EditApplicationDetails application={applicationData} close={resetStateCloseModal} />
                 </Modal.Body>
             </Modal>
             <Modal

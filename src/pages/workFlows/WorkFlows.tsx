@@ -1,55 +1,65 @@
 /* eslint-disable react/display-name */
-import React, {useEffect, useState} from 'react';
+import React, { useEffect, useState } from 'react';
 import Alert from '@material-ui/lab/Alert';
-import {Button, Card, Col, Modal, Row} from 'react-bootstrap';
+import { Button, Card, Col, Modal, Row } from 'react-bootstrap';
 import Breadcrumb from '../../App/components/Breadcrumb';
-import {ValidationForm} from 'react-bootstrap4-form-validation';
-import {Alerts, ToastifyAlerts} from '../lib/Alert';
-import {
-    ACTION_GET_ACTIONS_BY_ROLE_ID,
-    ACTION_GET_ROLES,
-    getAuthnzServiceActions
-} from '../../authnz-library/authnz-actions';
-import {getSimServiceActions} from '../../authnz-library/sim-actions';
-import {getFinanceServiceActions} from '../../authnz-library/finance-actions';
-import {getTimetablingServiceActions} from '../../authnz-library/timetabling-actions';
-import {customSelectTheme} from '../lib/SelectThemes';
-import {WorkFlowService} from '../../services/WorkFlowService';
-import Select from 'react-select';
-import {LinearProgress} from '@material-ui/core';
-import {canPerformActions} from '../../services/ActionChecker';
+import { Alerts, ToastifyAlerts } from '../lib/Alert';
+import { ACTION_GET_ACTIONS_BY_ROLE_ID, ACTION_GET_ROLES, getAuthnzServiceActions } from '../../authnz-library/authnz-actions';
+import { getSimServiceActions } from '../../authnz-library/sim-actions';
+import { getFinanceServiceActions } from '../../authnz-library/finance-actions';
+import { getTimetablingServiceActions } from '../../authnz-library/timetabling-actions';
+import { WorkFlowService } from '../../services/WorkFlowService';
+import { LinearProgress, MenuItem, Select } from '@material-ui/core';
+import { canPerformActions } from '../../services/ActionChecker';
 import TableWrapper from '../../utlis/TableWrapper';
 import ConfirmationModalWrapper from '../../App/components/modal/ConfirmationModalWrapper';
+import ModalWrapper from '../../App/components/modal/ModalWrapper';
 const alerts: Alerts = new ToastifyAlerts();
+
 const WorkFlows = (): JSX.Element => {
     const columns = [
-        {title: 'Name', field: 'name'},
-        {title: 'Description', field: 'description'},
+        { title: 'Name', field: 'name' },
+        { title: 'Description', field: 'description' },
         {
             title: 'Actions',
             render: (row) =>
                 canPerformActions(ACTION_GET_ACTIONS_BY_ROLE_ID.name) && (
-                    <>
-                        <Button
-                            className="btn btn-info"
-                            size="sm"
-                            onClick={() => {
-                                setActionName(row.name);
-                                fetchActionApprovers(row.name);
-                            }}
-                        >
-                            Create Workflow
-                        </Button>
-                    </>
+                    <div>
+                        <Select defaultValue="" value="" labelId="demo-simple-select-label" id="demo-simple-select" style={{ width: 100 }}>
+                            <MenuItem
+                                onClick={() => {
+                                    setActionName(row.name);
+                                    fetchActionApprovers(row.name, 'create');
+                                }}
+                                value="createWorkflow"
+                            >
+                                Create Workflow
+                            </MenuItem>
+                            <MenuItem
+                                onClick={() => {
+                                    setActionName(row.name);
+                                    fetchActionApprovers(row.name, 'view');
+                                }}
+                                value="viewWorkflow"
+                            >
+                                View Workflow
+                            </MenuItem>
+                        </Select>
+                    </div>
                 )
         }
     ];
+
+    const modalColumns = [
+        { title: 'ID', field: 'id' },
+        { title: 'Name', field: 'name' },
+        { title: 'Description', field: 'description' }
+    ];
+
     const options = [];
     const [iserror] = useState(false);
     const [actionName, setActionName] = useState('');
     const [errorMessages] = useState([]);
-    const [isMulti] = useState(true);
-    const [selectedOptions, setSelectedOptions] = useState([]);
     const [approvers, setApprovers] = useState([]);
     const [linearDisplay, setLinearDisplay] = useState('none');
     const [confirmLinearDisplay, setConfirmLinearDisplay] = useState('none');
@@ -62,29 +72,32 @@ const WorkFlows = (): JSX.Element => {
     const simsActions = Array.from(getSimServiceActions().values());
     const data = [...authnzActions, ...financeActions, ...timetableActions, ...simsActions];
     const [disabled, setDisabled] = useState(false);
+    const [defaultValuesId, setDefaultValuesId] = useState([]);
+    const [defaultCheckedRows, setDefaultCheckedRows] = useState([]);
+    const [selectedRows, setSelectedRows] = useState([]);
+    const [showWorkflowModal, setShowWorkflowModal] = useState(false);
 
     useEffect(() => {
         fetchRoles();
     }, []);
 
-    function fetchActionApprovers(actionName: string) {
+    function fetchActionApprovers(actionName: string, type: string) {
         setLinearDisplay('block');
         setApprovers([]);
         WorkFlowService.fetchActionApprovers(actionName)
             .then((res) => {
                 const approvingroles = res['data'];
                 const roles = approvingroles.map((it) => {
-                    return {value: it.role.id, label: it.role.name};
+                    return { value: it.role.id, label: it.role.name };
                 });
                 setApprovers(roles);
+                type === 'create' ? toggleCreateModal() : toggleWorkflowModal();
             })
             .catch(() => {
-                alerts.showError(`We couldn’t fetch the existing approving roles for ${actionName}, reopening the modal should fix this.`);
-                toggleCreateModal();
+                alerts.showError(`We couldn’t fetch the existing approving roles for ${actionName}, kindly try again.`);
             })
             .finally(() => {
                 setLinearDisplay('none');
-                toggleCreateModal();
             });
     }
 
@@ -97,36 +110,60 @@ const WorkFlows = (): JSX.Element => {
             })
             .catch((error) => {
                 alerts.showError(error.message);
-            }).finally(() => {
+            })
+            .finally(() => {
                 setLinearDisplay('none');
             });
     }
+
     roles.map((role) => {
-        return options.push({value: role.id, label: role.name});
+        return options.push({ value: role.id, label: role.name });
     });
-    const handleChange = (selectedOptions) => {
-        setSelectedOptions(selectedOptions);
+
+    const getDefaultChecked = (data, defaultValuesId) => {
+        const defaultChecked = [];
+        if (data.length <= 0 || defaultValuesId <= 0) {
+            return;
+        }
+        for (let i = 0; i < data.length; i++) {
+            const element = data[i];
+            if (defaultValuesId.indexOf(element.id) > -1) {
+                defaultChecked.push({ ...element, tableData: { checked: true } });
+            } else {
+                defaultChecked.push(element);
+            }
+        }
+        return setDefaultCheckedRows(defaultChecked);
     };
+
+    useEffect(() => {
+        getDefaultChecked(roles, defaultValuesId);
+    }, [roles, defaultValuesId]);
+
+    useEffect(() => {
+        setDefaultValuesId(approvers.map((item) => item.value));
+    }, [roles, approvers]);
+
+    const handleRowSelection = (rows) => {
+        const roleIds = rows.map((row) => ({ rank: row.id, roleId: row.id }));
+        const uniq = [...new Set(roleIds)];
+        setSelectedRows(uniq);
+    };
+
     function handleSubmitWorkFlow() {
         setDisabled(true);
         setLinearDisplay('block');
-        const approvingRoles = [];
-        selectedOptions.forEach((selectedOption, i) => {
-            approvingRoles.push({
-                rank: i + 1,
-                roleId: selectedOption.value
-            });
-        });
         setConfirmLinearDisplay('block');
         toggleCloseConfirmModal();
-        WorkFlowService.handleSubmitWorkFlow(actionName, approvingRoles)
+        WorkFlowService.handleSubmitWorkFlow(actionName, selectedRows)
             .then(() => {
                 alerts.showSuccess('Successfully created a workflow');
                 handleClose();
             })
             .catch((error) => {
                 alerts.showError(error.message);
-            }).finally(() => {
+            })
+            .finally(() => {
                 setModal(false);
                 setDisabled(false);
                 setLinearDisplay('none');
@@ -151,17 +188,20 @@ const WorkFlows = (): JSX.Element => {
     const toggleCloseConfirmModal = () => {
         setConfirmModal(false);
     };
+
+    const toggleWorkflowModal = () => setShowWorkflowModal(!showWorkflowModal);
+
     return (
         <>
             <div>
                 <Row className="align-items-center page-header">
                     <Col>
-                        <Breadcrumb/>
+                        <Breadcrumb />
                     </Col>
                 </Row>
                 {canPerformActions(ACTION_GET_ROLES.name) && (
                     <>
-                        <LinearProgress style={{display: linearDisplay}}/>
+                        <LinearProgress style={{ display: linearDisplay }} />
                         <Row>
                             <Col>
                                 <Card>
@@ -174,7 +214,7 @@ const WorkFlows = (): JSX.Element => {
                                             </Alert>
                                         )}
                                     </div>
-                                    <TableWrapper title="Work Flows" columns={columns} data={data} options={{}}/>
+                                    <TableWrapper title="Work Flows" columns={columns} data={data} options={{}} />
                                 </Card>
                             </Col>
                         </Row>
@@ -184,22 +224,22 @@ const WorkFlows = (): JSX.Element => {
             <Modal size="lg" show={showModal} aria-labelledby="contained-modal-title-vcenter" centered>
                 <Modal.Header closeButton>
                     <Modal.Title id="contained-modal-title-vcenter">
-                        Administer Workflow for action <i style={{fontWeight: 'lighter'}}>{actionName}</i>
+                        Administer Workflow for action <i style={{ fontWeight: 'lighter' }}>{actionName}</i>
                     </Modal.Title>
                 </Modal.Header>
                 <Modal.Body>
-                    <LinearProgress style={{display: confirmLinearDisplay}}/>
-                    <ValidationForm>
-                        <Select
-                            theme={customSelectTheme}
-                            defaultValue={approvers}
-                            options={options}
-                            isMulti={isMulti}
-                            placeholder="Select roles for this workflow"
-                            noOptionsMessage={() => 'No roles available'}
-                            onChange={handleChange}
-                        />
-                    </ValidationForm>
+                    <LinearProgress style={{ display: confirmLinearDisplay }} />
+                    <TableWrapper
+                        title={`Assign actions to ${actionName}`}
+                        columns={modalColumns}
+                        data={defaultCheckedRows}
+                        options={{
+                            selection: true,
+                            showSelectAllCheckbox: false,
+                            showTextRowsSelected: false
+                        }}
+                        onSelectionChange={(rows) => handleRowSelection(rows)}
+                    />
                 </Modal.Body>
                 <Modal.Footer>
                     <Col>
@@ -212,6 +252,19 @@ const WorkFlows = (): JSX.Element => {
                     </Col>
                 </Modal.Footer>
             </Modal>
+            <ModalWrapper
+                title={`Actions assigned to ${actionName}`}
+                modalSize="lg"
+                show={showWorkflowModal}
+                closeModal={toggleWorkflowModal}
+            >
+                <TableWrapper
+                    title={`Assign actions to ${actionName}`}
+                    columns={modalColumns}
+                    data={defaultCheckedRows}
+                    options={{ showTextRowsSelected: false }}
+                />
+            </ModalWrapper>
             <ConfirmationModalWrapper
                 disabled={disabled}
                 submitButton
@@ -220,7 +273,7 @@ const WorkFlows = (): JSX.Element => {
                 show={confirmModal}
             >
                 <h6 className="text-center">
-                    Are you sure you want to administer workflow for <i style={{fontWeight: 'lighter'}}>{actionName}</i>?
+                    Are you sure you want to administer workflow for <i style={{ fontWeight: 'lighter' }}>{actionName}</i>?
                 </h6>
             </ConfirmationModalWrapper>
         </>

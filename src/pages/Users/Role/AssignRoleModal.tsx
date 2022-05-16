@@ -1,9 +1,9 @@
-import React, { useEffect, useState } from 'react';
-import { Modal, Button } from 'react-bootstrap';
+import React, {useEffect, useState} from 'react';
+import {Modal} from 'react-bootstrap';
 import Select from 'react-select';
-import { Alerts, ToastifyAlerts } from '../../lib/Alert';
-import { customSelectTheme } from '../../lib/SelectThemes';
-import { authnzAxiosInstance } from '../../../utlis/interceptors/authnz-interceptor';
+import {Alerts, ToastifyAlerts} from '../../lib/Alert';
+import {customSelectTheme} from '../../lib/SelectThemes';
+import {authnzAxiosInstance} from '../../../utlis/interceptors/authnz-interceptor';
 import ConfirmationModalWrapper from '../../../App/components/modal/ConfirmationModalWrapper';
 
 const alerts: Alerts = new ToastifyAlerts();
@@ -35,7 +35,6 @@ export const AssignRoleModal = (props: IProps): JSX.Element => {
                 setRoles(res.data);
             })
             .catch((error) => {
-                console.log('Error');
                 alerts.showError(error.message);
             });
     }, []);
@@ -55,19 +54,16 @@ export const AssignRoleModal = (props: IProps): JSX.Element => {
         authnzAxiosInstance
             .post(`/users/${props.selectedrowprops.id}/roles`, { roleIds: roleIds })
             .then((res) => {
-                setDisabled(false);
                 if (res.status == 200) {
-                    props.onHide();
-                    toggleCloseConfirmModal();
                     alerts.showSuccess('Successfully assigned role to user');
                 }
             })
             .catch((error) => {
-                setDisabled(false);
-                props.onHide();
-                toggleCloseConfirmModal();
                 alerts.showError(error.message);
+            }).finally(() => {
                 props.onHide();
+                setDisabled(false);
+                toggleCloseConfirmModal();
             });
     };
     const toggleConfirmModal = () => {
@@ -76,7 +72,6 @@ export const AssignRoleModal = (props: IProps): JSX.Element => {
     const toggleCloseConfirmModal = () => {
         setConfirmModal(false);
     };
-
     return (
         <>
             <Modal {...props} size="lg" aria-labelledby="contained-modal-title-vcenter" centered>
@@ -95,12 +90,14 @@ export const AssignRoleModal = (props: IProps): JSX.Element => {
                     />
                 </Modal.Body>
                 <Modal.Footer>
-                    <Button disabled={disabled} variant="primary" onClick={() => props.toggleModal()}>
-                        Cancel
-                    </Button>
-                    <Button disabled={disabled} variant="danger" onClick={toggleConfirmModal}>
-                        Save
-                    </Button>
+                    <div className="form-group">
+                        <button disabled={disabled} className="btn btn-danger float-left" onClick={() => props.toggleModal()}>
+                            Cancel
+                        </button>
+                        <button disabled={disabled} className="btn btn-info float-right" onClick={toggleConfirmModal}>
+                            Submit
+                        </button>
+                    </div>
                 </Modal.Footer>
             </Modal>
             <ConfirmationModalWrapper

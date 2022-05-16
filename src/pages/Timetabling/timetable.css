@@ -1,4 +1,4 @@
-#scroll,#list {
+#scroll, #list {
     position: absolute;
     left: 0;
     top: 0;
@@ -20,6 +20,15 @@
     opacity: 0.5;
 }
 
-.dx-draggable-dragging > * {
+.dx-draggable-dragging>* {
     box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1), 0 6px 8px rgba(0, 0, 0, 0.2);
+}
+
+#list-item-draggable {
+    margin-top: 20px;
+    margin-left: 25px;
+}
+
+#list-item-draggable:first-child {
+    margin-top: 45%;
 }
