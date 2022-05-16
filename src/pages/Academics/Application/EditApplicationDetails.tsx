@@ -49,7 +49,7 @@ export function EditApplicationDetails(props) {
     const [gender, setGender] = useState(props.application?.applications_gender || '');
     const [maritalStatus, setMaritalStatus] = useState(props.application?.applications_maritalStatus || '');
     const [religion, setReligion] = useState(props.application?.applications_religion || '');
-    const [dateOfBirth, setDateOfBirth] = useState(props.application?.applications_dateOfBirth.slice(0, 10) || '');
+    const [dateOfBirth, setDateOfBirth] = useState(props.application?.applications_dateOfBirth?.slice(0, 10) || '');
     const [phoneNumber, setPhoneNumber] = useState(props.application?.applications_phoneNumber || '');
     const [fileUploaded, setFileUploaded] = useState(props.application?.applications_otherName);
     const [nextOfKinName, setNextOfKinName] = useState(props.application?.nkd_name || '');
@@ -57,7 +57,7 @@ export function EditApplicationDetails(props) {
     const [nextOfKinRelation, setNextOfKinRelation] = useState(props.application?.nkd_relation || '');
     const [physicalChallengesDetails, setPhysicalChallengesDetails] = useState(props.application?.applications_physicalChallengesDetails || '');
     const [physicalChallenges, setPhysicalChallenges] = useState(props.application?.applications_physicalChallenges || '');
-    const [preferredStartDate, setPreferredStartDate] = useState(props.application?.applications_preferredStartDate.slice(0, 10) || '');
+    const [preferredStartDate, setPreferredStartDate] = useState(props.application?.applications_preferredStartDate?.slice(0, 10) || '');
     const [campus, setCampus] = useState(props.application?.applications_campus);
     const [sponsor, setSponsor] = useState(props.application?.applications_sponsor || '');
     const [countyOfResidence, setCountyOfResidence] = useState(props.application?.applications_countyOfResidence || '');
