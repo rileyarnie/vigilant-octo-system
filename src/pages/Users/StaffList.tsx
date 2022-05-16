@@ -56,7 +56,7 @@ const StaffList = (): JSX.Element => {
     const [identificationType, setIdentificationType] = useState('');
     const [identification, setIdentification] = useState('');
     const [name, setName] = useState('');
-    const [selectedUserId, setSelectedUserId] = useState('');
+    const [userId, setSelectedUserId] = useState('');
     const [selectedUserAad, setSelectedUserIdAad] = useState('');
     const [email, setEmail] = useState('');
 
@@ -207,8 +207,8 @@ const StaffList = (): JSX.Element => {
 
     const createStaffHandler = () => {
         setDisabled(true);
-        const data = {name, identification, identificationType, email};
-        const body = selectedUserId ? {...data, selectedUserId} : data;
+        const data = { name, identification, identificationType, email };
+        const body = userId ? { ...data, userId } : data;
         timetablingAxiosInstance
             .post('/staff', body)
             .then(() => {
@@ -232,7 +232,7 @@ const StaffList = (): JSX.Element => {
             identification: identification,
             identificationType: identificationType,
             email: email,
-            userId: selectedUserId
+            userId: userId
         });
     };
 
