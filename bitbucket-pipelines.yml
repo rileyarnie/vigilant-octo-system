@@ -6,15 +6,15 @@ clone:
 pipelines:
   pull-requests:
     '**':
-
     - step:
+        runs-on: 
+            - 'self.hosted'
         name: Everything
         script:
         - git checkout $BITBUCKET_PR_DESTINATION_BRANCH
         - git checkout $BITBUCKET_BRANCH
         - DIFFED_FILES_TO_LINT=$(git diff $BITBUCKET_PR_DESTINATION_BRANCH --relative --diff-filter=d --name-only -- "*.ts" "*.tsx" "*.js" "*.jsx")
         - echo $DIFFED_FILES_TO_LINT
-        - if [ -z "$DIFFED_FILES_TO_LINT" ]; then exit 0; fi
         - npm install
         - npx eslint $DIFFED_FILES_TO_LINT
         - npm run-script build:example
