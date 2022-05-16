@@ -151,7 +151,7 @@ const EditVenue = (props): JSX.Element => {
                                                 </label>
                                                 <Select
                                                     theme={customSelectTheme}
-                                                    defaultValue={campusAssigned[0].value}
+                                                    defaultValue={{label: props.campus_name, value: props.campus_id}}
                                                     options={options}
                                                     isMulti={false}
                                                     placeholder="Select campus"
