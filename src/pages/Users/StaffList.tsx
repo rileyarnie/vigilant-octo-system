@@ -1,24 +1,25 @@
 /* eslint-disable linebreak-style */
 /* eslint-disable react/display-name */
-import React, { useEffect, useState } from 'react';
+import React, {useEffect, useState} from 'react';
 import Breadcrumb from '../../App/components/Breadcrumb';
-import { Card, Col, Row } from 'react-bootstrap';
-import { Alerts, ToastifyAlerts } from '../lib/Alert';
-import { LinearProgress } from '@mui/material';
-import { canPerformActions } from '../../services/ActionChecker';
-import { ACTION_GET_USERS } from '../../authnz-library/authnz-actions';
+import {Card, Col, Row} from 'react-bootstrap';
+import {Alerts, ToastifyAlerts} from '../lib/Alert';
+import {LinearProgress} from '@mui/material';
+import {canPerformActions} from '../../services/ActionChecker';
+import {ACTION_GET_USERS} from '../../authnz-library/authnz-actions';
 import TableWrapper from '../../utlis/TableWrapper';
 import CreateStaff from './CreateStaff/CreateStaff';
-import { timetablingAxiosInstance } from '../../utlis/interceptors/timetabling-interceptor';
+import {timetablingAxiosInstance} from '../../utlis/interceptors/timetabling-interceptor';
 import ConfirmationModalWrapper from '../../App/components/modal/ConfirmationModalWrapper';
-import { authnzAxiosInstance } from '../../utlis/interceptors/authnz-interceptor';
+import {authnzAxiosInstance} from '../../utlis/interceptors/authnz-interceptor';
 import CustomSwitch from '../../assets/switch/CustomSwitch';
 import ModalWrapper from '../../App/components/modal/ModalWrapper';
-import { ValidationForm, TextInput } from 'react-bootstrap4-form-validation';
+import {ValidationForm, TextInput} from 'react-bootstrap4-form-validation';
 import validator from 'validator';
 import Select from 'react-select';
 
 const alerts: Alerts = new ToastifyAlerts();
+
 interface Staff {
     activationStatus: boolean;
     approvalFlowId: number;
@@ -30,6 +31,7 @@ interface Staff {
     name: string;
     userId: 19;
 }
+
 const StaffList = (): JSX.Element => {
     const [disabled, setDisabled] = useState(false);
     const [switchStatus, setSwitchStatus] = useState<boolean>();
@@ -43,6 +45,14 @@ const StaffList = (): JSX.Element => {
     const [confirmUpdateStaffModal, setConfirmUpdateStaffModal] = useState(false);
     const [confirmCreateStaffModal, setConfirmCreateStaffModal] = useState(false);
     //
+    const identificationTypeOptions = [
+        {value: 'id_no', label: 'ID No'},
+        {value: 'passport', label: 'Passport No'},
+        {value: 'company_no', label: 'Company No'},
+        {value: 'service', label: 'Service No'},
+        {value: 'military_id', label: 'Military ID'},
+        {value: 'driver_license', label: 'Driver License'},
+    ];
     const [identificationType, setIdentificationType] = useState('');
     const [identification, setIdentification] = useState('');
     const [name, setName] = useState('');
@@ -87,25 +97,9 @@ const StaffList = (): JSX.Element => {
             });
     };
     const columns = [
-        { title: 'SN', field: 'id' },
-        { title: 'Name', field: 'name' },
-        { title: 'User', field: 'email' },
-        { title: 'Identification', field: 'identification' },
-        { title: 'Identification Type', field: 'identificationType' },
-        {
-            title: 'Actions',
-            render: (row) => (
-                <div
-                    style={{ paddingTop: '.8rem', cursor: 'pointer', color: 'blue' }}
-                    onClick={() => {
-                        setSelectedRow(row);
-                        editStaffHandler(row);
-                    }}
-                >
-                    <p>Edit Staff</p>
-                </div>
-            )
-        },
+        {title: 'SN', field: 'id'},
+        {title: 'Name', field: 'name'},
+        {title: 'User', field: 'email'},
         {
             title: 'Activation Status',
             field: 'internal_action',
@@ -114,7 +108,7 @@ const StaffList = (): JSX.Element => {
                     <CustomSwitch
                         defaultChecked={row.activationStatus}
                         color="secondary"
-                        inputProps={{ 'aria-label': 'controlled' }}
+                        inputProps={{'aria-label': 'controlled'}}
                         checked={row.activationStatus}
                         onChange={() => {
                             setActivationModal(true);
@@ -125,7 +119,7 @@ const StaffList = (): JSX.Element => {
                     <ConfirmationModalWrapper
                         disabled={disabled}
                         submitButton
-                        submitFunction={() => updateStaff({ activationStatus: switchStatus })}
+                        submitFunction={() => updateStaff({activationStatus: switchStatus})}
                         closeModal={handleCloseActivationModal}
                         show={activationModal}
                     >
@@ -135,7 +129,21 @@ const StaffList = (): JSX.Element => {
                     </ConfirmationModalWrapper>
                 </>
             )
-        }
+        },
+        {
+            title: 'Actions',
+            render: (row) => (
+                <button className="btn btn-link"
+                    onClick={() => {
+                        setSelectedRow(row);
+                        editStaffHandler(row);
+                    }}
+                >
+                    Edit Staff
+                </button>
+            )
+        },
+
     ];
 
     useEffect(() => {
@@ -145,6 +153,7 @@ const StaffList = (): JSX.Element => {
     useEffect(() => {
         fetchUsers();
     }, []);
+
 
     const editStaffHandler = (data) => {
         const userAad = users.filter((user) => user.id === data.userId)[0].aadAlias;
@@ -184,7 +193,7 @@ const StaffList = (): JSX.Element => {
     const fetchStaff = () => {
         setLinearDisplay('block');
         timetablingAxiosInstance
-            .get('/staff', { params: { includeDeactivated: true } })
+            .get('/staff', {params: {includeDeactivated: true}})
             .then((res) => {
                 setData(res.data);
             })
@@ -198,8 +207,8 @@ const StaffList = (): JSX.Element => {
 
     const createStaffHandler = () => {
         setDisabled(true);
-        const data = { name, identification, identificationType, email };
-        const body = selectedUserId ? { ...data, selectedUserId } : data;
+        const data = {name, identification, identificationType, email};
+        const body = selectedUserId ? {...data, selectedUserId} : data;
         timetablingAxiosInstance
             .post('/staff', body)
             .then(() => {
@@ -210,7 +219,6 @@ const StaffList = (): JSX.Element => {
             })
             .catch((err) => {
                 alerts.showError(err.message);
-                console.log('err', err);
             })
             .finally(() => {
                 toggleConfirmCreateStaffModal();
@@ -234,13 +242,13 @@ const StaffList = (): JSX.Element => {
     const handleSelect = (selectedUser) => {
         setSelectedUserId(selectedUser.value);
     };
-    const handleIdentificationTypeChange = (event) => {
-        setIdentificationType(event.target.value);
-    };
+
     const handleIdentificationChange = (event) => {
         setIdentification(event.target.value);
     };
-
+    const handleIdentificationTypeChange = (event) => {
+        setIdentificationType(event.value);
+    };
     const handleEmailChange = (event) => {
         setEmail(event.target.value);
     };
@@ -253,16 +261,16 @@ const StaffList = (): JSX.Element => {
         <>
             <Row className="align-items-center page-header">
                 <Col>
-                    <Breadcrumb />
+                    <Breadcrumb/>
                 </Col>
-                <CreateStaff openCreateStaffModal={toggleCreateStaffModal} fetchStaff={fetchStaff} />
+                <CreateStaff openCreateStaffModal={toggleCreateStaffModal} fetchStaff={fetchStaff}/>
             </Row>
-            <LinearProgress style={{ display: linearDisplay }} />
+            <LinearProgress style={{display: linearDisplay}}/>
             {canPerformActions(ACTION_GET_USERS.name) && (
                 <Row>
                     <Col>
                         <Card>
-                            <TableWrapper columns={columns} title="Staff" data={data} options={{}} />
+                            <TableWrapper columns={columns} title="Staff" data={data} options={{}}/>
                         </Card>
                     </Col>
                 </Row>
@@ -280,7 +288,8 @@ const StaffList = (): JSX.Element => {
                         <Col>
                             <Row>
                                 <Col md={12}>
-                                    <ValidationForm onSubmit={toggleConfirmUpdateStaffModal} onErrorSubmit={handleErrorSubmit}>
+                                    <ValidationForm onSubmit={toggleConfirmUpdateStaffModal}
+                                        onErrorSubmit={handleErrorSubmit}>
                                         <Row>
                                             <Col sm={6}>
                                                 <label htmlFor="user">
@@ -303,7 +312,7 @@ const StaffList = (): JSX.Element => {
                                                     placeholder="Select User"
                                                     noOptionsMessage={() => 'No available users'}
                                                     onChange={handleSelect}
-                                                    defaultValue={{ label: selectedUserAad, value: selectedUserAad }}
+                                                    defaultValue={{label: selectedUserAad, value: selectedUserAad}}
                                                 />
                                             </Col>
                                             <Col sm={6}>
@@ -319,7 +328,7 @@ const StaffList = (): JSX.Element => {
                                                         type="email"
                                                         placeholder="Enter Email"
                                                         validator={validator.isEmail}
-                                                        errorMessage={{ validator: 'Please enter a valid email' }}
+                                                        errorMessage={{validator: 'Please enter a valid email'}}
                                                         value={email}
                                                         onChange={handleEmailChange}
                                                     />
@@ -337,7 +346,7 @@ const StaffList = (): JSX.Element => {
                                                         id="name"
                                                         placeholder="Enter Name"
                                                         validator={!validator}
-                                                        errorMessage={{ validator: 'Please enter a name' }}
+                                                        errorMessage={{validator: 'Please enter a name'}}
                                                         value={name}
                                                         onChange={handleNameChange}
                                                     />
@@ -350,14 +359,17 @@ const StaffList = (): JSX.Element => {
                                                             Identification Type<span className="text-danger">*</span>
                                                         </b>
                                                     </label>
-                                                    <TextInput
+                                                    <Select
+                                                        options={identificationTypeOptions}
+                                                        defaultValue={{
+                                                            label: identificationType.replace(/(^\w)/g, g => g[0].toUpperCase()).replace(/([-_]\w)/g, g => ' ' + g[1].toUpperCase()).trim(),
+                                                            value: identificationType
+                                                        }}
                                                         name="identificationType"
                                                         id="identificationType"
-                                                        placeholder="Identification type"
-                                                        validator={!validator.isEmpty}
-                                                        errorMessage={{ validator: 'Please enter a value' }}
-                                                        value={identificationType}
-                                                        onChange={handleIdentificationTypeChange}
+                                                        placeholder="Select ID Type"
+                                                        noOptionsMessage={() => 'No types available'}
+                                                        onChange={(e) => handleIdentificationTypeChange(e)}
                                                     />
                                                 </div>
                                             </Col>
@@ -373,7 +385,7 @@ const StaffList = (): JSX.Element => {
                                                         id="identification"
                                                         placeholder="identification"
                                                         validator={!validator.isEmpty}
-                                                        errorMessage={{ validator: 'Please enter a value' }}
+                                                        errorMessage={{validator: 'Please enter a value'}}
                                                         value={identification}
                                                         onChange={handleIdentificationChange}
                                                     />
@@ -400,8 +412,9 @@ const StaffList = (): JSX.Element => {
                     <Col>
                         <Row>
                             <Col md={12}>
-                                <ValidationForm onSubmit={toggleConfirmCreateStaffModal} onErrorSubmit={handleErrorSubmit}>
-                                    <Row style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                                <ValidationForm onSubmit={toggleConfirmCreateStaffModal}
+                                    onErrorSubmit={handleErrorSubmit}>
+                                    <Row style={{display: 'flex', alignItems: 'center', justifyContent: 'center'}}>
                                         <Col sm={6}>
                                             <div className="form-group">
                                                 <label htmlFor="user">
@@ -435,7 +448,7 @@ const StaffList = (): JSX.Element => {
                                                     type="email"
                                                     placeholder="Enter Email"
                                                     validator={validator.isEmail}
-                                                    errorMessage={{ validator: 'Please enter a valid email' }}
+                                                    errorMessage={{validator: 'Please enter a valid email'}}
                                                     value={email}
                                                     onChange={handleEmailChange}
                                                 />
@@ -453,7 +466,7 @@ const StaffList = (): JSX.Element => {
                                                     id="name"
                                                     placeholder="Enter Name"
                                                     validator={!validator}
-                                                    errorMessage={{ validator: 'Please enter a name' }}
+                                                    errorMessage={{validator: 'Please enter a name'}}
                                                     value={name}
                                                     onChange={handleNameChange}
                                                 />
@@ -466,14 +479,13 @@ const StaffList = (): JSX.Element => {
                                                         Identification Type<span className="text-danger">*</span>
                                                     </b>
                                                 </label>
-                                                <TextInput
+                                                <Select
+                                                    options={identificationTypeOptions}
                                                     name="identificationType"
                                                     id="identificationType"
-                                                    placeholder="Identification type"
-                                                    validator={!validator.isEmpty}
-                                                    errorMessage={{ validator: 'Please enter a value' }}
-                                                    value={identificationType}
-                                                    onChange={handleIdentificationTypeChange}
+                                                    placeholder="Select ID Type"
+                                                    noOptionsMessage={() => 'No types available'}
+                                                    onChange={(e) => handleIdentificationTypeChange(e)}
                                                 />
                                             </div>
                                         </Col>
@@ -487,9 +499,9 @@ const StaffList = (): JSX.Element => {
                                                 <TextInput
                                                     name="identification"
                                                     id="identification"
-                                                    placeholder="identification"
+                                                    placeholder="Identification Number"
                                                     validator={!validator.isEmpty}
-                                                    errorMessage={{ validator: 'Please enter a value' }}
+                                                    errorMessage={{validator: 'Please enter an ID Number'}}
                                                     value={identification}
                                                     onChange={handleIdentificationChange}
                                                 />
