@@ -79,10 +79,10 @@ const ActionApprovals = () => {
             })
             .catch((err) => {
                 alerts.showError(err.message);
-                toggleCloseApproveModal();
             }).finally(()=>{
                 setLinearDisplay('none');
                 setDisabled(false);
+                toggleCloseApproveModal();
             });
     };
     const handleReject = (actionApprovalId:number) => {
@@ -98,10 +98,10 @@ const ActionApprovals = () => {
             })
             .catch((err) => {
                 alerts.showError(err.message);
-                toggleCloseApproveModal();
             }).finally(()=>{
                 setLinearDisplay('none');
                 setDisabled(false);
+                toggleCloseRejectModal();
             });
     };
     const toggleApproveModal = () => {
