@@ -330,7 +330,8 @@ const Department = (): JSX.Element => {
                             isMulti={false}
                             placeholder="Select a HOD."
                             noOptionsMessage={() => 'No HODs available'}
-                            onChange={handleChange}
+                            onInputChange={handleChange}
+                            isClearable={true}
                         />
                     </div>
                     <div className="form-group">
