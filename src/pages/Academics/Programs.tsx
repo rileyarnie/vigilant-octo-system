@@ -144,7 +144,7 @@ const Programs = (): JSX.Element => {
                         </Link>
                     )}
                     {canPerformActions(ACTION_GET_PROGRAMS.name) && (
-                        <Link to={'/programcourses'} onClick={() => localStorage.setItem('programId', row.id)} style={{ color: 'black' }}>
+                        <Link to={'/programcourses'} onClick={() => {localStorage.setItem('programId', row.id);localStorage.setItem('programName', row.name);}} style={{ color: 'black' }}>
                             <MenuItem value="viewCourses">View Courses</MenuItem>
                         </Link>
                     )}

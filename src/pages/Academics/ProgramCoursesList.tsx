@@ -13,6 +13,7 @@ import IconButton from '@material-ui/core/IconButton';
 import ArrowBackIcon from '@material-ui/icons/ArrowBack';
 import {timetablingAxiosInstance} from '../../utlis/interceptors/timetabling-interceptor';
 import TableWrapper from '../../utlis/TableWrapper';
+import ConfirmationModalWrapper from '../../App/components/modal/ConfirmationModalWrapper';
 
 const alerts: Alerts = new ToastifyAlerts();
 
@@ -38,13 +39,14 @@ const ProgramCoursesList = (props): JSX.Element => {
     ];
     const [data, setData] = useState([]);
     const [programId, setProgramId] = useState();
-    const [courseName, setCourseName] = useState('');
-    const [courseId] = useState(null);
+    const [courseId, setCourseId] = useState(0);
     const [iserror] = useState(false);
+    const [confirmModal, setConfirmModal] = useState(false);
+    const [disabled, setDisabled] = useState(false);
     const [linearDisplay, setLinearDisplay] = useState('none');
-    const [, setSelectedRows] = useState();
     const [errorMessages, setErrorMessages] = useState([]);
     const progId = JSON.parse(localStorage.getItem('programId'));
+    const programName = localStorage.getItem('programName');
 
     useEffect(() => {
         setLinearDisplay('block');
@@ -52,7 +54,6 @@ const ProgramCoursesList = (props): JSX.Element => {
             .get(`/programs/${progId}/courses`)
             .then((res) => {
                 setData(res.data);
-                console.log('Program Courses', res.data);
                 setLinearDisplay('none');
                 setProgramId(progId);
             })
@@ -74,20 +75,28 @@ const ProgramCoursesList = (props): JSX.Element => {
                 alerts.showError(error.message);
             });
     };
-
     const unassignSelectedCoursesFromTrainer = (selectedCourseId: number) => {
         setLinearDisplay('block');
         timetablingAxiosInstance
             .put(`/programs/${programId}/courses/${selectedCourseId}`)
-            .then((res) => {
+            .then(() => {
                 alerts.showSuccess('Succesfully removed course');
                 fetchCoursesAssignedToProgram(progId);
+                toggleCloseConfirmModal();
+                setDisabled(false);
                 setLinearDisplay('none');
             })
             .catch((error) => {
+                setDisabled(false);
                 alerts.showError(error.message);
                 setLinearDisplay('none');
             });
+    };
+    const toggleConfirmModal = () => {
+        setConfirmModal(true);
+    };
+    const toggleCloseConfirmModal = () => {
+        setConfirmModal(false);
     };
     const handleBack = () => {
         // eslint-disable-next-line react/prop-types
@@ -130,12 +139,23 @@ const ProgramCoursesList = (props): JSX.Element => {
                                     icon: DeleteIcon,
                                     tooltip: 'Delete Course',
                                     onClick: () => {
-                                        unassignSelectedCoursesFromTrainer(rowData.id);
+                                        setCourseId(rowData.id);
+                                        toggleConfirmModal();
                                     }
                                 })
                             ]}
                             options={{}}
                         />
+                        <ConfirmationModalWrapper disabled={disabled}
+                            submitButton
+                            submitFunction={() => {unassignSelectedCoursesFromTrainer(courseId);}}
+                            closeModal={toggleCloseConfirmModal}
+                            show={confirmModal}
+                        >
+                            <>
+                                <h6 className="text-center">Are you sure you want remove this course from {programName}?</h6>
+                            </>
+                        </ConfirmationModalWrapper>
                     </Card>
                 </Col>
             </Row>
