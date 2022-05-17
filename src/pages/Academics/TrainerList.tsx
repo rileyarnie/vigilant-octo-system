@@ -4,7 +4,7 @@ import Alert from '@material-ui/lab/Alert';
 import Department from '../services/Department';
 import Breadcrumb from '../../App/components/Breadcrumb';
 import { Button, Card, Col, Dropdown, DropdownButton, Row } from 'react-bootstrap';
-import { ValidationForm } from 'react-bootstrap4-form-validation';
+import { ValidationForm, SelectGroup } from 'react-bootstrap4-form-validation';
 import { Alerts, ToastifyAlerts } from '../lib/Alert';
 import LinearProgress from '@mui/material/LinearProgress';
 import { canPerformActions } from '../../services/ActionChecker';
@@ -126,9 +126,8 @@ const TrainerList = (): JSX.Element => {
     const [isError] = useState(false);
     const [staff, setStaff] = useState([]);
     const [departments, setDepartments] = useState([]);
-    const [selectedUser, setSelectedUser] = useState(0);
     const [selectedDept, setSelectedDept] = useState<{ id: number; name: string }>();
-    const [trainerType, setTrainerType] = useState<string>();
+    const [trainerType, setTrainerType] = useState('');
     const [showModal, setModal] = useState(false);
     const [confirmModal, setConfirmModal] = useState(false);
     const [showEditModal, setEditModal] = useState(false);
@@ -148,6 +147,9 @@ const TrainerList = (): JSX.Element => {
     const [showCantDeleteModal, setCantDeleteModal] = useState(false);
     const [departmentsWithHoDTrainer, setDepartmentsWithHoDTrainer] = useState<Department>();
     const [disabled, setDisabled] = useState(false);
+
+    const [user, setUser] = useState('');
+    const [department, setDepartment] = useState('');
 
     useEffect(() => {
         setLinearDisplay('block');
@@ -214,8 +216,8 @@ const TrainerList = (): JSX.Element => {
         setDisabled(true);
         e.preventDefault();
         const trainer = {
-            staffId: selectedUser,
-            departmentId: selectedDept?.id,
+            staffId: user,
+            departmentId: department,
             trainerType: trainerType
         };
         createTrainer(trainer);
@@ -322,9 +324,7 @@ const TrainerList = (): JSX.Element => {
     const handleChange = (selectedDept) => {
         setSelectedDept(selectedDept);
     };
-    const handleUser = (selectedUser) => {
-        setSelectedUser(selectedUser.value);
-    };
+
     const handleTrainerType = (trainerTyp) => {
         console.log('trainerType', trainerType);
         setTrainerType(trainerTyp.value);
@@ -389,62 +389,85 @@ const TrainerList = (): JSX.Element => {
                 </Col>
             </Row>
             <ModalWrapper show={showModal} closeModal={toggleCreateModal} modalSize="lg" title="Create a trainer" noFooter>
-                <ValidationForm>
+                <ValidationForm
+                    onSubmit={(e) => {
+                        e.preventDefault();
+                        toggleConfirmModal();
+                    }}
+                >
                     <div className="form-group">
                         <label htmlFor="user">
                             Select staff<span className="text-danger">*</span>
                         </label>
-                        <Select
-                            theme={customSelectTheme}
-                            defaultValue=""
-                            options={staffOptions}
-                            isMulti={false}
-                            placeholder="Select a user."
-                            noOptionsMessage={() => 'No users available'}
-                            isClearable
-                            onChange={handleUser}
-                        />
+                        <SelectGroup
+                            defaultValue={user}
+                            name="user"
+                            id="user"
+                            required
+                            onChange={(e) => {
+                                setUser(e.target.value);
+                            }}
+                            errorMessage="Please select a user"
+                        >
+                            <option value="">- Please select -</option>
+                            {staffOptions.map((staffOption) => (
+                                <option key={staffOption.value} value={staffOption.value}>
+                                    {staffOption.label}
+                                </option>
+                            ))}
+                        </SelectGroup>
                     </div>
                     <div className="form-group">
                         <label htmlFor="department">
                             Select a department<span className="text-danger">*</span>
                         </label>
-                        <Select
-                            theme={customSelectTheme}
-                            defaultValue=""
-                            options={departmentOptions}
-                            isMulti={false}
-                            isClearable
-                            placeholder="Select a department."
-                            noOptionsMessage={() => 'No department available'}
-                            onChange={handleChange}
-                        />
+                        <SelectGroup
+                            defaultValue={department}
+                            name="department"
+                            id="department"
+                            required
+                            onChange={(e) => {
+                                setDepartment(e.target.value);
+                            }}
+                            errorMessage="Please select a department"
+                        >
+                            <option value="">- Please select -</option>
+                            {departmentOptions.map((departmentOption) => (
+                                <option key={departmentOption.value} value={departmentOption.value}>
+                                    {departmentOption.label}
+                                </option>
+                            ))}
+                        </SelectGroup>
                     </div>
-
-                    <div className="form-group">
+                    <div>
                         <label htmlFor="trainerType">
-                            Select Trainer type<span className="text-danger">*</span>
+                            Select a trainer type<span className="text-danger">*</span>
                         </label>
-                        <Select
-                            theme={customSelectTheme}
-                            defaultValue=""
-                            options={trainerTypeOptions}
-                            isMulti={false}
-                            isClearable
-                            placeholder="Select trainer type."
-                            noOptionsMessage={() => 'No types available'}
-                            onChange={handleTrainerType}
-                        />
+                        <SelectGroup
+                            defaultValue={trainerType}
+                            name="trainerType"
+                            id="trainerType"
+                            required
+                            onChange={(e) => {
+                                setTrainerType(e.target.value);
+                            }}
+                            errorMessage="Please select trainer type"
+                        >
+                            <option value="">- Please select -</option>
+                            {trainerTypeOptions.map((trainerTypeOption) => (
+                                <option key={trainerTypeOption.value} value={trainerTypeOption.value}>
+                                    {trainerTypeOption.label}
+                                </option>
+                            ))}
+                        </SelectGroup>
                     </div>
+                    <Col className="mt-4">
+                        <button className="btn btn-danger float-left" onClick={handleCloseModal}>
+                            Cancel
+                        </button>
+                        <button className="btn btn-info float-right">Submit</button>
+                    </Col>
                 </ValidationForm>
-                <Col>
-                    <button className="btn btn-info float-right" onClick={toggleConfirmModal}>
-                        Submit
-                    </button>
-                    <button className="btn btn-danger float-left" onClick={handleCloseModal}>
-                        Cancel
-                    </button>
-                </Col>
             </ModalWrapper>
             <ModalWrapper title="Edit Trainer" show={showEditModal} closeModal={toggleEditModal} modalSize="lg" noFooter>
                 <ValidationForm>
