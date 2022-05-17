@@ -4,10 +4,9 @@ import React, { useEffect, useState } from 'react';
 import { Alerts, ToastifyAlerts } from '../lib/Alert';
 import Alert from '@material-ui/lab/Alert';
 import Breadcrumb from '../../App/components/Breadcrumb';
-import { Button, Card, Col, Row } from 'react-bootstrap';
+import { Button, Card, Col, ListGroup, Row } from 'react-bootstrap';
 import { Link } from 'react-router-dom';
 import { TextInput, ValidationForm } from 'react-bootstrap4-form-validation';
-import { LinearProgress } from '@mui/material';
 import { canPerformActions } from '../../services/ActionChecker';
 import { ACTION_ASSIGN_COURSE_TO_PROGRAM, ACTION_CREATE_PROGRAM, ACTION_GET_PROGRAMS } from '../../authnz-library/timetabling-actions';
 import { timetablingAxiosInstance } from '../../utlis/interceptors/timetabling-interceptor';
@@ -17,6 +16,7 @@ import Select from 'react-select';
 import ConfirmationModalWrapper from '../../App/components/modal/ConfirmationModalWrapper';
 import CustomSwitch from '../../assets/switch/CustomSwitch';
 import ModalWrapper from '../../App/components/modal/ModalWrapper';
+import { LinearProgress, MenuItem, Select as MUISelect } from '@material-ui/core';
 
 const alerts: Alerts = new ToastifyAlerts();
 
@@ -24,6 +24,7 @@ const Programs = (): JSX.Element => {
     interface Program {
         name?: string;
         id?: number;
+        codePrefix: string;
         description?: string;
         prerequisiteDocumentation?: number;
         requiresClearance?: boolean;
@@ -31,6 +32,7 @@ const Programs = (): JSX.Element => {
         activationStatus?: boolean;
         approval_status?: boolean;
         duration?: string;
+        department: { name: string };
     }
 
     const [data, setData] = useState([]);
@@ -56,8 +58,9 @@ const Programs = (): JSX.Element => {
     let activationStatus: boolean;
     const [disabledButton, setDisabledButton] = useState(false);
     const [status, setStatus] = useState(false);
+    const [programDetailsModal, setProgramDetailsModal] = useState(false);
+
     const handleActivationStatusToggle = (event, row: Program) => {
-        console.log('selected row ', row);
         setStatus(!row.activationStatus);
     };
     const handleToggleStatusSubmit = () => {
@@ -86,7 +89,10 @@ const Programs = (): JSX.Element => {
     };
 
     const columns = [
-        { title: 'ID', field: 'id', editable: 'never' as const },
+        {
+            title: 'Code',
+            render: (row) => `${row.codePrefix}-${row.id}`
+        },
         { title: 'Program Name', field: 'name' },
         {
             title: 'Activation Status',
@@ -118,24 +124,32 @@ const Programs = (): JSX.Element => {
             )
         },
         {
-            title: 'Assign courses',
-            field: 'internal_action',
-            render: (row) =>
-                canPerformActions(ACTION_ASSIGN_COURSE_TO_PROGRAM.name) && (
-                    <Link to={'/assigncourses'} onClick={() => localStorage.setItem('programId', row.id)}>
-                        <button className="btn btn btn-link">Assign courses</button>
-                    </Link>
-                )
-        },
-        {
-            title: 'View courses',
-            field: 'internal_action',
-            render: (row) =>
-                canPerformActions(ACTION_GET_PROGRAMS.name) && (
-                    <Link to={'/programcourses'} onClick={() => localStorage.setItem('programId', row.id)}>
-                        <button className="btn btn btn-link">View courses</button>
-                    </Link>
-                )
+            title: 'Actions',
+            render: (row) => (
+                <MUISelect defaultValue="" value="" labelId="demo-simple-select-label" id="demo-simple-select" style={{ width: 100 }}>
+                    {canPerformActions(ACTION_GET_PROGRAMS.name) && (
+                        <MenuItem
+                            value="assignCourses"
+                            onClick={() => {
+                                setSelectedRow(row);
+                                toggleProgramDetailsModal();
+                            }}
+                        >
+                            View Program Details
+                        </MenuItem>
+                    )}
+                    {canPerformActions(ACTION_ASSIGN_COURSE_TO_PROGRAM.name) && (
+                        <Link to={'/assigncourses'} onClick={() => localStorage.setItem('programId', row.id)} style={{ color: 'black' }}>
+                            <MenuItem value="assignCourses">Assign Courses</MenuItem>
+                        </Link>
+                    )}
+                    {canPerformActions(ACTION_GET_PROGRAMS.name) && (
+                        <Link to={'/programcourses'} onClick={() => localStorage.setItem('programId', row.id)} style={{ color: 'black' }}>
+                            <MenuItem value="viewCourses">View Courses</MenuItem>
+                        </Link>
+                    )}
+                </MUISelect>
+            )
         }
     ];
     const [errorMessages] = useState([]);
@@ -164,7 +178,7 @@ const Programs = (): JSX.Element => {
     const fetchPrograms = () => {
         setLinearDisplay('block');
         timetablingAxiosInstance
-            .get('/programs', { params: { includeDeactivated: true } })
+            .get('/programs', { params: { includeDeactivated: true, loadExtras: 'departments' } })
             .then((res) => {
                 setLinearDisplay('none');
                 setData(res.data);
@@ -242,6 +256,8 @@ const Programs = (): JSX.Element => {
     const toggleCloseConfirmModal = () => {
         setConfirmModal(false);
     };
+
+    const toggleProgramDetailsModal = () => setProgramDetailsModal(!programDetailsModal);
     return (
         <>
             <Row className="align-items-center page-header">
@@ -279,10 +295,17 @@ const Programs = (): JSX.Element => {
                 </>
             )}
             <ModalWrapper show={showModal} closeModal={toggleCreateModal} modalSize="lg" title="Create a program" noFooter>
-                <ValidationForm onSubmit={(e) => { e.preventDefault();toggleConfirmModal();}}>
+                <ValidationForm
+                    onSubmit={(e) => {
+                        e.preventDefault();
+                        toggleConfirmModal();
+                    }}
+                >
                     <div className="form-group">
                         <label htmlFor="name">
-                            <b>Program Name<span className="text-danger">*</span></b>
+                            <b>
+                                Program Name<span className="text-danger">*</span>
+                            </b>
                         </label>
                         <TextInput
                             name="name"
@@ -295,7 +318,9 @@ const Programs = (): JSX.Element => {
                         />
                         <br />
                         <label htmlFor="description">
-                            <b>Description<span className="text-danger">*</span></b>
+                            <b>
+                                Description<span className="text-danger">*</span>
+                            </b>
                         </label>
                         <TextInput
                             name="description"
@@ -310,7 +335,9 @@ const Programs = (): JSX.Element => {
                         />
                         <br />
                         <label htmlFor="cou">
-                            <b>Prerequisite Documentation<span className="text-danger">*</span></b>
+                            <b>
+                                Prerequisite Documentation<span className="text-danger">*</span>
+                            </b>
                         </label>
                         <TextInput
                             name="prerequisiteDocumentation"
@@ -325,7 +352,9 @@ const Programs = (): JSX.Element => {
                         />
                         <br />
                         <label htmlFor="certificationType">
-                            <b>Certification Type<span className="text-danger">*</span></b>
+                            <b>
+                                Certification Type<span className="text-danger">*</span>
+                            </b>
                         </label>
                         <br />
                         <Select
@@ -340,7 +369,9 @@ const Programs = (): JSX.Element => {
                         />
                         <br />
                         <label htmlFor="tiimetablelable">
-                            <b>Department<span className="text-danger">*</span></b>
+                            <b>
+                                Department<span className="text-danger">*</span>
+                            </b>
                         </label>
                         <br />
                         <Select
@@ -355,7 +386,9 @@ const Programs = (): JSX.Element => {
                         />
                         <br />
                         <label htmlFor="requiresClearance">
-                            <b>Requires Clearance<span className="text-danger">*</span></b>
+                            <b>
+                                Requires Clearance<span className="text-danger">*</span>
+                            </b>
                         </label>
                         <br />
                         <Select
@@ -371,7 +404,9 @@ const Programs = (): JSX.Element => {
                         <br />
                         <br />
                         <label htmlFor="duration">
-                            <b>Program duration<span className="text-danger">*</span></b>
+                            <b>
+                                Program duration<span className="text-danger">*</span>
+                            </b>
                         </label>
                         <br />
                         <TextInput
@@ -393,6 +428,26 @@ const Programs = (): JSX.Element => {
                         </button>
                     </div>
                 </ValidationForm>
+            </ModalWrapper>
+            <ModalWrapper
+                title={`Program Details for ${selectedRow?.name}`}
+                modalSize="lg"
+                closeModal={toggleProgramDetailsModal}
+                show={programDetailsModal}
+            >
+                <Row>
+                    <div className="col-md-12">
+                        <ListGroup>
+                            <ListGroup.Item>Program Code: {`${selectedRow?.codePrefix}-${selectedRow?.id}`}</ListGroup.Item>
+                            <ListGroup.Item>Program Name: {`${selectedRow?.name}`}</ListGroup.Item>
+                            <ListGroup.Item>Program Name: {`${selectedRow?.department?.name}`}</ListGroup.Item>
+                            <ListGroup.Item>Certification Type: {`${selectedRow?.certificationType}`}</ListGroup.Item>
+                            <ListGroup.Item>Program Duration: {`${selectedRow?.duration}`}</ListGroup.Item>
+                            <ListGroup.Item>Requires Clearance: {`${selectedRow?.requiresClearance ? 'Yes' : 'No'}`}</ListGroup.Item>
+                            <ListGroup.Item>Program Description: {`${selectedRow?.description}`}</ListGroup.Item>
+                        </ListGroup>
+                    </div>
+                </Row>
             </ModalWrapper>
             <ConfirmationModalWrapper
                 disabled={disabledButton}

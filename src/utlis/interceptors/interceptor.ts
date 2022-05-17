@@ -1,6 +1,7 @@
 import Config from '../../config';
 import getAccessToken from '../../pages/lib/getToken';
 import publicClientApplication from '../../pages/lib/initializeMSAL';
+import { v4 as uuidV4 } from 'uuid';
 
 import handleLogout from '../Logout';
 
@@ -9,6 +10,8 @@ export async function onRequestMade(requestConfig) {
     const tokenFromStorage = sessionStorage.getItem('idToken');
     const accessToken = tokenFromStorage === idToken ? idToken : tokenFromStorage;
     requestConfig.headers.authorization = `Bearer ${accessToken}`;
+    requestConfig.headers['X-Request-ID'] = uuidV4();
+    requestConfig.headers['X-Client-ID'] = 'staff-portal';
     return requestConfig;
 }
 
