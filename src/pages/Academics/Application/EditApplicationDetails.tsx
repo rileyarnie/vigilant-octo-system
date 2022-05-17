@@ -238,11 +238,12 @@ export function EditApplicationDetails(props) {
                                 errorMessage="Please select campus"
                             >
                                 <option value="">- Please select -</option>
-                                <option value="National Id" selected>
-                                        National ID
-                                </option>
-                                <option value="passport">Passport</option>
-                                <option value="Huduma Number">Huduma Number</option>
+                                <option value="ID No" selected>ID No</option>
+                                <option value="Passport No">Passport No</option>
+                                <option value="Company No">Company No</option>
+                                <option value="Service No">Service No</option>
+                                <option value="Military ID">Military ID</option>
+                                <option value="Driver License">Driver License</option>
                             </SelectGroup>
                             <br/>
                             <label htmlFor="identification">
@@ -949,8 +950,7 @@ export function EditApplicationDetails(props) {
                                         </div>
                                     ) : (
                                         <div>
-                                            <Typography
-                                                className={classes.instructions}>{getStepContent(activeStep)}</Typography>
+                                            <Typography className={classes.instructions}>{getStepContent(activeStep)}</Typography>
                                         </div>
                                     )}
                                 </div>
