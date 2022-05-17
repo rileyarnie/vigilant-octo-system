@@ -76,6 +76,7 @@ const Login = () => {
                 if (!res.data.isStaff) {
                     alerts.showError('You need to be a member of staff to access this app.');
                     localStorage.clear();
+                    sessionStorage.clear();
                     setLinearDisplay('none');
                     setDisabled(false);
                     return;
