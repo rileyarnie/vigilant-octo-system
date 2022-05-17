@@ -119,6 +119,7 @@ export function EditApplicationDetails(props) {
         updateApplication(updates);
     };
     const updateApplication = (updates) => {
+        setDisabledButton(true);
         simsAxiosInstance
             .put(`/program-cohort-applications/${props.application?.applications_id}`, {modifiedProgramCohortApplication: updates})
             .then(() => {
@@ -129,6 +130,7 @@ export function EditApplicationDetails(props) {
             }).finally(() =>{
                 setConfirmModal(false);
                 props.close();
+                setDisabledButton(false);
             });
     };
 
@@ -145,7 +147,6 @@ export function EditApplicationDetails(props) {
                 toggleUploadModal();
                 alerts.showSuccess('File uploaded successfully');
                 setDocumentsUrl(res.data);
-                setDisabledButton(false);
             })
             .catch((error) => {
                 alerts.showError(error.message);
