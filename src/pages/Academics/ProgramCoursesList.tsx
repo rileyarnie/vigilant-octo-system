@@ -82,7 +82,6 @@ const ProgramCoursesList = (props): JSX.Element => {
             .then(() => {
                 alerts.showSuccess('Succesfully removed course');
                 fetchCoursesAssignedToProgram(progId);
-                toggleCloseConfirmModal();
                 setDisabled(false);
                 setLinearDisplay('none');
             })
