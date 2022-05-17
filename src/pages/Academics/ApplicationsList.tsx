@@ -256,16 +256,16 @@ const ApplicationsList = (): JSX.Element => {
                                 <ListGroup.Item>Gender: {applicationData?.applications_gender}</ListGroup.Item>
                                 <ListGroup.Item>Marital Status: {applicationData?.applications_maritalStatus}</ListGroup.Item>
                                 <ListGroup.Item>Religion: {applicationData?.applications_religion}</ListGroup.Item>
-                                <ListGroup.Item>Date Of Birth: {applicationData?.applications_dateOfBirth?.slice(0,10)}</ListGroup.Item>
                             </ListGroup>
                         </div>
                         <div className="col-md-6">
                             <ListGroup>
                                 <ListGroup.Item>Phone Number: {applicationData?.applications_phoneNumber}</ListGroup.Item>
                                 <ListGroup.Item>Email Address: {applicationData?.applications_emailAddress}</ListGroup.Item>
+                                <ListGroup.Item>Date Of Birth: {applicationData?.applications_dateOfBirth?.slice(0,10)}</ListGroup.Item>
                                 <ListGroup.Item>Physical Challenges: {applicationData?.applications_physicalChallenges}</ListGroup.Item>
                                 <ListGroup.Item>Details: {applicationData?.applications_physicalChallengesDetails}</ListGroup.Item>
-                                <ListGroup.Item>Campus: {applicationData?.applications_campus}</ListGroup.Item>
+                                <ListGroup.Item>Campus: {applicationData?.campus[0].name}</ListGroup.Item>
                                 <ListGroup.Item>Preferred Start Date: {applicationData?.applications_preferredStartDate?.slice(0,10)}</ListGroup.Item>
                                 <ListGroup.Item>Sponsor: {applicationData?.applications_sponsor}</ListGroup.Item>
                                 <ListGroup.Item>County Of Residence: {applicationData?.applications_countyOfResidence}</ListGroup.Item>
