@@ -123,7 +123,7 @@ class Timetable extends React.Component {
         CourseCohortService.fetchCourseCohorts(loadExtras, semesterId)
             .then((res) => {
                 const courseCohorts = res.data
-                const courseCohortData = courseCohorts.map((cc) => {
+                const courseCohortData = courseCohorts.filter(ch => ch.programCohortSemester.status === 'PUBLISHED').map((cc) => {
                     return {
                         text: cc.course.name,
                         id: cc.id,

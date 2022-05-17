@@ -53,12 +53,11 @@ const Programs = (): JSX.Element => {
     const [selectedRow, setSelectedRow] = useState<Program>();
     const [, setProgramId] = useState(null);
     const [, setDisabled] = useState(false);
-    const [activationModal, setActivationModal] = useState(false);
     const [selectedDepartment, setSelectedDepartment] = useState();
-    let activationStatus: boolean;
     const [disabledButton, setDisabledButton] = useState(false);
     const [status, setStatus] = useState(false);
     const [programDetailsModal, setProgramDetailsModal] = useState(false);
+    const [activateConfirmModal, setActivateConfirmModal] = useState(false);
 
     const handleActivationStatusToggle = (event, row: Program) => {
         setStatus(!row.activationStatus);
@@ -72,11 +71,9 @@ const Programs = (): JSX.Element => {
         timetablingAxiosInstance
             .put(`/programs/${selectedRow.id}`, program)
             .then(() => {
-                const msg = activationStatus ? 'Successfully activated program' : 'Successfully Deactivated program';
+                const msg = program.activationStatus ? 'Successfully activated program' : 'Successfully Deactivated program';
                 alerts.showSuccess(msg);
-                setSelectedRow(null);
                 fetchPrograms();
-                toggleCloseConfirmModal();
             })
             .catch((error) => {
                 alerts.showError(error.message);
@@ -85,6 +82,8 @@ const Programs = (): JSX.Element => {
                 setDisabled(false);
                 setLinearDisplay('none');
                 setDisabledButton(false);
+                setSelectedRow(null);
+                toggleActivationConfirmModal();
             });
     };
 
@@ -106,15 +105,15 @@ const Programs = (): JSX.Element => {
                         onChange={(event) => {
                             handleActivationStatusToggle(event, row);
                             setSelectedRow(row);
-                            toggleActivationModal();
+                            toggleActivationConfirmModal();
                         }}
                     />
                     <ConfirmationModalWrapper
                         disabled={disabledButton}
                         submitButton
                         submitFunction={() => handleToggleStatusSubmit()}
-                        closeModal={handleCloseModal}
-                        show={activationModal}
+                        closeModal={toggleActivationConfirmModal}
+                        show={activateConfirmModal}
                     >
                         <h6 className="text-center">
                             A you sure you want to change the status of <>{!selectedRow ? '' : selectedRow.name}</> ?
@@ -242,13 +241,11 @@ const Programs = (): JSX.Element => {
     const toggleCreateModal = () => {
         showModal ? resetStateCloseModal() : setModal(true);
     };
-    const toggleActivationModal = () => {
-        activationModal ? resetStateCloseModal() : setActivationModal(true);
+
+    const toggleActivationConfirmModal = () => {
+        activateConfirmModal ? setActivateConfirmModal(false) : setActivateConfirmModal(true);
     };
-    const handleCloseModal = () => {
-        fetchPrograms();
-        setActivationModal(false);
-    };
+    
     const handleClose = () => setModal(false);
     const toggleConfirmModal = () => {
         setConfirmModal(true);
