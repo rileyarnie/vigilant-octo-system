@@ -50,8 +50,8 @@ const TrainerList = (): JSX.Element => {
     const columns = [
         { title: 'ID', field: 'tr_id', hidden: false },
         { title: 'Trainer AADAlias', render: (rowData) => rowData.stf_email },
-        { title: 'Trainer type', field: 'tr_trainerType' },
-        { title: 'Department ID', field: 'tr_departmentId' },
+        { title: 'Trainer Type', field: 'tr_trainerType' },
+        { title: 'Department', field: 'department_name' },
         {
             title: ' Actions',
             render: (row: { tr_departmentId: number; tr_trainerType: string; tr_id: number; tr_staffId: number; stf_name: string }) => (
