@@ -60,7 +60,6 @@ const TrainerList = (): JSX.Element => {
                         <div
                             className=""
                             onClick={() => {
-                                console.log('row', row);
                                 setSelectedDept(departments.filter((department) => department.id === row.tr_departmentId)[0]);
                                 setSelectedTrainer(row);
                                 setSelectedTrainerId(row.tr_id);
@@ -157,7 +156,6 @@ const TrainerList = (): JSX.Element => {
             .get('/trainers', { params: { includeDeactivated: true } })
             .then((res) => {
                 setLinearDisplay('none');
-                console.log(res.data);
                 setData(res.data);
             })
             .catch((error) => {
@@ -173,7 +171,6 @@ const TrainerList = (): JSX.Element => {
             })
             .catch((error) => {
                 //handle error using logging library
-                console.log('Error: ' + error);
                 alerts.showError(error.message);
             });
 
@@ -247,7 +244,6 @@ const TrainerList = (): JSX.Element => {
             // eslint-disable-next-line @typescript-eslint/no-explicit-any
         } catch (error: any) {
             // eslint disabled: TS Message => Catch clause variable type annotation must be 'any' or 'unknown' if specified.
-            console.log('error', error);
             alerts.showError(error.message);
         }
     };
@@ -326,7 +322,6 @@ const TrainerList = (): JSX.Element => {
     };
 
     const handleTrainerType = (trainerTyp) => {
-        console.log('trainerType', trainerType);
         setTrainerType(trainerTyp.value);
     };
     const toggleEditModal = () => {
