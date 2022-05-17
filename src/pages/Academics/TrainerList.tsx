@@ -4,7 +4,7 @@ import Alert from '@material-ui/lab/Alert';
 import Department from '../services/Department';
 import Breadcrumb from '../../App/components/Breadcrumb';
 import { Button, Card, Col, Dropdown, DropdownButton, Row } from 'react-bootstrap';
-import { ValidationForm } from 'react-bootstrap4-form-validation';
+import { ValidationForm, SelectGroup } from 'react-bootstrap4-form-validation';
 import { Alerts, ToastifyAlerts } from '../lib/Alert';
 import LinearProgress from '@mui/material/LinearProgress';
 import { canPerformActions } from '../../services/ActionChecker';
@@ -14,16 +14,16 @@ import TableWrapper from '../../utlis/TableWrapper';
 import { customSelectTheme, trainerTypes } from '../lib/SelectThemes';
 import Select from 'react-select';
 import ConfirmationModalWrapper from '../../App/components/modal/ConfirmationModalWrapper';
-import {DepartmentService} from '../services/DepartmentService';
+import { DepartmentService } from '../services/DepartmentService';
 import ModalWrapper from '../../App/components/modal/ModalWrapper';
 import CustomSwitch from '../../assets/switch/CustomSwitch';
 
 const alerts: Alerts = new ToastifyAlerts();
 
 const TrainerList = (): JSX.Element => {
-    const [switchStatus,setSwitchStatus] = useState<boolean>();
+    const [switchStatus, setSwitchStatus] = useState<boolean>();
     const [activationModal, setActivationModal] = useState(false);
-    const [selectedRow,setselectedRow] = useState<{tr_id:number}>();
+    const [selectedRow, setselectedRow] = useState<{ tr_id: number }>();
     const handleCloseActivationModal = () => {
         setActivationModal(false);
     };
@@ -35,12 +35,11 @@ const TrainerList = (): JSX.Element => {
             .patch(`/trainers/${trainerId}`, updates)
             .then(() => {
                 alerts.showSuccess('Successfully updated trainer');
-                fetchTrainers();         
+                fetchTrainers();
             })
             .catch((error) => {
                 console.error(error);
                 alerts.showError(error.message);
-                
             })
             .finally(() => {
                 setLinearDisplay('none');
@@ -61,9 +60,9 @@ const TrainerList = (): JSX.Element => {
                         <div
                             className=""
                             onClick={() => {
+                                setSelectedDept(departments.filter((department) => department.id === row.tr_departmentId)[0]);
                                 setSelectedTrainer(row);
                                 setSelectedTrainerId(row.tr_id);
-                                setDept(row.tr_departmentId);
                                 setTrainerType(row.tr_trainerType);
                                 setSelectedStaffId(row.tr_staffId);
 
@@ -77,7 +76,7 @@ const TrainerList = (): JSX.Element => {
                         <div
                             className=""
                             onClick={() => {
-                                toggleDeleteModal();
+                                // toggleDeleteModal();
                                 setTrainerId(row.tr_id);
                                 handleDelete(row.tr_id);
                             }}
@@ -91,34 +90,32 @@ const TrainerList = (): JSX.Element => {
         {
             title: 'Activation Status',
             field: 'internal_action',
-            render: (row) =>
-                (
-                    <>
-                        <CustomSwitch
-                            defaultChecked={row.tr_activationStatus}
-                            color="secondary"
-                            inputProps={{'aria-label': 'controlled'}}
-                            checked={row.tr_activationStatus}
-                            onChange={(event) => {
-                                setselectedRow(row);
-                                setActivationModal(true);
-                                setSwitchStatus(event.target.checked);
-                                
-                            }}
-                        />
-                        <ConfirmationModalWrapper
-                            disabled={disabled}
-                            submitButton
-                            submitFunction={() => updateTrainer(selectedRow?.tr_id,{activationStatus:switchStatus})}
-                            closeModal={handleCloseActivationModal}
-                            show={activationModal}
-                        >
-                            <h6 className="text-center">
-                                Are you sure you want to change the status of Trainer Id: <>{selectedRow?.tr_id}</> ?
-                            </h6>
-                        </ConfirmationModalWrapper>
-                    </>
-                )
+            render: (row) => (
+                <>
+                    <CustomSwitch
+                        defaultChecked={row.tr_activationStatus}
+                        color="secondary"
+                        inputProps={{ 'aria-label': 'controlled' }}
+                        checked={row.tr_activationStatus}
+                        onChange={(event) => {
+                            setselectedRow(row);
+                            setActivationModal(true);
+                            setSwitchStatus(event.target.checked);
+                        }}
+                    />
+                    <ConfirmationModalWrapper
+                        disabled={disabled}
+                        submitButton
+                        submitFunction={() => updateTrainer(selectedRow?.tr_id, { activationStatus: switchStatus })}
+                        closeModal={handleCloseActivationModal}
+                        show={activationModal}
+                    >
+                        <h6 className="text-center">
+                            Are you sure you want to change the status of Trainer Id: <>{selectedRow?.tr_id}</> ?
+                        </h6>
+                    </ConfirmationModalWrapper>
+                </>
+            )
         }
     ];
     const staffOptions = [];
@@ -128,36 +125,37 @@ const TrainerList = (): JSX.Element => {
     const [isError] = useState(false);
     const [staff, setStaff] = useState([]);
     const [departments, setDepartments] = useState([]);
-    const [selectedUser, setSelectedUser] = useState(0);
-    const [selectedDept, setDept] = useState<number>();
-    const [trainerType, setTrainerType] = useState<string>();
+    const [selectedDept, setSelectedDept] = useState<{ id: number; name: string }>();
+    const [trainerType, setTrainerType] = useState('');
     const [showModal, setModal] = useState(false);
     const [confirmModal, setConfirmModal] = useState(false);
     const [showEditModal, setEditModal] = useState(false);
     const [errorMessages] = useState([]);
     const [trainerId, setTrainerId] = useState(0);
-    const [selectedTrainerId, setSelectedTrainerId] = useState(0);
+    const [selectedTrainerId, setSelectedTrainerId] = useState<string | number>('');
     const [selectedTrainer, setSelectedTrainer] = useState<{
-        tr_departmentId: number;
+        tr_departmentId: number | string;
         tr_trainerType: string;
-        tr_id: number;
-        tr_staffId: number;
+        tr_id: number | string;
+        tr_staffId: number | string;
         stf_name: string;
     }>();
-    const [selectedStaffId, setSelectedStaffId] = useState(0);
+    const [selectedStaffId, setSelectedStaffId] = useState<number | string>('');
     const [linearDisplay, setLinearDisplay] = useState('none');
     const [showDeleteModal, setDeleteModal] = useState(false);
     const [showCantDeleteModal, setCantDeleteModal] = useState(false);
     const [departmentsWithHoDTrainer, setDepartmentsWithHoDTrainer] = useState<Department>();
     const [disabled, setDisabled] = useState(false);
 
+    const [user, setUser] = useState('');
+    const [department, setDepartment] = useState('');
+
     useEffect(() => {
         setLinearDisplay('block');
         timetablingAxiosInstance
-            .get('/trainers', { params: { includeDeactivated: true }})
+            .get('/trainers', { params: { includeDeactivated: true } })
             .then((res) => {
                 setLinearDisplay('none');
-                console.log(res.data);
                 setData(res.data);
             })
             .catch((error) => {
@@ -173,7 +171,6 @@ const TrainerList = (): JSX.Element => {
             })
             .catch((error) => {
                 //handle error using logging library
-                console.log('Error: ' + error);
                 alerts.showError(error.message);
             });
 
@@ -216,8 +213,8 @@ const TrainerList = (): JSX.Element => {
         setDisabled(true);
         e.preventDefault();
         const trainer = {
-            staffId: selectedUser,
-            departmentId: selectedDept,
+            staffId: user,
+            departmentId: department,
             trainerType: trainerType
         };
         createTrainer(trainer);
@@ -228,7 +225,7 @@ const TrainerList = (): JSX.Element => {
         setLinearDisplay('block');
         const updates = {
             staffId: selectedStaffId,
-            departmentID: selectedDept,
+            departmentID: selectedDept?.id,
             trainerType: trainerType
         };
 
@@ -236,13 +233,19 @@ const TrainerList = (): JSX.Element => {
     };
 
     const handleDelete = async (trainerId: number) => {
-        const departmentsWithHoDTrainer = await DepartmentService.getDepartmentByHODTrainerId(trainerId);
-        setDepartmentsWithHoDTrainer(departmentsWithHoDTrainer);
-        if (departmentsWithHoDTrainer) {
-            toggleCantDeleteModal();
-            return;
+        try {
+            const departmentsWithHoDTrainer = await DepartmentService.getDepartmentByHODTrainerId(trainerId);
+            setDepartmentsWithHoDTrainer(departmentsWithHoDTrainer);
+            if (departmentsWithHoDTrainer) {
+                toggleCantDeleteModal();
+                return;
+            }
+            toggleDeleteModal();
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        } catch (error: any) {
+            // eslint disabled: TS Message => Catch clause variable type annotation must be 'any' or 'unknown' if specified.
+            alerts.showError(error.message);
         }
-        toggleDeleteModal();
     };
 
     const createTrainer = (trainerData) => {
@@ -271,12 +274,12 @@ const TrainerList = (): JSX.Element => {
             .then(() => {
                 alerts.showSuccess('Succesfully edited trainer');
                 fetchTrainers();
+                toggleEditModal();
             })
             .catch((error) => {
                 alerts.showError(error.message);
             })
             .finally(() => {
-                toggleEditModal();
                 setConfirmModal(false);
                 setDisabled(false);
                 setLinearDisplay('none');
@@ -315,16 +318,23 @@ const TrainerList = (): JSX.Element => {
     };
 
     const handleChange = (selectedDept) => {
-        setDept(parseInt(selectedDept.value));
+        setSelectedDept(selectedDept);
     };
-    const handleUser = (selectedUser) => {
-        setSelectedUser(selectedUser.value);
-    };
+
     const handleTrainerType = (trainerTyp) => {
         setTrainerType(trainerTyp.value);
     };
     const toggleEditModal = () => {
-        showEditModal ? setEditModal(false) : setEditModal(true);
+        if (showEditModal) {
+            setEditModal(false);
+            setSelectedDept({ name: '', id: 0 });
+            setSelectedTrainer({ stf_name: '', tr_departmentId: '', tr_id: '', tr_staffId: '', tr_trainerType: '' });
+            setSelectedTrainerId('');
+            setTrainerType('');
+            setSelectedStaffId(0);
+        } else {
+            setEditModal(true);
+        }
     };
     const toggleCantDeleteModal = () => {
         showCantDeleteModal ? setCantDeleteModal(false) : setCantDeleteModal(true);
@@ -338,6 +348,7 @@ const TrainerList = (): JSX.Element => {
     const toggleCloseConfirmModal = () => {
         setConfirmModal(false);
     };
+
     return (
         <>
             <Row className="align-items-center page-header">
@@ -373,70 +384,98 @@ const TrainerList = (): JSX.Element => {
                 </Col>
             </Row>
             <ModalWrapper show={showModal} closeModal={toggleCreateModal} modalSize="lg" title="Create a trainer" noFooter>
-                <ValidationForm>
+                <ValidationForm
+                    onSubmit={(e) => {
+                        e.preventDefault();
+                        toggleConfirmModal();
+                    }}
+                >
                     <div className="form-group">
-                        <label htmlFor="user">Select staff<span className="text-danger">*</span></label>
-                        <Select
-                            theme={customSelectTheme}
-                            defaultValue=""
-                            options={staffOptions}
-                            isMulti={false}
-                            placeholder="Select a user."
-                            noOptionsMessage={() => 'No users available'}
-                            isClearable
-                            onChange={handleUser}
-                        />
-                        <br />
+                        <label htmlFor="user">
+                            Select staff<span className="text-danger">*</span>
+                        </label>
+                        <SelectGroup
+                            defaultValue={user}
+                            name="user"
+                            id="user"
+                            required
+                            onChange={(e) => {
+                                setUser(e.target.value);
+                            }}
+                            errorMessage="Please select a user"
+                        >
+                            <option value="">- Please select -</option>
+                            {staffOptions.map((staffOption) => (
+                                <option key={staffOption.value} value={staffOption.value}>
+                                    {staffOption.label}
+                                </option>
+                            ))}
+                        </SelectGroup>
                     </div>
                     <div className="form-group">
-                        <label htmlFor="department">Select a department<span className="text-danger">*</span></label>
-                        <Select
-                            theme={customSelectTheme}
-                            defaultValue=""
-                            options={departmentOptions}
-                            isMulti={false}
-                            isClearable
-                            placeholder="Select a department."
-                            noOptionsMessage={() => 'No department available'}
-                            onChange={handleChange}
-                        />
-                        <br />
+                        <label htmlFor="department">
+                            Select a department<span className="text-danger">*</span>
+                        </label>
+                        <SelectGroup
+                            defaultValue={department}
+                            name="department"
+                            id="department"
+                            required
+                            onChange={(e) => {
+                                setDepartment(e.target.value);
+                            }}
+                            errorMessage="Please select a department"
+                        >
+                            <option value="">- Please select -</option>
+                            {departmentOptions.map((departmentOption) => (
+                                <option key={departmentOption.value} value={departmentOption.value}>
+                                    {departmentOption.label}
+                                </option>
+                            ))}
+                        </SelectGroup>
                     </div>
-
-                    <div className="form-group">
-                        <label htmlFor="trainerType">Select Trainer type<span className="text-danger">*</span></label>
-                        <Select
-                            theme={customSelectTheme}
-                            defaultValue=""
-                            options={trainerTypeOptions}
-                            isMulti={false}
-                            isClearable
-                            placeholder="Select trainer type."
-                            noOptionsMessage={() => 'No types available'}
-                            onChange={handleTrainerType}
-                        />
-                        <br />
+                    <div>
+                        <label htmlFor="trainerType">
+                            Select a trainer type<span className="text-danger">*</span>
+                        </label>
+                        <SelectGroup
+                            defaultValue={trainerType}
+                            name="trainerType"
+                            id="trainerType"
+                            required
+                            onChange={(e) => {
+                                setTrainerType(e.target.value);
+                            }}
+                            errorMessage="Please select trainer type"
+                        >
+                            <option value="">- Please select -</option>
+                            {trainerTypeOptions.map((trainerTypeOption) => (
+                                <option key={trainerTypeOption.value} value={trainerTypeOption.value}>
+                                    {trainerTypeOption.label}
+                                </option>
+                            ))}
+                        </SelectGroup>
                     </div>
+                    <Col className="mt-4">
+                        <button className="btn btn-danger float-left" onClick={handleCloseModal}>
+                            Cancel
+                        </button>
+                        <button className="btn btn-info float-right">Submit</button>
+                    </Col>
                 </ValidationForm>
-                <Col>
-                    <button className="btn btn-info float-right" onClick={toggleConfirmModal}>
-                        Submit
-                    </button>
-                    <button className="btn btn-danger float-left" onClick={handleCloseModal}>
-                        Cancel
-                    </button>
-                </Col>
             </ModalWrapper>
             <ModalWrapper title="Edit Trainer" show={showEditModal} closeModal={toggleEditModal} modalSize="lg" noFooter>
                 <ValidationForm>
                     <div className="form-group">
-                        <label htmlFor="staff">Select a staff<span className="text-danger">*</span></label>
+                        <label htmlFor="staff">
+                            Select a staff<span className="text-danger">*</span>
+                        </label>
                         <Select
                             theme={customSelectTheme}
-                            defaultValue={!selectedTrainer ? '' : selectedTrainer.stf_name}
+                            defaultValue={{ value: selectedTrainer?.tr_staffId, label: selectedTrainer?.stf_name }}
                             options={staffOptions}
                             isMulti={false}
-                            placeholder={!selectedTrainer ? 'Select a staff.' : selectedTrainer.stf_name}
+                            placeholder="Select a staff."
                             noOptionsMessage={() => 'No staff available'}
                             onChange={handleEditStaff}
                         />
@@ -444,10 +483,12 @@ const TrainerList = (): JSX.Element => {
                     </div>
 
                     <div className="form-group">
-                        <label htmlFor="department">Select a department<span className="text-danger">*</span></label>
+                        <label htmlFor="department">
+                            Select a department<span className="text-danger">*</span>
+                        </label>
                         <Select
                             theme={customSelectTheme}
-                            defaultValue=""
+                            defaultValue={{ value: selectedDept?.id, label: selectedDept?.name }}
                             options={departmentOptions}
                             isMulti={false}
                             placeholder="Select a department."
@@ -458,13 +499,15 @@ const TrainerList = (): JSX.Element => {
                     </div>
 
                     <div className="form-group">
-                        <label htmlFor="trainerType">Select Trainer type<span className="text-danger">*</span></label>
+                        <label htmlFor="trainerType">
+                            Select Trainer type<span className="text-danger">*</span>
+                        </label>
                         <Select
                             theme={customSelectTheme}
-                            defaultValue={!selectedTrainer ? '' : trainerType}
+                            defaultValue={{ value: trainerType, label: trainerType }}
                             options={trainerTypeOptions}
                             isMulti={false}
-                            placeholder={!selectedTrainer ? 'Select trainer type.' : trainerType}
+                            placeholder="Select trainer type."
                             noOptionsMessage={() => 'No types available'}
                             onChange={handleTrainerType}
                         />
@@ -481,7 +524,8 @@ const TrainerList = (): JSX.Element => {
             <ModalWrapper show={showCantDeleteModal} title="Remove Trainer" modalSize="lg" closeModal={toggleCantDeleteModal}>
                 <p>Please change the HoD for {departmentsWithHoDTrainer?.name} before attempting to remove this trainer</p>
             </ModalWrapper>
-            <ConfirmationModalWrapper disabled={disabled}
+            <ConfirmationModalWrapper
+                disabled={disabled}
                 title="Remove trainer"
                 submitButton
                 submitFunction={() => deleteTrainer(trainerId)}
@@ -493,15 +537,16 @@ const TrainerList = (): JSX.Element => {
                     that they are assigned to
                 </p>{' '}
             </ConfirmationModalWrapper>
-            <ConfirmationModalWrapper disabled={disabled}
+            <ConfirmationModalWrapper
+                disabled={disabled}
                 submitButton
-                submitFunction={(e) => (selectedTrainer ? handleEdit(e) : handleSubmit(e))}
+                submitFunction={(e) => (selectedTrainer?.stf_name ? handleEdit(e) : handleSubmit(e))}
                 closeModal={toggleCloseConfirmModal}
                 show={confirmModal}
             >
                 <p>
-                    {selectedTrainer
-                        ? `Are you sure you want to edit trainer ${selectedTrainer.stf_name}?`
+                    {selectedTrainer?.stf_name
+                        ? `Are you sure you want to edit trainer ${selectedTrainer?.stf_name}?`
                         : 'Are you sure you want to create a new trainer'}
                 </p>
             </ConfirmationModalWrapper>
