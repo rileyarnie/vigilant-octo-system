@@ -1,20 +1,20 @@
 /* eslint-disable react/prop-types */
 /* eslint-disable camelcase */
 // eslint-disable-next-line no-use-before-define
-import React, { useEffect, useState } from 'react';
-import { Button, Card, Col, Container, Modal, Row } from 'react-bootstrap';
+import React, {useEffect, useState} from 'react';
+import {Button, Card, Col, Container, Modal, Row} from 'react-bootstrap';
 import axios from 'axios';
 import Config from '../../../config';
-import { createStyles, makeStyles, Theme } from '@material-ui/core/styles';
+import {createStyles, makeStyles, Theme} from '@material-ui/core/styles';
 import Stepper from '@material-ui/core/Stepper';
 import Step from '@material-ui/core/Step';
 import StepLabel from '@material-ui/core/StepLabel';
 import Typography from '@material-ui/core/Typography';
-import { FileInput, SelectGroup, TextInput, ValidationForm } from 'react-bootstrap4-form-validation';
-import { Alerts, ToastifyAlerts } from '../../lib/Alert';
-import { simsAxiosInstance } from '../../../utlis/interceptors/sims-interceptor';
-import { TimetableService } from '../../../services/TimetableService';
-import { timetablingAxiosInstance } from '../../../utlis/interceptors/timetabling-interceptor';
+import {FileInput, SelectGroup, TextInput, ValidationForm} from 'react-bootstrap4-form-validation';
+import {Alerts, ToastifyAlerts} from '../../lib/Alert';
+import {simsAxiosInstance} from '../../../utlis/interceptors/sims-interceptor';
+import {TimetableService} from '../../../services/TimetableService';
+import {timetablingAxiosInstance} from '../../../utlis/interceptors/timetabling-interceptor';
 
 const alerts: Alerts = new ToastifyAlerts();
 const useStyles = makeStyles((theme: Theme) =>
@@ -37,25 +37,27 @@ export function EditApplicationDetails(props) {
         id: number;
         name: string;
     }
+
     const timetablingSrv = Config.baseUrl.timetablingSrv;
     const [firstName, setFirstName] = useState(props.application?.applications_firstName || '');
     const [lastName, setLastName] = useState(props.application?.applications_lastName || '');
     const [otherName, setOtherName] = useState(props.application?.applications_otherName || '');
     const [nationality, setNationality] = useState(props.application?.applications_nationality || '');
     const [identification, setIdentification] = useState(props.application?.applications_identification || '');
-    const [identificationType, setIdentificationType] = useState(props.application?.applications_identification || '');
+    const [identificationType, setIdentificationType] = useState(props.application?.applications_identificationType || '');
     const [emailAddress, setEmailAddress] = useState(props.application?.applications_emailAddress || '');
     const [gender, setGender] = useState(props.application?.applications_gender || '');
     const [maritalStatus, setMaritalStatus] = useState(props.application?.applications_maritalStatus || '');
     const [religion, setReligion] = useState(props.application?.applications_religion || '');
-    const [dateOfBirth, setDateOfBirth] = useState(props.application?.applications_dateOfBirth || '');
+    const [dateOfBirth, setDateOfBirth] = useState(props.application?.applications_dateOfBirth.slice(0, 10) || '');
     const [phoneNumber, setPhoneNumber] = useState(props.application?.applications_phoneNumber || '');
     const [fileUploaded, setFileUploaded] = useState(props.application?.applications_otherName);
     const [nextOfKinName, setNextOfKinName] = useState(props.application?.nkd_name || '');
     const [nextOfKinPhoneNumber, setNextOfKinPhoneNumber] = useState(props.application?.nkd_nextOfKinPhoneNumber || '');
     const [nextOfKinRelation, setNextOfKinRelation] = useState(props.application?.nkd_relation || '');
+    const [physicalChallengesDetails, setPhysicalChallengesDetails] = useState(props.application?.applications_physicalChallengesDetails || '');
     const [physicalChallenges, setPhysicalChallenges] = useState(props.application?.applications_physicalChallenges || '');
-    const [courseStartDate, setCourseStartDate] = useState(props.application?.applications_courseStartDate || '');
+    const [preferredStartDate, setPreferredStartDate] = useState(props.application?.applications_preferredStartDate.slice(0, 10) || '');
     const [campus, setCampus] = useState(props.application?.applications_campus);
     const [sponsor, setSponsor] = useState(props.application?.applications_sponsor || '');
     const [countyOfResidence, setCountyOfResidence] = useState(props.application?.applications_countyOfResidence || '');
@@ -67,7 +69,7 @@ export function EditApplicationDetails(props) {
     useEffect(() => {
         const token = localStorage.getItem('idToken');
         const config = {
-            headers: { Authorization: `Bearer ${token}` }
+            headers: {Authorization: `Bearer ${token}`}
         };
         axios
             .get(`${timetablingSrv}/campuses`, config)
@@ -92,13 +94,14 @@ export function EditApplicationDetails(props) {
                 maritalStatus: maritalStatus,
                 religion: religion,
                 dateOfBirth: dateOfBirth,
-                // identificationType: identificationType,
+                identificationType: identificationType,
                 phoneNumber: phoneNumber,
                 physicalChallenges: physicalChallenges,
-                courseStartDate: courseStartDate,
+                physicalChallengesDetails:physicalChallengesDetails,
+                preferredStartDate: preferredStartDate,
                 campus: campus,
                 sponsor: sponsor,
-                // countyOfResidence: countyOfResidence,
+                countyOfResidence: countyOfResidence,
                 programCohortId: props.application?.applications_programCohortId
             },
             nextOfKin: {
@@ -114,7 +117,7 @@ export function EditApplicationDetails(props) {
     };
     const updateApplication = (updates) => {
         simsAxiosInstance
-            .put(`/program-cohort-applications/${props.application?.applications_id}`, { modifiedProgramCohortApplication: updates })
+            .put(`/program-cohort-applications/${props.application?.applications_id}`, {modifiedProgramCohortApplication: updates})
             .then(() => {
                 props.close();
                 alerts.showSuccess('Successfully updated application details');
@@ -123,11 +126,12 @@ export function EditApplicationDetails(props) {
                 alerts.showError(error.message);
             });
     };
+
     function handleUpload() {
         const form = new FormData();
         form.append('fileUploaded', fileUploaded);
         const config = {
-            headers: { 'content-type': 'multipart/form-data' }
+            headers: {'content-type': 'multipart/form-data'}
         };
         TimetableService.handleFileUpload(form, config);
         timetablingAxiosInstance
@@ -150,14 +154,14 @@ export function EditApplicationDetails(props) {
         switch (step) {
         case 0:
             return (
-                <ValidationForm>
+                <ValidationForm onSubmit={(e) => { e.preventDefault();handleNext();}}>
                     <div className="form-group row">
                         <div className="col-md-2"> </div>
                         <div className="col-md-4">
                             <label htmlFor="firstName">
                                 <b>First Name<span className="text-danger">*</span></b>
                             </label>
-                            <br />
+                            <br/>
                             <TextInput
                                 name="firstName"
                                 id="firstName"
@@ -169,11 +173,11 @@ export function EditApplicationDetails(props) {
                                     setFirstName(e.target.value);
                                 }}
                             />
-                            <br />
+                            <br/>
                             <label htmlFor="lastName">
                                 <b>Last Name<span className="text-danger">*</span></b>
                             </label>
-                            <br />
+                            <br/>
                             <TextInput
                                 name="lastName"
                                 id="lastName"
@@ -185,11 +189,11 @@ export function EditApplicationDetails(props) {
                                     setLastName(e.target.value);
                                 }}
                             />
-                            <br />
+                            <br/>
                             <label htmlFor="otherName">
                                 <b>Other Name</b>
                             </label>
-                            <br />
+                            <br/>
                             <TextInput
                                 name="otherName"
                                 id="otherName"
@@ -200,13 +204,13 @@ export function EditApplicationDetails(props) {
                                     setOtherName(e.target.value);
                                 }}
                             />
-                            <br />
+                            <br/>
                         </div>
                         <div className="col-md-4">
                             <label htmlFor="phoneNumber">
                                 <b>Phone Number<span className="text-danger">*</span></b>
                             </label>
-                            <br />
+                            <br/>
                             <TextInput
                                 name="phoneNumber"
                                 id="phoneNumber"
@@ -218,11 +222,11 @@ export function EditApplicationDetails(props) {
                                 placeholder="Enter Phone Number"
                                 type="text"
                             />
-                            <br />
+                            <br/>
                             <label htmlFor="identificationType">
                                 <b>Identification Type<span className="text-danger">*</span></b>
                             </label>
-                            <br />
+                            <br/>
                             <SelectGroup
                                 defaultValue={identificationType}
                                 name="identificationType"
@@ -240,11 +244,11 @@ export function EditApplicationDetails(props) {
                                 <option value="passport">Passport</option>
                                 <option value="Huduma Number">Huduma Number</option>
                             </SelectGroup>
-                            <br />
+                            <br/>
                             <label htmlFor="identification">
                                 <b>Identification Number<span className="text-danger">*</span></b>
                             </label>
-                            <br />
+                            <br/>
                             <TextInput
                                 name="identification"
                                 id="identification"
@@ -256,11 +260,11 @@ export function EditApplicationDetails(props) {
                                 }}
                                 type="text"
                             />
-                            <br />
+                            <br/>
                             <label htmlFor="email">
                                 <b>Email Address<span className="text-danger">*</span></b>
                             </label>
-                            <br />
+                            <br/>
                             <TextInput
                                 name="Email"
                                 id="email"
@@ -270,18 +274,29 @@ export function EditApplicationDetails(props) {
                                 onChange={(e) => {
                                     setEmailAddress(e.target.value);
                                 }}
-                                type="text"
+                                type="email"
                             />
                         </div>
-                        <div className="col-md-2"> </div>
+                        <div className="col-md-2"></div>
+                    </div>
+                    <div>
+                        <Button
+                            className="btn btn-danger float-left"
+                            style={{marginLeft: '1rem'}}
+                            disabled={activeStep === 0}
+                            onClick={handleBack}
+                        >
+                                Back
+                        </Button>
+                        <button className="btn btn-danger float-right">Next</button>
                     </div>
                 </ValidationForm>
             );
         case 1:
             return (
-                <ValidationForm>
+                <ValidationForm onSubmit={(e) => { e.preventDefault();handleNext();}}>
                     <div className="form-group row">
-                        <div className="col-md-2"> </div>
+                        <div className="col-md-2"></div>
                         <div className="col-md-4">
                             <label htmlFor="gender">
                                 <b>Gender<span className="text-danger">*</span></b>
@@ -301,11 +316,11 @@ export function EditApplicationDetails(props) {
                                 <option value="female">Female</option>
                                 <option value="other">Other</option>
                             </SelectGroup>
-                            <br />
+                            <br/>
                             <label htmlFor="religion">
                                 <b>Religion<span className="text-danger">*</span></b>
                             </label>
-                            <br />
+                            <br/>
                             <SelectGroup
                                 defaultValue={religion}
                                 name="religion"
@@ -323,11 +338,11 @@ export function EditApplicationDetails(props) {
                                 <option value="Hindu">Hinduism</option>
                                 <option value="Other">Other</option>
                             </SelectGroup>
-                            <br />
+                            <br/>
                             <label htmlFor="maritalStatus">
                                 <b>Marital Status<span className="text-danger">*</span></b>
                             </label>
-                            <br />
+                            <br/>
                             <SelectGroup
                                 defaultValue={maritalStatus}
                                 name="maritalStatus"
@@ -345,13 +360,13 @@ export function EditApplicationDetails(props) {
                                 <option value="separated">Separated</option>
                                 <option value="widowed">widowed</option>
                             </SelectGroup>
-                            <br />
+                            <br/>
                         </div>
                         <div className="col-md-4">
                             <label htmlFor="nationality">
                                 <b>Nationality<span className="text-danger">*</span></b>
                             </label>
-                            <br />
+                            <br/>
                             <SelectGroup
                                 defaultValue={nationality}
                                 name="nationality"
@@ -556,13 +571,13 @@ export function EditApplicationDetails(props) {
                                 <option value="zambian">Zambian</option>
                                 <option value="zimbabwean">Zimbabwean</option>
                             </SelectGroup>
-                            <br />
+                            <br/>
                             {nationality === 'kenyan' ? (
                                 <>
                                     <label htmlFor="maritalStatus">
                                         <b>County of Residence<span className="text-danger">*</span></b>
                                     </label>
-                                    <br />
+                                    <br/>
                                     <SelectGroup
                                         defaultValue={countyOfResidence}
                                         name="county"
@@ -626,76 +641,90 @@ export function EditApplicationDetails(props) {
                             ) : (
                                 <></>
                             )}
-                            <br />
+                            <br/>
                             <label htmlFor="dateOfBirth">
                                 <b>Date of Birth<span className="text-danger">*</span></b>
                             </label>
-                            <br />
+                            <br/>
                             <TextInput
                                 name="dateOfBirth"
                                 id="dateOfBirth"
-                                value={dateOfBirth}
+                                defaultValue={dateOfBirth}
                                 required
                                 onChange={(e) => {
                                     setDateOfBirth(e.target.value);
                                 }}
                                 type="date"
                             />
-                            <br />
+                            <br/>
                         </div>
-                        <div className="col-md-2"> </div>
+                        <div className="col-md-2"></div>
+                    </div>
+                    <div>
+                        <Button
+                            className="btn btn-danger float-left"
+                            style={{marginLeft: '1rem'}}
+                            disabled={activeStep === 0}
+                            onClick={handleBack}
+                        >
+                            Back
+                        </Button>
+                        <button className="btn btn-danger float-right">Next</button>
                     </div>
                 </ValidationForm>
             );
         case 2:
             return (
-                <ValidationForm>
+                <ValidationForm onSubmit={(e) => { e.preventDefault();handleNext();}}>
                     <div className="form-group row">
-                        <div className="col-md-2"> </div>
+                        <div className="col-md-2"></div>
                         <div className="col-md-4">
                             <label htmlFor="name">
                                 <b>Name<span className="text-danger">*</span></b>
                             </label>
-                            <br />
-                            <br />
+                            <br/>
+                            <br/>
                             <TextInput
                                 name="name"
                                 placeholder="Enter name"
                                 id="name"
+                                required
                                 value={nextOfKinName}
                                 onChange={(e) => {
                                     setNextOfKinName(e.target.value);
                                 }}
                                 type="text"
                             />
-                            <br />
+                            <br/>
                             <label htmlFor="phoneNumber">
                                 <b>Phone Number<span className="text-danger">*</span></b>
                             </label>
-                            <br />
-                            <br />
+                            <br/>
+                            <br/>
                             <TextInput
                                 name="phoneNumber"
                                 placeholder="Enter phone number"
                                 id="phoneNumber"
+                                required
                                 value={nextOfKinPhoneNumber}
                                 onChange={(e) => {
                                     setNextOfKinPhoneNumber(e.target.value);
                                 }}
                                 type="text"
                             />
-                            <br />
+                            <br/>
                         </div>
                         <div className="col-md-4">
                             <label htmlFor="relation">
                                 <b>Relation<span className="text-danger">*</span></b>
                             </label>
-                            <br />
-                            <br />
+                            <br/>
+                            <br/>
                             <TextInput
                                 name="relation"
                                 placeholder="Relation"
                                 id="relation"
+                                required
                                 value={nextOfKinRelation}
                                 onChange={(e) => {
                                     setNextOfKinRelation(e.target.value);
@@ -703,36 +732,46 @@ export function EditApplicationDetails(props) {
                                 type="text"
                             />
                         </div>
-                        <div className="col-md-2"> </div>
+                        <div className="col-md-2"></div>
+                    </div>
+                    <div>
+                        <Button
+                            className="btn btn-danger float-left"
+                            style={{marginLeft: '1rem'}}
+                            disabled={activeStep === 0}
+                            onClick={handleBack}
+                        >
+                            Back
+                        </Button>
+                        <button className="btn btn-danger float-right">Next</button>
                     </div>
                 </ValidationForm>
             );
         default:
             return (
-                <ValidationForm>
+                <ValidationForm onSubmit={handleEdit}>
                     <div className="form-group row">
-                        <div className="col-md-2"> </div>
+                        <div className="col-md-2"></div>
                         <div className="col-md-4">
                             <label htmlFor="courseStartDate">
                                 <b>Preferred Start Date<span className="text-danger">*</span></b>
                             </label>
-                            <br />
-                            <br />
+                            <br/>
                             <TextInput
                                 name="courseStartDate"
                                 required
                                 id="courseStartDate"
-                                value={courseStartDate}
+                                defaultValue={preferredStartDate}
                                 onChange={(e) => {
-                                    setCourseStartDate(e.target.value);
+                                    setPreferredStartDate(e.target.value);
                                 }}
                                 type="date"
                             />
-                            <br />
+                            <br/>
                             <label htmlFor="campus">
                                 <b>Preferred Campus<span className="text-danger">*</span></b>
                             </label>
-                            <br />
+                            <br/>
                             <SelectGroup
                                 name="campus"
                                 id="campus"
@@ -752,17 +791,18 @@ export function EditApplicationDetails(props) {
                                     );
                                 })}
                             </SelectGroup>
-                            <br />
+                            <br/>
                         </div>
                         <div className="col-md-4">
                             <label htmlFor="campus">
                                 <b>Sponsor<span className="text-danger">*</span></b>
                             </label>
-                            <br />
+                            <br/>
                             <SelectGroup
                                 name="campus"
                                 id="sponsor"
                                 required
+                                value={sponsor}
                                 onChange={(e) => {
                                     setSponsor(e.target.value);
                                 }}
@@ -774,28 +814,49 @@ export function EditApplicationDetails(props) {
                                 <option value="Employer">Employer</option>
                                 <option value="Other">Other</option>
                             </SelectGroup>
-                            <br />
+                            <br/>
                             <label htmlFor="physicalChallenges">
                                 <b>Physical Challenges<span className="text-danger">*</span></b>
                             </label>
-                            <br />
-                            <TextInput
-                                name="physicalChallenges"
-                                multiline
+                            <br/>
+                            <SelectGroup
+                                name="physical"
+                                id="pcr"
+                                required
                                 value={physicalChallenges}
-                                rows="3"
-                                id="physicalChallenges"
                                 onChange={(e) => {
                                     setPhysicalChallenges(e.target.value);
                                 }}
-                                type="text"
-                            />
-                            <br />
+                                errorMessage="Please select yes or No"
+                            >
+                                <option value="">- Please select -</option>
+                                <option value="Yes">Yes</option>
+                                <option value="No">No</option>
+                            </SelectGroup>
+                            {physicalChallenges === 'Yes' ? (
+                                <>                            <label htmlFor="physicalChallenges">
+                                    <b>Give more details<span className="text-danger">*</span></b>
+                                </label>
+                                <br/>
+                                <TextInput
+                                    name="physicalChallenges"
+                                    multiline
+                                    value={physicalChallengesDetails}
+                                    rows="3"
+                                    id="physicalChallenges"
+                                    onChange={(e) => {
+                                        setPhysicalChallengesDetails(e.target.value);
+                                    }}
+                                    type="text"
+                                />
+                                <br/></>) : (
+                                <></>
+                            )}
                             <label htmlFor="countryOfResidence">
                                 <b>Supporting Documents<span className="text-danger">*</span></b>
                             </label>
-                            <br />
-                            <br />
+                            <br/>
+                            <br/>
                             <button
                                 className="btn btn-danger"
                                 onClick={(e) => {
@@ -805,14 +866,26 @@ export function EditApplicationDetails(props) {
                             >
                                     Upload documents
                             </button>
-                            <br />
+                            <br/>
                         </div>
-                        <div className="col-md-2"> </div>
+                        <div className="col-md-2"></div>
+                    </div>
+                    <div>
+                        <Button
+                            className="btn btn-danger float-left"
+                            style={{marginLeft: '1rem'}}
+                            disabled={activeStep === 0}
+                            onClick={handleBack}
+                        >
+                            Back
+                        </Button>
+                        <button className="btn btn-info float-right">Submit</button>
                     </div>
                 </ValidationForm>
             );
         }
     }
+
     const [activeStep, setActiveStep] = React.useState(0);
     const [skipped, setSkipped] = React.useState(new Set<number>());
     const steps = getSteps();
@@ -876,34 +949,8 @@ export function EditApplicationDetails(props) {
                                         </div>
                                     ) : (
                                         <div>
-                                            <Typography className={classes.instructions}>{getStepContent(activeStep)}</Typography>
-                                            <div>
-                                                <Button
-                                                    className="btn btn-danger float-left"
-                                                    style={{ marginLeft: '1rem' }}
-                                                    disabled={activeStep === 0}
-                                                    onClick={handleBack}
-                                                >
-                                                    Back
-                                                </Button>
-                                                {activeStep === steps.length - 1 ? (
-                                                    <Button
-                                                        className="btn btn-info float-right"
-                                                        style={{ marginLeft: '1rem' }}
-                                                        onClick={handleEdit}
-                                                    >
-                                                        Submit
-                                                    </Button>
-                                                ) : (
-                                                    <Button
-                                                        className="btn btn-danger float-right"
-                                                        style={{ marginLeft: '1rem' }}
-                                                        onClick={handleNext}
-                                                    >
-                                                        Next
-                                                    </Button>
-                                                )}
-                                            </div>
+                                            <Typography
+                                                className={classes.instructions}>{getStepContent(activeStep)}</Typography>
                                         </div>
                                     )}
                                 </div>
@@ -930,8 +977,8 @@ export function EditApplicationDetails(props) {
                                 name="fileUploaded"
                                 id="image"
                                 encType="multipart/form-data"
-                                fileType={['pdf', 'doc', 'docx']}
-                                maxFileSize="10mb"
+                                fileType={['pdf']}
+                                maxFileSize="2mb"
                                 onInput={(e) => {
                                     setFileUploaded(() => {
                                         return e.target.files[0];
@@ -939,13 +986,13 @@ export function EditApplicationDetails(props) {
                                 }}
                                 errorMessage={{
                                     required: 'Please upload a document',
-                                    fileType: 'Only document is allowed',
+                                    fileType:'Only pdf document allowed',
                                     maxFileSize: 'Max file size is 10MB'
                                 }}
                             />
                         </ValidationForm>
                     </Modal.Body>
-                    <Modal.Footer style={{ display: 'flex', justifyContent: 'space-between' }}>
+                    <Modal.Footer style={{display: 'flex', justifyContent: 'space-between'}}>
                         <Button variant="contained" color="primary" onClick={toggleUploadModal}>
                             Close
                         </Button>
@@ -959,4 +1006,5 @@ export function EditApplicationDetails(props) {
         </>
     );
 }
+
 export default EditApplicationDetails;

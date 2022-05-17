@@ -188,6 +188,7 @@ const VenueList = (): JSX.Element => {
                     setLinearDisplay={setLinearDisplay}
                     setData={setData}
                     data={data}
+                    selectedVenue={selectedVenue}
                     setEditModal={setEditModal}
                     fetchVenues={fetchVenues}
                 >

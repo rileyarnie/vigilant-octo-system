@@ -45,23 +45,24 @@ const ApplicationsList = (): JSX.Element => {
     const [otherName, setOtherName] = useState('');
     const [nationality, setNationality] = useState('');
     const [identification, setIdentification] = useState('');
+    const [identificationType, setIdentificationType] = useState('');
     const [gender, setGender] = useState('');
     const [maritalStatus, setMaritalStatus] = useState('');
     const [religion, setReligion] = useState('');
     const [dateOfBirth, setDateOfBirth] = useState('');
-    const [placeofBirth, setPlaceOfBirth] = useState('');
     const [phoneNumber, setPhoneNumber] = useState('');
     const [emailAddress, setEmailAddress] = useState('');
     const [nextOfKinName, setNextOfKinName] = useState('');
     const [nextOfKinPhoneNumber, setNextOfKinPhoneNumber] = useState('');
     const [nextOfKinRelation, setNextOfKinRelation] = useState('');
     const [physicalChallenges, setPhysicalChallenges] = useState('');
-    const [courseStartDate, setCourseStartDate] = useState('');
+    const [physicalChallengesDetails, setPhysicalChallengesDetails] = useState('');
+    const [preferredStartDate, setPreferredStartDate] = useState('');
     const [campus, setCampus] = useState('');
     const [fileUploaded, setFileUploaded] = useState('');
     const [programCohortId, setProgramCohortId] = useState('');
     const [sponsor, setSponsor] = useState('');
-    const [countryOfResidence, setCountryOfResidence] = useState('');
+    const [countyOfResidence, setCountyOfResidence] = useState('');
     const [documentsUrl, setDocumentsUrl] = useState('');
     const [applicationData, setApplicationData] = useState([]);
     const [applicationId, setApplicationId] = useState('');
@@ -186,19 +187,20 @@ const ApplicationsList = (): JSX.Element => {
                                         setLastName(row.applications_lastName);
                                         setOtherName(row.applications_otherName);
                                         setIdentification(row.applications_identification);
+                                        setIdentificationType(row.applications_identificationType);
                                         setGender(row.applications_gender);
                                         setMaritalStatus(row.applications_maritalStatus);
                                         setReligion(row.applications_religion);
                                         setDateOfBirth(row.applications_dateOfBirth.slice(0, 10));
-                                        setPlaceOfBirth(row.applications_placeofBirth);
                                         setPhoneNumber(row.applications_phoneNumber);
                                         setEmailAddress(row.applications_emailAddress);
                                         setNationality(row.applications_nationality);
                                         setPhysicalChallenges(row.applications_physicalChallenges);
-                                        setCourseStartDate(row.applications_courseStartDate.slice(0, 10));
-                                        setCampus(row.applications_campus);
+                                        setPhysicalChallengesDetails(row.applications_physicalChallengesDetails);
+                                        setPreferredStartDate(row.applications_courseStartDate.slice(0, 10));
+                                        setCampus(row.campus[0]?.name);
                                         setSponsor(row.applications_sponsor);
-                                        setCountryOfResidence(row.applications_countryOfResidence);
+                                        setCountyOfResidence(row.applications_countyOfResidence);
                                         setProgramCohortId(row.applications_programCohortId);
                                         setIsAdmitted(row.applications_status);
                                         setNextOfKinName(row.nkd_name);
@@ -208,7 +210,6 @@ const ApplicationsList = (): JSX.Element => {
                                         setDocumentsUrl(row.sdocs_documentUrl);
                                     }}
                                     data={data}
-                                    //
                                     options={{
                                         rowStyle: (rowData) => ({
                                             backgroundColor: selectedRow === rowData.tableData.id ? '#EEE' : '#FFF'
@@ -301,6 +302,7 @@ const ApplicationsList = (): JSX.Element => {
                                 <ListGroup.Item>Last Name: {lastName}</ListGroup.Item>
                                 <ListGroup.Item>Other Name: {otherName}</ListGroup.Item>
                                 <ListGroup.Item>Nationality: {nationality}</ListGroup.Item>
+                                <ListGroup.Item>Identification Type: {identificationType}</ListGroup.Item>
                                 <ListGroup.Item>Identification: {identification}</ListGroup.Item>
                                 <ListGroup.Item>Gender: {gender}</ListGroup.Item>
                                 <ListGroup.Item>Marital Status: {maritalStatus}</ListGroup.Item>
@@ -310,14 +312,14 @@ const ApplicationsList = (): JSX.Element => {
                         </div>
                         <div className="col-md-6">
                             <ListGroup>
-                                <ListGroup.Item>Place of Birth: {placeofBirth}</ListGroup.Item>
                                 <ListGroup.Item>Phone Number: {phoneNumber}</ListGroup.Item>
                                 <ListGroup.Item>Email Address: {emailAddress}</ListGroup.Item>
                                 <ListGroup.Item>Physical Challenges: {physicalChallenges}</ListGroup.Item>
-                                <ListGroup.Item>Course Start Date: {courseStartDate}</ListGroup.Item>
+                                <ListGroup.Item>Physical Challenges Details: {physicalChallengesDetails}</ListGroup.Item>
+                                <ListGroup.Item>Preferred Start Date: {preferredStartDate}</ListGroup.Item>
                                 <ListGroup.Item>Campus: {campus}</ListGroup.Item>
                                 <ListGroup.Item>Sponsor: {sponsor}</ListGroup.Item>
-                                <ListGroup.Item>Country Of Residence: {countryOfResidence}</ListGroup.Item>
+                                <ListGroup.Item>County Of Residence: {countyOfResidence}</ListGroup.Item>
                             </ListGroup>
                         </div>
                     </Row>
@@ -379,18 +381,19 @@ const ApplicationsList = (): JSX.Element => {
                             <FileInput
                                 name="fileUploaded"
                                 id="image"
+                                required
                                 encType="multipart/form-data"
                                 fileType={['pdf', 'doc', 'docx']}
-                                maxFileSize="10mb"
+                                maxFileSize="2mb"
                                 onInput={(e) => {
                                     setFileUploaded(() => {
                                         return e.target.files[0];
                                     });
                                 }}
                                 errorMessage={{
-                                    required: 'Please upload a document',
-                                    fileType: 'Only document is allowed',
-                                    maxFileSize: 'Max file size is 10MB'
+                                    required: 'Please upload a (pdf) document',
+                                    fileType: 'Only pdf is allowed',
+                                    maxFileSize: 'Max file size is 2MB'
                                 }}
                             />
                         </ValidationForm>

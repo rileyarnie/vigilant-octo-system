@@ -13,14 +13,14 @@ const alerts: Alerts = new ToastifyAlerts();
 
 interface Props {
     toggleGraduationList: () => void;
+    programCohortId:number
 }
 
-const ProgramCohortGraduationList: React.FunctionComponent<Props> = ({ toggleGraduationList }) => {
+const ProgramCohortGraduationList: React.FunctionComponent<Props> = ({ toggleGraduationList, programCohortId }) => {
     const [linearDisplay, setLinearDisplay] = useState('none');
     const [errorMessages] = useState([]);
     const [isError] = useState(false);
     const [graduands, setGraduands] = useState([]);
-    const programCohortId = JSON.parse(localStorage.getItem('programCohortId'));
 
     useEffect(() => {
         setLinearDisplay('block');

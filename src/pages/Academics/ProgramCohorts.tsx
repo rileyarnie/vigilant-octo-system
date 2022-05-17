@@ -170,6 +170,7 @@ const ProgramCohorts = (): JSX.Element => {
                             setCohortId(row.program_cohorts_id);
                             toggleCreateModal();
                             setSelectedProgramCohort(row);
+                            setBanner(row.program_cohorts_bannerImageUrl);
                         }}
                     >
                         <Dropdown.Item>Edit</Dropdown.Item>
@@ -339,7 +340,7 @@ const ProgramCohorts = (): JSX.Element => {
             anticipatedGraduationYear: year === '' ? selectedProgramCohort.program_cohorts_anticipatedGraduationYear : year,
             anticipatedGraduationMonth: month === '' ? selectedProgramCohort.program_cohorts_anticipatedGraduationMonth : month,
             advertDescription: description === '' ? selectedProgramCohort.program_cohorts_advertDescription : description,
-            bannerImageUrl: selectedProgramCohort.program_cohorts_bannerImageUrl,
+            bannerImageUrl: banner,
             numberOfSlots: numberOfSlots === 0 ? selectedProgramCohort.program_cohorts_numberOfSlots : numberOfSlots
         };
         updateProgramCohort(cohortId, updates);
@@ -641,7 +642,7 @@ const ProgramCohorts = (): JSX.Element => {
                                       selectedProgramCohort.program_cohorts_anticipatedGraduationMonth
                                     : graduationDate
                             }
-                            bannerImage={cohortId ? selectedProgramCohort.program_cohorts_bannerImageUrl : banner}
+                            bannerImage={banner}
                         />
                     </Col>
                 </Row>
