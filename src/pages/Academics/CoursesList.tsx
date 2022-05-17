@@ -23,6 +23,7 @@ const CoursesList = (): JSX.Element => {
         name: string;
         id: number;
         code: string;
+        codePrefix:string;
         prerequisiteCourses: string;
         description: string;
         trainingHours: number;
@@ -245,7 +246,7 @@ const CoursesList = (): JSX.Element => {
                 <Row>
                     <div className="col-md-6">
                         <ListGroup>
-                            <ListGroup.Item>Course Code: {`${selectedRow?.code}`}</ListGroup.Item>
+                            <ListGroup.Item>Course Code: {`${selectedRow?.codePrefix}-${selectedRow?.id}`}</ListGroup.Item>
                             <ListGroup.Item>Course Name: {`${selectedRow?.name}`}</ListGroup.Item>
                             <ListGroup.Item>Department: {`${selectedRow?.department?.name}`}</ListGroup.Item>
                             <ListGroup.Item>Course Description: {`${selectedRow?.description}`}</ListGroup.Item>
