@@ -15,6 +15,7 @@ import {Alerts, ToastifyAlerts} from '../../lib/Alert';
 import {simsAxiosInstance} from '../../../utlis/interceptors/sims-interceptor';
 import {TimetableService} from '../../../services/TimetableService';
 import {timetablingAxiosInstance} from '../../../utlis/interceptors/timetabling-interceptor';
+import ConfirmationModalWrapper from '../../../App/components/modal/ConfirmationModalWrapper';
 
 const alerts: Alerts = new ToastifyAlerts();
 const useStyles = makeStyles((theme: Theme) =>
@@ -61,9 +62,11 @@ export function EditApplicationDetails(props) {
     const [campus, setCampus] = useState(props.application?.applications_campus);
     const [sponsor, setSponsor] = useState(props.application?.applications_sponsor || '');
     const [countyOfResidence, setCountyOfResidence] = useState(props.application?.applications_countyOfResidence || '');
-    const [documentsUrl, setDocumentsUrl] = useState(props.application?.applications_documentsUrl || '');
+    const [documentsUrl, setDocumentsUrl] = useState(props.application?.sdocs_documentUrl || '');
     const [campuses, setCampuses] = useState([]);
     const [showUploadModal, setShowUploadModal] = useState(false);
+    const [confirmModal, setConfirmModal] = useState(false);
+    const [disabledButton, setDisabledButton] = useState(false);
     JSON.parse(localStorage.getItem('programId') as string);
     const classes = useStyles();
     useEffect(() => {
@@ -116,14 +119,18 @@ export function EditApplicationDetails(props) {
         updateApplication(updates);
     };
     const updateApplication = (updates) => {
+        setDisabledButton(true);
         simsAxiosInstance
             .put(`/program-cohort-applications/${props.application?.applications_id}`, {modifiedProgramCohortApplication: updates})
             .then(() => {
-                props.close();
                 alerts.showSuccess('Successfully updated application details');
             })
             .catch((error) => {
                 alerts.showError(error.message);
+            }).finally(() =>{
+                setConfirmModal(false);
+                props.close();
+                setDisabledButton(false);
             });
     };
 
@@ -238,11 +245,12 @@ export function EditApplicationDetails(props) {
                                 errorMessage="Please select campus"
                             >
                                 <option value="">- Please select -</option>
-                                <option value="National Id" selected>
-                                        National ID
-                                </option>
-                                <option value="passport">Passport</option>
-                                <option value="Huduma Number">Huduma Number</option>
+                                <option value="ID No" selected>ID No</option>
+                                <option value="Passport No">Passport No</option>
+                                <option value="Company No">Company No</option>
+                                <option value="Service No">Service No</option>
+                                <option value="Military ID">Military ID</option>
+                                <option value="Driver License">Driver License</option>
                             </SelectGroup>
                             <br/>
                             <label htmlFor="identification">
@@ -749,7 +757,7 @@ export function EditApplicationDetails(props) {
             );
         default:
             return (
-                <ValidationForm onSubmit={handleEdit}>
+                <ValidationForm onSubmit={(e) => { e.preventDefault();toggleConfirmModal();}}>
                     <div className="form-group row">
                         <div className="col-md-2"></div>
                         <div className="col-md-4">
@@ -913,6 +921,9 @@ export function EditApplicationDetails(props) {
     const toggleUploadModal = () => {
         showUploadModal ? setShowUploadModal(false) : setShowUploadModal(true);
     };
+    const toggleConfirmModal = () => {
+        confirmModal ? setConfirmModal(false) : setConfirmModal(true);
+    };
     return (
         <>
             <Container fluid>
@@ -949,8 +960,7 @@ export function EditApplicationDetails(props) {
                                         </div>
                                     ) : (
                                         <div>
-                                            <Typography
-                                                className={classes.instructions}>{getStepContent(activeStep)}</Typography>
+                                            <Typography className={classes.instructions}>{getStepContent(activeStep)}</Typography>
                                         </div>
                                     )}
                                 </div>
@@ -959,6 +969,15 @@ export function EditApplicationDetails(props) {
                     </Card>
                 </Row>
             </Container>
+            <ConfirmationModalWrapper
+                disabled={disabledButton}
+                submitButton
+                submitFunction={handleEdit}
+                closeModal={() => setConfirmModal(false)}
+                show={confirmModal}
+            >
+                <h6>Are you sure you want to update {props.application?.applications_firstName} {props.application?.applications_lastName} application details ?</h6>
+            </ConfirmationModalWrapper>
             <Modal
                 backdrop="static"
                 show={showUploadModal}

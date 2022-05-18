@@ -3,7 +3,7 @@ import Department from './Department';
 
 export class DepartmentService {
     static async getDepartmentByHODTrainerId(id:number):Promise<Department> {
-        return await timetablingAxiosInstance.get('/departments/hod/departments', {
+        return await timetablingAxiosInstance.get('/departments', {
             params: {
                 hodTrainerId:id
             }
