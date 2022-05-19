@@ -25,6 +25,7 @@ const Transactions = (): JSX.Element => {
     const [transactionDetailsModal, setTransactionDetailsModal] = useState(false);
     const [selectedRow, setSelectedRow] = useState({});
     const [selectError, setSelectError] = useState(true);
+    const [submissionData, setSubmissionData] = useState({});
 
     const columns = [
         { title: 'Transaction ID', field: 'id' },
@@ -43,9 +44,11 @@ const Transactions = (): JSX.Element => {
     ];
 
     const FeePaymentHandler = () => {
+        console.log('submissionData', submissionData);
         console.log('fee payment submitted');
     };
     const FeeWaiverHandler = () => {
+        console.log('submissionData', submissionData);
         console.log('fee waiver submitted');
     };
 
@@ -64,6 +67,13 @@ const Transactions = (): JSX.Element => {
     //close Fee Payment Modal
     const closeFeePaymentModal = () => {
         setFeePaymentModal(false);
+        setStudent('');
+    };
+
+    //close fee waiver modal
+
+    const closeFeeWaiverModal = () => {
+        setFeeWaiverModal(false);
         setStudent('');
     };
 
@@ -111,19 +121,10 @@ const Transactions = (): JSX.Element => {
             </Row>
             {canPerformActions(ACTION_GET_CAMPUSES.name) && (
                 <>
-                    {/* <LinearProgress style={{ display: linearDisplay }} /> */}
+                    {/* <LinearProgress style={{ display: 'block' }} /> */}
                     <Row>
                         <Col>
                             <Card>
-                                {/* <div>
-                                    {iserror && (
-                                        <Alert severity="error">
-                                            {errorMessages.map((msg, i) => {
-                                                return <div key={i}>{msg}</div>;
-                                            })}
-                                        </Alert>
-                                    )}
-                                </div> */}
                                 <TableWrapper title="Transactions" columns={columns} options={{ actionsColumnIndex: -1 }} data={data} />
                             </Card>
                         </Col>
@@ -135,7 +136,7 @@ const Transactions = (): JSX.Element => {
                     onErrorSubmit={handleErrorSubmit}
                     onSubmit={(e, formData) => {
                         e.preventDefault();
-                        console.log('formData', formData);
+                        setSubmissionData({ ...formData, student });
                         setConfirmModal(true);
                     }}
                 >
@@ -152,7 +153,6 @@ const Transactions = (): JSX.Element => {
                                     cacheOptions
                                     loadOptions={promiseOptions}
                                     defaultOptions
-                                    // onInputChange={handleInputChange}
                                     onChange={handleInputChange}
                                 />
                                 {selectError && <p className="text-danger">Please Select Student</p>}
@@ -165,15 +165,7 @@ const Transactions = (): JSX.Element => {
                                         Currency<span className="text-danger">*</span>
                                     </b>
                                 </label>
-                                <TextInput
-                                    name="currency"
-                                    id="currency"
-                                    type="text"
-                                    required
-                                    // value={campusId ? selectedCampusName : campusName}
-                                    // placeholder={campusId ? selectedCampusName : campusName}
-                                    // onChange={(e) => (campusId ? setSelectedCampusName(e.target.value) : setCampusName(e.target.value))}
-                                />
+                                <TextInput name="currency" id="currency" type="text" required />
                             </Col>
                             <Col sm={9}>
                                 <label htmlFor="amount">
@@ -181,15 +173,7 @@ const Transactions = (): JSX.Element => {
                                         Amount<span className="text-danger">*</span>
                                     </b>
                                 </label>
-                                <TextInput
-                                    name="amount"
-                                    id="amount"
-                                    type="text"
-                                    required
-                                    // value={campusId ? selectedCampusName : campusName}
-                                    // placeholder={campusId ? selectedCampusName : campusName}
-                                    // onChange={(e) => (campusId ? setSelectedCampusName(e.target.value) : setCampusName(e.target.value))}
-                                />
+                                <TextInput name="amount" id="amount" type="text" required />
                             </Col>
                         </Row>
                         <Row className="mt-4">
@@ -220,15 +204,7 @@ const Transactions = (): JSX.Element => {
                                         Narrative<span className="text-danger">*</span>
                                     </b>
                                 </label>
-                                <TextInput
-                                    name="narrative"
-                                    id="narrative"
-                                    multiline
-                                    required
-                                    // value={this.state.description}
-                                    // onChange={this.handleChange}
-                                    rows="3"
-                                />
+                                <TextInput name="narrative" id="narrative" multiline required rows="3" />
                             </Col>
                         </Row>
                     </div>
@@ -242,18 +218,12 @@ const Transactions = (): JSX.Element => {
                     </div>
                 </ValidationForm>
             </ModalWrapper>
-            <ModalWrapper
-                show={feeWaiverModal}
-                closeModal={() => setFeeWaiverModal(false)}
-                title="Record Fee Waiver"
-                modalSize="lg"
-                noFooter
-            >
+            <ModalWrapper show={feeWaiverModal} closeModal={closeFeeWaiverModal} title="Record Fee Waiver" modalSize="lg" noFooter>
                 <ValidationForm
                     onErrorSubmit={handleErrorSubmit}
                     onSubmit={(e, formData) => {
                         e.preventDefault();
-                        console.log('formData', formData);
+                        setSubmissionData({ ...formData, student });
                         setConfirmModal(true);
                     }}
                 >
@@ -270,8 +240,9 @@ const Transactions = (): JSX.Element => {
                                     cacheOptions
                                     loadOptions={promiseOptions}
                                     defaultOptions
-                                    onInputChange={handleInputChange}
+                                    onChange={handleInputChange}
                                 />
+                                {selectError && <p className="text-danger">Please Select Student</p>}
                             </Col>
                         </Row>
                         <Row className="mt-4">
@@ -281,15 +252,7 @@ const Transactions = (): JSX.Element => {
                                         Currency<span className="text-danger">*</span>
                                     </b>
                                 </label>
-                                <TextInput
-                                    name="currency"
-                                    id="currency"
-                                    type="text"
-                                    required
-                                    // value={campusId ? selectedCampusName : campusName}
-                                    // placeholder={campusId ? selectedCampusName : campusName}
-                                    // onChange={(e) => (campusId ? setSelectedCampusName(e.target.value) : setCampusName(e.target.value))}
-                                />
+                                <TextInput name="currency" id="currency" type="text" required />
                             </Col>
                             <Col sm={9}>
                                 <label htmlFor="amount">
@@ -297,15 +260,7 @@ const Transactions = (): JSX.Element => {
                                         Amount<span className="text-danger">*</span>
                                     </b>
                                 </label>
-                                <TextInput
-                                    name="amount"
-                                    id="amount"
-                                    type="text"
-                                    required
-                                    // value={campusId ? selectedCampusName : campusName}
-                                    // placeholder={campusId ? selectedCampusName : campusName}
-                                    // onChange={(e) => (campusId ? setSelectedCampusName(e.target.value) : setCampusName(e.target.value))}
-                                />
+                                <TextInput name="amount" id="amount" type="text" required />
                             </Col>
                         </Row>
                         <Row className="mt-4">
@@ -315,21 +270,15 @@ const Transactions = (): JSX.Element => {
                                         Narrative<span className="text-danger">*</span>
                                     </b>
                                 </label>
-                                <TextInput
-                                    name="narrative"
-                                    id="narrative"
-                                    multiline
-                                    required
-                                    // value={this.state.description}
-                                    // onChange={this.handleChange}
-                                    rows="3"
-                                />
+                                <TextInput name="narrative" id="narrative" multiline required rows="3" />
                             </Col>
                         </Row>
                     </div>
                     <div className="form-group">
-                        <button className="btn btn-info float-right">Submit</button>
-                        <button type="reset" className="btn btn-danger float-left" onClick={() => setFeeWaiverModal(false)}>
+                        <button disabled={disabled} className="btn btn-info float-right">
+                            Submit
+                        </button>
+                        <button type="reset" className="btn btn-danger float-left" onClick={closeFeeWaiverModal}>
                             Close
                         </button>
                     </div>
