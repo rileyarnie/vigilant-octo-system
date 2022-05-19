@@ -19,6 +19,7 @@ import { MenuItem, Select} from '@material-ui/core';
 import ChangeExamCutOffModal from './ChangeExamCutOffModal';
 import CustomSwitch from '../../assets/switch/CustomSwitch';
 import ConfirmationModalWrapper from '../../App/components/modal/ConfirmationModalWrapper';
+import { timetablingAxiosInstance } from '../../utlis/interceptors/timetabling-interceptor';
 
 const alerts: Alerts = new ToastifyAlerts();
 
@@ -48,7 +49,7 @@ function ProgramCohortSemesters(props: { history: { goBack: () => void } }) {
         setDisabled(true);
         try {
             try {
-                await simsAxiosInstance
+                await timetablingAxiosInstance
                     .put(`/program-cohort-semesters/${pcsId}/activation`, updates);
                 alerts.showSuccess('Successfully updated course cohort');
                 fetchProgramCohortSemester('semester', programCohortId);
