@@ -22,6 +22,7 @@ import {createStyles, makeStyles, Theme} from '@material-ui/core/styles';
 import IconButton from '@material-ui/core/IconButton';
 import ArrowBackIcon from '@material-ui/icons/ArrowBack';
 import TableWrapper from '../../utlis/TableWrapper';
+import ConfirmationModalWrapper from '../../App/components/modal/ConfirmationModalWrapper';
 
 const alerts: Alerts = new ToastifyAlerts();
 
@@ -42,17 +43,20 @@ function ProgramCohortSemesterDetails(props) {
         })
     );
     const classes = useStyles();
+
     interface TabPanelProps {
         children?: React.ReactNode;
         index: number;
         value: any;
     }
+
     const selectStyle = {
         width: '100%',
         height: '30px'
     };
+
     function TabPanel(props: TabPanelProps) {
-        const { children, value, index, ...other } = props;
+        const {children, value, index, ...other} = props;
         return (
             <div
                 role="tabpanel"
@@ -69,22 +73,24 @@ function ProgramCohortSemesterDetails(props) {
             </div>
         );
     }
+
     function a11yProps(index: any) {
         return {
             id: `scrollable-auto-tab-${index}`,
             'aria-controls': `scrollable-auto-tabpanel-${index}`
         };
     }
+
     const columns = [
-        { title: 'ID', field: 'course.id', editable: 'never' as const },
-        { title: 'Name', field: 'course.name' },
-        { title: 'Start Date', render: (rowData) => rowData.programCohortSemester.semester.startDate.slice(0, 10) },
-        { title: 'End Date', render: (rowData) => rowData.programCohortSemester.semester.endDate.slice(0, 10) }
+        {title: 'ID', field: 'course.id', editable: 'never' as const},
+        {title: 'Name', field: 'course.name'},
+        {title: 'Start Date', render: (rowData) => rowData.programCohortSemester.semester.startDate.slice(0, 10)},
+        {title: 'End Date', render: (rowData) => rowData.programCohortSemester.semester.endDate.slice(0, 10)}
     ];
     const feeItemColumns = [
-        { title: 'ID', field: 'id', editable: 'never' as const },
-        { title: 'Narrative', field: 'narrative' },
-        { title: 'Amount', render: (rowData) => rowData.currency + ' ' + rowData.amount }
+        {title: 'ID', field: 'id', editable: 'never' as const},
+        {title: 'Narrative', field: 'narrative'},
+        {title: 'Amount', render: (rowData) => rowData.currency + ' ' + rowData.amount}
     ];
     const [errorMessages] = useState([]);
     const [narrative, setNarrative] = useState('');
@@ -92,12 +98,13 @@ function ProgramCohortSemesterDetails(props) {
     const [currency, setCurrency] = useState('KES');
     const [feeItemId, setFeeItemId] = useState(null);
     const [showModal, setShowModal] = useState(false);
-    const [showDialog, setShowDialog] = useState(false);
     const [showPublishModal, setShowPublishModal] = useState(false);
     const [showCancelModal, setShowCancelModal] = useState(false);
     const [showPublishDialog, setShowPublishDialog] = useState(false);
     const [anticipatedStartDate, setAnticipatedStartDate] = useState('');
     const [numOfSlots] = useState('');
+    const [confirmModal, setConfirmModal] = useState(false);
+    const [disabledButton, setDisabledButton] = useState(false);
     const [examCutOffDate, setExamCutOffDate] = useState('');
     const [selectedNarrative, setSelectedNarrative] = useState('');
     const [selectedAmount, setSelectedAmount] = useState(0);
@@ -121,6 +128,7 @@ function ProgramCohortSemesterDetails(props) {
         getProgramCohortSemesterById(JSON.parse(programCohortSemesterId));
         getFeesItems(programCohortSemesterId);
     }, []);
+
     function fetchCourseCohortBySemesterId(loadExtras: string, semesterId: string, programCohortId: string) {
         setLinearDisplay('block');
         CourseCohortService.fetchCourseCohortBySemesterId(loadExtras, semesterId, programCohortId)
@@ -130,22 +138,25 @@ function ProgramCohortSemesterDetails(props) {
                 setLinearDisplay('none');
             })
             .catch((error) => {
-                console.error(error);
                 alerts.showError(error.message);
                 setLinearDisplay('none');
             });
     }
+
     const [value, setValue] = React.useState(0);
     const handleChange = (event: React.ChangeEvent<unknown>, newValue: number) => {
         setValue(newValue);
     };
+
     function getFeesItems(programCohortSemesterId: string) {
         setLinearDisplay('block');
         FeesManagementService.getFeesItems(programCohortSemesterId)
             .then((res) => {
                 const feeData = res['data'];
                 setFeeItemData(feeData);
-
+                if(feeData) {
+                    setCurrency(feeData[0].currency);
+                }
             })
             .catch((error) => {
                 if (error.message.includes('not found')) {
@@ -154,12 +165,15 @@ function ProgramCohortSemesterDetails(props) {
                 alerts.showError(error.message);
             });
     }
-    async function getProgramCohortSemesterById(programCohortSemesterId:number): Promise<void> {
+
+    async function getProgramCohortSemesterById(programCohortSemesterId: number): Promise<void> {
         const status = await (await ProgramCohortService.getProgramCohortSemesterById(programCohortSemesterId)).status;
         setProgramCohortSemesterStatus(status);
         return;
     }
+
     function handleFeeItemsCreation() {
+        setDisabledButton(true);
         setLinearDisplay('block');
         const createFeeItemRequest = {
             narrative: narrative,
@@ -168,30 +182,36 @@ function ProgramCohortSemesterDetails(props) {
             programCohortSemesterId: programCohortSemesterId
         };
         FeesManagementService.createFeesItems(createFeeItemRequest)
-            .then((res) => {
-                console.log(res);
+            .then(() => {
                 alerts.showSuccess('Successfully created a fee item');
-                setLinearDisplay('none');
             })
             .catch((error) => {
                 alerts.showError(error.message);
+            }).finally(() => {
                 setLinearDisplay('none');
+                setDisabledButton(false);
+                getFeesItems(programCohortSemesterId);
+                resetStateCloseModal();
             });
     }
+
     function updateFeeItem(feeItemId, updates) {
         setLinearDisplay('block');
+        setDisabledButton(true);
         FeesManagementService.updateFeesItems(updates)
             .then(() => {
                 alerts.showSuccess('Successfully updated a fee item');
-                resetStateCloseModal();
-                setLinearDisplay('none');
             })
             .catch((error) => {
-                setLinearDisplay('block');
                 alerts.showError(error.response.data);
+            }).finally(() => {
+                getFeesItems(programCohortSemesterId);
+                resetStateCloseModal();
+                setDisabledButton(false);
                 setLinearDisplay('none');
             });
     }
+
     const handleEdit = (e) => {
         setLinearDisplay('block');
         e.preventDefault();
@@ -203,6 +223,7 @@ function ProgramCohortSemesterDetails(props) {
         };
         updateFeeItem(feeItemId, updates);
     };
+
     function publishProgramCohort() {
         setLinearDisplay('block');
         const programCohortSemester = {
@@ -217,27 +238,31 @@ function ProgramCohortSemesterDetails(props) {
                 alerts.showSuccess('Successfully published program cohort semester');
                 togglePublishModalDialog();
                 showPublishSemesterModal();
-                setLinearDisplay('none');
             })
             .catch((error) => {
                 alerts.showError(error.message);
                 setLinearDisplay('none');
+            }).finally(() => {
+                setLinearDisplay('none');
+                resetStateCloseModal();
             });
     }
+
     const resetStateCloseModal = (): void => {
         setFeeItemId(null);
         setNarrative('');
         setAmount(0);
-        setCurrency('');
         setShowModal(false);
         setShowCancelModal(false);
+        setConfirmModal(false);
+        setShowPublishDialog(false);
     };
     // create fee items
-    const showCreateModal = () => {
-        showModal ? resetStateCloseModal() : setShowModal(true);
+    const createFeeItemModal = () => {
+        setShowModal(true);
     };
-    const toggleDialog = () => {
-        showModal ? setShowDialog(false) : setShowDialog(true);
+    const closeCreateFeeItemModal = () => {
+        setShowModal(false);
     };
     //publish program cohort semester
     const showPublishSemesterModal = () => {
@@ -249,6 +274,12 @@ function ProgramCohortSemesterDetails(props) {
     const togglePublishModalDialog = () => {
         showPublishModal ? setShowPublishDialog(false) : setShowPublishDialog(true);
     };
+    const toggleConfirmModal = () => {
+        setConfirmModal(true);
+    };
+    const toggleCloseConfirmModal = () => {
+        setConfirmModal(false);
+    };
     const handleBack = () => {
         props.history.goBack();
     };
@@ -256,13 +287,13 @@ function ProgramCohortSemesterDetails(props) {
         <>
             <Row className="align-items-center page-header">
                 <Col>
-                    <Breadcrumb />
+                    <Breadcrumb/>
                 </Col>
             </Row>
             <Row>
                 <div className="">
                     <IconButton aria-label="delete" className={classes.margin} onClick={handleBack} size="small">
-                        <ArrowBackIcon fontSize="inherit" /> Back
+                        <ArrowBackIcon fontSize="inherit"/> Back
                     </IconButton>
                 </div>
                 <div>
@@ -277,17 +308,17 @@ function ProgramCohortSemesterDetails(props) {
                     </Button>
                     <Button
                         className="float-center"
-                        style={{ marginLeft: '48px' }}
+                        style={{marginLeft: '48px'}}
                         variant="danger"
                         onClick={() => {
                             showCancelSemesterModal();
                         }}
                     >
-                                        Cancel{' '}
+                        Cancel{' '}
                     </Button>
                 </div>
             </Row>
-            <LinearProgress style={{ display: linearDisplay }} />
+            <LinearProgress style={{display: linearDisplay}}/>
             <Row>
                 <div className={classes.root}>
                     <AppBar position="static" color="default">
@@ -320,7 +351,7 @@ function ProgramCohortSemesterDetails(props) {
                                     title={`${programName} of ${anticipatedGraduation} course cohorts`}
                                     columns={columns}
                                     data={courseCohortData}
-                                    options={{  }}
+                                    options={{}}
                                 />
                             </Card>
                         </Col>
@@ -333,7 +364,7 @@ function ProgramCohortSemesterDetails(props) {
                                         className="float-right"
                                         variant="danger"
                                         onClick={() => {
-                                            showCreateModal();
+                                            createFeeItemModal();
                                         }}
                                     >
                                         Create Fee Item
@@ -352,7 +383,7 @@ function ProgramCohortSemesterDetails(props) {
                                     title={`${programName} of ${anticipatedGraduation} Fees Items`}
                                     columns={feeItemColumns}
                                     data={feeItemsData}
-                                    options={{ actionsColumnIndex: -1,  }}
+                                    options={{actionsColumnIndex: -1,}}
                                     actions={[
                                         {
                                             icon: Edit,
@@ -362,7 +393,7 @@ function ProgramCohortSemesterDetails(props) {
                                                 setSelectedNarrative(rowData.narrative);
                                                 setSelectedAmount(rowData.amount);
                                                 setSelectedCurrency(rowData.currency);
-                                                showCreateModal();
+                                                createFeeItemModal();
                                             }
                                         }
                                     ]}
@@ -374,7 +405,7 @@ function ProgramCohortSemesterDetails(props) {
             </Row>
             <Modal
                 show={showModal}
-                onHide={showCreateModal}
+                onHide={closeCreateFeeItemModal}
                 size="lg"
                 backdrop="static"
                 aria-labelledby="contained-modal-title-vcenter"
@@ -382,7 +413,7 @@ function ProgramCohortSemesterDetails(props) {
             >
                 <Modal.Header closeButton>
                     <Modal.Title id="contained-modal-title-vcenter">
-                        {feeItemId ? 'Edit fee item' : 'Create a fee item'} for {programName}
+                        {feeItemId ? 'Edit fee item' : `Create a fee item for ${programName}`}
                     </Modal.Title>
                 </Modal.Header>
                 <Modal.Body>
@@ -391,111 +422,54 @@ function ProgramCohortSemesterDetails(props) {
                             <label htmlFor="narrative">
                                 <b>Narrative</b>
                             </label>
-                            <br />
+                            <br/>
                             <TextInput
                                 name="narrative"
                                 id="narrative"
                                 type="text"
-                                value={narrative}
-                                onChange={(e) => {
-                                    setNarrative(e.target.value);
-                                }}
+                                value={feeItemId ? selectedNarrative : narrative}
+                                onChange={(e) => (feeItemId ? setSelectedNarrative(e.target.value) : setNarrative(e.target.value))}
                                 required
                             />
-                            <br />
+                            <br/>
                             <label htmlFor="amount">
                                 <b>Amount</b>
                             </label>
-                            <br />
+                            <br/>
                             <TextInput
                                 name="amount"
                                 id="amount"
                                 required
                                 type="text"
-                                value={amount}
-                                onChange={(e) => {
-                                    setAmount(e.target.value);
-                                }}
+                                value={feeItemId ? selectedAmount : amount}
+                                onChange={(e) => (feeItemId ? setSelectedAmount(e.target.value) : setAmount(e.target.value))}
                             />
-                            <br />
+                            <br/>
                             <label htmlFor="currency">
                                 <b>Currency</b>
                             </label>
-                            <br />
+                            <br/>
                             <SelectCurrency
                                 style={selectStyle}
                                 name="currency"
-                                value={currency}
-                                onChange={(e) => {
-                                    setCurrency(e.target.value);
-                                }}
+                                value={feeItemId ? selectedCurrency : currency}
+                                onChange={(e) => (feeItemId ? setSelectedCurrency(e.target.value) : setCurrency(e.target.value))}
                             />
                         </div>
                         <div className="form-group">
                             <button
-                                className="btn btn-info float-left"
+                                className="btn btn-info float-right"
                                 onClick={(e) => {
                                     e.preventDefault();
-                                    setShowDialog(true);
+                                    toggleConfirmModal();
                                 }}
                             >
-                                Preview
+                                Submit
                             </button>
+                            <button className="btn btn-danger float-left" onClick={(e) => {e.preventDefault();closeCreateFeeItemModal();}}>Close</button>
                         </div>
                     </ValidationForm>
-                    <button className="btn btn-danger float-right" onClick={showCreateModal}>
-                        {' '}
-                        Close{' '}
-                    </button>
                 </Modal.Body>
-            </Modal>
-            <Modal show={showDialog} onHide={toggleDialog} size="sm" backdrop="static" centered>
-                <Modal.Header closeButton>
-                    <Modal.Title id="contained-modal-title-vcenter">
-                        Do you want to {feeItemId ? 'Edit fee item' : 'Create a fee item'} for {programName}
-                    </Modal.Title>
-                </Modal.Header>
-                <Modal.Body>
-                    <div>
-                        <div className="form-group">
-                            <label htmlFor="narrative">
-                                <b>Narrative : </b>
-                                {narrative}
-                            </label>
-                            <br />
-                            <label htmlFor="amount">
-                                <b>Amount : </b>
-                                {amount}
-                            </label>
-                            <br />
-                            <label htmlFor="currency">
-                                <b>Currency : </b>
-                                {currency}
-                            </label>
-                            <br />
-                        </div>
-                        <br />
-                    </div>
-                </Modal.Body>
-                <Modal.Footer style={{ display: 'flex', justifyContent: 'space-between' }}>
-                    <Button
-                        variant="btn btn-danger btn-rounded"
-                        onClick={(e) => {
-                            e.preventDefault();
-                            setShowDialog(false);
-                        }}
-                    >
-                        Continue editing
-                    </Button>
-                    <Button
-                        onClick={(e) => {
-                            feeItemId ? handleEdit(e) : handleFeeItemsCreation();
-                        }}
-                        variant="btn btn-info btn-rounded"
-                    >
-                        Submit
-                    </Button>
-                </Modal.Footer>
             </Modal>
             <Modal
                 show={showPublishModal}
@@ -514,7 +488,7 @@ function ProgramCohortSemesterDetails(props) {
                             <label htmlFor="narrative">
                                 <b>Anticipated startDate</b>
                             </label>
-                            <br />
+                            <br/>
                             <TextInput
                                 name="narrative"
                                 id="narrative"
@@ -527,11 +501,11 @@ function ProgramCohortSemesterDetails(props) {
                                 }}
                                 required
                             />
-                            <br />
+                            <br/>
                             <label htmlFor="narrative">
                                 <b>Exam Cut off Date</b>
                             </label>
-                            <br />
+                            <br/>
                             <TextInput
                                 name="examCutoff"
                                 id="examCutoff"
@@ -573,12 +547,13 @@ function ProgramCohortSemesterDetails(props) {
             <Modal show={showCancelModal} onHide={showCancelSemesterModal} size="lg" backdrop="static" centered>
                 <Modal.Header closeButton>
                     <Modal.Title id="contained-modal-title-vcenter">
-                        Cancelling a program-cohort cancels all active course-cohorts and prevents addition of the cohort to a semester or
+                        Cancelling a program-cohort cancels all active course-cohorts and prevents addition of the
+                        cohort to a semester or
                         timetabling of the same, are you sure you want to proceed?
                     </Modal.Title>
                 </Modal.Header>
                 <Modal.Body></Modal.Body>
-                <Modal.Footer style={{ display: 'flex', justifyContent: 'space-between' }}>
+                <Modal.Footer style={{display: 'flex', justifyContent: 'space-between'}}>
                     <Button
                         variant="btn btn-info btn-rounded"
                         onClick={(e) => {
@@ -599,7 +574,8 @@ function ProgramCohortSemesterDetails(props) {
                 <Modal.Body>
                     <ValidationForm>
                         <p>
-                            ”Publishing a semester for {programCohortCode} will disable you from adding semesters to this semester for the
+                            ”Publishing a semester for {programCohortCode} will disable you from adding semesters to
+                            this semester for the
                             course, continue?”
                         </p>
                         <div className="form-group">
@@ -607,22 +583,17 @@ function ProgramCohortSemesterDetails(props) {
                                 <b>Anticipated Start Date : </b>
                                 {anticipatedStartDate}
                             </label>
-                            <br />
+                            <br/>
                             <label htmlFor="amount">
                                 <b>Exam Cutoff Date : </b>
                                 {examCutOffDate}
                             </label>
-                            <br />
-                            <label htmlFor="currency">
-                                <b>Number of Slots : </b>
-                                {numOfSlots}
-                            </label>
-                            <br />
+                            <br/>
                         </div>
-                        <br />
+                        <br/>
                     </ValidationForm>
                 </Modal.Body>
-                <Modal.Footer style={{ display: 'flex', justifyContent: 'space-between' }}>
+                <Modal.Footer style={{display: 'flex', justifyContent: 'space-between'}}>
                     <Button
                         variant="btn btn-danger btn-rounded"
                         onClick={(e) => {
@@ -637,7 +608,23 @@ function ProgramCohortSemesterDetails(props) {
                     </Button>
                 </Modal.Footer>
             </Modal>
+
+            <ConfirmationModalWrapper disabled={disabledButton}
+                submitButton
+                submitFunction={feeItemId ? handleEdit : handleFeeItemsCreation}
+                closeModal={toggleCloseConfirmModal}
+                show={confirmModal}
+            >
+                <>
+                    <h6>
+                        {feeItemId
+                            ? `Are you sure you want to update ${selectedNarrative} ?`
+                            : `Are you sure you want to create a fee item for ${programName} ?`}
+                    </h6>
+                </>
+            </ConfirmationModalWrapper>
         </>
     );
 }
+
 export default ProgramCohortSemesterDetails;
