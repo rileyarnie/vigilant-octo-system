@@ -13,6 +13,12 @@ import { ACTION_CREATE_FEE_PAYMENT, ACTION_CREATE_FEE_WAIVER } from '../../authn
 import ModalWrapper from '../../App/components/modal/ModalWrapper';
 import AsyncSelect from 'react-select/async';
 import TransactionDetails from './TransactionDetails';
+import { simsAxiosInstance } from '../../utlis/interceptors/sims-interceptor';
+import debounce from 'lodash.debounce';
+import { financeAxiosInstance } from '../../utlis/interceptors/finance-interceptor';
+import { StudentFeesManagementService } from '../../services/StudentFeesManagementService';
+import axios from 'axios';
+import { timetablingAxiosInstance } from '../../utlis/interceptors/timetabling-interceptor';
 
 const Transactions = (): JSX.Element => {
     const alerts: Alerts = new ToastifyAlerts();
@@ -21,18 +27,33 @@ const Transactions = (): JSX.Element => {
     const [feeWaiverModal, setFeeWaiverModal] = useState(false);
     const [confirmModal, setConfirmModal] = useState(false);
     const [disabled, setDisabled] = useState(false);
-    const [student, setStudent] = useState('');
+    const [studentId, setStudentId] = useState('');
     const [transactionDetailsModal, setTransactionDetailsModal] = useState(false);
     const [selectedRow, setSelectedRow] = useState({});
     const [selectError, setSelectError] = useState(true);
-    const [submissionData, setSubmissionData] = useState({});
+    const [submissionData, setSubmissionData] = useState<{
+        studentId: number;
+        currency: string;
+        narrative: string;
+        attachment: unknown;
+        evidenceUrls?: string;
+        amount: number;
+    }>({
+        studentId: 0,
+        currency: '',
+        narrative: '',
+        evidenceUrls: '',
+        amount: 0,
+        attachment: {}
+    });
+    const [attachment, setAttachment] = useState('');
+    const [attachmentUrl, setAttachmentUrl] = useState('link');
 
     const columns = [
         { title: 'Transaction ID', field: 'id' },
-        { title: 'Transaction Date', field: 'date' },
-        { title: 'Narrative', field: 'description' },
-        { title: 'Amount', field: 'description' },
-        { title: 'Balance', field: 'balance' },
+        { title: 'Transaction Date', render: (row) => new Date(row.transactionDate).toLocaleDateString() },
+        { title: 'Narrative', field: 'narrative' },
+        { title: 'Amount', render: (row) => `${row.currency} ${row.amount}` },
         {
             title: 'Actions',
             render: (row) => (
@@ -43,38 +64,120 @@ const Transactions = (): JSX.Element => {
         }
     ];
 
+    const handleFileUpload = () => {
+        const form = new FormData();
+        form.append('attachment', attachment);
+        const config = {
+            headers: { 'content-type': 'multipart/form-data' }
+        };
+        StudentFeesManagementService.uploadSupportDocument(form, config)
+            .then((res) => {
+                alerts.showSuccess('File uploaded successfully');
+                setAttachmentUrl(res['data']);
+            })
+            .catch((error) => {
+                alerts.showError(error.message);
+            });
+    };
+
+    // StudentId, narrative, currency and amount are required fields for this request
     const FeePaymentHandler = () => {
-        console.log('submissionData', submissionData);
-        console.log('fee payment submitted');
+        setDisabled(true);
+        // eslint-disable-next-line @typescript-eslint/no-unused-vars
+        const { attachment, ...data } = submissionData;
+        const feeRecord = { ...data, evidenceUrls: attachmentUrl };
+        // eslint-disable-next-line no-debugger
+        debugger;
+        StudentFeesManagementService.recordFeesReport(feeRecord)
+            .then((res) => {
+                console.log('res.data', res);
+            })
+            .catch((error) => {
+                console.log('error', error);
+            })
+            .finally(() => {
+                setDisabled(false);
+                setConfirmModal(false);
+            });
     };
     const FeeWaiverHandler = () => {
+        setDisabled(true);
         console.log('submissionData', submissionData);
         console.log('fee waiver submitted');
+        StudentFeesManagementService.applyWaiver(submissionData)
+            .then(() => {
+                alerts.showSuccess('Fee Record created successfully');
+                // toggleCloseConfirmModal();
+                // props.closeModal();
+                getTransactions();
+            })
+            .catch((error) => {
+                // props.closeModal();
+                // toggleCloseConfirmModal();
+                alerts.showError(error.response.data);
+            })
+            .finally(() => {
+                setDisabled(false);
+                setConfirmModal(false);
+            });
     };
 
-    // const promiseOptions = [];
-    const promiseOptions = (inputValue: string) =>
-        new Promise((resolve) => {
-            setTimeout(() => {
-                inputValue === '' ? resolve([]) : resolve([{ value: 'yellow', label: 'Yellow' }]);
-            }, 1000);
-        });
+    //get transactions
+    const getTransactions = () => {
+        financeAxiosInstance
+            .get('/transactions')
+            .then((res) => {
+                setData(res.data);
+                console.log('res.data', res.data);
+            })
+            .catch((err) => {
+                console.log('err.message', err.message);
+            })
+            .finally(() => {
+                console.log('done');
+            });
+    };
+
+    useEffect(() => {
+        getTransactions();
+    }, []);
+
+    //get students options
+    const promiseOptions = (inputValue: string) => {
+        const url = `program-cohort-applications/student/${inputValue}`;
+        if (inputValue.length < 1) {
+            return [];
+        }
+        return simsAxiosInstance
+            .get(url)
+            .then((res) => {
+                const responseData = res.data;
+                const options = responseData.map((item) => ({ value: item.studentId, label: `${item.firstName} ${item.lastName}` }));
+                return options;
+            })
+            .catch((err) => {
+                console.log('err.message', err.message);
+            });
+    };
+
+    // debounce to avoid too many calls
+    const loadStudents = debounce(promiseOptions, 300);
 
     const handleInputChange = (e) => {
-        setStudent(e.value);
+        setStudentId(e.value);
     };
 
     //close Fee Payment Modal
     const closeFeePaymentModal = () => {
         setFeePaymentModal(false);
-        setStudent('');
+        setStudentId('');
     };
 
     //close fee waiver modal
 
     const closeFeeWaiverModal = () => {
         setFeeWaiverModal(false);
-        setStudent('');
+        setStudentId('');
     };
 
     //handle Errors
@@ -85,19 +188,35 @@ const Transactions = (): JSX.Element => {
     //transcation details
     const handleTransactionDetails = (row) => {
         setSelectedRow(row);
-        setTransactionDetailsModal(true);
+        const requestOne = timetablingAxiosInstance.get('/staff/1');
+        // const requestTwo = simsAxiosInstance.get('/program-cohort-applications/1');
+
+        // open details modal after all requests are succesful
+        axios
+            .all([requestOne])
+            .then(() => {
+                axios.spread((...responses) => {
+                    console.log(responses[0]);
+                    // console.log(responses[1]);
+                    // console.log(responses[2]);
+                });
+                setTransactionDetailsModal(true);
+            })
+            .catch((err) => console.log(err));
     };
 
     //handle select
     useEffect(() => {
-        if (student.trim() === '') {
+        // // eslint-disable-next-line no-debugger
+        // debugger;
+        if (!studentId) {
             setSelectError(true);
             setDisabled(true);
         } else {
             setSelectError(false);
             setDisabled(false);
         }
-    }, [student]);
+    }, [studentId]);
 
     return (
         <>
@@ -136,7 +255,7 @@ const Transactions = (): JSX.Element => {
                     onErrorSubmit={handleErrorSubmit}
                     onSubmit={(e, formData) => {
                         e.preventDefault();
-                        setSubmissionData({ ...formData, student });
+                        setSubmissionData({ ...formData, amount: parseInt(formData.amount), studentId });
                         setConfirmModal(true);
                     }}
                 >
@@ -151,7 +270,7 @@ const Transactions = (): JSX.Element => {
                                 <AsyncSelect
                                     id="studentOptions"
                                     cacheOptions
-                                    loadOptions={promiseOptions}
+                                    loadOptions={loadStudents}
                                     defaultOptions
                                     onChange={handleInputChange}
                                 />
@@ -177,16 +296,17 @@ const Transactions = (): JSX.Element => {
                             </Col>
                         </Row>
                         <Row className="mt-4">
-                            <Col sm={12}>
-                                <label htmlFor="attachment">
-                                    <b>
-                                        Supporting Documents<span className="text-danger">*</span>
-                                    </b>
-                                </label>
+                            <label htmlFor="attachment">
+                                <b>
+                                    Supporting Documents<span className="text-danger">*</span>
+                                </b>
+                            </label>
+                            <Col sm={9}>
                                 <FileInput
                                     name="attachment"
                                     id="attachment"
-                                    required
+                                    required={attachmentUrl ? true : false}
+                                    onChange={(event) => setAttachment(event.target.files[0])}
                                     fileType={['pdf']}
                                     maxFileSize="2 mb"
                                     errorMessage={{
@@ -195,6 +315,11 @@ const Transactions = (): JSX.Element => {
                                         maxFileSize: 'Max file size is 2 mb'
                                     }}
                                 />
+                            </Col>
+                            <Col sm={3}>
+                                <Button disabled={!attachment} className="float-right" variant="info" onClick={handleFileUpload}>
+                                    Upload
+                                </Button>
                             </Col>
                         </Row>
                         <Row className="mt-4">
@@ -223,7 +348,7 @@ const Transactions = (): JSX.Element => {
                     onErrorSubmit={handleErrorSubmit}
                     onSubmit={(e, formData) => {
                         e.preventDefault();
-                        setSubmissionData({ ...formData, student });
+                        setSubmissionData({ ...formData, amount: parseInt(formData.amount), studentId });
                         setConfirmModal(true);
                     }}
                 >
@@ -238,7 +363,7 @@ const Transactions = (): JSX.Element => {
                                 <AsyncSelect
                                     id="studentOptions"
                                     cacheOptions
-                                    loadOptions={promiseOptions}
+                                    loadOptions={loadStudents}
                                     defaultOptions
                                     onChange={handleInputChange}
                                 />

@@ -27,15 +27,15 @@ const TransactionDetails: React.FunctionComponent<Props> = (props) => {
                             <h6>Student:</h6>
                             reg No - Name
                         </ListGroup.Item>
-                        <ListGroup.Item>
+                        {/* <ListGroup.Item>
                             <h6>Program:</h6>
                             code - Name
+                        </ListGroup.Item> */}
+                        <ListGroup.Item>
+                            <h6>Fee Balance:</h6>balance here
                         </ListGroup.Item>
                         <ListGroup.Item>
-                            <h6>Fee Balance:</h6> - balance here
-                        </ListGroup.Item>
-                        <ListGroup.Item>
-                            <h6>Supporting document:</h6> - link here
+                            <h6>Supporting document:</h6>link here
                         </ListGroup.Item>
                     </ListGroup>
                 </div>
