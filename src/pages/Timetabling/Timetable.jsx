@@ -79,7 +79,8 @@ class Timetable extends React.Component {
             timetableDataWithErrors: [],
             itemsWithColor: [],
             priorityId: 2,
-            disablePublishButton: false
+            disablePublishButton: false,
+            unitDuration:60
         }
         this.onAppointmentRemove = this.onAppointmentRemove.bind(this)
         this.onAppointmentFormOpening = this.onAppointmentFormOpening.bind(this)
@@ -123,7 +124,7 @@ class Timetable extends React.Component {
         CourseCohortService.fetchCourseCohorts(loadExtras, semesterId)
             .then((res) => {
                 const courseCohorts = res.data
-                const courseCohortData = courseCohorts.filter(ch => ch.programCohortSemester.status === 'PUBLISHED').map((cc) => {
+                const courseCohortData = courseCohorts.filter(ch => ch.programCohortSemester.status.toUpperCase() === 'PUBLISHED').map((cc) => {
                     return {
                         text: cc.course.name,
                         id: cc.id,
@@ -353,7 +354,7 @@ class Timetable extends React.Component {
                 label: {
                     text: 'Duration in hours'
                 },
-                dataField: 'duration',
+                dataField: 'unitDuration',
                 editorType: 'dxNumberBox',
                 editorOptions: {
                     width: '100%',
@@ -364,7 +365,7 @@ class Timetable extends React.Component {
                     type: 'number',
                     onChange(args) {
                         console.log('duration in hours data ', args)
-                        this.setState({ durationInMinutes: args.value })
+                        this.setState({ unitDuration: args.value })
                     }
                 }
             }
@@ -378,7 +379,7 @@ class Timetable extends React.Component {
             venueId: e.appointmentData.venueId,
             recurrenceStartDate: e.appointmentData.startDate,
             recurrenceEndDate: e.appointmentData.endDate,
-            durationInMinutes: e.appointmentData.durationInMinutes,
+            durationInMinutes: e.appointmentData.unitDuration * 60,
             startTime: e.appointmentData.startTime,
             numSessions: e.appointmentData.numSessions,
             trainerId: e.appointmentData.trainerId
@@ -493,7 +494,7 @@ class Timetable extends React.Component {
                     views={['day', 'week', 'workWeek']}
                     defaultCurrentView="week"
                     firstDayOfWeek={1}
-                    cellDuration={60}
+                    cellDuration={this.state.unitDuration}
                     defaultCurrentDate={currentDate}
                     height={600}
                     startDayHour={8}
@@ -501,7 +502,7 @@ class Timetable extends React.Component {
                     editing={true}
                     appointmentTooltipComponent={AppointmentTooltip}
                     onAppointmentFormOpening={this.onAppointmentFormOpening}
-                    onAppointmentUpdated={e => { this.handleEdit(e) }}
+                    onAppointmentUpdated={e => { this.handleEdit(e); console.log(''); }}
                 >
                     <Resource
                         fieldExpr='colorId'

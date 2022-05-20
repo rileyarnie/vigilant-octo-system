@@ -7,7 +7,7 @@ export class TimetableService {
         return timetablingAxiosInstance.post('/timetabling-units', timetableUnit);
     }
     static async updateTimetableUnit(timetableUnitData): Promise<void> {
-        return timetablingAxiosInstance.put(`/timetabling-units/${timetableUnitData.timetablingUnitId}`, { timetableUnitData });
+        return timetablingAxiosInstance.put(`/timetabling-units/${timetableUnitData.timetablingUnitId}`,  timetableUnitData );
     }
     static async getTimetableUnit(semesterId?: number): Promise<TimetablingUnit[]> {
         return timetablingAxiosInstance.get('/timetabling-units', { params: { semesterId: semesterId } });
