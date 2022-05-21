@@ -9,10 +9,11 @@ import CourseCohortService from '../../services/CourseCohortsService'
 import { TrainerService } from '../../services/TrainerService'
 import { TimetableService } from '../../services/TimetableService'
 import { VenueService } from '../../services/VenueService'
-import { Button } from 'react-bootstrap'
+import {Button, Col, Row} from 'react-bootstrap'
 import { ToastifyAlerts } from '../lib/Alert'
 import AppointmentTooltip from './AppointmentTooltip'
 import { SemesterService } from '../../services/SemesterService'
+import {LinearProgress} from "@mui/material";
 const alerts = new ToastifyAlerts()
 const currentDate = new Date()
 const draggingGroupName = 'appointmentsGroup'
@@ -356,7 +357,7 @@ class Timetable extends React.Component {
                 label: {
                     text: 'Duration in hours'
                 },
-                dataField: 'duration',
+                dataField: 'unitDuration',
                 editorType: 'dxNumberBox',
                 editorOptions: {
                     width: '100%',
@@ -366,8 +367,7 @@ class Timetable extends React.Component {
                     showSpinButtons: true,
                     type: 'number',
                     onChange(args) {
-                        console.log('duration in hours data ', args)
-                        this.setState({ durationInMinutes: args.value })
+                        this.setState({ unitDuration: args.value })
                     }
                 }
             }
