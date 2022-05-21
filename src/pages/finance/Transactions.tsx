@@ -219,7 +219,7 @@ const Transactions = (): JSX.Element => {
         const requestFour = row.crAccount.studentId
             ? financeAxiosInstance.get('/fees/reports', {
                 params: {
-                    studentId: row.drAccount.studentId
+                    studentId: row.crAccount.studentId
                 }
             })
             : null;
@@ -230,7 +230,6 @@ const Transactions = (): JSX.Element => {
                 }
             })
             : null;
-        console.log('row', row);
         // open details modal after all requests are succesful
         axios
             .all([requestOne, requestTwo, requestThree, requestFour, requestFive])
@@ -239,9 +238,9 @@ const Transactions = (): JSX.Element => {
                     console.log('responses', responses);
                     const staff = responses[0] && responses[0].data;
                     setRecordedBy({ staffId: staff.id, name: staff.name });
-                    const balanceCr = responses[1] && responses[1].data.balance;
+                    const balanceCr = responses[3] && responses[3].data.balance;
                     setFeeBalanceCr(balanceCr);
-                    const balanceDr = responses[2] && responses[2].data.balance;
+                    const balanceDr = responses[4] && responses[4].data.balance;
                     setFeeBalanceDr(balanceDr);
                 })
             )
