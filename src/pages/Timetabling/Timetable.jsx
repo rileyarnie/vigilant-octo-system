@@ -153,12 +153,10 @@ class Timetable extends React.Component {
                             venueId: tu.venueId,
                             trainerId: courseCohort.trainerId,
                             startDate: new Date(tu.recurrenceStartDate),
-                            endDate: new Date(tu.recurrenceEndDate),
+                            endDate: new Date(tu.recurrenceEndDate)
                         })
                     })
                 }
-
-
                 this.setState({timetableData: datasourceTu})
             })
             .catch((error) => {
