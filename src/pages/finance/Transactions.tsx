@@ -203,37 +203,37 @@ const Transactions = (): JSX.Element => {
         const requestOne = timetablingAxiosInstance.get(`/staff/${row.created_by_user_id}`);
         const requestTwo = row.crAccount.studentId
             ? simsAxiosInstance.get('/program-cohort-applications', {
-                  params: {
-                      studentId: row.crAccount.studentId
-                  }
-              })
+                params: {
+                    studentId: row.crAccount.studentId
+                }
+            })
             : null;
         const requestThree = row.drAccount.studentId
             ? simsAxiosInstance.get('/program-cohort-applications', {
-                  params: {
-                      studentId: row.drAccount.studentId
-                  }
-              })
+                params: {
+                    studentId: row.drAccount.studentId
+                }
+            })
             : null;
 
         const requestFour = row.crAccount.studentId
             ? financeAxiosInstance.get('/fees/reports', {
-                  params: {
-                      studentId: 5
-                  }
-              })
+                params: {
+                    studentId: row.drAccount.studentId
+                }
+            })
             : null;
         const requestFive = row.drAccount.studentId
             ? financeAxiosInstance.get('/fees/reports', {
-                  params: {
-                      studentId: 5
-                  }
-              })
+                params: {
+                    studentId: row.drAccount.studentId
+                }
+            })
             : null;
         console.log('row', row);
         // open details modal after all requests are succesful
         axios
-            .all([requestOne, requestFour, requestFive])
+            .all([requestOne, requestTwo, requestThree, requestFour, requestFive])
             .then(
                 axios.spread((...responses) => {
                     console.log('responses', responses);
