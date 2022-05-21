@@ -9,10 +9,11 @@ import CourseCohortService from '../../services/CourseCohortsService'
 import { TrainerService } from '../../services/TrainerService'
 import { TimetableService } from '../../services/TimetableService'
 import { VenueService } from '../../services/VenueService'
-import { Button } from 'react-bootstrap'
+import {Button, Col, Row} from 'react-bootstrap'
 import { ToastifyAlerts } from '../lib/Alert'
 import AppointmentTooltip from './AppointmentTooltip'
 import { SemesterService } from '../../services/SemesterService'
+import {LinearProgress} from "@mui/material";
 const alerts = new ToastifyAlerts()
 const currentDate = new Date()
 const draggingGroupName = 'appointmentsGroup'
@@ -79,16 +80,14 @@ class Timetable extends React.Component {
             timetableDataWithErrors: [],
             itemsWithColor: [],
             priorityId: 2,
-            disablePublishButton: false
+            disablePublishButton: false,
+            unitDuration:60,
+            linearDisplay: 'none'
         }
         this.onAppointmentRemove = this.onAppointmentRemove.bind(this)
         this.onAppointmentFormOpening = this.onAppointmentFormOpening.bind(this)
         this.onAppointmentAdd = this.onAppointmentAdd.bind(this)
         this.timeTabledUnitsWithErrors = this.timeTabledUnitsWithErrors.bind(this)
-        //this.onVenueChanged = this.onVenueChanged.bind(this)
-        //this.handleEdit()
-        //this.courseCohortData
-
     }
     // selectedTimetablingUnit = {}
     componentDidMount() {
@@ -108,22 +107,23 @@ class Timetable extends React.Component {
         // find if timetable has errors and disable publish button
         const conflictFound = this.state.timeTabledUnitErrors.find(error => error?.errors?.length > 0)
 
-        this.setState({ disablePublishButton: conflictFound ? true : false })
+        this.setState({disablePublishButton: conflictFound ? true : false})
     }
 
     fetchTimetableUnitErrors = (semesterId) => {
         TimetableService.getTimetableUnitErrors(semesterId)
             .then((res) => {
                 const errors = res.data
-                this.setState({ timeTabledUnitErrors: errors })
+                this.setState({timeTabledUnitErrors: errors})
                 this.checkTimeTableErrors() // check timetable for errors/conflicts
             })
     }
     fetchCourseCohorts = (loadExtras, semesterId) => {
+        this.setState({linearDisplay: 'block'})
         CourseCohortService.fetchCourseCohorts(loadExtras, semesterId)
             .then((res) => {
                 const courseCohorts = res.data
-                const courseCohortData = courseCohorts.filter(ch => ch.programCohortSemester.status === 'PUBLISHED').map((cc) => {
+                const courseCohortData = courseCohorts.filter(ch => ch.programCohortSemester.status.toUpperCase() === 'PUBLISHED').map((cc) => {
                     return {
                         text: cc.course.name,
                         id: cc.id,
@@ -141,23 +141,23 @@ class Timetable extends React.Component {
                             text: courseCohort.course.name,
                             timetablingUnitId: tu.id,
                             courseCohortId: tu.courseCohortId,
-                            dayOfWeek: new Date(tu.recurrenceStartDate).toLocaleString('en-us', { weekday: 'short' }),
+                            dayOfWeek: new Date(tu.recurrenceStartDate).toLocaleString('en-us', {weekday: 'short'}),
                             numSessions: tu.numSessions,
                             venueId: tu.venueId,
                             trainerId: courseCohort.trainerId,
                             startDate: new Date(tu.recurrenceStartDate),
-                            endDate: new Date(tu.recurrenceEndDate),
+                            endDate: new Date(tu.recurrenceEndDate)
                         })
                     })
                 }
-
-
-                this.setState({ timetableData: datasourceTu })
+                this.setState({timetableData: datasourceTu})
             })
             .catch((error) => {
                 console.error(error)
                 alerts.showError(error.message)
-            })
+            }).finally(() => {
+            this.setState({linearDisplay: 'none'})
+        })
     }
 
 
@@ -183,7 +183,7 @@ class Timetable extends React.Component {
         SemesterService.fetchSemesters()
             .then((res) => {
                 const semData = res['data']
-                this.setState({ semesters: semData })
+                this.setState({semesters: semData})
             })
             .catch((error) => {
                 console.error(error)
@@ -214,6 +214,7 @@ class Timetable extends React.Component {
 
     /** add unit to the timetable and save the status to the database  */
     onAppointmentAdd(e) {
+        this.setState({linearDisplay: 'block'})
         const index = this.state.courseCohort.indexOf(e.fromData)
         const timetableData = e['itemData']
         const min = Math.min(timetableData.trainingHours, this.state.maxNumUnitRepetition)
@@ -235,6 +236,9 @@ class Timetable extends React.Component {
         }).catch((error) => {
             console.error(error)
             alerts.showError(error.message)
+        }).finally(() => {
+            this.fetchCourseCohorts('course, timetablingUnits, semester', this.state.semesterId)
+            this.setState({linearDisplay: 'none'})
         })
 
         // get expected hours for the course
@@ -353,7 +357,7 @@ class Timetable extends React.Component {
                 label: {
                     text: 'Duration in hours'
                 },
-                dataField: 'duration',
+                dataField: 'unitDuration',
                 editorType: 'dxNumberBox',
                 editorOptions: {
                     width: '100%',
@@ -363,8 +367,7 @@ class Timetable extends React.Component {
                     showSpinButtons: true,
                     type: 'number',
                     onChange(args) {
-                        console.log('duration in hours data ', args)
-                        this.setState({ durationInMinutes: args.value })
+                        this.setState({ unitDuration: args.value })
                     }
                 }
             }
@@ -373,12 +376,13 @@ class Timetable extends React.Component {
         ])
     }
     handleEdit(e) {
+        this.setState({linearDisplay: 'block'})
         const updatedTimetablingUnit = {
             timetablingUnitId: e.appointmentData.timetablingUnitId,
             venueId: e.appointmentData.venueId,
             recurrenceStartDate: e.appointmentData.startDate,
             recurrenceEndDate: e.appointmentData.endDate,
-            durationInMinutes: e.appointmentData.durationInMinutes,
+            durationInMinutes: e.appointmentData.unitDuration * 60,
             startTime: e.appointmentData.startTime,
             numSessions: e.appointmentData.numSessions,
             trainerId: e.appointmentData.trainerId
@@ -393,12 +397,15 @@ class Timetable extends React.Component {
                 alerts.showSuccess('Timetable updated successfully')
                 this.checkTimeTableErrors() // check timetable for errors/conflicts
             })
-            .catch((error) => {
-                console.error(error)
+            .catch(() => {
                 // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
                 alerts.showError('Couldn\'t update Timetable')
-            })
+            }).finally(() => {
+            this.fetchCourseCohorts('course, timetablingUnits, semester', this.state.semesterId)
+            this.setState({linearDisplay: 'none'})
+        })
     }
+
     onListDragStart(e) {
         e.cancel = true
     }
@@ -411,14 +418,15 @@ class Timetable extends React.Component {
         }
     }
     async publishTimetable() {
+        this.setState({linearDisplay: 'block'})
         await SemesterService.publishTimetable(this.state.semesterId)
             .then(() => {
                 alerts.showSuccess('Timetable published successfully')
             })
             .catch((error) => {
-                console.error(error)
-                // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
                 alerts.showError(error.message)
+            }).finally(() => {
+                this.setState({linearDisplay: 'none'})
             })
     }
     getTimetablingUnitId(courseCohorts, courseCohortId) {
@@ -438,6 +446,10 @@ class Timetable extends React.Component {
     }
     render() {
         return (
+            <>
+                <Row>
+                    <Col><LinearProgress style={{display: this.state.linearDisplay}}/></Col>
+                </Row>
             <React.Fragment>
                 {this.state.semesterId ?
                     <Button
@@ -493,7 +505,7 @@ class Timetable extends React.Component {
                     views={['day', 'week', 'workWeek']}
                     defaultCurrentView="week"
                     firstDayOfWeek={1}
-                    cellDuration={60}
+                    cellDuration={this.state.unitDuration}
                     defaultCurrentDate={currentDate}
                     height={600}
                     startDayHour={8}
@@ -501,7 +513,7 @@ class Timetable extends React.Component {
                     editing={true}
                     appointmentTooltipComponent={AppointmentTooltip}
                     onAppointmentFormOpening={this.onAppointmentFormOpening}
-                    onAppointmentUpdated={e => { this.handleEdit(e) }}
+                    onAppointmentUpdated={e => { this.handleEdit(e); console.log(''); }}
                 >
                     <Resource
                         fieldExpr='colorId'
@@ -521,6 +533,7 @@ class Timetable extends React.Component {
                     />
                 </Scheduler>
             </React.Fragment>
+                </>
         )
     }
 }
