@@ -4,6 +4,9 @@ import ConfirmationModalWrapper from '../../App/components/modal/ConfirmationMod
 
 interface Props {
     data: unknown;
+    staff: { staffId: number; name: string };
+    balanceCr: number;
+    balanceDr: number;
 }
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 const TransactionDetails: React.FunctionComponent<Props> = (props) => {
@@ -16,24 +19,31 @@ const TransactionDetails: React.FunctionComponent<Props> = (props) => {
     };
     return (
         <div>
-            {console.log('props.data', props.data)}
+            {/* {console.log('props.data', props.data)} */}
             <Row>
                 <div className="col-md-12">
                     <ListGroup>
                         <ListGroup.Item>
-                            <h6>Recorded by:</h6> staffId - Name
+                            <h6>Recorded by:</h6> {props.staff.staffId} - {props.staff.name}
                         </ListGroup.Item>
-                        <ListGroup.Item>
-                            <h6>Student:</h6>
-                            reg No - Name
-                        </ListGroup.Item>
+                        {props.balanceCr && (
+                            <ListGroup.Item>
+                                <h6>Student (Cr):</h6>
+                                <p>reg No - Name</p>
+                                <p>Balance: KES {props.balanceCr}</p>
+                            </ListGroup.Item>
+                        )}
+                        {props.balanceDr && (
+                            <ListGroup.Item>
+                                <h6>Student (Dr):</h6>
+                                <p>reg No - Name</p>
+                                <p>Balance: KES {props.balanceDr}</p>
+                            </ListGroup.Item>
+                        )}
                         {/* <ListGroup.Item>
                             <h6>Program:</h6>
                             code - Name
                         </ListGroup.Item> */}
-                        <ListGroup.Item>
-                            <h6>Fee Balance:</h6>balance here
-                        </ListGroup.Item>
                         <ListGroup.Item>
                             <h6>Supporting document:</h6>link here
                         </ListGroup.Item>

@@ -22,7 +22,7 @@ import { timetablingAxiosInstance } from '../../utlis/interceptors/timetabling-i
 
 const Transactions = (): JSX.Element => {
     const alerts: Alerts = new ToastifyAlerts();
-    const [data, setData] = useState([{ id: 1, date: 'today', description: 'the description', balance: 'balance' }]);
+    const [data, setData] = useState([]);
     const [feePaymentModal, setFeePaymentModal] = useState(false);
     const [feeWaiverModal, setFeeWaiverModal] = useState(false);
     const [confirmModal, setConfirmModal] = useState(false);
@@ -48,6 +48,9 @@ const Transactions = (): JSX.Element => {
     });
     const [attachment, setAttachment] = useState('');
     const [attachmentUrl, setAttachmentUrl] = useState('link');
+    const [recordedBy, setRecordedBy] = useState<{ staffId: number; name: string }>({ staffId: 0, name: '' });
+    const [feeBalanceCr, setFeeBalanceCr] = useState(0);
+    const [feeBalanceDr, setFeeBalanceDr] = useState(0);
 
     const columns = [
         { title: 'Transaction ID', field: 'id' },
@@ -57,7 +60,13 @@ const Transactions = (): JSX.Element => {
         {
             title: 'Actions',
             render: (row) => (
-                <Button variant="info" onClick={() => handleTransactionDetails(row)}>
+                <Button
+                    variant="info"
+                    onClick={() => {
+                        setSelectedRow(row);
+                        handleTransactionDetails(row);
+                    }}
+                >
                     View Details
                 </Button>
             )
@@ -110,6 +119,7 @@ const Transactions = (): JSX.Element => {
                 // toggleCloseConfirmModal();
                 // props.closeModal();
                 getTransactions();
+                setFeeWaiverModal(false);
             })
             .catch((error) => {
                 // props.closeModal();
@@ -145,9 +155,6 @@ const Transactions = (): JSX.Element => {
     //get students options
     const promiseOptions = (inputValue: string) => {
         const url = `program-cohort-applications/student/${inputValue}`;
-        if (inputValue.length < 1) {
-            return [];
-        }
         return simsAxiosInstance
             .get(url)
             .then((res) => {
@@ -161,7 +168,13 @@ const Transactions = (): JSX.Element => {
     };
 
     // debounce to avoid too many calls
-    const loadStudents = debounce(promiseOptions, 300);
+    // const loadStudents = debounce(promiseOptions, 300);
+    const loadOptions = React.useCallback(
+        debounce((inputText, callback) => {
+            promiseOptions(inputText).then((options) => callback(options));
+        }, 3000),
+        []
+    );
 
     const handleInputChange = (e) => {
         setStudentId(e.value);
@@ -187,22 +200,55 @@ const Transactions = (): JSX.Element => {
 
     //transcation details
     const handleTransactionDetails = (row) => {
-        setSelectedRow(row);
-        const requestOne = timetablingAxiosInstance.get('/staff/1');
-        // const requestTwo = simsAxiosInstance.get('/program-cohort-applications/1');
+        const requestOne = timetablingAxiosInstance.get(`/staff/${row.created_by_user_id}`);
+        const requestTwo = row.crAccount.studentId
+            ? simsAxiosInstance.get('/program-cohort-applications', {
+                  params: {
+                      studentId: row.crAccount.studentId
+                  }
+              })
+            : null;
+        const requestThree = row.drAccount.studentId
+            ? simsAxiosInstance.get('/program-cohort-applications', {
+                  params: {
+                      studentId: row.drAccount.studentId
+                  }
+              })
+            : null;
 
+        const requestFour = row.crAccount.studentId
+            ? financeAxiosInstance.get('/fees/reports', {
+                  params: {
+                      studentId: 5
+                  }
+              })
+            : null;
+        const requestFive = row.drAccount.studentId
+            ? financeAxiosInstance.get('/fees/reports', {
+                  params: {
+                      studentId: 5
+                  }
+              })
+            : null;
+        console.log('row', row);
         // open details modal after all requests are succesful
         axios
-            .all([requestOne])
-            .then(() => {
+            .all([requestOne, requestFour, requestFive])
+            .then(
                 axios.spread((...responses) => {
-                    console.log(responses[0]);
-                    // console.log(responses[1]);
-                    // console.log(responses[2]);
-                });
+                    console.log('responses', responses);
+                    const staff = responses[0] && responses[0].data;
+                    setRecordedBy({ staffId: staff.id, name: staff.name });
+                    const balanceCr = responses[1] && responses[1].data.balance;
+                    setFeeBalanceCr(balanceCr);
+                    const balanceDr = responses[2] && responses[2].data.balance;
+                    setFeeBalanceDr(balanceDr);
+                })
+            )
+            .then(() => {
                 setTransactionDetailsModal(true);
             })
-            .catch((err) => console.log(err));
+            .catch((err) => alerts.showError(err.message));
     };
 
     //handle select
@@ -270,7 +316,7 @@ const Transactions = (): JSX.Element => {
                                 <AsyncSelect
                                     id="studentOptions"
                                     cacheOptions
-                                    loadOptions={loadStudents}
+                                    loadOptions={loadOptions}
                                     defaultOptions
                                     onChange={handleInputChange}
                                 />
@@ -363,7 +409,7 @@ const Transactions = (): JSX.Element => {
                                 <AsyncSelect
                                     id="studentOptions"
                                     cacheOptions
-                                    loadOptions={loadStudents}
+                                    loadOptions={loadOptions}
                                     defaultOptions
                                     onChange={handleInputChange}
                                 />
@@ -415,7 +461,7 @@ const Transactions = (): JSX.Element => {
                 closeModal={() => setTransactionDetailsModal(false)}
                 modalSize="lg"
             >
-                <TransactionDetails data={selectedRow} />
+                <TransactionDetails data={selectedRow} staff={recordedBy} balanceCr={feeBalanceCr} balanceDr={feeBalanceDr} />
             </ModalWrapper>
             <ConfirmationModalWrapper
                 show={confirmModal}
