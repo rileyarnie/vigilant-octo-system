@@ -87,10 +87,6 @@ class Timetable extends React.Component {
         this.onAppointmentFormOpening = this.onAppointmentFormOpening.bind(this)
         this.onAppointmentAdd = this.onAppointmentAdd.bind(this)
         this.timeTabledUnitsWithErrors = this.timeTabledUnitsWithErrors.bind(this)
-        //this.onVenueChanged = this.onVenueChanged.bind(this)
-        //this.handleEdit()
-        //this.courseCohortData
-
     }
     // selectedTimetablingUnit = {}
     componentDidMount() {
