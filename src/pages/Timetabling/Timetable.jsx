@@ -136,6 +136,8 @@ class Timetable extends React.Component {
                 this.setState({ courseCohort: courseCohortData })
                 let datasourceTu = []
                 for (const courseCohort of courseCohorts) {
+                    const semEndDate = courseCohort.programCohortSemester.semester.endDate;
+                    const semEndFormat = moment(semEndDate.split('T')[0]).format('YYYYMMDD') + 'T000000Z';
                     courseCohort.timetablingUnit.map((tu) => {
                         datasourceTu.push({
                             text: courseCohort.course.name,
@@ -146,8 +148,8 @@ class Timetable extends React.Component {
                             venueId: tu.venueId,
                             trainerId: courseCohort.trainerId,
                             startDate: new Date(tu.recurrenceStartDate),
-                            endDate: new Date(tu.recurrenceEndDate)
-                        })
+                            endDate: new Date(tu.recurrenceEndDate),
+                            recurrenceRule: `FREQ=WEEKLY;BYDAY=${moment(tu.recurrenceStartDate).format('dd').toUpperCase()};UNTIL=${semEndFormat}`
                     })
 
                     // check if training hours has been met
