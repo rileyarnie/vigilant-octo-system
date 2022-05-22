@@ -92,12 +92,15 @@ const Transactions = (): JSX.Element => {
     // StudentId, narrative, currency and amount are required fields for this request
     const FeePaymentHandler = () => {
         setDisabled(true);
+        setLinearDisplay('block');
+
         // eslint-disable-next-line @typescript-eslint/no-unused-vars
         const { attachment, ...data } = submissionData;
         const feeRecord = { ...data, evidenceUrls: attachmentUrl };
         StudentFeesManagementService.recordFeesReport(feeRecord)
             .then(() => {
                 alerts.showSuccess('Fee record created successfuly');
+                getTransactions();
             })
             .catch((error) => {
                 alerts.showError(error.message);
@@ -105,10 +108,13 @@ const Transactions = (): JSX.Element => {
             .finally(() => {
                 setDisabled(false);
                 setConfirmModal(false);
+                setLinearDisplay('none');
             });
     };
     const FeeWaiverHandler = () => {
         setDisabled(true);
+        setLinearDisplay('block');
+
         StudentFeesManagementService.applyWaiver(submissionData)
             .then(() => {
                 alerts.showSuccess('Fee Record created successfully');
@@ -121,6 +127,7 @@ const Transactions = (): JSX.Element => {
             .finally(() => {
                 setDisabled(false);
                 setConfirmModal(false);
+                setLinearDisplay('none');
             });
     };
 
@@ -192,15 +199,15 @@ const Transactions = (): JSX.Element => {
 
     //transcation details
     const handleTransactionDetails = (row) => {
-        const requestOne = timetablingAxiosInstance.get(`/staff/${row.created_by_user_id}`);
-        const requestTwo = row.crAccount.studentId
+        const getStaffByUserId = timetablingAxiosInstance.get(`/staff/${row.created_by_user_id}`);
+        const getCrStudentDetails = row.crAccount.studentId
             ? simsAxiosInstance.get('/program-cohort-applications', {
                 params: {
                     studentId: row.crAccount.studentId
                 }
             })
             : null;
-        const requestThree = row.drAccount.studentId
+        const getDrStudentDetails = row.drAccount.studentId
             ? simsAxiosInstance.get('/program-cohort-applications', {
                 params: {
                     studentId: row.drAccount.studentId
@@ -208,14 +215,14 @@ const Transactions = (): JSX.Element => {
             })
             : null;
 
-        const requestFour = row.crAccount.studentId
+        const getCrStudentBalance = row.crAccount.studentId
             ? financeAxiosInstance.get('/fees/reports', {
                 params: {
                     studentId: row.crAccount.studentId
                 }
             })
             : null;
-        const requestFive = row.drAccount.studentId
+        const getDrStudentBalance = row.drAccount.studentId
             ? financeAxiosInstance.get('/fees/reports', {
                 params: {
                     studentId: row.drAccount.studentId
@@ -224,7 +231,7 @@ const Transactions = (): JSX.Element => {
             : null;
         // open details modal after all requests are succesful
         axios
-            .all([requestOne, requestTwo, requestThree, requestFour, requestFive])
+            .all([getStaffByUserId, getCrStudentDetails, getDrStudentDetails, getCrStudentBalance, getDrStudentBalance])
             .then(
                 axios.spread((...responses) => {
                     const staff = responses[0] && responses[0].data;
@@ -464,6 +471,7 @@ const Transactions = (): JSX.Element => {
                 submitButton
                 submitFunction={feePaymentModal ? FeePaymentHandler : FeeWaiverHandler}
             >
+                <LinearProgress style={{ display: linearDisplay }} />
                 <b>
                     <h5>Are you sure you want to Submit {feePaymentModal ? 'Fee Payment' : 'Fee Waiver'}?</h5>
                 </b>
