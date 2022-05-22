@@ -415,8 +415,7 @@ class Timetable extends React.Component {
                 this.checkTimeTableErrors(); // check timetable for errors/conflicts
             })
             .catch(() => {
-                // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
-                alerts.showError('Couldn\'t update Timetable');
+                alerts.showError('Could not update Timetabling Unit');
             }).finally(() => {
                 this.onTimeTableUpdate(); // call function to refetch the data from db
                 this.setState({ linearDisplay: 'none' });
@@ -427,14 +426,12 @@ class Timetable extends React.Component {
         const timetabledUnitId = e.appointmentData.timetablingUnitId;
         TimetableService.deleteTimetableUnit(timetabledUnitId)
             .then(() => {
-                alerts.showSuccess('Successfully deleted a timetabled Unit');
-                this.checkTimeTableErrors(); // check timetable for errors/conflicts
+                alerts.showSuccess('Successfully deleted a timetabling Unit');
+                this.onTimeTableUpdate(); // call function to refetch the data from db
             })
             .catch(() => {
-                // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
-                alerts.showError('Couldn\'t update Timetable');
+                alerts.showError('Could not delete timet');
             }).finally(() => {
-            this.onTimeTableUpdate(); // call function to refetch the data from db
             this.setState({ linearDisplay: 'none' });
         });
     }
@@ -562,7 +559,6 @@ class Timetable extends React.Component {
                         />
                         <AppointmentDragging
                             group={draggingGroupName}
-                            onRemove={this.onAppointmentRemove}
                             onAdd={this.onAppointmentAdd}
                         />
                     </Scheduler>
