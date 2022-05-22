@@ -13,7 +13,9 @@ import {Button, Col, Row} from 'react-bootstrap'
 import { ToastifyAlerts } from '../lib/Alert'
 import AppointmentTooltip from './AppointmentTooltip'
 import { SemesterService } from '../../services/SemesterService'
-import {LinearProgress} from "@mui/material";
+import { LinearProgress } from '@mui/material';
+import moment from 'moment'
+
 const alerts = new ToastifyAlerts()
 const currentDate = new Date()
 const draggingGroupName = 'appointmentsGroup'
@@ -152,10 +154,11 @@ class Timetable extends React.Component {
                             recurrenceRule: `FREQ=WEEKLY;BYDAY=${moment(tu.recurrenceStartDate).format('dd').toUpperCase()};UNTIL=${semEndFormat}`
                     })
 
-                    // check if training hours has been met
-                    this.checkTrainingHoursHasBeenMet(courseCohort, courseCohorts.indexOf(courseCohort));
+                        // check if training hours has been met
+                        this.checkTrainingHoursHasBeenMet(courseCohort, courseCohorts.indexOf(courseCohort));
+                    })
+                    }
                 }
-                this.setState({timetableData: datasourceTu})
             })
             .catch((error) => {
                 console.error(error)
