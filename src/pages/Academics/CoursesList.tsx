@@ -108,7 +108,6 @@ const CoursesList = (): JSX.Element => {
                     size="sm"
                     onClick={() => {
                         setSelectedRow(row);
-                        console.log('row', row);
                         toggleCourseDetailsModal();
                     }}
                 >
