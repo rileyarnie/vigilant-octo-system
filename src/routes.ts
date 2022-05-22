@@ -31,6 +31,7 @@ import WorkFlows from './pages/workFlows/WorkFlows';
 import ActionApprovals from './pages/Approvals/ActionApprovals';
 import StaffList from './pages/Users/StaffList';
 import Login from './pages/Auth/Login';
+import Transactions from './pages/finance/Transactions';
 
 const routes = [
     { path: '/dashboard', exact: true, name: 'default', component: Default },
@@ -71,6 +72,7 @@ const routes = [
     { path: '/studentfeesreport', exact: true, name: 'default', component: StudentFeesReport },
     { path: '/workflows', exact: true, name: 'default', component: WorkFlows },
     { path: '/actionapprovals', exact: true, name: 'default', component: ActionApprovals },
-    { path: '/login', exact: true, name: 'default', component: Login }
+    { path: '/login', exact: true, name: 'default', component: Login },
+    { path: '/fee-transactions', exact: true, name: 'default', component: Transactions }
 ];
 export default routes;

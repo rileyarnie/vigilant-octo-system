@@ -156,7 +156,7 @@ const chartData: { items: MenuItemType[] } = {
                                     hidden: !canPerformActions(ACTION_GET_COURSE_COHORTS.name)
                                 }
                             ]
-                        },
+                        }
                     ]
                 },
                 {
@@ -172,7 +172,7 @@ const chartData: { items: MenuItemType[] } = {
                             url: '/semesters',
                             hidden: !canPerformActions(ACTION_GET_SEMESTERS.name)
                         },
-                        
+
                         {
                             id: 'applications',
                             title: 'Applications',
@@ -194,7 +194,7 @@ const chartData: { items: MenuItemType[] } = {
                     title: 'Finance',
                     type: 'item',
                     icon: 'feather icon-user',
-                    url: '/studentlist',
+                    url: '/fee-transactions',
                     hidden: !canPerformActions(ACTION_GET_FEE_REPORTS.name)
                 },
                 {
