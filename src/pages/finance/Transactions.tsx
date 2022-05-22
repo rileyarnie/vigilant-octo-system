@@ -6,10 +6,9 @@ import { Button, Card, Col, Row } from 'react-bootstrap';
 import { TextInput, ValidationForm, FileInput } from 'react-bootstrap4-form-validation';
 import { Alerts, ToastifyAlerts } from '../lib/Alert';
 import { canPerformActions } from '../../services/ActionChecker';
-import { ACTION_GET_CAMPUSES } from '../../authnz-library/timetabling-actions';
 import TableWrapper from '../../utlis/TableWrapper';
 import ConfirmationModalWrapper from '../../App/components/modal/ConfirmationModalWrapper';
-import { ACTION_CREATE_FEE_PAYMENT, ACTION_CREATE_FEE_WAIVER } from '../../authnz-library/finance-actions';
+import { ACTION_CREATE_FEE_PAYMENT, ACTION_CREATE_FEE_WAIVER, ACTION_GET_FEE_ITEMS } from '../../authnz-library/finance-actions';
 import ModalWrapper from '../../App/components/modal/ModalWrapper';
 import AsyncSelect from 'react-select/async';
 import TransactionDetails from './TransactionDetails';
@@ -47,7 +46,7 @@ const Transactions = (): JSX.Element => {
         attachment: {}
     });
     const [attachment, setAttachment] = useState('');
-    const [attachmentUrl, setAttachmentUrl] = useState('link');
+    const [attachmentUrl, setAttachmentUrl] = useState('');
     const [recordedBy, setRecordedBy] = useState<{ staffId: number; name: string }>({ staffId: 0, name: '' });
     const [feeBalanceCr, setFeeBalanceCr] = useState(0);
     const [feeBalanceDr, setFeeBalanceDr] = useState(0);
@@ -95,8 +94,6 @@ const Transactions = (): JSX.Element => {
         // eslint-disable-next-line @typescript-eslint/no-unused-vars
         const { attachment, ...data } = submissionData;
         const feeRecord = { ...data, evidenceUrls: attachmentUrl };
-        // eslint-disable-next-line no-debugger
-        debugger;
         StudentFeesManagementService.recordFeesReport(feeRecord)
             .then((res) => {
                 console.log('res.data', res);
@@ -116,14 +113,10 @@ const Transactions = (): JSX.Element => {
         StudentFeesManagementService.applyWaiver(submissionData)
             .then(() => {
                 alerts.showSuccess('Fee Record created successfully');
-                // toggleCloseConfirmModal();
-                // props.closeModal();
                 getTransactions();
                 setFeeWaiverModal(false);
             })
             .catch((error) => {
-                // props.closeModal();
-                // toggleCloseConfirmModal();
                 alerts.showError(error.response.data);
             })
             .finally(() => {
@@ -172,7 +165,7 @@ const Transactions = (): JSX.Element => {
     const loadOptions = React.useCallback(
         debounce((inputText, callback) => {
             promiseOptions(inputText).then((options) => callback(options));
-        }, 3000),
+        }, 1000),
         []
     );
 
@@ -252,8 +245,6 @@ const Transactions = (): JSX.Element => {
 
     //handle select
     useEffect(() => {
-        // // eslint-disable-next-line no-debugger
-        // debugger;
         if (!studentId) {
             setSelectError(true);
             setDisabled(true);
@@ -283,9 +274,9 @@ const Transactions = (): JSX.Element => {
                     )}
                 </Col>
             </Row>
-            {canPerformActions(ACTION_GET_CAMPUSES.name) && (
+            {canPerformActions(ACTION_GET_FEE_ITEMS.name) && (
                 <>
-                    {/* <LinearProgress style={{ display: 'block' }} /> */}
+                    <LinearProgress style={{ display: 'block' }} />
                     <Row>
                         <Col>
                             <Card>
