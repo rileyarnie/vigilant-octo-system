@@ -93,7 +93,6 @@ const StudentFeeReport = (): JSX.Element => {
             });
     }
     function handleReversal() {
-        console.log('handle reversal called...');
         setLinearDisplay('block');
         const reversal = {
             transactionId: transactionId
