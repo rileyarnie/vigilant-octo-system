@@ -97,10 +97,11 @@ const Transactions = (): JSX.Element => {
         StudentFeesManagementService.handleFeeReversal(reversal)
             .then(() => {
                 alerts.showSuccess('Successfully reversed transaction');
-                setLinearDisplay('none');
             })
             .catch((error) => {
                 alerts.showError(error.message);
+            })
+            .finally(() => {
                 setLinearDisplay('none');
             });
     }
