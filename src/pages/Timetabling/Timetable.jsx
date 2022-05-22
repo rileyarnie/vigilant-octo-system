@@ -160,6 +160,14 @@ class Timetable extends React.Component {
         })
     }
 
+    /**
+     * handle timetable updates, re-fetch data from the database
+     */
+    onTimeTableUpdate() {
+        this.fetchCourseCohorts('course, timetablingUnits, semester', this.state.semesterId);
+        this.setState({ linearDisplay: 'none' });
+        this.checkTimeTableErrors(); // check timetable for errors/conflicts
+    }
 
     timeTabledUnitsWithErrors(timeTabledUnits, timeTabledUnitErrors) {
         const items = timeTabledUnits?.map(unit => ({
@@ -237,7 +245,7 @@ class Timetable extends React.Component {
             console.error(error)
             alerts.showError(error.message)
         }).finally(() => {
-            this.fetchCourseCohorts('course, timetablingUnits, semester', this.state.semesterId)
+            this.onTimeTableUpdate(); // call function to refetch the data from db
             this.setState({linearDisplay: 'none'})
         })
 
@@ -401,7 +409,7 @@ class Timetable extends React.Component {
                 // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
                 alerts.showError('Couldn\'t update Timetable')
             }).finally(() => {
-            this.fetchCourseCohorts('course, timetablingUnits, semester', this.state.semesterId)
+                this.onTimeTableUpdate(); // call function to refetch the data from db
             this.setState({linearDisplay: 'none'})
         })
     }
