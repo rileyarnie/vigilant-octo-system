@@ -1,6 +1,5 @@
 /* eslint-disable react/display-name */
 import React, { useEffect, useState } from 'react';
-import { LinearProgress } from '@material-ui/core';
 import Breadcrumb from '../../App/components/Breadcrumb';
 import { Button, Card, Col, Row } from 'react-bootstrap';
 import { TextInput, ValidationForm, FileInput } from 'react-bootstrap4-form-validation';
@@ -18,6 +17,7 @@ import { financeAxiosInstance } from '../../utlis/interceptors/finance-intercept
 import { StudentFeesManagementService } from '../../services/StudentFeesManagementService';
 import axios from 'axios';
 import { timetablingAxiosInstance } from '../../utlis/interceptors/timetabling-interceptor';
+import { LinearProgress } from '@material-ui/core';
 
 const Transactions = (): JSX.Element => {
     const alerts: Alerts = new ToastifyAlerts();
@@ -28,7 +28,7 @@ const Transactions = (): JSX.Element => {
     const [disabled, setDisabled] = useState(false);
     const [studentId, setStudentId] = useState('');
     const [transactionDetailsModal, setTransactionDetailsModal] = useState(false);
-    const [selectedRow, setSelectedRow] = useState({});
+    const [selectedRow, setSelectedRow] = useState<{id?:number,narrative?:string,amount?:number}>({});
     const [selectError, setSelectError] = useState(true);
     const [submissionData, setSubmissionData] = useState<{
         studentId: number;
@@ -88,6 +88,23 @@ const Transactions = (): JSX.Element => {
                 alerts.showError(error.message);
             });
     };
+
+    function handleReversal(transactionId:number) {
+        setLinearDisplay('block');
+        const reversal = {
+            transactionId: transactionId
+        };
+        StudentFeesManagementService.handleFeeReversal(reversal)
+            .then(() => {
+                alerts.showSuccess('Successfully reversed transaction');
+            })
+            .catch((error) => {
+                alerts.showError(error.message);
+            })
+            .finally(() => {
+                setLinearDisplay('none');
+            });
+    }
 
     // StudentId, narrative, currency and amount are required fields for this request
     const FeePaymentHandler = () => {
@@ -464,6 +481,8 @@ const Transactions = (): JSX.Element => {
                     balanceCr={feeBalanceCr}
                     balanceDr={feeBalanceDr}
                     supportingDocument={attachmentUrl}
+                    handleReversal={handleReversal} 
+                    transactionId={selectedRow.id}
                 />
             </ModalWrapper>
             <ConfirmationModalWrapper

@@ -7,17 +7,14 @@ interface Props {
     staff: { staffId: number; name: string };
     balanceCr: number;
     balanceDr: number;
+    handleReversal: (transactionId:number) => void;
+    transactionId:number
     supportingDocument?: string;
 }
 const TransactionDetails: React.FunctionComponent<Props> = (props) => {
     const [disabled, setDisabled] = useState(false);
     const [confirmModal, setConfirmModal] = useState(false);
 
-    //reverse transaction function
-    const reverseTransactionHandler = () => {
-        setDisabled(true);
-        console.log('transaction reversed');
-    };
     return (
         <div>
             <Row>
@@ -67,7 +64,10 @@ const TransactionDetails: React.FunctionComponent<Props> = (props) => {
                     setConfirmModal(false);
                 }}
                 submitButton
-                submitFunction={reverseTransactionHandler}
+                submitFunction={() => {
+                    setDisabled(true);
+                    props.handleReversal(props.transactionId);
+                }}
             >
                 <h6>Are you sure you want to reverse this transaction?</h6>
             </ConfirmationModalWrapper>
