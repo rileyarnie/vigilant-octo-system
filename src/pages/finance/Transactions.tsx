@@ -96,11 +96,11 @@ const Transactions = (): JSX.Element => {
         const { attachment, ...data } = submissionData;
         const feeRecord = { ...data, evidenceUrls: attachmentUrl };
         StudentFeesManagementService.recordFeesReport(feeRecord)
-            .then((res) => {
-                console.log('res.data', res);
+            .then(() => {
+                alerts.showSuccess('Fee record created successfuly');
             })
             .catch((error) => {
-                console.log('error', error);
+                alerts.showError(error.message);
             })
             .finally(() => {
                 setDisabled(false);
@@ -109,8 +109,6 @@ const Transactions = (): JSX.Element => {
     };
     const FeeWaiverHandler = () => {
         setDisabled(true);
-        console.log('submissionData', submissionData);
-        console.log('fee waiver submitted');
         StudentFeesManagementService.applyWaiver(submissionData)
             .then(() => {
                 alerts.showSuccess('Fee Record created successfully');
@@ -135,7 +133,7 @@ const Transactions = (): JSX.Element => {
                 setData(res.data);
             })
             .catch((err) => {
-                console.log('err.message', err.message);
+                console.error('err.message', err.message);
             })
             .finally(() => {
                 setLinearDisplay('none');
@@ -157,7 +155,7 @@ const Transactions = (): JSX.Element => {
                 return options;
             })
             .catch((err) => {
-                console.log('err.message', err.message);
+                console.error('err.message', err.message);
             });
     };
 
@@ -229,7 +227,6 @@ const Transactions = (): JSX.Element => {
             .all([requestOne, requestTwo, requestThree, requestFour, requestFive])
             .then(
                 axios.spread((...responses) => {
-                    console.log('responses', responses);
                     const staff = responses[0] && responses[0].data;
                     setRecordedBy({ staffId: staff.id, name: staff.name });
                     const balanceCr = responses[3] && responses[3].data.balance;
@@ -238,10 +235,10 @@ const Transactions = (): JSX.Element => {
                     setFeeBalanceDr(balanceDr);
                 })
             )
-            .then(() => {
+            .catch((err) => alerts.showError(err.message))
+            .finally(() => {
                 setTransactionDetailsModal(true);
-            })
-            .catch((err) => alerts.showError(err.message));
+            });
     };
 
     //handle select
@@ -277,7 +274,7 @@ const Transactions = (): JSX.Element => {
             </Row>
             {canPerformActions(ACTION_GET_FEE_ITEMS.name) && (
                 <>
-                    <LinearProgress style={{ display: linearDisplay}} />
+                    <LinearProgress style={{ display: linearDisplay }} />
                     <Row>
                         <Col>
                             <Card>
