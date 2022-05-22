@@ -314,6 +314,7 @@ const Transactions = (): JSX.Element => {
                                     loadOptions={loadOptions}
                                     defaultOptions
                                     onChange={handleInputChange}
+                                    placeholder="Search for student"
                                 />
                                 {selectError && <p className="text-danger">Please Select Student</p>}
                             </Col>
@@ -407,6 +408,7 @@ const Transactions = (): JSX.Element => {
                                     loadOptions={loadOptions}
                                     defaultOptions
                                     onChange={handleInputChange}
+                                    placeholder="Search for student"
                                 />
                                 {selectError && <p className="text-danger">Please Select Student</p>}
                             </Col>
