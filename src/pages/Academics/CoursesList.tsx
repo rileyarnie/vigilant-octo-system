@@ -23,8 +23,8 @@ const CoursesList = (): JSX.Element => {
         name: string;
         id: number;
         code: string;
-        codePrefix:string;
-        prerequisiteCourses: string;
+        codePrefix: string;
+        prerequisiteCourses: { id: number; name: string; codePrefix: string }[];
         description: string;
         trainingHours: number;
         isTimetableable: boolean;
@@ -42,7 +42,7 @@ const CoursesList = (): JSX.Element => {
     const fetchCourses = () => {
         setLinearDisplay('block');
         timetablingAxiosInstance
-            .get('/courses', { params: { includeDeactivated: true, loadExtras: 'semsters,departments' } })
+            .get('/courses', { params: { includeDeactivated: true, loadExtras: 'semsters,departments,prerequisiteCourses' } })
             .then((res) => {
                 setLinearDisplay('none');
                 setData(res.data);
@@ -108,6 +108,7 @@ const CoursesList = (): JSX.Element => {
                     size="sm"
                     onClick={() => {
                         setSelectedRow(row);
+                        console.log('row', row);
                         toggleCourseDetailsModal();
                     }}
                 >
@@ -269,16 +270,16 @@ const CoursesList = (): JSX.Element => {
                             <Interweave content={selectedRow?.courseOutline} />
                         </div>
                     )}
-                    {selectedRow?.prerequisiteCourses && (
+                    {selectedRow?.prerequisiteCourses.length > 0 && (
                         <div>
                             <h5 style={{ marginTop: '0.8rem' }}>Prerequisite Courses</h5>
-                            {/* <ul>
+                            <ul>
                                 {selectedRow?.prerequisiteCourses.map((course) => (
                                     <li key={course.id}>
-                                        {course.name} - {course.code}
+                                        {course.name} : {course.codePrefix}-{course.id}
                                     </li>
                                 ))}
-                            </ul> */}
+                            </ul>
                         </div>
                     )}
                 </Row>
