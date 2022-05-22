@@ -73,25 +73,33 @@ const CourseCohortsList = (props): JSX.Element => {
             title: 'Action',
             field: 'internal_action',
             render: (row) => (
-                <button
-                    className="btn btn btn-link"
-                    onClick={() => {
-                        handleShow();
-                        setSelectedRow(row);
-                    }}
-                >
-                    {row.programCohortSemester ? (
+                <>
+                    {(row.programCohortSemester && (row.programCohortSemester.status).toUpperCase() === 'PUBLISHED') ? (
                         <>
-                            Change Semester
-                            <AssignmentTurnedIn fontSize="inherit" style={{ fontSize: '20px', color: 'black' }} />
-                        </>
-                    ) : (
+                            Cant update a published Cohort Semester
+                        </>) : (
                         <>
-                            Assign Semester
-                            <AssignmentTurnedIn fontSize="inherit" style={{ fontSize: '20px', color: 'black' }} />
+                            <button
+                                className="btn btn btn-link"
+                                onClick={() => {
+                                    handleShow();
+                                    setSelectedRow(row);
+                                }}
+                            >
+                                {row.programCohortSemester ? (
+                                    <>
+                                        Change Semester
+                                        <AssignmentTurnedIn fontSize="inherit" style={{ fontSize: '20px', color: 'black' }} />
+                                    </>) : (
+                                    <>
+                                        Assign Semester
+                                        <AssignmentTurnedIn fontSize="inherit" style={{ fontSize: '20px', color: 'black' }} />
+                                    </>)
+                                }
+                            </button>
                         </>
                     )}
-                </button>
+                </>
             )
         }
     ];
