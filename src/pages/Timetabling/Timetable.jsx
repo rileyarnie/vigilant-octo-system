@@ -430,7 +430,7 @@ class Timetable extends React.Component {
                 this.onTimeTableUpdate(); // call function to refetch the data from db
             })
             .catch(() => {
-                alerts.showError('Could not delete timet');
+                alerts.showError('Could not delete timetabling Unit');
             }).finally(() => {
             this.setState({ linearDisplay: 'none' });
         });
