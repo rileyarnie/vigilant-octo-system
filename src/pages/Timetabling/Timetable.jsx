@@ -307,8 +307,6 @@ class Timetable extends React.Component {
                     onValueChange(e) {
                         this.setState({ trainerId: e.target.value });
                         trainerId = e.target.value;
-                        console.log('TRAINER ID', trainerId);
-                        alert(trainerId);
                     }
                 },
             }, {
@@ -425,7 +423,6 @@ class Timetable extends React.Component {
             });
     }
     handleDeletion(e) {
-        console.log('KUNA KITU HAPA',e);
         this.setState({ linearDisplay: 'block' });
         const timetabledUnitId = e.appointmentData.timetablingUnitId;
         TimetableService.deleteTimetableUnit(timetabledUnitId)
@@ -502,7 +499,6 @@ class Timetable extends React.Component {
                             displayExpr="name"
                             valueExpr="id"
                             width={240}
-                            //value={id}
                             onValueChanged={(e) => {
                                 // TODO: update currentDate
                                 this.setState({ semesterId: e.value })
