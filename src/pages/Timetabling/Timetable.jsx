@@ -79,6 +79,7 @@ class Timetable extends React.Component {
             colorData: [],
             colorId: 0,
             timeTabledUnitErrors: [],
+            timetableData:[],
             timetableDataWithErrors: [],
             itemsWithColor: [],
             priorityId: 2,
@@ -153,14 +154,13 @@ class Timetable extends React.Component {
                             endDate: new Date(tu.recurrenceEndDate),
                             recurrenceRule: `FREQ=WEEKLY;BYDAY=${moment(tu.recurrenceStartDate).format('dd').toUpperCase()};UNTIL=${semEndFormat}`
                         });
-
+                        this.setState({ timetableData: datasourceTu });
                         // check if training hours has been met
                         this.checkTrainingHoursHasBeenMet(courseCohort, courseCohorts.indexOf(courseCohort));
                     });
                 }
             })
             .catch((error) => {
-                console.error(error);
                 alerts.showError(error.message);
             }).finally(() => {
                 this.setState({ linearDisplay: 'none' });
@@ -272,7 +272,6 @@ class Timetable extends React.Component {
         TimetableService.createTimetableUnit(timetableUnit).then(() => {
             alerts.showSuccess('TimetableUnit added successfully');
         }).catch((error) => {
-            console.error(error);
             alerts.showError(error.message);
         }).finally(() => {
             this.onTimeTableUpdate(); // call function to refetch the data from db
@@ -281,7 +280,7 @@ class Timetable extends React.Component {
         // update the values 
         this.state.timetableDataWithErrors.push(e.itemData);
         this.setState({
-            // timetableUnits: [...this.state.courseCohort],
+            timetableUnits: [...this.state.courseCohort],
             timetableDataWithErrors: [...this.state.timetableDataWithErrors]
         });
     }
@@ -425,6 +424,23 @@ class Timetable extends React.Component {
                 this.setState({ linearDisplay: 'none' });
             });
     }
+    handleDeletion(e) {
+        console.log('KUNA KITU HAPA',e);
+        this.setState({ linearDisplay: 'block' });
+        const timetabledUnitId = e.appointmentData.timetablingUnitId;
+        TimetableService.deleteTimetableUnit(timetabledUnitId)
+            .then(() => {
+                alerts.showSuccess('Successfully deleted a timetabled Unit');
+                this.checkTimeTableErrors(); // check timetable for errors/conflicts
+            })
+            .catch(() => {
+                // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
+                alerts.showError('Couldn\'t update Timetable');
+            }).finally(() => {
+            this.onTimeTableUpdate(); // call function to refetch the data from db
+            this.setState({ linearDisplay: 'none' });
+        });
+    }
 
     onListDragStart(e) {
         e.cancel = true;
@@ -489,6 +505,7 @@ class Timetable extends React.Component {
                             //value={id}
                             onValueChanged={(e) => {
                                 // TODO: update currentDate
+                                this.setState({ semesterId: e.value })
                                 this.fetchCourseCohorts('course, timetablingUnits, semester', this.state.semesterId);
                                 this.fetchTimetableUnitErrors(this.state.semesterId);
                                 this.timeTabledUnitsWithErrors(this.state.timetableData, this.state.timeTabledUnitErrors);
@@ -533,7 +550,8 @@ class Timetable extends React.Component {
                         editing={true}
                         appointmentTooltipComponent={AppointmentTooltip}
                         onAppointmentFormOpening={this.onAppointmentFormOpening}
-                        onAppointmentUpdated={e => { this.handleEdit(e); console.log(''); }}
+                        onAppointmentUpdated={e => { this.handleEdit(e)}}
+                        onAppointmentDeleted={e => { this.handleDeletion(e)}}
                     >
                         <Resource
                             fieldExpr='colorId'

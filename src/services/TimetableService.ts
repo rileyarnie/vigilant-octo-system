@@ -9,6 +9,9 @@ export class TimetableService {
     static async updateTimetableUnit(timetableUnitData): Promise<void> {
         return timetablingAxiosInstance.put(`/timetabling-units/${timetableUnitData.timetablingUnitId}`,  timetableUnitData );
     }
+    static async deleteTimetableUnit(timetableUnitId:number): Promise<void> {
+        return timetablingAxiosInstance.delete(`/timetabling-units/${timetableUnitId}`);
+    }
     static async getTimetableUnit(semesterId?: number): Promise<TimetablingUnit[]> {
         return timetablingAxiosInstance.get('/timetabling-units', { params: { semesterId: semesterId } });
     }
