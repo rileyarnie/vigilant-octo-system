@@ -7,25 +7,27 @@ interface Props {
     staff: { staffId: number; name: string };
     balanceCr: number;
     balanceDr: number;
+    supportingDocument?: string;
 }
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
 const TransactionDetails: React.FunctionComponent<Props> = (props) => {
     const [disabled, setDisabled] = useState(false);
     const [confirmModal, setConfirmModal] = useState(false);
 
     //reverse transaction function
     const reverseTransactionHandler = () => {
+        setDisabled(true);
         console.log('transaction reversed');
     };
     return (
         <div>
-            {/* {console.log('props.data', props.data)} */}
             <Row>
                 <div className="col-md-12">
                     <ListGroup>
-                        <ListGroup.Item>
-                            <h6>Recorded by:</h6> {props.staff.staffId} - {props.staff.name}
-                        </ListGroup.Item>
+                        {props.staff && (
+                            <ListGroup.Item>
+                                <h6>Recorded by:</h6> {props.staff.staffId} - {props.staff.name}
+                            </ListGroup.Item>
+                        )}
                         {props.balanceCr && (
                             <ListGroup.Item>
                                 <h6>Student (Cr):</h6>
@@ -44,9 +46,11 @@ const TransactionDetails: React.FunctionComponent<Props> = (props) => {
                             <h6>Program:</h6>
                             code - Name
                         </ListGroup.Item> */}
-                        <ListGroup.Item>
-                            <h6>Supporting document:</h6>link here
-                        </ListGroup.Item>
+                        {props.supportingDocument && (
+                            <ListGroup.Item>
+                                <h6>Supporting document:</h6>link here
+                            </ListGroup.Item>
+                        )}
                     </ListGroup>
                 </div>
             </Row>
