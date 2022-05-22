@@ -50,6 +50,7 @@ const Transactions = (): JSX.Element => {
     const [recordedBy, setRecordedBy] = useState<{ staffId: number; name: string }>({ staffId: 0, name: '' });
     const [feeBalanceCr, setFeeBalanceCr] = useState(0);
     const [feeBalanceDr, setFeeBalanceDr] = useState(0);
+    const [linearDisplay, setLinearDisplay] = useState('none');
 
     const columns = [
         { title: 'Transaction ID', field: 'id' },
@@ -127,17 +128,17 @@ const Transactions = (): JSX.Element => {
 
     //get transactions
     const getTransactions = () => {
+        setLinearDisplay('block');
         financeAxiosInstance
             .get('/transactions')
             .then((res) => {
                 setData(res.data);
-                console.log('res.data', res.data);
             })
             .catch((err) => {
                 console.log('err.message', err.message);
             })
             .finally(() => {
-                console.log('done');
+                setLinearDisplay('none');
             });
     };
 
@@ -276,7 +277,7 @@ const Transactions = (): JSX.Element => {
             </Row>
             {canPerformActions(ACTION_GET_FEE_ITEMS.name) && (
                 <>
-                    <LinearProgress style={{ display: 'block' }} />
+                    <LinearProgress style={{ display: linearDisplay}} />
                     <Row>
                         <Col>
                             <Card>
@@ -451,7 +452,13 @@ const Transactions = (): JSX.Element => {
                 closeModal={() => setTransactionDetailsModal(false)}
                 modalSize="lg"
             >
-                <TransactionDetails data={selectedRow} staff={recordedBy} balanceCr={feeBalanceCr} balanceDr={feeBalanceDr} supportingDocument={attachmentUrl} />
+                <TransactionDetails
+                    data={selectedRow}
+                    staff={recordedBy}
+                    balanceCr={feeBalanceCr}
+                    balanceDr={feeBalanceDr}
+                    supportingDocument={attachmentUrl}
+                />
             </ModalWrapper>
             <ConfirmationModalWrapper
                 show={confirmModal}
