@@ -7,6 +7,8 @@ interface Props {
     staff: { staffId: number; name: string };
     balanceCr: number;
     balanceDr: number;
+    handleReversal: (transactionId:number) => void;
+    transactionId:number
 }
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 const TransactionDetails: React.FunctionComponent<Props> = (props) => {
@@ -63,7 +65,7 @@ const TransactionDetails: React.FunctionComponent<Props> = (props) => {
                     setConfirmModal(false);
                 }}
                 submitButton
-                submitFunction={reverseTransactionHandler}
+                submitFunction={() => props.handleReversal(props.transactionId)}
             >
                 <h6>Are you sure you want to reverse this transaction?</h6>
             </ConfirmationModalWrapper>

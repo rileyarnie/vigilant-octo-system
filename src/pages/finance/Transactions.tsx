@@ -1,6 +1,5 @@
 /* eslint-disable react/display-name */
 import React, { useEffect, useState } from 'react';
-import { LinearProgress } from '@material-ui/core';
 import Breadcrumb from '../../App/components/Breadcrumb';
 import { Button, Card, Col, Row } from 'react-bootstrap';
 import { TextInput, ValidationForm, FileInput } from 'react-bootstrap4-form-validation';
@@ -29,8 +28,9 @@ const Transactions = (): JSX.Element => {
     const [disabled, setDisabled] = useState(false);
     const [studentId, setStudentId] = useState('');
     const [transactionDetailsModal, setTransactionDetailsModal] = useState(false);
-    const [selectedRow, setSelectedRow] = useState({});
+    const [selectedRow, setSelectedRow] = useState<{id?:number,narrative?:string,amount?:number}>({});
     const [selectError, setSelectError] = useState(true);
+    const [linearDisplay, setLinearDisplay] = useState('none');
     const [submissionData, setSubmissionData] = useState<{
         studentId: number;
         currency: string;
@@ -88,6 +88,22 @@ const Transactions = (): JSX.Element => {
                 alerts.showError(error.message);
             });
     };
+
+    function handleReversal(transactionId:number) {
+        setLinearDisplay('block');
+        const reversal = {
+            transactionId: transactionId
+        };
+        StudentFeesManagementService.handleFeeReversal(reversal)
+            .then(() => {
+                alerts.showSuccess('Successfully reversed transaction');
+                setLinearDisplay('none');
+            })
+            .catch((error) => {
+                alerts.showError(error.message);
+                setLinearDisplay('none');
+            });
+    }
 
     // StudentId, narrative, currency and amount are required fields for this request
     const FeePaymentHandler = () => {
@@ -460,7 +476,7 @@ const Transactions = (): JSX.Element => {
                 closeModal={() => setTransactionDetailsModal(false)}
                 modalSize="lg"
             >
-                <TransactionDetails data={selectedRow} staff={recordedBy} balanceCr={feeBalanceCr} balanceDr={feeBalanceDr} />
+                <TransactionDetails data={selectedRow} handleReversal={handleReversal} transactionId={selectedRow.id} staff={recordedBy} balanceCr={feeBalanceCr} balanceDr={feeBalanceDr} />
             </ModalWrapper>
             <ConfirmationModalWrapper
                 show={confirmModal}

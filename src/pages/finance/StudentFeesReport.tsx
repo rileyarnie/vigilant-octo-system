@@ -93,6 +93,7 @@ const StudentFeeReport = (): JSX.Element => {
             });
     }
     function handleReversal() {
+        console.log('handle reversal called...');
         setLinearDisplay('block');
         const reversal = {
             transactionId: transactionId
@@ -177,7 +178,9 @@ const StudentFeeReport = (): JSX.Element => {
                         <Button variant="danger" autoFocus onClick={handleClose}>
                             Cancel
                         </Button>
-                        <Button variant="info" onClick={handleReversal} autoFocus>
+                        <Button variant="info" onClick={() => {
+                            handleReversal();
+                        }} autoFocus>
                             Confirm
                         </Button>
                     </DialogActions>

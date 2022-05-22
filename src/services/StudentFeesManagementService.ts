@@ -5,7 +5,7 @@ import { timetablingAxiosInstance } from '../utlis/interceptors/timetabling-inte
 
 export class StudentFeesManagementService {
     static async handleFeeReversal(reversal: unknown): Promise<void> {
-        return financeAxiosInstance.put('/fees/reversals', reversal);
+        return financeAxiosInstance.post('/fees/reversals', reversal);
     }
     static async fetchFeesReport(studentId: number): Promise<FeeReport[]> {
         return financeAxiosInstance.get('/fees/reports', { params: { studentId } });
