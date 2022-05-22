@@ -149,6 +149,9 @@ class Timetable extends React.Component {
                             endDate: new Date(tu.recurrenceEndDate)
                         })
                     })
+
+                    // check if training hours has been met
+                    this.checkTrainingHoursHasBeenMet(courseCohort, courseCohorts.indexOf(courseCohort));
                 }
                 this.setState({timetableData: datasourceTu})
             })
@@ -217,7 +220,29 @@ class Timetable extends React.Component {
                 courseCohort: [...this.state.courseCohort],
                 timetableDataWithErrors: [...this.state.timetableDataWithErrors]
             })
+
+    /** Function check is a course has exceeded training hours and remove it from the que */
+    checkTrainingHoursHasBeenMet(courseCohort, index) {
+        // get expected hours for the course
+        const expectedTrainingHours = courseCohort.course.trainingHours;
+
+        // get the total duration for all the units for the course-cohort
+        const currentSessionDuration = courseCohort.timetablingUnit.map(unit => unit.durationInMinutes).reduce((a, b) => a + b, 0);
+        const totalDurationInHours = (currentSessionDuration / 60);
+
+        // check if all hours have been exhausted on the timetable
+        const removeCoursesFromList = expectedTrainingHours === totalDurationInHours || totalDurationInHours > expectedTrainingHours;
+        if (!removeCoursesFromList) { console.log('Don\'t remove courses from the side, add more units'); }
+
+        // remove the course from the side list only if all hours have been met
+        if (removeCoursesFromList) {
+            console.log(`All units meet the expected hours: ${totalDurationInHours} for the current cohort`);
+            this.state.courseCohort.splice(index, 1);
         }
+
+        this.setState({
+            timetableUnits: [...this.state.courseCohort]
+        });
     }
 
     /** add unit to the timetable and save the status to the database  */
@@ -246,36 +271,14 @@ class Timetable extends React.Component {
             alerts.showError(error.message)
         }).finally(() => {
             this.onTimeTableUpdate(); // call function to refetch the data from db
-            this.setState({linearDisplay: 'none'})
-        })
-
-        // get expected hours for the course
-        const expectedTrainingHours = timetableData.trainingHours
-
-        // get the total duration for all the units for the course-cohort
-        const currentSessionDuration = this.state.tempTimetableUnit.filter(u => u.courseCohortId === timetableData.id).map(unit => unit.durationInMinutes).reduce((a, b) => a + b, 0)
-        const totalDurationBeforeLatestAdd = timetableData.timetablingUnits.map(unit => unit.durationInMinutes).reduce((a, b) => a + b, 0) + currentSessionDuration
-        const totalDurationInHours = (totalDurationBeforeLatestAdd / 60)
-
-        // check if all hours have been exhausted on the timetable
-        const removeCoursesFromList = expectedTrainingHours === totalDurationInHours || totalDurationInHours > expectedTrainingHours
-        if (!removeCoursesFromList) { console.log('Don\'t remove courses from the side, add more units') }
-
-        // remove the course from the side list only if all hours have been met
-        if (index >= 0 && removeCoursesFromList) {
-            console.log(`All units meet the expected hours: ${totalDurationInHours} for the current cohort`)
-            this.state.courseCohort.splice(index, 1)
-        }
+        });
 
         // update the values 
-        this.state.timetableDataWithErrors.push(e.itemData)
+        this.state.timetableDataWithErrors.push(e.itemData);
         this.setState({
-            timetableUnits: [...this.state.courseCohort],
+            // timetableUnits: [...this.state.courseCohort],
             timetableDataWithErrors: [...this.state.timetableDataWithErrors]
-        })
-
-        // check timetable for errors/conflicts
-        this.checkTimeTableErrors()
+        });
     }
 
     async onAppointmentFormOpening(e) {
