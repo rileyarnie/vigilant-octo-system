@@ -222,6 +222,8 @@ class Timetable extends React.Component {
                 courseCohort: [...this.state.courseCohort],
                 timetableDataWithErrors: [...this.state.timetableDataWithErrors]
             })
+        }
+    }
 
     /** Function check is a course has exceeded training hours and remove it from the que */
     checkTrainingHoursHasBeenMet(courseCohort, index) {
@@ -250,7 +252,7 @@ class Timetable extends React.Component {
     /** add unit to the timetable and save the status to the database  */
     onAppointmentAdd(e) {
         this.setState({linearDisplay: 'block'})
-        const index = this.state.courseCohort.indexOf(e.fromData)
+        // const index = this.state.courseCohort.indexOf(e.fromData)
         const timetableData = e['itemData']
         const min = Math.min(timetableData.trainingHours, this.state.maxNumUnitRepetition)
         const timetableUnit = {
@@ -263,7 +265,6 @@ class Timetable extends React.Component {
             colorId: this.state.colorId,
         }
 
-        this.state.tempTimetableUnit.push(timetableUnit) // push to temporally array
 
         // save timetableUnit to the database
         TimetableService.createTimetableUnit(timetableUnit).then(() => {
@@ -283,6 +284,10 @@ class Timetable extends React.Component {
         });
     }
 
+    /**
+     * Handle on timetable unit open
+     * @param {event} e data from the form
+     */
     async onAppointmentFormOpening(e) {
         const max = Math.max(20, 40)
         const { form } = e
@@ -481,7 +486,7 @@ class Timetable extends React.Component {
                         width={240}
                         //value={id}
                         onValueChanged={(e) => {
-                            this.setState({ semesterId: e.value })
+                                // TODO: update currentDate
                             this.fetchCourseCohorts('course, timetablingUnits, semester', this.state.semesterId)
                             this.fetchTimetableUnitErrors(this.state.semesterId)
                             this.timeTabledUnitsWithErrors(this.state.timetableData, this.state.timeTabledUnitErrors)
