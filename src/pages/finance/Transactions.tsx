@@ -5,10 +5,9 @@ import { Button, Card, Col, Row } from 'react-bootstrap';
 import { TextInput, ValidationForm, FileInput } from 'react-bootstrap4-form-validation';
 import { Alerts, ToastifyAlerts } from '../lib/Alert';
 import { canPerformActions } from '../../services/ActionChecker';
-import { ACTION_GET_CAMPUSES } from '../../authnz-library/timetabling-actions';
 import TableWrapper from '../../utlis/TableWrapper';
 import ConfirmationModalWrapper from '../../App/components/modal/ConfirmationModalWrapper';
-import { ACTION_CREATE_FEE_PAYMENT, ACTION_CREATE_FEE_WAIVER } from '../../authnz-library/finance-actions';
+import { ACTION_CREATE_FEE_PAYMENT, ACTION_CREATE_FEE_WAIVER, ACTION_GET_FEE_ITEMS } from '../../authnz-library/finance-actions';
 import ModalWrapper from '../../App/components/modal/ModalWrapper';
 import AsyncSelect from 'react-select/async';
 import TransactionDetails from './TransactionDetails';
@@ -18,6 +17,7 @@ import { financeAxiosInstance } from '../../utlis/interceptors/finance-intercept
 import { StudentFeesManagementService } from '../../services/StudentFeesManagementService';
 import axios from 'axios';
 import { timetablingAxiosInstance } from '../../utlis/interceptors/timetabling-interceptor';
+import { LinearProgress } from '@material-ui/core';
 
 const Transactions = (): JSX.Element => {
     const alerts: Alerts = new ToastifyAlerts();
@@ -30,7 +30,6 @@ const Transactions = (): JSX.Element => {
     const [transactionDetailsModal, setTransactionDetailsModal] = useState(false);
     const [selectedRow, setSelectedRow] = useState<{id?:number,narrative?:string,amount?:number}>({});
     const [selectError, setSelectError] = useState(true);
-    const [linearDisplay, setLinearDisplay] = useState('none');
     const [submissionData, setSubmissionData] = useState<{
         studentId: number;
         currency: string;
@@ -47,10 +46,11 @@ const Transactions = (): JSX.Element => {
         attachment: {}
     });
     const [attachment, setAttachment] = useState('');
-    const [attachmentUrl, setAttachmentUrl] = useState('link');
+    const [attachmentUrl, setAttachmentUrl] = useState('');
     const [recordedBy, setRecordedBy] = useState<{ staffId: number; name: string }>({ staffId: 0, name: '' });
     const [feeBalanceCr, setFeeBalanceCr] = useState(0);
     const [feeBalanceDr, setFeeBalanceDr] = useState(0);
+    const [linearDisplay, setLinearDisplay] = useState('none');
 
     const columns = [
         { title: 'Transaction ID', field: 'id' },
@@ -108,59 +108,58 @@ const Transactions = (): JSX.Element => {
     // StudentId, narrative, currency and amount are required fields for this request
     const FeePaymentHandler = () => {
         setDisabled(true);
+        setLinearDisplay('block');
+
         // eslint-disable-next-line @typescript-eslint/no-unused-vars
         const { attachment, ...data } = submissionData;
         const feeRecord = { ...data, evidenceUrls: attachmentUrl };
-        // eslint-disable-next-line no-debugger
-        debugger;
         StudentFeesManagementService.recordFeesReport(feeRecord)
-            .then((res) => {
-                console.log('res.data', res);
+            .then(() => {
+                alerts.showSuccess('Fee record created successfuly');
+                getTransactions();
             })
             .catch((error) => {
-                console.log('error', error);
+                alerts.showError(error.message);
             })
             .finally(() => {
                 setDisabled(false);
                 setConfirmModal(false);
+                setLinearDisplay('none');
             });
     };
     const FeeWaiverHandler = () => {
         setDisabled(true);
-        console.log('submissionData', submissionData);
-        console.log('fee waiver submitted');
+        setLinearDisplay('block');
+
         StudentFeesManagementService.applyWaiver(submissionData)
             .then(() => {
                 alerts.showSuccess('Fee Record created successfully');
-                // toggleCloseConfirmModal();
-                // props.closeModal();
                 getTransactions();
                 setFeeWaiverModal(false);
             })
             .catch((error) => {
-                // props.closeModal();
-                // toggleCloseConfirmModal();
                 alerts.showError(error.response.data);
             })
             .finally(() => {
                 setDisabled(false);
                 setConfirmModal(false);
+                setLinearDisplay('none');
             });
     };
 
     //get transactions
     const getTransactions = () => {
+        setLinearDisplay('block');
         financeAxiosInstance
             .get('/transactions')
             .then((res) => {
                 setData(res.data);
-                console.log('res.data', res.data);
             })
             .catch((err) => {
-                console.log('err.message', err.message);
+                console.error('err.message', err.message);
             })
             .finally(() => {
-                console.log('done');
+                setLinearDisplay('none');
             });
     };
 
@@ -179,7 +178,7 @@ const Transactions = (): JSX.Element => {
                 return options;
             })
             .catch((err) => {
-                console.log('err.message', err.message);
+                console.error('err.message', err.message);
             });
     };
 
@@ -188,7 +187,7 @@ const Transactions = (): JSX.Element => {
     const loadOptions = React.useCallback(
         debounce((inputText, callback) => {
             promiseOptions(inputText).then((options) => callback(options));
-        }, 3000),
+        }, 1000),
         []
     );
 
@@ -216,15 +215,15 @@ const Transactions = (): JSX.Element => {
 
     //transcation details
     const handleTransactionDetails = (row) => {
-        const requestOne = timetablingAxiosInstance.get(`/staff/${row.created_by_user_id}`);
-        const requestTwo = row.crAccount.studentId
+        const getStaffByUserId = timetablingAxiosInstance.get(`/staff/${row.created_by_user_id}`);
+        const getCrStudentDetails = row.crAccount.studentId
             ? simsAxiosInstance.get('/program-cohort-applications', {
                 params: {
                     studentId: row.crAccount.studentId
                 }
             })
             : null;
-        const requestThree = row.drAccount.studentId
+        const getDrStudentDetails = row.drAccount.studentId
             ? simsAxiosInstance.get('/program-cohort-applications', {
                 params: {
                     studentId: row.drAccount.studentId
@@ -232,14 +231,14 @@ const Transactions = (): JSX.Element => {
             })
             : null;
 
-        const requestFour = row.crAccount.studentId
+        const getCrStudentBalance = row.crAccount.studentId
             ? financeAxiosInstance.get('/fees/reports', {
                 params: {
                     studentId: row.crAccount.studentId
                 }
             })
             : null;
-        const requestFive = row.drAccount.studentId
+        const getDrStudentBalance = row.drAccount.studentId
             ? financeAxiosInstance.get('/fees/reports', {
                 params: {
                     studentId: row.drAccount.studentId
@@ -248,10 +247,9 @@ const Transactions = (): JSX.Element => {
             : null;
         // open details modal after all requests are succesful
         axios
-            .all([requestOne, requestTwo, requestThree, requestFour, requestFive])
+            .all([getStaffByUserId, getCrStudentDetails, getDrStudentDetails, getCrStudentBalance, getDrStudentBalance])
             .then(
                 axios.spread((...responses) => {
-                    console.log('responses', responses);
                     const staff = responses[0] && responses[0].data;
                     setRecordedBy({ staffId: staff.id, name: staff.name });
                     const balanceCr = responses[3] && responses[3].data.balance;
@@ -260,16 +258,14 @@ const Transactions = (): JSX.Element => {
                     setFeeBalanceDr(balanceDr);
                 })
             )
-            .then(() => {
+            .catch((err) => alerts.showError(err.message))
+            .finally(() => {
                 setTransactionDetailsModal(true);
-            })
-            .catch((err) => alerts.showError(err.message));
+            });
     };
 
     //handle select
     useEffect(() => {
-        // // eslint-disable-next-line no-debugger
-        // debugger;
         if (!studentId) {
             setSelectError(true);
             setDisabled(true);
@@ -299,9 +295,9 @@ const Transactions = (): JSX.Element => {
                     )}
                 </Col>
             </Row>
-            {canPerformActions(ACTION_GET_CAMPUSES.name) && (
+            {canPerformActions(ACTION_GET_FEE_ITEMS.name) && (
                 <>
-                    {/* <LinearProgress style={{ display: 'block' }} /> */}
+                    <LinearProgress style={{ display: linearDisplay }} />
                     <Row>
                         <Col>
                             <Card>
@@ -476,7 +472,15 @@ const Transactions = (): JSX.Element => {
                 closeModal={() => setTransactionDetailsModal(false)}
                 modalSize="lg"
             >
-                <TransactionDetails data={selectedRow} handleReversal={handleReversal} transactionId={selectedRow.id} staff={recordedBy} balanceCr={feeBalanceCr} balanceDr={feeBalanceDr} />
+                <TransactionDetails
+                    data={selectedRow}
+                    staff={recordedBy}
+                    balanceCr={feeBalanceCr}
+                    balanceDr={feeBalanceDr}
+                    supportingDocument={attachmentUrl}
+                    handleReversal={handleReversal} 
+                    transactionId={selectedRow.id}
+                />
             </ModalWrapper>
             <ConfirmationModalWrapper
                 show={confirmModal}
@@ -485,6 +489,7 @@ const Transactions = (): JSX.Element => {
                 submitButton
                 submitFunction={feePaymentModal ? FeePaymentHandler : FeeWaiverHandler}
             >
+                <LinearProgress style={{ display: linearDisplay }} />
                 <b>
                     <h5>Are you sure you want to Submit {feePaymentModal ? 'Fee Payment' : 'Fee Waiver'}?</h5>
                 </b>
