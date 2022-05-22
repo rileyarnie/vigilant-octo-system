@@ -451,7 +451,7 @@ const Transactions = (): JSX.Element => {
                 closeModal={() => setTransactionDetailsModal(false)}
                 modalSize="lg"
             >
-                <TransactionDetails data={selectedRow} staff={recordedBy} balanceCr={feeBalanceCr} balanceDr={feeBalanceDr} />
+                <TransactionDetails data={selectedRow} staff={recordedBy} balanceCr={feeBalanceCr} balanceDr={feeBalanceDr} supportingDocument={attachmentUrl} />
             </ModalWrapper>
             <ConfirmationModalWrapper
                 show={confirmModal}
