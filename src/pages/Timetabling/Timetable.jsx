@@ -233,8 +233,8 @@ class Timetable extends React.Component {
         const expectedTrainingHours = courseCohort.course.trainingHours;
 
         // get the total duration for all the units for the course-cohort
-        const currentSessionDuration = courseCohort.timetablingUnit.map(unit => unit.durationInMinutes).reduce((a, b) => a + b, 0);
-        const totalDurationInHours = (currentSessionDuration / 60);
+        const totalUnitSessionDuration = courseCohort.timetablingUnit.map(unit => unit.durationInMinutes * unit.numSessions).reduce((a, b) => a + b, 0);
+        const totalDurationInHours = (totalUnitSessionDuration / 60);
 
         // check if all hours have been exhausted on the timetable
         const removeCoursesFromList = expectedTrainingHours === totalDurationInHours || totalDurationInHours > expectedTrainingHours;
