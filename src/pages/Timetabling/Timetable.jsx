@@ -79,7 +79,7 @@ class Timetable extends React.Component {
             colorData: [],
             colorId: 0,
             timeTabledUnitErrors: [],
-            timetableData:[],
+            timetableData: [],
             timetableDataWithErrors: [],
             itemsWithColor: [],
             priorityId: 2,
@@ -269,7 +269,6 @@ class Timetable extends React.Component {
             venueId: null,
             unitStartDate: this.currentDate
         };
-
 
         // save timetableUnit to the database
         TimetableService.createTimetableUnit(timetableUnit).then(() => {
@@ -593,8 +592,8 @@ class Timetable extends React.Component {
                         editing={true}
                         appointmentTooltipComponent={AppointmentTooltip}
                         onAppointmentFormOpening={this.onAppointmentFormOpening}
-                        onAppointmentUpdated={e => { this.handleEdit(e)}}
-                        onAppointmentDeleted={e => { this.handleDeletion(e)}}
+                        onAppointmentUpdated={e => { this.handleEdit(e); }}
+                        onAppointmentDeleted={e => { this.handleDeletion(e); }}
                     >
                         <Resource
                             fieldExpr='colorId'
