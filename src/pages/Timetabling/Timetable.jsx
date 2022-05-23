@@ -139,6 +139,7 @@ class Timetable extends React.Component {
                 this.setState({ courseCohort: courseCohortData });
                 let datasourceTu = [];
                 for (const courseCohort of courseCohorts) {
+                    const semStartDate = courseCohort.programCohortSemester.semester.startDate // update current date to semester start date
                     const semEndDate = courseCohort.programCohortSemester.semester.endDate;
                     const semEndFormat = moment(semEndDate.split('T')[0]).format('YYYYMMDD') + 'T000000Z';
                     courseCohort.timetablingUnit.map((tu) => {
@@ -154,7 +155,7 @@ class Timetable extends React.Component {
                             endDate: new Date(tu.recurrenceEndDate),
                             recurrenceRule: `FREQ=WEEKLY;BYDAY=${moment(tu.recurrenceStartDate).format('dd').toUpperCase()};UNTIL=${semEndFormat}`
                         });
-                        this.setState({ timetableData: datasourceTu });
+                        this.setState({ timetableData: datasourceTu, currentDate: semStartDate });
                         // check if training hours has been met
                         this.checkTrainingHoursHasBeenMet(courseCohort, courseCohorts.indexOf(courseCohort));
                     });
@@ -265,7 +266,8 @@ class Timetable extends React.Component {
             numSessions: min || 1,
             durationInMinutes: 60,
             colorId: this.state.colorId,
-            venueId: null
+            venueId: null,
+            unitStartDate: this.currentDate
         };
 
 
@@ -559,8 +561,7 @@ class Timetable extends React.Component {
                             valueExpr="id"
                             width={240}
                             onValueChanged={(e) => {
-                                // TODO: update currentDate
-                                this.setState({ semesterId: e.value })
+                                this.setState({ semesterId: e.value });
                                 this.fetchCourseCohorts('course, timetablingUnits, semester', this.state.semesterId);
                                 this.fetchTimetableUnitErrors(this.state.semesterId);
                                 this.timeTabledUnitsWithErrors(this.state.timetableData, this.state.timeTabledUnitErrors);
