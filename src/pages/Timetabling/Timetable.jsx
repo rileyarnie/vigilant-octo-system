@@ -342,10 +342,7 @@ class Timetable extends React.Component {
                 itemTemplate: 'TestTextInput',
                 editorOptions: {
                     width: '100%',
-                    type: 'time',
-                    onChange(args) {
-                        this.setState({ startTime: args.value });
-                    }
+                    type: 'time'
                 }
             }, {
                 label: {
@@ -355,10 +352,7 @@ class Timetable extends React.Component {
                 editorType: 'dxDateBox',
                 editorOptions: {
                     width: '100%',
-                    type: 'time',
-                    onChange(args) {
-                        this.setState({ endTime: args.value });
-                    }
+                    type: 'time'
                 }
             },
             {
@@ -398,13 +392,9 @@ class Timetable extends React.Component {
                     max: max,
                     format: '',
                     showSpinButtons: true,
-                    type: 'number',
-                    onChange(args) {
-                        this.setState({ numSessions: args.value });
-                    }
+                    type: 'number'
                 }
             },
-
             {
                 label: {
                     text: 'Duration in hours'
@@ -417,10 +407,7 @@ class Timetable extends React.Component {
                     max: 2, // TODO: find max value for unit duration
                     format: '',
                     showSpinButtons: true,
-                    type: 'number',
-                    onChange(args) {
-                        this.setState({ unitDuration: args.value });
-                    }
+                    type: 'number'
                 }
             }
         ]);
