@@ -265,6 +265,7 @@ class Timetable extends React.Component {
             numSessions: min || 1,
             durationInMinutes: 60,
             colorId: this.state.colorId,
+            venueId: null
         };
 
 
@@ -303,11 +304,7 @@ class Timetable extends React.Component {
                 editorOptions: {
                     items: await trainerData,
                     displayExpr: 'text',
-                    valueExpr: 'id',
-                    onValueChange(e) {
-                        this.setState({ trainerId: e.target.value });
-                        trainerId = e.target.value;
-                    }
+                    valueExpr: 'id'
                 },
             }, {
                 label: {
@@ -318,10 +315,7 @@ class Timetable extends React.Component {
                 editorOptions: {
                     items: await venueData,
                     displayExpr: 'text',
-                    valueExpr: 'id',
-                    onChange(e) {
-                        this.setState({ venueId: e.target.value });
-                    }
+                    valueExpr: 'id'
                 }
             },
             {
@@ -404,10 +398,10 @@ class Timetable extends React.Component {
             numSessions: e.appointmentData.numSessions,
             trainerId: e.appointmentData.trainerId
         };
-        const courseCohortId = this.getCourseCohortProgramCohortId(this.state.courseCohort, updatedTimetablingUnit.timetablingUnitId).ccId;
-        const programCohortId = this.getCourseCohortProgramCohortId(this.state.courseCohort, updatedTimetablingUnit.timetablingUnitId).pcId;
+
+        const { ccId, pcId } = this.getCourseCohortProgramCohortId(this.state.courseCohort, updatedTimetablingUnit.timetablingUnitId);
         if (updatedTimetablingUnit.timetablingUnitId) {
-            CourseCohortService.updateCourseCohort(courseCohortId, { trainerId: updatedTimetablingUnit.trainerId, programCohortId: programCohortId });
+            CourseCohortService.updateCourseCohort(ccId, { trainerId: updatedTimetablingUnit.trainerId, programCohortId: pcId });
         }
         TimetableService.updateTimetableUnit(updatedTimetablingUnit)
             .then(() => {

@@ -28,7 +28,9 @@ const CourseCohortsDetails = (props: any): JSX.Element => {
     const [showGraduating, setShowGraduating] = useState(false);
     const [courseCohort, setCourseCohort] = useState([]);
     const [isMarkEntryUnlocked, setIsMarkEntryUnlocked] = useState(false);
+    const [isMarksPublished, setMarksPublished] = useState(false);
     const [showMarksLockedModal, setMarksLockedModal] = useState(false);
+    const [programCohortId, setProgramCohortId] = useState(0);
     let enterredMarks;
     let selectedMarks;
     const shortTermMarks = [
@@ -116,6 +118,8 @@ const CourseCohortsDetails = (props: any): JSX.Element => {
                 console.log('gotten course cohort ', res.data);
                 setCourseCohort(res.data[0]);
                 setIsMarkEntryUnlocked(res.data[0].isMarkEntryUnlocked);
+                setMarksPublished(res.data[0].isMarksPublished);
+                setProgramCohortId(res.data[0].programCohortId);
             })
             .catch(err => err);
     };
@@ -166,13 +170,29 @@ const CourseCohortsDetails = (props: any): JSX.Element => {
             .then(() => {
                 fetchcourseCohortsRegistrations(certificationType);
                 alerts.showSuccess('Successfuly updated marks');
-                setLinearDisplay('none');
             })
             .catch((error) => {
-                alerts.showError(error.response.data);
+                alerts.showError(error);
+            })
+            .finally(() => {                
                 setLinearDisplay('none');
             });
     };
+
+    function publishMarks(courseCohortId: number){
+        return timetablingAxiosInstance
+            .patch(`/course-cohorts/${courseCohortId}`,{isMarksPublished:true, programCohortId})
+            .then(() => {
+                fetchcourseCohortsRegistrations(certificationType);
+                alerts.showSuccess('Successfuly published marks');
+            })
+            .catch((error) => {
+                alerts.showError(error.message);                
+            })
+            .finally(() => {
+                setLinearDisplay('none');
+            });
+    }
 
     const handleMarksChange = (e) => {
         enterredMarks = parseInt(e.target.value);
@@ -210,6 +230,7 @@ const CourseCohortsDetails = (props: any): JSX.Element => {
                                         certificationType={certificationType}
                                     ></CreateMarksModal>
                                 </Col>
+
                                 <Col>
                                     <Button
                                         className="float-right"
@@ -221,6 +242,20 @@ const CourseCohortsDetails = (props: any): JSX.Element => {
                                         Show Graduating Students
                                     </Button>
                                 </Col>
+                                {
+                                    !isMarksPublished  &&                                 
+                                <Col>
+                                    <Button
+                                        className="float-right"
+                                        variant="primary"
+                                        onClick={() => {
+                                            publishMarks(parseInt(courseCohortId));
+                                        }}
+                                    >
+                                        Publish Marks
+                                    </Button>
+                                </Col>   
+                                }                                                             
                             </Row>
                         </Col>
                     </Row>
@@ -238,12 +273,12 @@ const CourseCohortsDetails = (props: any): JSX.Element => {
                                     )}
                                 </div>
                                 <TableWrapper
-                                    title="Course Cohort Student/Marks Details"
+                                    title={isMarkEntryUnlocked && isMarksPublished ? 'Course Cohort Student/Marks Details 🔓' : 'Course Cohort Student/Marks Details 🔒' }
                                     columns={columns}
                                     data={data}
                                     options={{ actionsColumnIndex: 0,}}
                                     editable={{
-                                        onRowUpdate: (newData) => updateMarks(newData.id, enterredMarks || selectedMarks)
+                                        onRowUpdate: async (newData) => {await updateMarks(newData.id, enterredMarks || selectedMarks);}
                                     }}
                                 />
                             </Card>
