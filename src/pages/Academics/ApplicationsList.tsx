@@ -37,9 +37,11 @@ const ApplicationsList = (): JSX.Element => {
         applications_physicalChallenges: string,
         applications_physicalChallengesDetails: string,
         applications_preferredStartDate: string,
+        applications_id: number,
         applications_religion: string,
         applications_sponsor: string,
         applications_programCohortId: string,
+        applications_studentId?: number,
         programCohortId: number,
         nkd_name: string,
         nkd_nextOfKinPhoneNumber: string,
@@ -204,7 +206,7 @@ const ApplicationsList = (): JSX.Element => {
                         Application Id: {applicationId}
                         {isAdmitted === 'ADMITTED' && (
                             <>
-                                <Link to={'/publishedsemesters'} onClick={() => localStorage.setItem('programId', applicationData?.applications_programCohortId)}>
+                                <Link to={`/publishedsemesters?programCohortId=${applicationData?.applications_programCohortId}&studentId=${applicationData?.applications_studentId}&applicationId=${applicationData?.applications_id}&studentName=${applicationData?.applications_firstName+' '+applicationData?.applications_lastName}`}>
                                     <Button style={{ marginRight: '.5rem', marginLeft: '.5rem' }} variant="info" onClick={handleClose}>
                                         View Semesters
                                     </Button>
