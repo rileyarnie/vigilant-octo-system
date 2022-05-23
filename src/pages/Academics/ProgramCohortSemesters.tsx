@@ -34,7 +34,7 @@ const useStyles = makeStyles((theme: Theme) =>
     })
 );
 function ProgramCohortSemesters(props: { history: { goBack: () => void } }) {
-    const [selectedRow,setselectedRow] = useState<{id:number, programCohortSemesterId:number, programCohortSemester:{id:number}}>();
+    const [selectedRow,setselectedRow] = useState<{id:number,name:string, programCohortSemesterId:number, programCohortSemester:{id:number}}>();
     const [disabled, setDisabled] = useState(false);
     const [activationModal, setActivationModal] = useState(false);
     const [switchStatus,setSwitchStatus] = useState<boolean>();
@@ -44,7 +44,7 @@ function ProgramCohortSemesters(props: { history: { goBack: () => void } }) {
     }
     const [programCohortSemesterId, setProgramCohortSemesterId] = useState(0);
 
-    
+
     async function updatePCS(pcsId: number, updates:unknown){
         setDisabled(true);
         try {
@@ -64,7 +64,7 @@ function ProgramCohortSemesters(props: { history: { goBack: () => void } }) {
     }
     const classes = useStyles();
     const columns = [
-        { title: 'ID', field: 'id', editable: 'never' as const },
+        { title: 'ID', field: 'programCohortSemesterId', editable: 'never' as const },
         { title: 'Name', field: 'name' },
         { title: 'Start Date', render: (rowData: { startDate: string | unknown[] }) => rowData?.startDate?.slice(0, 10) },
         { title: 'End Date', render: (rowData: { endDate: string | unknown[] }) => rowData?.endDate?.slice(0, 10) },
@@ -121,18 +121,18 @@ function ProgramCohortSemesters(props: { history: { goBack: () => void } }) {
                                 setselectedRow(row);
                                 setActivationModal(true);
                                 setSwitchStatus(event.target.checked);
-                                
+
                             }}
                         />
                         <ConfirmationModalWrapper
                             disabled={disabled}
                             submitButton
-                            submitFunction={() => updatePCS(selectedRow?.id,{activationStatus:switchStatus})}
+                            submitFunction={() => updatePCS(selectedRow?.programCohortSemesterId,{activationStatus:switchStatus})}
                             closeModal={handleCloseActivationModal}
                             show={activationModal}
                         >
                             <h6 className="text-center">
-                                Are you sure you want to change the status of Program Cohort Semester Id: <>{selectedRow?.id}</> ?
+                                Are you sure you want to change the activation status of <>{selectedRow?.name}</> ?
                             </h6>
                         </ConfirmationModalWrapper>
                     </>
@@ -169,6 +169,7 @@ function ProgramCohortSemesters(props: { history: { goBack: () => void } }) {
                         endDate: cc?.programCohortSemester?.semester.endDate,
                         programCohortId: cc?.programCohortId,
                         programCohortSemesterId: cc?.programCohortSemesterId,
+                        activationStatus: cc?.programCohortSemester?.activationStatus
                     };
                 });
                 setData(semesterData);
@@ -238,12 +239,12 @@ function ProgramCohortSemesters(props: { history: { goBack: () => void } }) {
                 </Col>
             </Row>
 
-            <ChangeExamCutOffModal 
+            <ChangeExamCutOffModal
                 programCohortSemesterId={programCohortSemesterId}
-                showCutOffModal={showCutOffModal}         
-                setShowModal = {setShowCutOffModal}    
+                showCutOffModal={showCutOffModal}
+                setShowModal = {setShowCutOffModal}
                 modalTitle= {`Change ${programName} of ${anticipatedGraduation} semester Exam Cut Off Date`}
-            >                
+            >
             </ChangeExamCutOffModal>
         </>
     );
