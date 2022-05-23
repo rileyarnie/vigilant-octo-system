@@ -421,12 +421,39 @@ class Timetable extends React.Component {
                     }
                 }
             }
-
-
         ]);
     }
+
+    /**
+     * handle timetable appointment/unit edits, save updates to database
+     * @param {event} e data from timetable unit edit
+     */
     handleEdit(e) {
         this.setState({ linearDisplay: 'block' });
+
+        const unitStartDate = new Date(e.appointmentData.unitStartDate);
+        const numberOfSessions = e.appointmentData.numSessions;
+
+        const { semEnds, diff } = this.getMaxValueForNumberOfSession(); // get max value form semester date difference
+        if (numberOfSessions > diff) {
+            // number of sessions has exceeded semester period
+            alerts.showError('Number of sessions can\'t exceed semester period!');
+            this.setState({ linearDisplay: 'non' });
+            return;
+        }
+
+        // find the unit end date from unit start time and number of session (minus 1/ initial session)
+        const unitStartDay = unitStartDate.getDate();
+        const unitEndDate = moment(new Date(unitStartDate).setDate(unitStartDay + (7 * (numberOfSessions - 1)))).format('YYYY-MM-DD');
+
+        // check end date does not exceed semester end date
+        if (unitEndDate > semEnds) {
+            // program end date has exceeded semester end date
+            alerts.showError('Program End date has passed semester end date');
+            this.setState({ linearDisplay: 'non' });
+            return;
+        }
+
         const updatedTimetablingUnit = {
             timetablingUnitId: e.appointmentData.timetablingUnitId,
             venueId: e.appointmentData.venueId,
@@ -467,8 +494,8 @@ class Timetable extends React.Component {
             .catch(() => {
                 alerts.showError('Could not delete timetabling Unit');
             }).finally(() => {
-            this.setState({ linearDisplay: 'none' });
-        });
+                this.setState({ linearDisplay: 'none' });
+            });
     }
 
     onListDragStart(e) {
