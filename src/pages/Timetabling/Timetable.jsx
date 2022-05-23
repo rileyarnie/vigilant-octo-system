@@ -287,13 +287,26 @@ class Timetable extends React.Component {
     }
 
     /**
+     * get the max value for number of sessions
+     * @returns {object} maximum number of sessions
+     */
+    getMaxValueForNumberOfSession() {
+        // get semester
+        const semester = this.state.semesters.find(sem => sem.id === this.state.semesterId);
+
+        // Max number of sessions = sem end date - start date (in weeks)
+        const semStarts = moment(semester.startDate);
+        const semEnds = moment(semester.endDate);
+        return { semEnds: semEnds, diff: semEnds.diff(semStarts, 'weeks') };
+    }
+
+    /**
      * Handle on timetable unit open
      * @param {event} e data from the form
      */
     async onAppointmentFormOpening(e) {
-        const max = Math.max(20, 40);
+        const max = await this.getMaxValueForNumberOfSession().diff; // get max value form semester date difference
         const { form } = e;
-        let trainerId = 0;
         form.option('items', [
             {
                 label: {
