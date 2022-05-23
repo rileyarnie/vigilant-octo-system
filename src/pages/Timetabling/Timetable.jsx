@@ -358,7 +358,33 @@ class Timetable extends React.Component {
                         this.setState({ endTime: args.value });
                     }
                 }
-            }, {
+            },
+            {
+                label: {
+                    text: 'Start Date'
+                },
+                dataField: 'unitStartDate',
+                editorType: 'dxDateBox',
+                itemTemplate: 'TestTextInput',
+                editorOptions: {
+                    width: '100%',
+                    type: 'date'
+                }
+            },
+            {
+                label: {
+                    text: 'End Date'
+                },
+                dataField: 'unitEndDate',
+                editorType: 'dxDateBox',
+                itemTemplate: 'TestTextInput',
+                editorOptions: {
+                    width: '100%',
+                    type: 'date',
+                    disabled: true
+                }
+            },
+            {
                 label: {
                     text: 'Number of Sessions'
                 },
@@ -409,7 +435,9 @@ class Timetable extends React.Component {
             durationInMinutes: e.appointmentData.unitDuration * 60,
             startTime: e.appointmentData.startTime,
             numSessions: e.appointmentData.numSessions,
-            trainerId: e.appointmentData.trainerId
+            trainerId: e.appointmentData.trainerId,
+            unitStartDate: e.appointmentData.unitStartDate,
+            unitEndDate: new Date(unitEndDate)
         };
 
         const { ccId, pcId } = this.getCourseCohortProgramCohortId(this.state.courseCohort, updatedTimetablingUnit.timetablingUnitId);
