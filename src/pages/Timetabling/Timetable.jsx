@@ -414,7 +414,7 @@ class Timetable extends React.Component {
                 editorOptions: {
                     width: '100%',
                     min: 0,
-                    max: max,
+                    max: 2, // TODO: find max value for unit duration
                     format: '',
                     showSpinButtons: true,
                     type: 'number',
