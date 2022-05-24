@@ -19,19 +19,21 @@ import moment from 'moment';
 const alerts = new ToastifyAlerts();
 const currentDate = new Date();
 const draggingGroupName = 'appointmentsGroup';
-const venueData = VenueService.fetchVenues().then((res) => {
-    return res['data'].map((venue) => {
-        return { id: venue.venue_id, text: venue.venue_name };
-    });
-})
+const venueData = VenueService.fetchVenues()
+    .then((res) => {
+        return res['data'].map((venue) => {
+            return { id: venue.venue_id, text: venue.venue_name };
+        });
+    })
     .catch((error) => {
         console.error(error);
     });
-const trainerData = TrainerService.fetchTrainers().then((res) => {
-    return res['data'].map((t) => {
-        return { id: t.tr_id, text: t.stf_name };
-    });
-})
+const trainerData = TrainerService.fetchTrainers()
+    .then((res) => {
+        return res['data'].map((t) => {
+            return { id: t.tr_id, text: t.stf_name };
+        });
+    })
     .catch((error) => {
         console.error(error);
     });
@@ -39,16 +41,17 @@ const priorities = [
     {
         text: 'High',
         id: 1,
-        color: '#cc5c53',
-    }, {
+        color: '#cc5c53'
+    },
+    {
         text: 'Low',
         id: 2,
-        color: '#ff9747',
-    },
+        color: '#ff9747'
+    }
 ];
 
 class Timetable extends React.Component {
-    courseCohortData = []
+    courseCohortData = [];
     constructor(props) {
         super(props);
         this.state = {
@@ -108,42 +111,48 @@ class Timetable extends React.Component {
     /** Check if timetable has errors */
     checkTimeTableErrors() {
         // find if timetable has errors and disable publish button
-        const conflictFound = this.state.timeTabledUnitErrors.find(error => error?.errors?.length > 0);
+        const conflictFound = this.state.timeTabledUnitErrors.find((error) => error?.errors?.length > 0);
 
         this.setState({ disablePublishButton: conflictFound ? true : false });
     }
 
     fetchTimetableUnitErrors = (semesterId) => {
-        TimetableService.getTimetableUnitErrors(semesterId)
-            .then((res) => {
-                const errors = res.data;
-                this.setState({ timeTabledUnitErrors: errors });
-                this.checkTimeTableErrors(); // check timetable for errors/conflicts
-            });
-    }
+        TimetableService.getTimetableUnitErrors(semesterId).then((res) => {
+            const errors = res.data;
+            this.setState({ timeTabledUnitErrors: errors });
+            this.checkTimeTableErrors(); // check timetable for errors/conflicts
+        });
+    };
     fetchCourseCohorts = (loadExtras, semesterId) => {
         this.setState({ linearDisplay: 'block' });
         CourseCohortService.fetchCourseCohorts(loadExtras, semesterId)
             .then((res) => {
                 const courseCohorts = res.data;
-                const courseCohortData = courseCohorts.filter(ch => ch.programCohortSemester.status.toUpperCase() === 'PUBLISHED').map((cc) => {
-                    return {
-                        text: cc.course.name,
-                        id: cc.id,
-                        trainerId: cc.trainerId,
-                        programCohortId: cc.programCohortId,
-                        timetablingUnits: cc.timetablingUnit,
-                        trainingHours: cc.course.trainingHours
-                    };
-                });
+                const courseCohortData = courseCohorts
+                    .filter((ch) => ch.programCohortSemester.status.toUpperCase() === 'PUBLISHED')
+                    .map((cc) => {
+                        return {
+                            text: cc.course.name,
+                            id: cc.id,
+                            trainerId: cc.trainerId,
+                            programCohortId: cc.programCohortId,
+                            timetablingUnits: cc.timetablingUnit,
+                            trainingHours: cc.course.trainingHours
+                        };
+                    });
                 this.setState({ courseCohort: courseCohortData });
                 let datasourceTu = [];
                 for (const courseCohort of courseCohorts) {
-                    const semStartDate = courseCohort.programCohortSemester.semester.startDate // update current date to semester start date
+                    const semStartDate = courseCohort.programCohortSemester.semester.startDate; // update current date to semester start date
                     const semEndDate = courseCohort.programCohortSemester.semester.endDate;
-                    const semEndFormat = moment(semEndDate.split('T')[0]).format('YYYYMMDD') + 'T000000Z';
+                    const semEndFormat = moment(semEndDate.split('T')[0]).format('YYYYMMDD');
+
                     courseCohort.timetablingUnit.map((tu) => {
-                        datasourceTu.push({
+                        const formattedReccurenceEndDate = moment(tu.recurrenceEndDate).format('YYYYMMDD');
+
+                        const startDate = new Date(tu.recurrenceStartDate);
+                        const endDate = new Date(startDate.setTime(startDate.getTime() + 1 * 60 * 60 * 1000));
+                        const d = {
                             text: courseCohort.course.name,
                             timetablingUnitId: tu.id,
                             courseCohortId: tu.courseCohortId,
@@ -152,9 +161,18 @@ class Timetable extends React.Component {
                             venueId: tu.venueId,
                             trainerId: courseCohort.trainerId,
                             startDate: new Date(tu.recurrenceStartDate),
-                            endDate: new Date(tu.recurrenceEndDate),
-                            recurrenceRule: `FREQ=WEEKLY;BYDAY=${moment(tu.recurrenceStartDate).format('dd').toUpperCase()};UNTIL=${semEndFormat}`
-                        });
+                            endDate: endDate,
+                            // startDate: new Date('2022-05-01T17:30:00.000Z'),
+                            // endDate: new Date('2022-05-01T17:30:00.000Z'),
+                            recurrenceRule: `FREQ=WEEKLY;BYDAY=${moment(tu.recurrenceStartDate).format('dd').toUpperCase()};COUNT=${
+                                tu.numSessions
+                            }`
+                        };
+                        // if (tu.numSessions > 1) {
+                        // d.recurrenceRule = `FREQ=WEEKLY;BYDAY=${moment(tu.recurrenceStartDate).format('dd').toUpperCase()};`;
+                        // }
+                        datasourceTu.push(d);
+                        // console.log('datasourceTu', datasourceTu);
                         this.setState({ timetableData: datasourceTu, currentDate: semStartDate });
                         // check if training hours has been met
                         this.checkTrainingHoursHasBeenMet(courseCohort, courseCohorts.indexOf(courseCohort));
@@ -163,10 +181,11 @@ class Timetable extends React.Component {
             })
             .catch((error) => {
                 alerts.showError(error.message);
-            }).finally(() => {
+            })
+            .finally(() => {
                 this.setState({ linearDisplay: 'none' });
             });
-    }
+    };
 
     /**
      * handle timetable updates, re-fetch data from the database
@@ -178,17 +197,17 @@ class Timetable extends React.Component {
     }
 
     timeTabledUnitsWithErrors(timeTabledUnits, timeTabledUnitErrors) {
-        const items = timeTabledUnits?.map(unit => ({
-            ...timeTabledUnitErrors?.find((error) => (error.timetablingUnitId === unit.timetablingUnitId) && error), priorityId: 2
-            , ...unit
+        const items = timeTabledUnits?.map((unit) => ({
+            ...timeTabledUnitErrors?.find((error) => error.timetablingUnitId === unit.timetablingUnitId && error),
+            priorityId: 2,
+            ...unit
         }));
         const itemsWithColor = [];
         // const itemsWithColor=items.map(item=>item.errors.length>0?({...item,item.color:"#ff0000"}):({{...item,item.color:"#000ff0"}})}
         for (let i = 0; i < items.length; i++) {
             if (items[i].errors?.length > 0) {
                 itemsWithColor.push({ ...items[i], color: '#ff97471' });
-            }
-            else {
+            } else {
                 itemsWithColor.push({ ...items[i], priorityId: 2 });
             }
         }
@@ -205,15 +224,15 @@ class Timetable extends React.Component {
                 console.error(error);
                 alerts.showError(error.message);
             });
-    }
+    };
     sumNumSession = () => {
-        return this.state.courseCohort.map(t => {
+        return this.state.courseCohort.map((t) => {
             t.totalNumSessions = 0;
-            t.timetablingUnit.forEach(tu => {
+            t.timetablingUnit.forEach((tu) => {
                 t.totalNumSessions += tu.numSessions;
             });
         });
-    }
+    };
 
     onAppointmentRemove(e) {
         const index = this.state.timetableDataWithErrors.indexOf(e.itemData);
@@ -234,12 +253,16 @@ class Timetable extends React.Component {
         const expectedTrainingHours = courseCohort.course.trainingHours;
 
         // get the total duration for all the units for the course-cohort
-        const totalUnitSessionDuration = courseCohort.timetablingUnit.map(unit => unit.durationInMinutes * unit.numSessions).reduce((a, b) => a + b, 0);
-        const totalDurationInHours = (totalUnitSessionDuration / 60);
+        const totalUnitSessionDuration = courseCohort.timetablingUnit
+            .map((unit) => unit.durationInMinutes * unit.numSessions)
+            .reduce((a, b) => a + b, 0);
+        const totalDurationInHours = totalUnitSessionDuration / 60;
 
         // check if all hours have been exhausted on the timetable
         const removeCoursesFromList = expectedTrainingHours === totalDurationInHours || totalDurationInHours > expectedTrainingHours;
-        if (!removeCoursesFromList) { console.log('Don\'t remove courses from the side, add more units'); }
+        if (!removeCoursesFromList) {
+            console.log("Don't remove courses from the side, add more units");
+        }
 
         // remove the course from the side list only if all hours have been met
         if (removeCoursesFromList) {
@@ -254,32 +277,46 @@ class Timetable extends React.Component {
 
     /** add unit to the timetable and save the status to the database  */
     onAppointmentAdd(e) {
+        // console.log('e', e);
         this.setState({ linearDisplay: 'block' });
         // const index = this.state.courseCohort.indexOf(e.fromData)
         const timetableData = e['itemData'];
         const min = Math.min(timetableData.trainingHours, this.state.maxNumUnitRepetition);
+
+        // find the unit end date from unit start time and number of session (minus 1/ initial session)
+        //us
+        const unitStartDate = new Date(timetableData.startDate);
+
+        const numberOfSessions = min || 1;
+        const unitEndDate = moment(unitStartDate).add(unitStartDate + 7 * (numberOfSessions - 1), 'days');
+        debugger;
         const timetableUnit = {
             courseCohortId: timetableData.id,
-            recurrenceStartDate: new Date(timetableData.startDate),
-            recurrenceEndDate: new Date(timetableData.endDate),
+            recurrenceStartDate: unitStartDate,
+            recurrenceEndDate: unitEndDate,
             startTime: timetableData.startDate.toTimeString().slice(0, 8),
-            numSessions: min || 1,
+            numSessions: numberOfSessions,
             durationInMinutes: 60,
             colorId: this.state.colorId,
             venueId: null,
             unitStartDate: this.currentDate
         };
 
+        // console.log('timetableUnit', timetableUnit);
+        debugger;
         // save timetableUnit to the database
-        TimetableService.createTimetableUnit(timetableUnit).then(() => {
-            alerts.showSuccess('TimetableUnit added successfully');
-        }).catch((error) => {
-            alerts.showError(error.message);
-        }).finally(() => {
-            this.onTimeTableUpdate(); // call function to refetch the data from db
-        });
+        TimetableService.createTimetableUnit(timetableUnit)
+            .then(() => {
+                alerts.showSuccess('TimetableUnit added successfully');
+            })
+            .catch((error) => {
+                alerts.showError(error.message);
+            })
+            .finally(() => {
+                this.onTimeTableUpdate(); // call function to refetch the data from db
+            });
 
-        // update the values 
+        // update the values
         this.state.timetableDataWithErrors.push(e.itemData);
         this.setState({
             timetableUnits: [...this.state.courseCohort],
@@ -293,7 +330,7 @@ class Timetable extends React.Component {
      */
     getMaxValueForNumberOfSession() {
         // get semester
-        const semester = this.state.semesters.find(sem => sem.id === this.state.semesterId);
+        const semester = this.state.semesters.find((sem) => sem.id === this.state.semesterId);
 
         // Max number of sessions = sem end date - start date (in weeks)
         const semStarts = moment(semester.startDate);
@@ -319,8 +356,9 @@ class Timetable extends React.Component {
                     items: await trainerData,
                     displayExpr: 'text',
                     valueExpr: 'id'
-                },
-            }, {
+                }
+            },
+            {
                 label: {
                     text: 'Select a Venue'
                 },
@@ -343,7 +381,8 @@ class Timetable extends React.Component {
                     width: '100%',
                     type: 'time'
                 }
-            }, {
+            },
+            {
                 label: {
                     text: 'End Time'
                 },
@@ -419,20 +458,26 @@ class Timetable extends React.Component {
     handleEdit(e) {
         this.setState({ linearDisplay: 'block' });
 
+        const startTimeHours = new Date(e.appointmentData.startDate).getHours();
+        const unitStartDateHours = moment(new Date(e.appointmentData.unitStartDate)).add(startTimeHours, 'hours');
+        const unitEndDateHours = moment(new Date(unitStartDateHours)).add(e.appointmentData.unitDuration, 'hours');
+
+        // console.log('e when editing', e);
         const unitStartDate = new Date(e.appointmentData.unitStartDate);
         const numberOfSessions = e.appointmentData.numSessions;
 
         const { semEnds, diff } = this.getMaxValueForNumberOfSession(); // get max value form semester date difference
         if (numberOfSessions > diff) {
             // number of sessions has exceeded semester period
-            alerts.showError('Number of sessions can\'t exceed semester period!');
+            alerts.showError("Number of sessions can't exceed semester period!");
             this.setState({ linearDisplay: 'non' });
             return;
         }
 
         // find the unit end date from unit start time and number of session (minus 1/ initial session)
         const unitStartDay = unitStartDate.getDate();
-        const unitEndDate = moment(new Date(unitStartDate).setDate(unitStartDay + (7 * (numberOfSessions - 1)))).format('YYYY-MM-DD');
+        const unitEndDate = moment(new Date(unitStartDate)).add(unitStartDay + 7 * (numberOfSessions - 1), 'days');
+        // console.log('unitEndDate', unitEndDate);
 
         // check end date does not exceed semester end date
         if (unitEndDate > semEnds) {
@@ -441,24 +486,28 @@ class Timetable extends React.Component {
             this.setState({ linearDisplay: 'non' });
             return;
         }
+        //:TODO remove duration and end date fields from form
+        // console.log('e.appointmentData', e.appointmentData);
 
         const updatedTimetablingUnit = {
             timetablingUnitId: e.appointmentData.timetablingUnitId,
             venueId: e.appointmentData.venueId,
-            recurrenceStartDate: e.appointmentData.startDate,
-            recurrenceEndDate: e.appointmentData.endDate,
+            recurrenceStartDate: new Date(unitStartDateHours),
+            recurrenceEndDate: new Date(unitEndDateHours),
+            // recurrenceEndDate: e.appointmentData.endDate,
             durationInMinutes: e.appointmentData.unitDuration * 60,
-            startTime: e.appointmentData.startTime,
+            startTime: e.appointmentData.startDate.toTimeString().slice(0, 8),
+            // startTime: e.appointmentData.startTime,
             numSessions: e.appointmentData.numSessions,
             trainerId: e.appointmentData.trainerId,
-            unitStartDate: e.appointmentData.unitStartDate,
-            unitEndDate: new Date(unitEndDate)
+            unitStartDate: e.appointmentData.startDate
+            // unitEndDate: new Date(unitEndDate)
         };
-
         const { ccId, pcId } = this.getCourseCohortProgramCohortId(this.state.courseCohort, updatedTimetablingUnit.timetablingUnitId);
         if (updatedTimetablingUnit.timetablingUnitId) {
             CourseCohortService.updateCourseCohort(ccId, { trainerId: updatedTimetablingUnit.trainerId, programCohortId: pcId });
         }
+        debugger;
         TimetableService.updateTimetableUnit(updatedTimetablingUnit)
             .then(() => {
                 alerts.showSuccess('Timetable updated successfully');
@@ -466,7 +515,8 @@ class Timetable extends React.Component {
             })
             .catch(() => {
                 alerts.showError('Could not update Timetabling Unit');
-            }).finally(() => {
+            })
+            .finally(() => {
                 this.onTimeTableUpdate(); // call function to refetch the data from db
                 this.setState({ linearDisplay: 'none' });
             });
@@ -481,7 +531,8 @@ class Timetable extends React.Component {
             })
             .catch(() => {
                 alerts.showError('Could not delete timetabling Unit');
-            }).finally(() => {
+            })
+            .finally(() => {
                 this.setState({ linearDisplay: 'none' });
             });
     }
@@ -505,17 +556,18 @@ class Timetable extends React.Component {
             })
             .catch((error) => {
                 alerts.showError(error.message);
-            }).finally(() => {
+            })
+            .finally(() => {
                 this.setState({ linearDisplay: 'none' });
             });
     }
     getTimetablingUnitId(courseCohorts, courseCohortId) {
-        const cc = courseCohorts.filter(courseCohort => courseCohort.id === courseCohortId);
+        const cc = courseCohorts.filter((courseCohort) => courseCohort.id === courseCohortId);
 
         return cc.timetablingUnit.id;
     }
     getCourseCohortProgramCohortId(courseCohorts, timetablingUnitId) {
-        const cc = courseCohorts.filter(it => it.timetablingUnits.map(tu => tu.id).includes(timetablingUnitId))[0];
+        const cc = courseCohorts.filter((it) => it.timetablingUnits.map((tu) => tu.id).includes(timetablingUnitId))[0];
         return {
             ccId: cc.id,
             pcId: cc.programCohortId
@@ -528,19 +580,29 @@ class Timetable extends React.Component {
         return (
             <>
                 <Row>
-                    <Col><LinearProgress style={{ display: this.state.linearDisplay }} /></Col>
+                    <Col>
+                        <LinearProgress style={{ display: this.state.linearDisplay }} />
+                    </Col>
                 </Row>
                 <React.Fragment>
-                    {this.state.semesterId ?
+                    {this.state.semesterId ? (
                         <Button
                             disabled={this.state.disablePublishButton}
                             onClick={() => this.publishTimetable()}
-                            className="float-right" variant="danger"
-                            style={{ transform: `translateX(${-40}px)` }}> Publish Timetable</Button>
-                        : ''
-                    }
+                            className="float-right"
+                            variant="danger"
+                            style={{ transform: `translateX(${-40}px)` }}
+                        >
+                            {' '}
+                            Publish Timetable
+                        </Button>
+                    ) : (
+                        ''
+                    )}
                     <div className="option">
-                        <span className="text-center"><b>Select a semester</b></span>
+                        <span className="text-center">
+                            <b>Select a semester</b>
+                        </span>
                         <SelectBox
                             items={this.state.semesters}
                             displayExpr="name"
@@ -558,12 +620,8 @@ class Timetable extends React.Component {
                     <ScrollView id="scroll">
                         {/* {this.state.semesterId? <Button className="float-right" variant="danger">Publish Timetable</Button> : ''} */}
 
-                        <Draggable
-                            id="list"
-                            data="dropArea"
-                            group={draggingGroupName}
-                            onDragStart={this.onListDragStart}>
-                            {this.state.courseCohort.map((courseCohort) =>
+                        <Draggable id="list" data="dropArea" group={draggingGroupName} onDragStart={this.onListDragStart}>
+                            {this.state.courseCohort.map((courseCohort) => (
                                 <Draggable
                                     id="list-item-draggable"
                                     key={courseCohort.id}
@@ -572,45 +630,57 @@ class Timetable extends React.Component {
                                     group={draggingGroupName}
                                     data={courseCohort}
                                     onDragStart={this.onItemDragStart}
-                                    onDragEnd={this.onItemDragEnd}>
-                                    {<>Course name: {courseCohort.text}</>}<br />{<>TrainingHours: {courseCohort.trainingHours}</>}<br />{<>Trainer: {courseCohort.trainerId || 'No Set Trainer'}</>}<br />
-                                </Draggable>)}
+                                    onDragEnd={this.onItemDragEnd}
+                                >
+                                    {<>Course name: {courseCohort.text}</>}
+                                    <br />
+                                    {<>TrainingHours: {courseCohort.trainingHours}</>}
+                                    <br />
+                                    {<>Trainer: {courseCohort.trainerId || 'No Set Trainer'}</>}
+                                    <br />
+                                </Draggable>
+                            ))}
                         </Draggable>
                     </ScrollView>
                     <Scheduler
                         timeZone="Africa/Nairobi"
                         id="scheduler"
+                        // dataSource={this.state.timetableData}
                         dataSource={this.state.timetableDataWithErrors}
-                        views={['day', 'week', 'workWeek']}
+                        views={['day', 'week', 'workWeek', 'month']}
                         defaultCurrentView="week"
                         firstDayOfWeek={1}
                         cellDuration={this.state.unitDuration}
                         defaultCurrentDate={currentDate}
                         height={600}
-                        startDayHour={8}
-                        endDayHour={17}
+                        startDayHour={7}
+                        endDayHour={18}
                         editing={true}
-                        appointmentTooltipComponent={AppointmentTooltip}
+                        // appointmentTooltipComponent={AppointmentTooltip}
                         onAppointmentFormOpening={this.onAppointmentFormOpening}
-                        onAppointmentUpdated={e => { this.handleEdit(e); }}
-                        onAppointmentDeleted={e => { this.handleDeletion(e); }}
+                        onAppointmentUpdated={(e) => {
+                            this.handleEdit(e);
+                        }}
+                        onAppointmentDeleted={(e) => {
+                            this.handleDeletion(e);
+                        }}
                     >
-                        <Resource
-                            fieldExpr='colorId'
-                            dataSource={this.state.itemsWithColor}
-                            label='text'
-                            useColorAsDefault={true}
-                        />
-                        <Resource
-                            dataSource={priorities}
-                            fieldExpr="priorityId"
-                            label="Priority"
-                        />
-                        <AppointmentDragging
-                            group={draggingGroupName}
-                            onAdd={this.onAppointmentAdd}
-                        />
+                        {/* {console.log('this.state.timetableDataWithErrors', this.state.timetableDataWithErrors)} */}
+                        {/* <Resource fieldExpr="colorId" dataSource={this.state.itemsWithColor} label="text" useColorAsDefault={true} /> */}
+                        <Resource dataSource={this.state.timetableDataWithErrors} fieldExpr="priorityId" label="text" />
+                        <AppointmentDragging group={draggingGroupName} onAdd={this.onAppointmentAdd} />
                     </Scheduler>
+                    {/* <Scheduler
+                        timeZone="Africa/Nairobi"
+                        dataSource={this.state.timetableDataWithErrors}
+                        views={['day', 'week', 'month']}
+                        defaultCurrentView="month"
+                        defaultCurrentDate={currentDate}
+                        startDayHour={8}
+                        height={600}
+                    >
+                        <Resource dataSource={this.state.timetableDataWithErrors} fieldExpr="priorityId" label="text" />
+                    </Scheduler> */}
                 </React.Fragment>
             </>
         );
