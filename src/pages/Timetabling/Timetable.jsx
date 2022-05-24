@@ -11,7 +11,6 @@ import { TimetableService } from '../../services/TimetableService';
 import { VenueService } from '../../services/VenueService';
 import { Button, Col, Row } from 'react-bootstrap';
 import { ToastifyAlerts } from '../lib/Alert';
-import AppointmentTooltip from './AppointmentTooltip';
 import { SemesterService } from '../../services/SemesterService';
 import { LinearProgress } from '@mui/material';
 import moment from 'moment';
@@ -392,7 +391,7 @@ class Timetable extends React.Component {
                 editorOptions: {
                     width: '100%',
                     min: 1,
-                    max: 3, // TODO: find max value for unit duration
+                    max: 24, // to allow units to span all day e.g confreneces
                     format: '',
                     showSpinButtons: true,
                     type: 'number'
