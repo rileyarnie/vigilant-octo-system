@@ -146,7 +146,6 @@ class Timetable extends React.Component {
                     const semStartDate = courseCohort.programCohortSemester.semester.startDate; // update current date to semester start date
                     const semEndDate = courseCohort.programCohortSemester.semester.endDate;
                     courseCohort.timetablingUnit.map((tu) => {
-
                         const startDate = new Date(tu.recurrenceStartDate);
                         const endDate = new Date(startDate.setTime(startDate.getTime() + 1 * 60 * 60 * 1000));
                         const d = {
@@ -158,7 +157,7 @@ class Timetable extends React.Component {
                             venueId: tu.venueId,
                             trainerId: courseCohort.trainerId,
                             startDate: new Date(tu.recurrenceStartDate),
-                            endDate: endDate,
+                            endDate: new Date(tu.recurrenceEndDate),
                             recurrenceRule: `FREQ=WEEKLY;BYDAY=${moment(tu.recurrenceStartDate).format('dd').toUpperCase()};COUNT=${
                                 tu.numSessions
                             }`
@@ -272,23 +271,25 @@ class Timetable extends React.Component {
         // const index = this.state.courseCohort.indexOf(e.fromData)
         const timetableData = e['itemData'];
         const min = Math.min(timetableData.trainingHours, this.state.maxNumUnitRepetition);
+        console.log('e', e);
 
         // find the unit end date from unit start time and number of session (minus 1/ initial session)
         //us
         const unitStartDate = new Date(timetableData.startDate);
+        const unitEndDateTime = new Date(timetableData.endDate);
 
         const numberOfSessions = min || 1;
         const unitEndDate = moment(unitStartDate).add(unitStartDate + 7 * (numberOfSessions - 1), 'days');
         const timetableUnit = {
             courseCohortId: timetableData.id,
             recurrenceStartDate: unitStartDate,
-            recurrenceEndDate: unitEndDate,
+            recurrenceEndDate: unitEndDateTime,
             startTime: timetableData.startDate.toTimeString().slice(0, 8),
             numSessions: numberOfSessions,
             durationInMinutes: 60,
             colorId: this.state.colorId,
             venueId: null,
-            unitStartDate: this.currentDate
+            unitStartDate: unitStartDate
         };
 
         // save timetableUnit to the database
@@ -472,7 +473,6 @@ class Timetable extends React.Component {
             return;
         }
         //TODO: remove duration and end date fields from form
-        // console.log('e.appointmentData', e.appointmentData);
 
         const updatedTimetablingUnit = {
             timetablingUnitId: e.appointmentData.timetablingUnitId,
