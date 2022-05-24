@@ -1,6 +1,5 @@
 import * as React from 'react';
 import {Row, Col, Card} from 'react-bootstrap';
-import Breadcrumb from '../../App/components/Breadcrumb';
 import AppBar from '@material-ui/core/AppBar';
 import Tabs from '@material-ui/core/Tabs';
 import Tab from '@material-ui/core/Tab';
@@ -69,21 +68,6 @@ function Default(): JSX.Element {
 
     return (
         <>
-            <Row className="align-items-center page-header">
-                <Col md={6}>
-                    <Breadcrumb/>
-                </Col>
-
-                <Col md={6} className="text-right">
-                    <button type="button" className="btn btn-primary m-r-5">
-                        <i className="feather icon-plus"/> Filter
-                    </button>
-                    <button type="button" className="btn btn-outline-primary">
-                        <i className="feather icon-rotate-cw"/> Reload
-                    </button>
-                </Col>
-            </Row>
-
             <Row>
                 <div className={classes.root}>
                     <AppBar position="static" color="default">

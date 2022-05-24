@@ -1,17 +1,16 @@
 /* eslint-disable linebreak-style */
 /* eslint-disable react/display-name */
 /* eslint-disable react/prop-types */
-import React, { useState, useEffect } from 'react';
-import { MTableToolbar } from 'material-table';
+import React, {useState, useEffect} from 'react';
+import {MTableToolbar} from 'material-table';
 import LinearProgress from '@material-ui/core/LinearProgress';
 import Alert from '@material-ui/lab/Alert';
 import Breadcrumb from '../../../App/components/Breadcrumb';
-import { Row, Col, Modal, Button, Card } from 'react-bootstrap';
-import { Alerts, ToastifyAlerts } from '../../lib/Alert';
+import {Row, Col, Modal, Button, Card} from 'react-bootstrap';
+import {Alerts, ToastifyAlerts} from '../../lib/Alert';
 import TableWrapper from '../../../utlis/TableWrapper';
-import { timetablingAxiosInstance } from '../../../utlis/interceptors/timetabling-interceptor';
-import {CourseCohortService} from '../../services/CourseCohortsService';
-import { simsAxiosInstance } from '../../../utlis/interceptors/sims-interceptor';
+import {timetablingAxiosInstance} from '../../../utlis/interceptors/timetabling-interceptor';
+import {simsAxiosInstance} from '../../../utlis/interceptors/sims-interceptor';
 
 const alerts: Alerts = new ToastifyAlerts();
 const PublishedSemester = (): JSX.Element => {
@@ -29,6 +28,7 @@ const PublishedSemester = (): JSX.Element => {
     interface registration {
         registrationStatus: string;
     }
+
     interface Course {
         programCohortSemester: programCohortSemester;
         id: number;
@@ -37,16 +37,17 @@ const PublishedSemester = (): JSX.Element => {
         status: string;
         registration: registration;
     }
+
     const columns = [
-        { title: 'ID', field: 'id' },
-        { title: 'Semester name', field: 'name' },
-        { title: 'Start Date', render: (row) => row?.startDate.slice(0, 10) },
-        { title: 'End Date', render: (row) => row?.endDate.slice(0, 10) }
+        {title: 'ID', field: 'id'},
+        {title: 'Semester name', field: 'name'},
+        {title: 'Start Date', render: (row) => row?.startDate.slice(0, 10)},
+        {title: 'End Date', render: (row) => row?.endDate.slice(0, 10)}
     ];
     const childColumns = [
-        { title: 'ID', field: 'course.id' },
-        { title: 'Course Code', field: 'course.codePrefix' },
-        { title: 'Course Name', field: 'course.name' },
+        {title: 'ID', field: 'course.id'},
+        {title: 'Course Code', field: 'course.codePrefix'},
+        {title: 'Course Name', field: 'course.name'},
         {
             title: 'Registration Status',
             render: (row) => <>{row.registration?.registrationStatus === 'registered' ? 'Registered' : 'Not Registered'}</>
@@ -55,11 +56,8 @@ const PublishedSemester = (): JSX.Element => {
     const [data, setData] = useState([]);
     const [childData, setChildData] = useState(new Map<number, Course[]>());
     const [isError] = useState(false);
-    const [,setSelectedRows] = useState([]);
     const [errorMessages] = useState([]);
-    const [courseCode, setCourseCode] = useState('');
     const [courseCohortIds, setCourseCohortIds] = useState([]);
-    const [showModal, setModal] = useState(false);
     const [modalShow, setModalShow] = useState(false);
     const [programCohortSemesterId, setProgramCohortSemesterId] = useState();
     const [applicationId, setApplicationId] = useState();
@@ -76,20 +74,26 @@ const PublishedSemester = (): JSX.Element => {
     }, [programCohortId]);
 
     function getCourseCohorts() {
-        timetablingAxiosInstance.get('/course-cohorts', {params: { studentId: studentId, programCohortId: programCohortId, loadExtras: 'course,semester,student,registrations'}})
+        timetablingAxiosInstance.get('/course-cohorts', {
+            params: {
+                studentId: studentId,
+                programCohortId: programCohortId,
+                loadExtras: 'course,semester,student,registrations'
+            }
+        })
             .then((res) => {
                 const myData = res.data;
-                setProgramCohortSemesterId(res.data[0].programCohortSemesterId);
+                // setProgramCohortSemesterId(res.data[0].programCohortSemesterId);
                 const uniqueSemIds = myData
                     .map((v: Course) => v.programCohortSemester.semesterId)
                     .filter((value, index, self) => self.indexOf(value) === index);
                 const semesterData = uniqueSemIds.map((semId) => {
                     const cc = myData.filter((v: Course) => v.programCohortSemester.semesterId === semId)[0];
                     return {
-                        id: cc.programCohortSemester?.semester.id,
-                        name: cc.programCohortSemester?.semester.name,
-                        startDate: cc.programCohortSemester?.semester.startDate,
-                        endDate: cc.programCohortSemester?.semester.endDate
+                        id: cc.programCohortSemester.semester.id,
+                        name: cc.programCohortSemester.semester.name,
+                        startDate: cc.programCohortSemester.semester.startDate,
+                        endDate: cc.programCohortSemester.semester.endDate
                     };
                 });
                 setData(semesterData);
@@ -105,10 +109,9 @@ const PublishedSemester = (): JSX.Element => {
                 alerts.showError(error.message);
             });
     }
+
     const resetStateCloseModal = () => {
-        setModal(false);
         setModalShow(false);
-        setCourseCode('');
     };
     const handleRegistration = () => {
         const register = {
@@ -130,45 +133,13 @@ const PublishedSemester = (): JSX.Element => {
                 setLinearDisplay('none');
             });
     };
-    const handleRowSelection = (courseName: string, courseId: number, rows) => {
-        const courseCohortId = rows.map((row) => row.id);
-        const uniq = [...new Set(courseCohortId)];
-        setSelectedRows(uniq);
-        setCourseCohortIds(courseCohortId);
-    };
-    const handleDefer = () => {
-        const drop = {
-            createCourseCohortRegistration: {
-                studentId: studentId,
-                courseCohortId: courseCohortIds,
-                registrationStatus: 'deferred'
-            }
-        };
-        simsAxiosInstance.post('/course-cohort-registrations', drop)
-            .then(() => {
-                alerts.showSuccess('Course deffered successfully');
-            })
-            .catch((error) => {
-                alerts.showError(error.message);
-            }).finally(() => {
-                getCourseCohorts();
-                resetStateCloseModal();
-                setLinearDisplay('none');
-            });
-    };
-
-    function getTranscript(programCohortId: string, semesterId: number) {
-        CourseCohortService.getTranscript(programCohortId, semesterId);
-    }
-    const toggleDeferModal = () => {
-        showModal ? resetStateCloseModal() : setModal(true);
+    const handleRowSelection = (rows) => {
+        const courseCohortIds = rows.map((row) => row.id);
+        setCourseCohortIds(courseCohortIds);
+        setProgramCohortSemesterId(rows[0]?.programCohortSemesterId);
     };
     const toggleRegisterModal = () => {
         modalShow ? resetStateCloseModal() : setModalShow(true);
-        setModal(false);
-    };
-    const handleClose = () => {
-        showModal ? resetStateCloseModal() : setModal(false);
     };
     const handleCloseModal = () => {
         modalShow ? resetStateCloseModal() : setModalShow(false);
@@ -177,10 +148,10 @@ const PublishedSemester = (): JSX.Element => {
         <>
             <Row className="align-items-center page-header">
                 <Col>
-                    <Breadcrumb />
+                    <Breadcrumb/>
                 </Col>
             </Row>
-            <LinearProgress style={{ display: linearDisplay }} />
+            <LinearProgress style={{display: linearDisplay}}/>
             <Row>
                 <Col>
                     <Card>
@@ -215,12 +186,12 @@ const PublishedSemester = (): JSX.Element => {
                                                         color: 'primary'
                                                     })
                                                 }}
-                                                onSelectionChange={(rows) => handleRowSelection(rows[0]?.course.name, rows[0]?.id, rows)}
+                                                onSelectionChange={(rows) => handleRowSelection(rows)}
                                                 components={{
                                                     Toolbar: (props) => (
                                                         <div>
                                                             <MTableToolbar {...props} />
-                                                            <div style={{ padding: '0px 10px' }}>
+                                                            <div style={{padding: '0px 10px'}}>
                                                                 <Button
                                                                     className="btn btn-info btn-rounded float-center"
                                                                     onClick={() => {
@@ -228,14 +199,6 @@ const PublishedSemester = (): JSX.Element => {
                                                                     }}
                                                                 >
                                                                     Register
-                                                                </Button>
-                                                                <Button
-                                                                    className="btn btn-info btn-rounded float-right"
-                                                                    onClick={() => {
-                                                                        getTranscript(programCohortId, row.id);
-                                                                    }}
-                                                                >
-                                                                    Download Transcript
                                                                 </Button>
                                                             </div>
                                                         </div>
@@ -251,30 +214,6 @@ const PublishedSemester = (): JSX.Element => {
                 </Col>
             </Row>
             <Modal
-                show={showModal}
-                onHide={toggleDeferModal}
-                size="lg"
-                backdrop="static"
-                aria-labelledby="contained-modal-title-vcenter"
-                centered
-            >
-                <Modal.Header closeButton>
-                    <Modal.Title id="contained-modal-title-vcenter">Deferment</Modal.Title>
-                </Modal.Header>
-                <Modal.Body>
-                    <p className="text-cen">
-                        You are about to request for deferral of <b>{courseCode}</b> Select submit to confirm. No action
-                        will be taken if you select cancel
-                    </p>
-                    <Button className="btn btn-danger btn-rounded float-left" onClick={handleClose}>
-                        Cancel
-                    </Button>
-                    <Button className="btn btn-info btn-rounded float-right" onClick={() => handleDefer()}>
-                        Submit
-                    </Button>
-                </Modal.Body>
-            </Modal>
-            <Modal
                 show={modalShow}
                 onHide={toggleRegisterModal}
                 size="lg"
@@ -283,11 +222,13 @@ const PublishedSemester = (): JSX.Element => {
                 centered
             >
                 <Modal.Header closeButton>
-                    <Modal.Title className="text-center" id="contained-modal-title-vcenter">Course Registration</Modal.Title>
+                    <Modal.Title className="text-center" id="contained-modal-title-vcenter">Course
+                        Registration</Modal.Title>
                 </Modal.Header>
                 <Modal.Body>
                     <p className="text-center">
-                        You are about to request for registration of the courses selected<br/> Select <b>Submit</b> to confirm. No
+                        You are about to request for registration of the courses selected<br/> Select <b>Submit</b> to
+                        confirm. No
                         action will be taken if you select cancel
                     </p>
                     <Button className="btn btn-danger btn-rounded float-left" onClick={handleCloseModal}>
