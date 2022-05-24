@@ -279,7 +279,6 @@ class Timetable extends React.Component {
         const unitEndDateTime = new Date(timetableData.endDate);
 
         const numberOfSessions = min || 1;
-        const unitEndDate = moment(unitStartDate).add(unitStartDate + 7 * (numberOfSessions - 1), 'days');
         const timetableUnit = {
             courseCohortId: timetableData.id,
             recurrenceStartDate: unitStartDate,
@@ -360,50 +359,14 @@ class Timetable extends React.Component {
             },
             {
                 label: {
-                    text: 'Start Time'
+                    text: 'Start Date'
                 },
                 dataField: 'startDate',
                 editorType: 'dxDateBox',
                 itemTemplate: 'TestTextInput',
                 editorOptions: {
                     width: '100%',
-                    type: 'time'
-                }
-            },
-            {
-                label: {
-                    text: 'End Time'
-                },
-                dataField: 'endDate',
-                editorType: 'dxDateBox',
-                editorOptions: {
-                    width: '100%',
-                    type: 'time'
-                }
-            },
-            {
-                label: {
-                    text: 'Start Date'
-                },
-                dataField: 'unitStartDate',
-                editorType: 'dxDateBox',
-                itemTemplate: 'TestTextInput',
-                editorOptions: {
-                    width: '100%',
-                    type: 'date'
-                }
-            },
-            {
-                label: {
-                    text: 'End Date'
-                },
-                dataField: 'unitEndDate',
-                editorType: 'dxDateBox',
-                itemTemplate: 'TestTextInput',
-                editorOptions: {
-                    width: '100%',
-                    type: 'date',
-                    disabled: true
+                    type: 'datetime'
                 }
             },
             {
@@ -429,8 +392,8 @@ class Timetable extends React.Component {
                 editorType: 'dxNumberBox',
                 editorOptions: {
                     width: '100%',
-                    min: 0,
-                    max: 2, // TODO: find max value for unit duration
+                    min: 1,
+                    max: 3, // TODO: find max value for unit duration
                     format: '',
                     showSpinButtons: true,
                     type: 'number'
@@ -446,11 +409,8 @@ class Timetable extends React.Component {
     handleEdit(e) {
         this.setState({ linearDisplay: 'block' });
 
-        const startTimeHours = new Date(e.appointmentData.startDate).getHours();
-        const unitStartDateHours = moment(new Date(e.appointmentData.unitStartDate)).add(startTimeHours, 'hours');
-        const unitEndDateHours = moment(new Date(unitStartDateHours)).add(e.appointmentData.unitDuration, 'hours');
-
-        const unitStartDate = new Date(e.appointmentData.unitStartDate);
+        const recurrenceStartDate = new Date(e.appointmentData.startDate);
+        const recurrenceEndDate = new Date(moment(new Date(recurrenceStartDate)).add(e.appointmentData.unitDuration, 'hours'));
         const numberOfSessions = e.appointmentData.numSessions;
 
         const { semEnds, diff } = this.getMaxValueForNumberOfSession(); // get max value form semester date difference
@@ -462,8 +422,7 @@ class Timetable extends React.Component {
         }
 
         // find the unit end date from unit start time and number of session (minus 1/ initial session)
-        const unitStartDay = unitStartDate.getDate();
-        const unitEndDate = moment(new Date(unitStartDate)).add(unitStartDay + 7 * (numberOfSessions - 1), 'days');
+        const unitEndDate = moment(new Date(e.appointmentData.startDate)).add(numberOfSessions - 1, 'weeks');
 
         // check end date does not exceed semester end date
         if (unitEndDate > semEnds) {
@@ -472,20 +431,17 @@ class Timetable extends React.Component {
             this.setState({ linearDisplay: 'non' });
             return;
         }
-        //TODO: remove duration and end date fields from form
 
         const updatedTimetablingUnit = {
             timetablingUnitId: e.appointmentData.timetablingUnitId,
             venueId: e.appointmentData.venueId,
-            recurrenceStartDate: new Date(unitStartDateHours),
-            recurrenceEndDate: new Date(unitEndDateHours),
+            recurrenceStartDate: recurrenceStartDate,
+            recurrenceEndDate: recurrenceEndDate,
             durationInMinutes: e.appointmentData.unitDuration * 60,
             startTime: e.appointmentData.startDate.toTimeString().slice(0, 8),
-            // startTime: e.appointmentData.startTime,
             numSessions: e.appointmentData.numSessions,
             trainerId: e.appointmentData.trainerId,
             unitStartDate: e.appointmentData.startDate
-            // unitEndDate: new Date(unitEndDate)
         };
         const { ccId, pcId } = this.getCourseCohortProgramCohortId(this.state.courseCohort, updatedTimetablingUnit.timetablingUnitId);
         if (updatedTimetablingUnit.timetablingUnitId) {
