@@ -271,7 +271,6 @@ class Timetable extends React.Component {
         // const index = this.state.courseCohort.indexOf(e.fromData)
         const timetableData = e['itemData'];
         const min = Math.min(timetableData.trainingHours, this.state.maxNumUnitRepetition);
-        console.log('e', e);
 
         // find the unit end date from unit start time and number of session (minus 1/ initial session)
         //us
