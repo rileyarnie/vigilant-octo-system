@@ -289,7 +289,6 @@ class Timetable extends React.Component {
 
         const numberOfSessions = min || 1;
         const unitEndDate = moment(unitStartDate).add(unitStartDate + 7 * (numberOfSessions - 1), 'days');
-        debugger;
         const timetableUnit = {
             courseCohortId: timetableData.id,
             recurrenceStartDate: unitStartDate,
@@ -303,7 +302,6 @@ class Timetable extends React.Component {
         };
 
         // console.log('timetableUnit', timetableUnit);
-        debugger;
         // save timetableUnit to the database
         TimetableService.createTimetableUnit(timetableUnit)
             .then(() => {
@@ -507,7 +505,6 @@ class Timetable extends React.Component {
         if (updatedTimetablingUnit.timetablingUnitId) {
             CourseCohortService.updateCourseCohort(ccId, { trainerId: updatedTimetablingUnit.trainerId, programCohortId: pcId });
         }
-        debugger;
         TimetableService.updateTimetableUnit(updatedTimetablingUnit)
             .then(() => {
                 alerts.showSuccess('Timetable updated successfully');
