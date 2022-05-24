@@ -145,10 +145,7 @@ class Timetable extends React.Component {
                 for (const courseCohort of courseCohorts) {
                     const semStartDate = courseCohort.programCohortSemester.semester.startDate; // update current date to semester start date
                     const semEndDate = courseCohort.programCohortSemester.semester.endDate;
-                    const semEndFormat = moment(semEndDate.split('T')[0]).format('YYYYMMDD');
-
                     courseCohort.timetablingUnit.map((tu) => {
-                        const formattedReccurenceEndDate = moment(tu.recurrenceEndDate).format('YYYYMMDD');
 
                         const startDate = new Date(tu.recurrenceStartDate);
                         const endDate = new Date(startDate.setTime(startDate.getTime() + 1 * 60 * 60 * 1000));
@@ -162,17 +159,11 @@ class Timetable extends React.Component {
                             trainerId: courseCohort.trainerId,
                             startDate: new Date(tu.recurrenceStartDate),
                             endDate: endDate,
-                            // startDate: new Date('2022-05-01T17:30:00.000Z'),
-                            // endDate: new Date('2022-05-01T17:30:00.000Z'),
                             recurrenceRule: `FREQ=WEEKLY;BYDAY=${moment(tu.recurrenceStartDate).format('dd').toUpperCase()};COUNT=${
                                 tu.numSessions
                             }`
                         };
-                        // if (tu.numSessions > 1) {
-                        // d.recurrenceRule = `FREQ=WEEKLY;BYDAY=${moment(tu.recurrenceStartDate).format('dd').toUpperCase()};`;
-                        // }
                         datasourceTu.push(d);
-                        // console.log('datasourceTu', datasourceTu);
                         this.setState({ timetableData: datasourceTu, currentDate: semStartDate });
                         // check if training hours has been met
                         this.checkTrainingHoursHasBeenMet(courseCohort, courseCohorts.indexOf(courseCohort));
@@ -277,7 +268,6 @@ class Timetable extends React.Component {
 
     /** add unit to the timetable and save the status to the database  */
     onAppointmentAdd(e) {
-        // console.log('e', e);
         this.setState({ linearDisplay: 'block' });
         // const index = this.state.courseCohort.indexOf(e.fromData)
         const timetableData = e['itemData'];
@@ -301,7 +291,6 @@ class Timetable extends React.Component {
             unitStartDate: this.currentDate
         };
 
-        // console.log('timetableUnit', timetableUnit);
         // save timetableUnit to the database
         TimetableService.createTimetableUnit(timetableUnit)
             .then(() => {
@@ -460,7 +449,6 @@ class Timetable extends React.Component {
         const unitStartDateHours = moment(new Date(e.appointmentData.unitStartDate)).add(startTimeHours, 'hours');
         const unitEndDateHours = moment(new Date(unitStartDateHours)).add(e.appointmentData.unitDuration, 'hours');
 
-        // console.log('e when editing', e);
         const unitStartDate = new Date(e.appointmentData.unitStartDate);
         const numberOfSessions = e.appointmentData.numSessions;
 
@@ -475,7 +463,6 @@ class Timetable extends React.Component {
         // find the unit end date from unit start time and number of session (minus 1/ initial session)
         const unitStartDay = unitStartDate.getDate();
         const unitEndDate = moment(new Date(unitStartDate)).add(unitStartDay + 7 * (numberOfSessions - 1), 'days');
-        // console.log('unitEndDate', unitEndDate);
 
         // check end date does not exceed semester end date
         if (unitEndDate > semEnds) {
@@ -484,7 +471,7 @@ class Timetable extends React.Component {
             this.setState({ linearDisplay: 'non' });
             return;
         }
-        //:TODO remove duration and end date fields from form
+        //TODO: remove duration and end date fields from form
         // console.log('e.appointmentData', e.appointmentData);
 
         const updatedTimetablingUnit = {
@@ -492,7 +479,6 @@ class Timetable extends React.Component {
             venueId: e.appointmentData.venueId,
             recurrenceStartDate: new Date(unitStartDateHours),
             recurrenceEndDate: new Date(unitEndDateHours),
-            // recurrenceEndDate: e.appointmentData.endDate,
             durationInMinutes: e.appointmentData.unitDuration * 60,
             startTime: e.appointmentData.startDate.toTimeString().slice(0, 8),
             // startTime: e.appointmentData.startTime,
@@ -642,7 +628,6 @@ class Timetable extends React.Component {
                     <Scheduler
                         timeZone="Africa/Nairobi"
                         id="scheduler"
-                        // dataSource={this.state.timetableData}
                         dataSource={this.state.timetableDataWithErrors}
                         views={['day', 'week', 'workWeek', 'month']}
                         defaultCurrentView="week"
@@ -653,7 +638,6 @@ class Timetable extends React.Component {
                         startDayHour={7}
                         endDayHour={18}
                         editing={true}
-                        // appointmentTooltipComponent={AppointmentTooltip}
                         onAppointmentFormOpening={this.onAppointmentFormOpening}
                         onAppointmentUpdated={(e) => {
                             this.handleEdit(e);
@@ -662,22 +646,10 @@ class Timetable extends React.Component {
                             this.handleDeletion(e);
                         }}
                     >
-                        {/* {console.log('this.state.timetableDataWithErrors', this.state.timetableDataWithErrors)} */}
                         {/* <Resource fieldExpr="colorId" dataSource={this.state.itemsWithColor} label="text" useColorAsDefault={true} /> */}
                         <Resource dataSource={this.state.timetableDataWithErrors} fieldExpr="priorityId" label="text" />
                         <AppointmentDragging group={draggingGroupName} onAdd={this.onAppointmentAdd} />
                     </Scheduler>
-                    {/* <Scheduler
-                        timeZone="Africa/Nairobi"
-                        dataSource={this.state.timetableDataWithErrors}
-                        views={['day', 'week', 'month']}
-                        defaultCurrentView="month"
-                        defaultCurrentDate={currentDate}
-                        startDayHour={8}
-                        height={600}
-                    >
-                        <Resource dataSource={this.state.timetableDataWithErrors} fieldExpr="priorityId" label="text" />
-                    </Scheduler> */}
                 </React.Fragment>
             </>
         );
