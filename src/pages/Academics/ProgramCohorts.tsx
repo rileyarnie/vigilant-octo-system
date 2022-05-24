@@ -375,12 +375,12 @@ const ProgramCohorts = (): JSX.Element => {
         ProgramCohortService.cancelProgramCohort(cohortIdCancel, cancellationData)
             .then(() => {
                 alerts.showSuccess('Successfully cancelled a program cohort');
-            })
-            .catch((error) => {
-
+            }).catch((error) => {
                 alerts.showError(error.response.data);
-            }).finally(() =>{
+            }).finally(() => {
                 setLinearDisplay('none');
+                setCohortIdCancel(null);
+                setCohortName('');
                 toggleCancelModal();
                 toggleCloseConfirmModal();
             });
