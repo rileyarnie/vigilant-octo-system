@@ -83,7 +83,6 @@ const PublishedSemester = (): JSX.Element => {
         })
             .then((res) => {
                 const myData = res.data;
-                // setProgramCohortSemesterId(res.data[0].programCohortSemesterId);
                 const uniqueSemIds = myData
                     .map((v: Course) => v.programCohortSemester.semesterId)
                     .filter((value, index, self) => self.indexOf(value) === index);
