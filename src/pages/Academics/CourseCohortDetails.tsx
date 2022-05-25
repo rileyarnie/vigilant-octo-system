@@ -29,7 +29,8 @@ const CourseCohortsDetails = (props: any): JSX.Element => {
     const [courseCohort, setCourseCohort] = useState([]);
     const [isMarkEntryUnlocked, setIsMarkEntryUnlocked] = useState(false);
     const [isMarksPublished, setMarksPublished] = useState(false);
-    const [showMarksLockedModal, setMarksLockedModal] = useState(false);
+    const [confirmModal, setConfirmModal] = useState(false);
+    const [disabledButton] = useState(false);
     const [programCohortId, setProgramCohortId] = useState(0);
     let enterredMarks;
     let selectedMarks;
@@ -92,18 +93,20 @@ const CourseCohortsDetails = (props: any): JSX.Element => {
         setLinearDisplay('block');
         timetablingAxiosInstance
             .patch(`/course-cohorts/${id}`, {
-                isMarksEntryUnlocked: isMarkEntryUnlocked,
-                programCohortId: courseCohort.programCohortId
+                isMarkEntryUnlocked: isMarkEntryUnlocked,
+                programCohortId: courseCohort.programCohortId,
+                semesterId:courseCohort.programCohortSemester.semesterId
             })
-            .then(res => {
-                alerts.showSuccess('Successfuly updated marks entry lock status');
-                setLinearDisplay('none');
-                return res.data;
+            .then(() => {
+                alerts.showSuccess('Successfully updated marks entry lock status');
+                fetchCourseCohortById();
+
             })
-            .catch(err => {
-                console.log(err);
-                setLinearDisplay('none');
+            .catch(() => {
                 alerts.showError('Error updating marks entry lock status');
+            }).finally(() => {
+                setLinearDisplay('none');
+                setConfirmModal(false);
             });
     };
 
@@ -115,8 +118,7 @@ const CourseCohortsDetails = (props: any): JSX.Element => {
                     loadExtras: 'semester'
                 }
             })
-            .then(res => {
-                console.log('gotten course cohort ', res.data);
+            .then((res) => {
                 setCourseCohort(res.data[0]);
                 setIsMarkEntryUnlocked(res.data[0].isMarkEntryUnlocked);
                 setMarksPublished(res.data[0].isMarksPublished);
@@ -174,7 +176,7 @@ const CourseCohortsDetails = (props: any): JSX.Element => {
             .put(`/course-cohort-registration-marks/${id}`, { marks: marks })
             .then(() => {
                 fetchcourseCohortsRegistrations(certificationType);
-                alerts.showSuccess('Successfuly updated marks');
+                alerts.showSuccess('Successfully updated marks');
             })
             .catch((error) => {
                 alerts.showError(error);
@@ -189,7 +191,7 @@ const CourseCohortsDetails = (props: any): JSX.Element => {
             .patch(`/course-cohorts/${courseCohortId}`,{isMarksPublished:true, programCohortId})
             .then(() => {
                 fetchcourseCohortsRegistrations(certificationType);
-                alerts.showSuccess('Successfuly published marks');
+                alerts.showSuccess('Successfully published marks');
             })
             .catch((error) => {
                 alerts.showError(error.message);                
@@ -204,6 +206,12 @@ const CourseCohortsDetails = (props: any): JSX.Element => {
     };
     const handleSelect = (e) => {
         selectedMarks = e.target.value;
+    };
+    const toggleConfirmModal = () => {
+        setConfirmModal(true);
+    };
+    const toggleCloseConfirmModal = () => {
+        setConfirmModal(false);
     };
     return (
         <>
@@ -220,9 +228,7 @@ const CourseCohortsDetails = (props: any): JSX.Element => {
                                     <Button
                                         className="float-right"
                                         variant="primary"
-                                        onClick={() => {
-                                            isMarkEntryUnlocked ? handleMarksEntryUnlockedEdit(courseCohortId, false,courseCohort ) : handleMarksEntryUnlockedEdit(courseCohortId, true,courseCohort); 
-                                        }}
+                                        onClick={() => {toggleConfirmModal();}}
                                     >
                                         {isMarkEntryUnlocked ? 'Lock Marks Entry' : 'Unlock Marks Entry'} 
                                     </Button>
@@ -293,13 +299,16 @@ const CourseCohortsDetails = (props: any): JSX.Element => {
             ) : (
                 <ProgramCohortGraduationList toggleGraduationList={toggleGraduationList} programCohortId={props.location.state.programCohortId} />
             )}
-            <ConfirmationModalWrapper
-                disabled={!showMarksLockedModal}
-                show={showMarksLockedModal}
-                closeModal={() => setMarksLockedModal(false)}
-                //closeModal={() => setMarksLockedModal(false)}
+
+            <ConfirmationModalWrapper disabled={disabledButton}
+                submitButton
+                submitFunction={() => {
+                    isMarkEntryUnlocked ? handleMarksEntryUnlockedEdit(courseCohortId, false,courseCohort ) : handleMarksEntryUnlockedEdit(courseCohortId, true,courseCohort);
+                }}
+                closeModal={toggleCloseConfirmModal}
+                show={confirmModal}
             >
-                <p>Marks entry is locked. Please unlock mark entry to continue.</p>
+                <p className="text-center">Are you sure you want to change <b>Marks Entry Lock Status</b> ?</p>
             </ConfirmationModalWrapper>
         </>
     );
