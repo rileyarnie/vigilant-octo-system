@@ -151,7 +151,7 @@ const CourseCohortsDetails = (props: any): JSX.Element => {
     const fetchcourseCohortsRegistrations = (certificationTypeParam:string): void => {
         setLinearDisplay('block');
         simsAxiosInstance
-            .get('/course-cohort-registrations', { params: { loadExtras: 'marks,student', certificationType: certificationTypeParam, courseCohortIds: courseCohortId } })
+            .get('/course-cohort-registrations', { params: { loadExtras: 'marks,student',includeDeactivated: true, certificationType: certificationTypeParam, courseCohortIds: courseCohortId } })
             .then((res) => {
                 const ccData = res.data;
                 setData(ccData);
