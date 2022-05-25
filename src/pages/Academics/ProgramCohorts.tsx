@@ -64,7 +64,8 @@ const ProgramCohorts = (): JSX.Element => {
     const [numberOfSlots, setNumberOfSlots] = useState(0);
     const [showModal, setModal] = useState(false);
     const [cohortId, setCohortId] = useState(null);
-    const [cohortName] = useState('');
+    const [cohortIdCancel, setCohortIdCancel] = useState(null);
+    const [cohortName, setCohortName] = useState('');
     const [errorMessages] = useState([]);
     const [showUploadModal, setShowUploadModal] = useState(false);
     const [cancelModal, setCancelModal] = useState(false);
@@ -178,6 +179,8 @@ const ProgramCohorts = (): JSX.Element => {
                     <button
                         className="btn btn btn-link"
                         onClick={() => {
+                            setCohortIdCancel(row.program_cohorts_id);
+                            setCohortName(row.pg_name);
                             toggleCancelModal();
                         }}
                     >
@@ -360,20 +363,24 @@ const ProgramCohorts = (): JSX.Element => {
         createCohort(cohort);
     };
 
+    /**
+     * Handle cancellation of program cohort
+     */
     function handleCancellation() {
         setLinearDisplay('block');
-        const cancelletionData = {
+        const cancellationData = {
             status: 'canceled'
         };
-        ProgramCohortService.cancelProgramCohort(cohortId, cancelletionData)
+
+        ProgramCohortService.cancelProgramCohort(cohortIdCancel, cancellationData)
             .then(() => {
                 alerts.showSuccess('Successfully cancelled a program cohort');
-            })
-            .catch((error) => {
-
+            }).catch((error) => {
                 alerts.showError(error.response.data);
-            }).finally(() =>{
+            }).finally(() => {
                 setLinearDisplay('none');
+                setCohortIdCancel(null);
+                setCohortName('');
                 toggleCancelModal();
                 toggleCloseConfirmModal();
             });
