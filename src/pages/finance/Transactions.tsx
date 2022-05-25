@@ -26,9 +26,10 @@ const Transactions = (): JSX.Element => {
     const [feeWaiverModal, setFeeWaiverModal] = useState(false);
     const [confirmModal, setConfirmModal] = useState(false);
     const [disabled, setDisabled] = useState(false);
+    const [disableReversalButton, setDisableReversalButton] = useState(false);
     const [studentId, setStudentId] = useState('');
     const [transactionDetailsModal, setTransactionDetailsModal] = useState(false);
-    const [selectedRow, setSelectedRow] = useState<{id?:number,narrative?:string,amount?:number}>({});
+    const [selectedRow, setSelectedRow] = useState<{ id?: number; narrative?: string; amount?: number }>({});
     const [selectError, setSelectError] = useState(true);
     const [submissionData, setSubmissionData] = useState<{
         studentId: number;
@@ -89,20 +90,23 @@ const Transactions = (): JSX.Element => {
             });
     };
 
-    function handleReversal(transactionId:number) {
+    function handleReversal(transactionId: number) {
         setLinearDisplay('block');
         const reversal = {
             transactionId: transactionId
         };
+        setDisableReversalButton(true);
         StudentFeesManagementService.handleFeeReversal(reversal)
             .then(() => {
                 alerts.showSuccess('Successfully reversed transaction');
+                setTransactionDetailsModal(false);
             })
             .catch((error) => {
                 alerts.showError(error.message);
             })
             .finally(() => {
                 setLinearDisplay('none');
+                setDisableReversalButton(false);
             });
     }
 
@@ -117,6 +121,7 @@ const Transactions = (): JSX.Element => {
         StudentFeesManagementService.recordFeesReport(feeRecord)
             .then(() => {
                 alerts.showSuccess('Fee record created successfuly');
+                setFeePaymentModal(false);
                 getTransactions();
             })
             .catch((error) => {
@@ -356,9 +361,7 @@ const Transactions = (): JSX.Element => {
                         </Row>
                         <Row className="mt-4">
                             <label htmlFor="attachment">
-                                <b>
-                                    Supporting Documents<span className="text-danger">*</span>
-                                </b>
+                                <b>Supporting Documents</b>
                             </label>
                             <Col sm={9}>
                                 <FileInput
@@ -481,8 +484,9 @@ const Transactions = (): JSX.Element => {
                     balanceCr={feeBalanceCr}
                     balanceDr={feeBalanceDr}
                     supportingDocument={attachmentUrl}
-                    handleReversal={handleReversal} 
+                    handleReversal={handleReversal}
                     transactionId={selectedRow.id}
+                    disabled={disableReversalButton}
                 />
             </ModalWrapper>
             <ConfirmationModalWrapper
