@@ -1,28 +1,29 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 /* eslint-disable react/prop-types */
 /* eslint-disable react/display-name */
-import React, {useEffect, useState} from 'react';
-import {Alerts, ToastifyAlerts} from '../lib/Alert';
+import React, { useEffect, useState } from 'react';
+import { Alerts, ToastifyAlerts } from '../lib/Alert';
 import Edit from '@material-ui/icons/Edit';
 import SelectCurrency from 'react-select-currency';
 import Alert from '@material-ui/lab/Alert';
 import Breadcrumb from '../../App/components/Breadcrumb';
-import {Button, Card, Col, Modal, Row} from 'react-bootstrap';
-import {TextInput, ValidationForm} from 'react-bootstrap4-form-validation';
-import {LinearProgress} from '@mui/material';
-import {CourseCohortService} from '../services/CourseCohortsService';
+import { Button, Card, Col, Modal, Row } from 'react-bootstrap';
+import { TextInput, ValidationForm } from 'react-bootstrap4-form-validation';
+import { LinearProgress } from '@mui/material';
+import { CourseCohortService } from '../services/CourseCohortsService';
 import AppBar from '@material-ui/core/AppBar';
 import Tabs from '@material-ui/core/Tabs';
 import Tab from '@material-ui/core/Tab';
 import Typography from '@material-ui/core/Typography';
 import Box from '@material-ui/core/Box';
-import {FeesManagementService} from '../services/FeesManagementService';
-import {ProgramCohortService} from '../services/ProgramCohortService';
-import {createStyles, makeStyles, Theme} from '@material-ui/core/styles';
+import { FeesManagementService } from '../services/FeesManagementService';
+import { ProgramCohortService } from '../services/ProgramCohortService';
+import { createStyles, makeStyles, Theme } from '@material-ui/core/styles';
 import IconButton from '@material-ui/core/IconButton';
 import ArrowBackIcon from '@material-ui/icons/ArrowBack';
 import TableWrapper from '../../utlis/TableWrapper';
 import ConfirmationModalWrapper from '../../App/components/modal/ConfirmationModalWrapper';
+import ModalWrapper from '../../App/components/modal/ModalWrapper';
 
 const alerts: Alerts = new ToastifyAlerts();
 
@@ -56,7 +57,7 @@ function ProgramCohortSemesterDetails(props) {
     };
 
     function TabPanel(props: TabPanelProps) {
-        const {children, value, index, ...other} = props;
+        const { children, value, index, ...other } = props;
         return (
             <div
                 role="tabpanel"
@@ -82,15 +83,15 @@ function ProgramCohortSemesterDetails(props) {
     }
 
     const columns = [
-        {title: 'ID', field: 'course.id', editable: 'never' as const},
-        {title: 'Name', field: 'course.name'},
-        {title: 'Start Date', render: (rowData) => rowData.programCohortSemester?.semester?.startDate?.slice(0, 10)},
-        {title: 'End Date', render: (rowData) => rowData.programCohortSemester?.semester?.endDate?.slice(0, 10)}
+        { title: 'ID', field: 'course.id', editable: 'never' as const },
+        { title: 'Name', field: 'course.name' },
+        { title: 'Start Date', render: (rowData) => rowData.programCohortSemester?.semester?.startDate?.slice(0, 10) },
+        { title: 'End Date', render: (rowData) => rowData.programCohortSemester?.semester?.endDate?.slice(0, 10) }
     ];
     const feeItemColumns = [
-        {title: 'ID', field: 'id', editable: 'never' as const},
-        {title: 'Narrative', field: 'narrative'},
-        {title: 'Amount', render: (rowData) => rowData?.currency + ' ' + rowData.amount}
+        { title: 'ID', field: 'id', editable: 'never' as const },
+        { title: 'Narrative', field: 'narrative' },
+        { title: 'Amount', render: (rowData) => rowData?.currency + ' ' + rowData.amount }
     ];
     const [errorMessages] = useState([]);
     const [narrative, setNarrative] = useState('');
@@ -100,7 +101,7 @@ function ProgramCohortSemesterDetails(props) {
     const [showModal, setShowModal] = useState(false);
     const [showPublishModal, setShowPublishModal] = useState(false);
     const [showCancelModal, setShowCancelModal] = useState(false);
-    const [showPublishDialog, setShowPublishDialog] = useState(false);
+    const [confirmPublishModal, setConfirmPublishModal] = useState(false);
     const [anticipatedStartDate, setAnticipatedStartDate] = useState('');
     const [numOfSlots] = useState('');
     const [confirmModal, setConfirmModal] = useState(false);
@@ -109,23 +110,23 @@ function ProgramCohortSemesterDetails(props) {
     const [selectedNarrative, setSelectedNarrative] = useState('');
     const [selectedAmount, setSelectedAmount] = useState(0);
     const [selectedCurrency, setSelectedCurrency] = useState('');
-    const [programCohortSemesterStatus, setProgramCohortSemesterStatus] = useState('pending');
+    const [programCohortSemesterStatus, setProgramCohortSemesterStatus] = useState('');
+    const [programCohortCode, setProgramCohortCode] = useState('');
     const programName = localStorage.getItem('programName');
     const semStartDate = localStorage.getItem('semStartDate');
     const semEndDate = localStorage.getItem('semEndDate');
     const semesterId = localStorage.getItem('semesterId');
     const anticipatedGraduation = localStorage.getItem('anticipatedGraduation');
     const programCohortId = localStorage.getItem('programCohortId');
-    const programCohortSemesterId = localStorage.getItem('programCohortSemesterId');
-    const programCohortCode = localStorage.getItem('programCohortCode');
     const [courseCohortData, setCourseCohortData] = useState([]);
     const [feeItemsData, setFeeItemData] = useState([]);
     const [linearDisplay, setLinearDisplay] = useState('none');
     const [isError] = useState(false);
+
+    const programCohortSemesterId = props.match.params.programCohortSemesterId;
+
     useEffect(() => {
-        setLinearDisplay('block');
         fetchCourseCohortBySemesterId('course', semesterId, programCohortId);
-        getProgramCohortSemesterById(JSON.parse(programCohortSemesterId));
         getFeesItems(programCohortSemesterId);
     }, []);
 
@@ -135,6 +136,8 @@ function ProgramCohortSemesterDetails(props) {
             .then((res) => {
                 const ccData = res['data'];
                 setCourseCohortData(ccData);
+                setProgramCohortSemesterStatus(ccData[0]?.programCohortSemester?.status);
+                setProgramCohortCode(ccData[0]?.programCohort?.code);
                 setLinearDisplay('none');
             })
             .catch((error) => {
@@ -154,7 +157,7 @@ function ProgramCohortSemesterDetails(props) {
             .then((res) => {
                 const feeData = res['data'];
                 setFeeItemData(feeData);
-                if(feeData) {
+                if (feeData) {
                     setCurrency(feeData[0]?.currency);
                 }
             })
@@ -164,12 +167,6 @@ function ProgramCohortSemesterDetails(props) {
                 }
                 alerts.showError(error.message);
             });
-    }
-
-    async function getProgramCohortSemesterById(programCohortSemesterId: number): Promise<void> {
-        const status = await (await ProgramCohortService.getProgramCohortSemesterById(programCohortSemesterId)).status;
-        setProgramCohortSemesterStatus(status);
-        return;
     }
 
     function handleFeeItemsCreation() {
@@ -187,11 +184,12 @@ function ProgramCohortSemesterDetails(props) {
             })
             .catch((error) => {
                 alerts.showError(error.message);
-            }).finally(() => {
+            })
+            .finally(() => {
                 setLinearDisplay('none');
                 setDisabledButton(false);
                 getFeesItems(programCohortSemesterId);
-                resetStateCloseModal();
+                resetState();
             });
     }
 
@@ -204,9 +202,10 @@ function ProgramCohortSemesterDetails(props) {
             })
             .catch((error) => {
                 alerts.showError(error.response.data);
-            }).finally(() => {
+            })
+            .finally(() => {
                 getFeesItems(programCohortSemesterId);
-                resetStateCloseModal();
+                resetState();
                 setDisabledButton(false);
                 setLinearDisplay('none');
             });
@@ -224,39 +223,56 @@ function ProgramCohortSemesterDetails(props) {
         updateFeeItem(feeItemId, updates);
     };
 
-    function publishProgramCohort() {
+    interface programCohortSemesterBody {
+        status: string;
+        examCutOffDate?: string;
+        anticipatedStartDate?: string;
+        numberOfSlots?: string;
+    }
+    function publishProgramCohort(status: string) {
         setLinearDisplay('block');
-        const programCohortSemester = {
-            status: 'PUBLISHED',
-            examCutOffDate: examCutOffDate,
-            anticipatedStartDate: anticipatedStartDate,
-            numberOfSlots: numOfSlots
-        };
+        setDisabledButton(true);
+        let programCohortSemester: programCohortSemesterBody;
+        let message: string;
+
+        if (status === 'PENDING') {
+            programCohortSemester = {
+                status: 'PUBLISHED',
+                examCutOffDate: examCutOffDate,
+                anticipatedStartDate: anticipatedStartDate,
+                numberOfSlots: numOfSlots
+            };
+            message = 'Successfully published program cohort semester';
+        } else {
+            programCohortSemester = {
+                status: 'PENDING'
+            };
+            message = 'Successfully unpublished program cohort semester';
+        }
+
         ProgramCohortService.publishProgramCohortSemester(programCohortSemesterId, programCohortSemester)
-            .then((res) => {
-                console.log(res);
-                alerts.showSuccess('Successfully published program cohort semester');
-                togglePublishModalDialog();
-                showPublishSemesterModal();
+            .then(() => {
+                alerts.showSuccess(message);
+                togglePublishSemesterModal();
             })
             .catch((error) => {
                 alerts.showError(error.message);
+            })
+            .finally(() => {
                 setLinearDisplay('none');
-            }).finally(() => {
-                setLinearDisplay('none');
-                resetStateCloseModal();
+                resetState();
+                toggleConfirmPublishModal();
+                fetchCourseCohortBySemesterId('course', semesterId, programCohortId);
+                setDisabledButton(false);
             });
     }
 
-    const resetStateCloseModal = (): void => {
+    const resetState = (): void => {
         setFeeItemId(null);
         setNarrative('');
         setAmount(0);
-        setShowModal(false);
-        setShowCancelModal(false);
-        setConfirmModal(false);
-        setShowPublishDialog(false);
     };
+
     // create fee items
     const createFeeItemModal = () => {
         setShowModal(true);
@@ -265,14 +281,14 @@ function ProgramCohortSemesterDetails(props) {
         setShowModal(false);
     };
     //publish program cohort semester
-    const showPublishSemesterModal = () => {
-        showPublishModal ? resetStateCloseModal() : setShowPublishModal(true);
+    const togglePublishSemesterModal = () => {
+        showPublishModal ? setShowPublishModal(false) : setShowPublishModal(true);
     };
     const showCancelSemesterModal = () => {
-        showCancelModal ? resetStateCloseModal() : setShowCancelModal(true);
+        showCancelModal ? resetState() : setShowCancelModal(true);
     };
-    const togglePublishModalDialog = () => {
-        showPublishModal ? setShowPublishDialog(false) : setShowPublishDialog(true);
+    const toggleConfirmPublishModal = () => {
+        showPublishModal ? setConfirmPublishModal(false) : setConfirmPublishModal(true);
     };
     const toggleConfirmModal = () => {
         setConfirmModal(true);
@@ -287,13 +303,13 @@ function ProgramCohortSemesterDetails(props) {
         <>
             <Row className="align-items-center page-header">
                 <Col>
-                    <Breadcrumb/>
+                    <Breadcrumb />
                 </Col>
             </Row>
             <Row>
                 <div className="">
                     <IconButton aria-label="delete" className={classes.margin} onClick={handleBack} size="small">
-                        <ArrowBackIcon fontSize="inherit"/> Back
+                        <ArrowBackIcon fontSize="inherit" /> Back
                     </IconButton>
                 </div>
                 <div>
@@ -301,14 +317,16 @@ function ProgramCohortSemesterDetails(props) {
                         className="float-center"
                         variant="danger"
                         onClick={() => {
-                            showPublishSemesterModal();
+                            programCohortSemesterStatus.toLowerCase() === 'pending'
+                                ? togglePublishSemesterModal()
+                                : toggleConfirmPublishModal();
                         }}
                     >
-                        {programCohortSemesterStatus === 'pending' ? 'Publish' : 'Unpublish'}
+                        {programCohortSemesterStatus.toLowerCase() === 'pending' ? 'Publish' : 'Unpublish'}
                     </Button>
                     <Button
                         className="float-center"
-                        style={{marginLeft: '48px'}}
+                        style={{ marginLeft: '48px' }}
                         variant="danger"
                         onClick={() => {
                             showCancelSemesterModal();
@@ -318,7 +336,7 @@ function ProgramCohortSemesterDetails(props) {
                     </Button>
                 </div>
             </Row>
-            <LinearProgress style={{display: linearDisplay}}/>
+            <LinearProgress style={{ display: linearDisplay }} />
             <Row>
                 <div className={classes.root}>
                     <AppBar position="static" color="default">
@@ -383,7 +401,7 @@ function ProgramCohortSemesterDetails(props) {
                                     title={`${programName} of ${anticipatedGraduation} Fees Items`}
                                     columns={feeItemColumns}
                                     data={feeItemsData}
-                                    options={{actionsColumnIndex: -1,}}
+                                    options={{ actionsColumnIndex: -1 }}
                                     actions={[
                                         {
                                             icon: Edit,
@@ -422,7 +440,7 @@ function ProgramCohortSemesterDetails(props) {
                             <label htmlFor="narrative">
                                 <b>Narrative</b>
                             </label>
-                            <br/>
+                            <br />
                             <TextInput
                                 name="narrative"
                                 id="narrative"
@@ -431,11 +449,11 @@ function ProgramCohortSemesterDetails(props) {
                                 onChange={(e) => (feeItemId ? setSelectedNarrative(e.target.value) : setNarrative(e.target.value))}
                                 required
                             />
-                            <br/>
+                            <br />
                             <label htmlFor="amount">
                                 <b>Amount</b>
                             </label>
-                            <br/>
+                            <br />
                             <TextInput
                                 name="amount"
                                 id="amount"
@@ -444,11 +462,11 @@ function ProgramCohortSemesterDetails(props) {
                                 value={feeItemId ? selectedAmount : amount}
                                 onChange={(e) => (feeItemId ? setSelectedAmount(e.target.value) : setAmount(e.target.value))}
                             />
-                            <br/>
+                            <br />
                             <label htmlFor="currency">
                                 <b>Currency</b>
                             </label>
-                            <br/>
+                            <br />
                             <SelectCurrency
                                 style={selectStyle}
                                 name="currency"
@@ -466,29 +484,38 @@ function ProgramCohortSemesterDetails(props) {
                             >
                                 Submit
                             </button>
-                            <button className="btn btn-danger float-left" onClick={(e) => {e.preventDefault();closeCreateFeeItemModal();}}>Close</button>
+                            <button
+                                className="btn btn-danger float-left"
+                                onClick={(e) => {
+                                    e.preventDefault();
+                                    closeCreateFeeItemModal();
+                                }}
+                            >
+                                Close
+                            </button>
                         </div>
                     </ValidationForm>
                 </Modal.Body>
             </Modal>
-            <Modal
+            <ModalWrapper
+                title={programCohortSemesterStatus.toLowerCase() === 'published' ? 'Unpublish' : 'Publish ' + `${programName}`}
                 show={showPublishModal}
-                onHide={showPublishSemesterModal}
-                size="lg"
-                backdrop="static"
-                aria-labelledby="contained-modal-title-vcenter"
-                centered
+                closeModal={togglePublishSemesterModal}
+                modalSize="lg"
+                noFooter
             >
-                <Modal.Header>
-                    <Modal.Title id="contained-modal-title-vcenter">Publish {programName}</Modal.Title>
-                </Modal.Header>
-                <Modal.Body>
-                    <ValidationForm>
+                {programCohortSemesterStatus.toLowerCase() !== 'published' && (
+                    <ValidationForm
+                        onSubmit={(e) => {
+                            e.preventDefault();
+                            setConfirmPublishModal(true);
+                        }}
+                    >
                         <div className="form-group">
                             <label htmlFor="narrative">
                                 <b>Anticipated startDate</b>
                             </label>
-                            <br/>
+                            <br />
                             <TextInput
                                 name="narrative"
                                 id="narrative"
@@ -501,11 +528,11 @@ function ProgramCohortSemesterDetails(props) {
                                 }}
                                 required
                             />
-                            <br/>
+                            <br />
                             <label htmlFor="narrative">
                                 <b>Exam Cut off Date</b>
                             </label>
-                            <br/>
+                            <br />
                             <TextInput
                                 name="examCutoff"
                                 id="examCutoff"
@@ -521,39 +548,32 @@ function ProgramCohortSemesterDetails(props) {
                         </div>
                         <div className="form-group">
                             <button
-                                className="btn btn-info float-left"
+                                type="button"
+                                className="btn btn-danger float-left"
                                 onClick={(e) => {
                                     e.preventDefault();
-                                    setShowPublishDialog(true);
+                                    togglePublishSemesterModal();
                                 }}
                             >
-                                Publish
+                                Cancel
                             </button>
                         </div>
+                        <div className="form-group">
+                            <button className="btn btn-info float-right">Publish</button>
+                        </div>
                     </ValidationForm>
-                    <button
-                        className="btn btn-danger float-right"
-                        onClick={(e) => {
-                            e.preventDefault();
-                            setShowPublishModal(false);
-                        }}
-                    >
-                        {' '}
-                        Close{' '}
-                    </button>
-                </Modal.Body>
-            </Modal>
+                )}
+            </ModalWrapper>
             {/* cancel programCohortSemester modal */}
             <Modal show={showCancelModal} onHide={showCancelSemesterModal} size="lg" backdrop="static" centered>
                 <Modal.Header closeButton>
                     <Modal.Title id="contained-modal-title-vcenter">
-                        Cancelling a program-cohort cancels all active course-cohorts and prevents addition of the
-                        cohort to a semester or
+                        Cancelling a program-cohort cancels all active course-cohorts and prevents addition of the cohort to a semester or
                         timetabling of the same, are you sure you want to proceed?
                     </Modal.Title>
                 </Modal.Header>
                 <Modal.Body></Modal.Body>
-                <Modal.Footer style={{display: 'flex', justifyContent: 'space-between'}}>
+                <Modal.Footer style={{ display: 'flex', justifyContent: 'space-between' }}>
                     <Button
                         variant="btn btn-info btn-rounded"
                         onClick={(e) => {
@@ -566,50 +586,26 @@ function ProgramCohortSemesterDetails(props) {
                     <Button variant="btn btn-danger btn-rounded">Cancel</Button>
                 </Modal.Footer>
             </Modal>
+            <ConfirmationModalWrapper
+                disabled={disabledButton}
+                show={confirmPublishModal}
+                closeModal={() => setConfirmPublishModal(false)}
+                submitButton
+                submitFunction={() => publishProgramCohort(programCohortSemesterStatus)}
+                title=""
+            >
+                {programCohortSemesterStatus.toLowerCase() !== 'published' ? (
+                    <h6>
+                        Publishing a semester for {programCohortCode} will disable you from adding semesters to this semester for the
+                        course, continue?
+                    </h6>
+                ) : (
+                    <h6>Are you sure you want to unpublish {programCohortCode}?</h6>
+                )}
+            </ConfirmationModalWrapper>
 
-            <Modal show={showPublishDialog} onHide={togglePublishModalDialog} size="sm" backdrop="static" centered>
-                <Modal.Header closeButton>
-                    <Modal.Title id="contained-modal-title-vcenter">publish {programName}</Modal.Title>
-                </Modal.Header>
-                <Modal.Body>
-                    <ValidationForm>
-                        <p>
-                            ”Publishing a semester for {programCohortCode} will disable you from adding semesters to
-                            this semester for the
-                            course, continue?”
-                        </p>
-                        <div className="form-group">
-                            <label htmlFor="narrative">
-                                <b>Anticipated Start Date : </b>
-                                {anticipatedStartDate}
-                            </label>
-                            <br/>
-                            <label htmlFor="amount">
-                                <b>Exam Cutoff Date : </b>
-                                {examCutOffDate}
-                            </label>
-                            <br/>
-                        </div>
-                        <br/>
-                    </ValidationForm>
-                </Modal.Body>
-                <Modal.Footer style={{display: 'flex', justifyContent: 'space-between'}}>
-                    <Button
-                        variant="btn btn-danger btn-rounded"
-                        onClick={(e) => {
-                            e.preventDefault();
-                            setShowPublishDialog(false);
-                        }}
-                    >
-                        Continue editing
-                    </Button>
-                    <Button onClick={publishProgramCohort} variant="btn btn-info btn-rounded">
-                        Continue to Publish
-                    </Button>
-                </Modal.Footer>
-            </Modal>
-
-            <ConfirmationModalWrapper disabled={disabledButton}
+            <ConfirmationModalWrapper
+                disabled={disabledButton}
                 submitButton
                 submitFunction={feeItemId ? handleEdit : handleFeeItemsCreation}
                 closeModal={toggleCloseConfirmModal}

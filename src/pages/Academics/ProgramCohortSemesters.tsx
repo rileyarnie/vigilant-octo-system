@@ -84,23 +84,27 @@ function ProgramCohortSemesters(props: { history: { goBack: () => void } }) {
                             localStorage.setItem('semEndDate', row.endDate.slice(0, 10));
                             localStorage.setItem('programCohortId', row.programCohortId);
                         }}
-                        to={'/pcsdetails'}
+                        to={`/program-cohort-semester/${row.programCohortSemesterId}`}
                     >
                         <MenuItem value="view details">View Details</MenuItem>
                     </Link>
-                    <a className="btn btn btn-link"
+                    <a
+                        className="btn btn btn-link"
                         onClick={() => {
                             fetchTranscript(parseInt(programCohortId), row.id);
-                        }}>
+                        }}
+                    >
                         <MenuItem value="download">Download Transcript</MenuItem>
                     </a>
                     <br></br>
-                    <a className="btn btn btn-link"
+                    <a
+                        className="btn btn btn-link"
                         onClick={() => {
                             setselectedRow(row);
                             setProgramCohortSemesterId(row.programCohortSemesterId);
                             setShowCutOffModal(true);
-                        }}>
+                        }}
+                    >
                         <MenuItem value="download">Change Exam Cut Off Date</MenuItem>
                     </a>
                 </Select>
@@ -109,34 +113,32 @@ function ProgramCohortSemesters(props: { history: { goBack: () => void } }) {
         {
             title: 'Activation Status',
             field: 'internal_action',
-            render: (row) =>
-                (
-                    <>
-                        <CustomSwitch
-                            defaultChecked={row.activationStatus}
-                            color="secondary"
-                            inputProps={{'aria-label': 'controlled'}}
-                            checked={row.activationStatus}
-                            onChange={(event) => {
-                                setselectedRow(row);
-                                setActivationModal(true);
-                                setSwitchStatus(event.target.checked);
-
-                            }}
-                        />
-                        <ConfirmationModalWrapper
-                            disabled={disabled}
-                            submitButton
-                            submitFunction={() => updatePCS(selectedRow?.programCohortSemesterId,{activationStatus:switchStatus})}
-                            closeModal={handleCloseActivationModal}
-                            show={activationModal}
-                        >
-                            <h6 className="text-center">
-                                Are you sure you want to change the activation status of <>{selectedRow?.name}</> ?
-                            </h6>
-                        </ConfirmationModalWrapper>
-                    </>
-                )
+            render: (row) => (
+                <>
+                    <CustomSwitch
+                        defaultChecked={row.activationStatus}
+                        color="secondary"
+                        inputProps={{ 'aria-label': 'controlled' }}
+                        checked={row.activationStatus}
+                        onChange={(event) => {
+                            setselectedRow(row);
+                            setActivationModal(true);
+                            setSwitchStatus(event.target.checked);
+                        }}
+                    />
+                    <ConfirmationModalWrapper
+                        disabled={disabled}
+                        submitButton
+                        submitFunction={() => updatePCS(selectedRow?.programCohortSemesterId, { activationStatus: switchStatus })}
+                        closeModal={handleCloseActivationModal}
+                        show={activationModal}
+                    >
+                        <h6 className="text-center">
+                            Are you sure you want to change the activation status of <>{selectedRow?.name}</> ?
+                        </h6>
+                    </ConfirmationModalWrapper>
+                </>
+            )
         }
     ];
     const [errorMessages] = useState([]);

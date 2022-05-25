@@ -67,7 +67,7 @@ const routes = [
     { path: '/coursecohorts', exact: true, name: 'default', component: CourseCohorts },
     { path: '/coursecohortdetails/:id', exact: true, name: 'default', component: CourseCohortsDetails },
     { path: '/programcohortsemester', exact: true, name: 'default', component: ProgramCohortSemesters },
-    { path: '/pcsdetails', exact: true, name: 'default', component: ProgramCohortSemesterDetails },
+    { path: '/program-cohort-semester/:programCohortSemesterId', exact: true, name: 'default', component: ProgramCohortSemesterDetails },
     { path: '/studentlist', exact: true, name: 'default', component: ApplicantsList },
     { path: '/studentfeesreport', exact: true, name: 'default', component: StudentFeesReport },
     { path: '/workflows', exact: true, name: 'default', component: WorkFlows },
