@@ -42,7 +42,6 @@ const CourseCohortsDetails = (props: any): JSX.Element => {
         { value: 'pass', label: 'pass' },
         { value: 'fail', label: 'fail' }
     ];
-
     function renderSwitch(rowData) {
         switch (rowData.certificationType) {
         case CertificationType.shortTerm:
@@ -73,7 +72,9 @@ const CourseCohortsDetails = (props: any): JSX.Element => {
     }
     const columns = [
         { title: 'Course Cohort ID', render: () => props.match.params?.id, hidden: false, editable: 'never' as const },
-        { title: 'Certification Type', field: 'certificationType', hidden: true },
+        { title: 'Student name', render: (row) => row.registration?.student?.applications[0]?.firstName+ ' '+row.registration?.student?.applications[0]?.lastName},
+        { title: 'Identification No', render: (row) => row.registration?.student?.applications[0]?.identification },
+        { title: 'Certification Type', field: 'certificationType' },
         { title: 'Id', field: 'id', hidden: true },
         { title: 'Marks', field: 'marks', editComponent: (tableData) => renderSwitch(tableData?.rowData) },
         { title: 'Grade', field: 'grade', editable: 'never' as const }
@@ -150,12 +151,16 @@ const CourseCohortsDetails = (props: any): JSX.Element => {
     const fetchcourseCohortsRegistrations = (certificationTypeParam:string): void => {
         setLinearDisplay('block');
         simsAxiosInstance
-            .get('/course-cohort-registrations', { params: { loadExtras: 'marks', certificationType: certificationTypeParam, courseCohortIds: courseCohortId } })
+            .get('/course-cohort-registrations', { params: { loadExtras: 'marks,student',includeDeactivated: true, certificationType: certificationTypeParam, courseCohortIds: courseCohortId } })
             .then((res) => {
                 const ccData = res.data;
                 setData(ccData);
                 setLinearDisplay('none');
 
+            })
+            .catch((error) => {
+                console.log('Error fetching marks ', error);
+                alerts.showError('Something went wrong fetching marks. Please contact system administrator.');
             });
     };
 
@@ -224,7 +229,7 @@ const CourseCohortsDetails = (props: any): JSX.Element => {
                                 </Col>
                                 <Col>
                                     <CreateMarksModal
-                                        fetchcourseCohortsRegistrations={() => fetchcourseCohortsRegistrations(certificationType)}
+                                        fetchcourseCohortsRegistrations={fetchcourseCohortsRegistrations}
                                         setLinearDisplay={setLinearDisplay}
                                         courseCohortId={courseCohortId}
                                         certificationType={certificationType}

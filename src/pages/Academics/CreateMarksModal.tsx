@@ -11,9 +11,9 @@ import {timetablingAxiosInstance} from '../../utlis/interceptors/timetabling-int
 const alerts: Alerts = new ToastifyAlerts();
 interface Props extends React.HTMLAttributes<Element> {
     setLinearDisplay: (string) => void;
-    fetchcourseCohortsRegistrations: () => void;
+    fetchcourseCohortsRegistrations: (certificationTypeParam?: string) => void;
     courseCohortId:number;
-    certificationType:string;
+    certificationType?:string;
 }
 const CreateMarksModal = (props:Props) => {
     const [courseCohortRegistrationId,setCourseCohortRegistrationId] = useState(0);
@@ -137,7 +137,8 @@ const CreateMarksModal = (props:Props) => {
         simsAxiosInstance
             .get('/course-cohort-registrations', {
                 params: {
-                    courseCohortIds: props.courseCohortId
+                    courseCohortIds: props.courseCohortId,
+                    loadExtras: 'student'
                 }
             })
             .then((res) => {
@@ -149,7 +150,7 @@ const CreateMarksModal = (props:Props) => {
             });
     }
     ccRegistrations.map((cc:any) => {
-        return options.push({ value: cc.id, label: cc.id });
+        return options.push({ value: cc.id, label: cc.student?.applications[0]?.firstName+' '+cc.student?.applications[0]?.lastName+' - '+cc.student?.applications[0]?.identification });
     });
 
 
@@ -179,7 +180,7 @@ const CreateMarksModal = (props:Props) => {
             .then(() => {
                 setDisabled(false);
                 alerts.showSuccess('Marks Created Successfully');
-                props.fetchcourseCohortsRegistrations();
+                props.fetchcourseCohortsRegistrations(props.certificationType);
                 props.setLinearDisplay('none');
                 setModalShow(false);
             })
@@ -247,18 +248,6 @@ const CreateMarksModal = (props:Props) => {
                                                 />
                                                 &nbsp;&nbsp;&nbsp;
                                                 <br />
-                                                {/* <label htmlFor="name">
-                                                    <b>Marks</b>
-                                                </label>
-                                                <TextInput
-                                                    name="name"
-                                                    id="name"
-                                                    type="text"
-                                                    placeholder="Enter marks"
-                                                    required
-                                                    onChange={handleMarksInput}
-                                                />
-                                                <br />                     */}
                                                 {renderSwitch()}
                                                 <label htmlFor="name">
                                                     <b>Type Of Marks</b>
@@ -274,10 +263,10 @@ const CreateMarksModal = (props:Props) => {
                                             </div>
 
                                             <div className="form-group">
-                                                <button className="btn btn-danger float-right">Submit</button>
+                                                <button className="btn btn-info float-right">Submit</button>
                                             </div>
                                         </ValidationForm>
-                                        <button className="btn btn-info float-left" onClick={() => setModalShow(false)}>
+                                        <button className="btn btn-danger float-left" onClick={() => setModalShow(false)}>
                                             Cancel
                                         </button>
                                     </Col>

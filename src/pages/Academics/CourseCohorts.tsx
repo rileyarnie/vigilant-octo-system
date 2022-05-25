@@ -109,11 +109,15 @@ const CourseCohorts = (): JSX.Element => {
     }, []);
     const fetchcourseCohorts = (): void => {
         setLinearDisplay('block');
-        timetablingAxiosInstance.get('/course-cohorts', { params: { loadExtras: 'trainer' } }).then((res) => {
+        timetablingAxiosInstance.get('/course-cohorts', { params: { loadExtras: 'trainer,program' } }).then((res) => {
             const ccData = res.data;
             setData(ccData);
             setLinearDisplay('none');
-        });
+        })
+            .catch((error) => {
+                console.log('Failed to fetch course cohorts,',error);
+                alerts.showError('Something went wrong fetching marks. Please contact system administrator.');
+            });
     };
 
     const fetchcourseCohortsByTrainerId = (trainerId: number): void => {
