@@ -115,6 +115,7 @@ const CourseCohorts = (): JSX.Element => {
             setLinearDisplay('none');
         })
             .catch((error) => {
+                console.log('Failed to fetch course cohorts,',error);
                 alerts.showError('Something went wrong fetching marks. Please contact system administrator.');
             });
     };
