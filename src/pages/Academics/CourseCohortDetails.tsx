@@ -91,16 +91,16 @@ const CourseCohortsDetails = (props: any): JSX.Element => {
         setLinearDisplay('block');
         timetablingAxiosInstance
             .patch(`/course-cohorts/${id}`, {
-                isMarksEntryUnlocked: isMarkEntryUnlocked,
-                programCohortId: courseCohort.programCohortId
+                isMarkEntryUnlocked: isMarkEntryUnlocked,
+                programCohortId: courseCohort.programCohortId,
+                semesterId:courseCohort.programCohortSemester.semesterId
             })
-            .then(res => {
-                alerts.showSuccess('Successfuly updated marks entry lock status');
+            .then(() => {
+                alerts.showSuccess('Successfully updated marks entry lock status');
+                fetchCourseCohortById();
                 setLinearDisplay('none');
-                return res.data;
             })
-            .catch(err => {
-                console.log(err);
+            .catch(() => {
                 setLinearDisplay('none');
                 alerts.showError('Error updating marks entry lock status');
             });
@@ -114,8 +114,7 @@ const CourseCohortsDetails = (props: any): JSX.Element => {
                     loadExtras: 'semester'
                 }
             })
-            .then(res => {
-                console.log('gotten course cohort ', res.data);
+            .then((res) => {
                 setCourseCohort(res.data[0]);
                 setIsMarkEntryUnlocked(res.data[0].isMarkEntryUnlocked);
                 setMarksPublished(res.data[0].isMarksPublished);
@@ -169,7 +168,7 @@ const CourseCohortsDetails = (props: any): JSX.Element => {
             .put(`/course-cohort-registration-marks/${id}`, { marks: marks })
             .then(() => {
                 fetchcourseCohortsRegistrations(certificationType);
-                alerts.showSuccess('Successfuly updated marks');
+                alerts.showSuccess('Successfully updated marks');
             })
             .catch((error) => {
                 alerts.showError(error);
@@ -184,7 +183,7 @@ const CourseCohortsDetails = (props: any): JSX.Element => {
             .patch(`/course-cohorts/${courseCohortId}`,{isMarksPublished:true, programCohortId})
             .then(() => {
                 fetchcourseCohortsRegistrations(certificationType);
-                alerts.showSuccess('Successfuly published marks');
+                alerts.showSuccess('Successfully published marks');
             })
             .catch((error) => {
                 alerts.showError(error.message);                
