@@ -23,6 +23,7 @@
         "@microsoft/microsoft-graph-client": "^3.0.2",
         "@mui/material": "^5.2.2",
         "@popperjs/core": "^2.11.2",
+        "@types/react-date-range": "1.4.0",
         "@types/react-draft-wysiwyg": "^1.13.4",
         "apexcharts": "^3.10.1",
         "aphrodite": "^2.4.0",
