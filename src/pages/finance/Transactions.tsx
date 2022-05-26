@@ -348,7 +348,6 @@ const Transactions = (): JSX.Element => {
                 <Col md={6}>
                     <Breadcrumb />
                 </Col>
-                {console.log('studentId', studentId)}
                 <Col md={6}>
                     {canPerformActions(ACTION_CREATE_FEE_PAYMENT.name) && (
                         <Button className="float-right ml-4" variant="danger" onClick={() => setFeePaymentModal(true)}>
