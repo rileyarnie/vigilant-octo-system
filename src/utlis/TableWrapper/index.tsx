@@ -45,7 +45,7 @@ const TableWrapper = ({ title, data, columns, options, ...props }): JSX.Element 
                 pageSize: 10,
                 // eslint-disable-next-line react/prop-types
                 pageSizeOptions: [5, 10, 20, 50, { value: data?.length, label: 'View All' }],
-                headerStyle: { backgroundColor: '#242e3e', color: '#b5bdca', fontWeight: 'bold' }
+                headerStyle: { backgroundColor: '#242e3e', color: '#b5bdca', fontWeight: 'bold', zIndex: 0 }
             }}
             {...props}
         />
