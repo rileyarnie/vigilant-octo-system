@@ -18,6 +18,7 @@ import { StudentFeesManagementService } from '../../services/StudentFeesManageme
 import axios from 'axios';
 import { timetablingAxiosInstance } from '../../utlis/interceptors/timetabling-interceptor';
 import { LinearProgress } from '@material-ui/core';
+import DateRangePickerElement from '../../App/components/DatePicker/DateRangePicker';
 
 const Transactions = (): JSX.Element => {
     const alerts: Alerts = new ToastifyAlerts();
@@ -29,6 +30,7 @@ const Transactions = (): JSX.Element => {
     const [disableReversalButton, setDisableReversalButton] = useState(false);
     const [studentId, setStudentId] = useState('');
     const [transactionDetailsModal, setTransactionDetailsModal] = useState(false);
+    const [dateRangeModal, setDateRangeModal] = useState(false);
     const [selectedRow, setSelectedRow] = useState<{ id?: number; narrative?: string; amount?: number }>({});
     const [selectError, setSelectError] = useState(true);
     const [submissionData, setSubmissionData] = useState<{
@@ -52,6 +54,23 @@ const Transactions = (): JSX.Element => {
     const [feeBalanceCr, setFeeBalanceCr] = useState(0);
     const [feeBalanceDr, setFeeBalanceDr] = useState(0);
     const [linearDisplay, setLinearDisplay] = useState('none');
+
+    //daterange state
+    const [dateRange, setDateRange] = useState<
+        [
+            {
+                startDate: Date;
+                endDate: Date;
+                key: string;
+            }
+        ]
+    >([
+        {
+            startDate: new Date(),
+            endDate: new Date(),
+            key: 'selection'
+        }
+    ]);
 
     const columns = [
         { title: 'Transaction ID', field: 'id' },
@@ -170,13 +189,21 @@ const Transactions = (): JSX.Element => {
     };
 
     //filter transactions
-    const filterTranscations = (filter:string) => {
+    const filterTranscations = (filter: string, dates?: [{ startDate: Date; endDate: Date; key: string }]) => {
         setLinearDisplay('block');
-        const params = filter === 'student' ? { studentId } : '';
+        const params =
+            filter === 'student'
+                ? { studentId }
+                : {
+                    startDate: new Date(dates[0].startDate).toISOString().split('T')[0],
+                    endDate: new Date(dates[0].endDate).toISOString().split('T')[0]
+                };
+
         financeAxiosInstance
             .get('/transactions', { params })
             .then((res) => {
                 setData(res.data);
+                setDateRangeModal(false);
             })
             .catch((err) => {
                 console.error('err.message', err.message);
@@ -312,8 +339,13 @@ const Transactions = (): JSX.Element => {
                     )}
 
                     {canPerformActions(ACTION_CREATE_FEE_WAIVER.name) && (
-                        <Button className="float-right" variant="danger" onClick={() => setFeeWaiverModal(true)}>
+                        <Button className="float-right ml-4" variant="danger" onClick={() => setFeeWaiverModal(true)}>
                             Record Fee Waiver
+                        </Button>
+                    )}
+                    {canPerformActions(ACTION_GET_FEE_ITEMS.name) && (
+                        <Button className="float-right" variant="info" onClick={() => setDateRangeModal(true)}>
+                            Filter By Dates
                         </Button>
                     )}
                 </Col>
@@ -539,6 +571,16 @@ const Transactions = (): JSX.Element => {
                     <h5>Are you sure you want to Submit {feePaymentModal ? 'Fee Payment' : 'Fee Waiver'}?</h5>
                 </b>
             </ConfirmationModalWrapper>
+            <ModalWrapper
+                show={dateRangeModal}
+                modalSize="xl"
+                title="Select date range"
+                closeModal={() => setDateRangeModal(false)}
+                submitButton
+                submitFunction={() => filterTranscations('dates', dateRange)}
+            >
+                <DateRangePickerElement setDateRange={setDateRange} ranges={dateRange} />
+            </ModalWrapper>
         </>
     );
 };
