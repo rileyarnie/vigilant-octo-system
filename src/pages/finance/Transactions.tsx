@@ -201,11 +201,11 @@ const Transactions = (): JSX.Element => {
                     endDate: new Date(dates[0].endDate).toISOString().split('T')[0]
                 };
 
+        setDateRangeModal(false);
         financeAxiosInstance
             .get('/transactions', { params })
             .then((res) => {
                 setData(res.data);
-                setDateRangeModal(false);
             })
             .catch((err) => {
                 console.error('err.message', err.message);
