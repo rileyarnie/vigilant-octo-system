@@ -528,7 +528,7 @@ function ProgramCohortSemesterDetails(props) {
                                 type="date"
                                 min={semStartDate}
                                 max={semEndDate}
-                                value={semStartDate}
+                                defaultValue={semStartDate}
                                 onChange={(e) => {
                                     setAnticipatedStartDate(e.target.value);
                                 }}
