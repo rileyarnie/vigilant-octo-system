@@ -328,10 +328,10 @@ const Transactions = (): JSX.Element => {
     return (
         <>
             <Row className="align-items-center page-header">
-                <Col>
+                <Col md={3}>
                     <Breadcrumb />
                 </Col>
-                <Col>
+                <Col md={9}>
                     {canPerformActions(ACTION_CREATE_FEE_PAYMENT.name) && (
                         <Button className="float-right ml-4" variant="danger" onClick={() => setFeePaymentModal(true)}>
                             Record Fee Payment
@@ -348,29 +348,30 @@ const Transactions = (): JSX.Element => {
                             Filter By Dates
                         </Button>
                     )}
+                    {canPerformActions(ACTION_GET_FEE_ITEMS.name) && (
+                        <Row>
+                            <Col>
+                                <AsyncSelect
+                                    id="studentOptions"
+                                    cacheOptions
+                                    loadOptions={loadOptions}
+                                    defaultOptions
+                                    onChange={handleInputChange}
+                                    placeholder="Filter by student"
+                                    styles={{ menuPortal: (base) => ({ ...base, zIndex: 9999 }) }}
+                                />
+                            </Col>
+                            <Col>
+                                {' '}
+                                <Button className="" variant="info" onClick={() => filterTranscations('student')}>
+                                        Filter By Student
+                                </Button>
+                            </Col>
+                        </Row>
+                    )}
                 </Col>
             </Row>
-            <div className="mb-4">
-                <Row>
-                    <Col md={4}>
-                        <AsyncSelect
-                            id="studentOptions"
-                            cacheOptions
-                            loadOptions={loadOptions}
-                            defaultOptions
-                            onChange={handleInputChange}
-                            placeholder="Filter by student"
-                            styles={{ menuPortal: (base) => ({ ...base, zIndex: 9999 }) }}
-                        />
-                    </Col>
-                    <Col>
-                        {' '}
-                        <Button className="" variant="info" onClick={() => filterTranscations('student')}>
-                            Filter
-                        </Button>
-                    </Col>
-                </Row>
-            </div>
+
             {canPerformActions(ACTION_GET_FEE_ITEMS.name) && (
                 <>
                     <LinearProgress style={{ display: linearDisplay }} />
