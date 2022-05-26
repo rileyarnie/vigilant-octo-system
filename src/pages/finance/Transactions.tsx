@@ -191,16 +191,19 @@ const Transactions = (): JSX.Element => {
     };
 
     //filter transactions
-    const filterTranscations = (filter: string, dates?: [{ startDate: Date; endDate: Date; key: string }]) => {
+    const filterTranscations = (filter: string, id?:number, dates?: [{ startDate: Date; endDate: Date; key: string }]) => {
         setLinearDisplay('block');
         const params =
             filter === 'student'
-                ? { studentId }
+                ? { studentId:id }
                 : {
                     startDate: new Date(dates[0].startDate).toISOString().split('T')[0],
                     endDate: new Date(dates[0].endDate).toISOString().split('T')[0]
                 };
 
+                
+        // eslint-disable-next-line no-debugger
+        debugger;
         financeAxiosInstance
             .get('/transactions', { params })
             .then((res) => {
@@ -245,6 +248,12 @@ const Transactions = (): JSX.Element => {
 
     const handleInputChange = (e) => {
         setStudentId(e.value);
+    };
+    const handleFilterInputChange = (e) => {
+        setStudentId(e.value);
+        // eslint-disable-next-line no-debugger
+        debugger;
+        filterTranscations('student',e.value);
     };
 
     //close Fee Payment Modal
@@ -336,10 +345,11 @@ const Transactions = (): JSX.Element => {
     return (
         <>
             <Row className="align-items-center page-header">
-                <Col md={3}>
+                <Col md={6}>
                     <Breadcrumb />
                 </Col>
-                <Col md={9}>
+                {console.log('studentId', studentId)}
+                <Col md={6}>
                     {canPerformActions(ACTION_CREATE_FEE_PAYMENT.name) && (
                         <Button className="float-right ml-4" variant="danger" onClick={() => setFeePaymentModal(true)}>
                             Record Fee Payment
@@ -364,16 +374,10 @@ const Transactions = (): JSX.Element => {
                                     cacheOptions
                                     loadOptions={loadOptions}
                                     defaultOptions
-                                    onChange={handleInputChange}
+                                    onChange={handleFilterInputChange}
                                     placeholder="Filter by student"
                                     styles={{ menuPortal: (base) => ({ ...base, zIndex: 9999 }) }}
                                 />
-                            </Col>
-                            <Col>
-                                {' '}
-                                <Button className="" variant="info" onClick={() => filterTranscations('student')}>
-                                    Filter By Student
-                                </Button>
                             </Col>
                         </Row>
                     )}
@@ -588,7 +592,7 @@ const Transactions = (): JSX.Element => {
                 title="Select date range"
                 closeModal={() => setDateRangeModal(false)}
                 submitButton
-                submitFunction={() => filterTranscations('dates', dateRange)}
+                submitFunction={() => filterTranscations('dates', undefined ,dateRange)}
             >
                 <DateRangePickerElement setDateRange={setDateRange} ranges={dateRange} />
             </ModalWrapper>
