@@ -191,19 +191,16 @@ const Transactions = (): JSX.Element => {
     };
 
     //filter transactions
-    const filterTranscations = (filter: string, id?:number, dates?: [{ startDate: Date; endDate: Date; key: string }]) => {
+    const filterTranscations = (filter: string, id?: number, dates?: [{ startDate: Date; endDate: Date; key: string }]) => {
         setLinearDisplay('block');
         const params =
             filter === 'student'
-                ? { studentId:id }
+                ? { studentId: id }
                 : {
                     startDate: new Date(dates[0].startDate).toISOString().split('T')[0],
                     endDate: new Date(dates[0].endDate).toISOString().split('T')[0]
                 };
 
-                
-        // eslint-disable-next-line no-debugger
-        debugger;
         financeAxiosInstance
             .get('/transactions', { params })
             .then((res) => {
@@ -251,9 +248,8 @@ const Transactions = (): JSX.Element => {
     };
     const handleFilterInputChange = (e) => {
         setStudentId(e.value);
-        // eslint-disable-next-line no-debugger
-        debugger;
-        filterTranscations('student',e.value);
+
+        filterTranscations('student', e.value);
     };
 
     //close Fee Payment Modal
@@ -591,7 +587,7 @@ const Transactions = (): JSX.Element => {
                 title="Select date range"
                 closeModal={() => setDateRangeModal(false)}
                 submitButton
-                submitFunction={() => filterTranscations('dates', undefined ,dateRange)}
+                submitFunction={() => filterTranscations('dates', undefined, dateRange)}
             >
                 <DateRangePickerElement setDateRange={setDateRange} ranges={dateRange} />
             </ModalWrapper>
