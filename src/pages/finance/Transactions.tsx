@@ -304,7 +304,6 @@ const Transactions = (): JSX.Element => {
                 axios.spread((...responses) => {
                     const staff = responses[0] && responses[0].data;
                     setRecordedBy({ staffId: staff.id, name: staff.name });
-                    console.log('responses[1].data[0]', responses[1].data[0]);
                     const studentCrFirstName = responses[1] && responses[1]?.data[0].applications_firstName;
                     const studentCrLastName = responses[1] && responses[1]?.data[0].applications_lastName;
                     setStudentNameCr(`${studentCrFirstName} ${studentCrLastName}`);
