@@ -439,7 +439,7 @@ const CourseCohortsList = (props): JSX.Element => {
                             name="c"
                             id="color"
                             required
-                            value={selectedRow?.programCohortSemester?.semesterId}
+                            defaultValue={selectedRow?.programCohortSemester?.semesterId}
                             onChange={(e) => {
                                 setSelectedSemesterId(e.target.value);
                             }}

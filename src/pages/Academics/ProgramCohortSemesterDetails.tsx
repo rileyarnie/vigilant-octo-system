@@ -264,6 +264,9 @@ function ProgramCohortSemesterDetails(props) {
                 toggleConfirmPublishModal();
                 fetchCourseCohortBySemesterId('course', semesterId, programCohortId);
                 setDisabledButton(false);
+                setShowModal(false);
+                setConfirmPublishModal(false);
+
             });
     }
 
@@ -271,6 +274,9 @@ function ProgramCohortSemesterDetails(props) {
         setFeeItemId(null);
         setNarrative('');
         setAmount(0);
+        setShowModal(false);
+        setShowPublishModal(false);
+        setConfirmModal(false);
     };
 
     // create fee items
@@ -522,7 +528,7 @@ function ProgramCohortSemesterDetails(props) {
                                 type="date"
                                 min={semStartDate}
                                 max={semEndDate}
-                                value={anticipatedStartDate}
+                                value={semStartDate}
                                 onChange={(e) => {
                                     setAnticipatedStartDate(e.target.value);
                                 }}
