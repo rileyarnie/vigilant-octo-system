@@ -1,21 +1,21 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 /* eslint-disable react/prop-types */
 /* eslint-disable react/display-name */
-import React, {useEffect, useState} from 'react';
-import {Alerts, ToastifyAlerts} from '../lib/Alert';
+import React, { useEffect, useState } from 'react';
+import { Alerts, ToastifyAlerts } from '../lib/Alert';
 import Alert from '@material-ui/lab/Alert';
 import Breadcrumb from '../../App/components/Breadcrumb';
-import {Card, Col, Row} from 'react-bootstrap';
-import {LinearProgress} from '@mui/material';
+import { Card, Col, Row } from 'react-bootstrap';
+import { LinearProgress } from '@mui/material';
 import CourseCohort from '../services/CourseCohort';
-import {CourseCohortService} from '../services/CourseCohortsService';
-import {createStyles, makeStyles, Theme} from '@material-ui/core/styles';
+import { CourseCohortService } from '../services/CourseCohortsService';
+import { createStyles, makeStyles, Theme } from '@material-ui/core/styles';
 import IconButton from '@material-ui/core/IconButton';
 import ArrowBackIcon from '@material-ui/icons/ArrowBack';
-import {simsAxiosInstance} from '../../utlis/interceptors/sims-interceptor';
+import { simsAxiosInstance } from '../../utlis/interceptors/sims-interceptor';
 import TableWrapper from '../../utlis/TableWrapper';
 import { Link } from 'react-router-dom';
-import { MenuItem, Select} from '@material-ui/core';
+import { MenuItem, Select } from '@material-ui/core';
 import ChangeExamCutOffModal from './ChangeExamCutOffModal';
 import CustomSwitch from '../../assets/switch/CustomSwitch';
 import ConfirmationModalWrapper from '../../App/components/modal/ConfirmationModalWrapper';
@@ -34,23 +34,26 @@ const useStyles = makeStyles((theme: Theme) =>
     })
 );
 function ProgramCohortSemesters(props: { history: { goBack: () => void } }) {
-    const [selectedRow,setselectedRow] = useState<{id:number,name:string, programCohortSemesterId:number, programCohortSemester:{id:number}}>();
+    const [selectedRow, setselectedRow] = useState<{
+        id: number;
+        name: string;
+        programCohortSemesterId: number;
+        programCohortSemester: { id: number };
+    }>();
     const [disabled, setDisabled] = useState(false);
     const [activationModal, setActivationModal] = useState(false);
-    const [switchStatus,setSwitchStatus] = useState<boolean>();
+    const [switchStatus, setSwitchStatus] = useState<boolean>();
     const [showCutOffModal, setShowCutOffModal] = useState<boolean>();
-    function handleCloseActivationModal () {
+    function handleCloseActivationModal() {
         setActivationModal(false);
     }
     const [programCohortSemesterId, setProgramCohortSemesterId] = useState(0);
 
-
-    async function updatePCS(pcsId: number, updates:unknown){
+    async function updatePCS(pcsId: number, updates: unknown) {
         setDisabled(true);
         try {
             try {
-                await timetablingAxiosInstance
-                    .put(`/program-cohort-semesters/${pcsId}/activation`, updates);
+                await timetablingAxiosInstance.put(`/program-cohort-semesters/${pcsId}/activation`, updates);
                 alerts.showSuccess('Successfully updated course cohort');
                 fetchProgramCohortSemester('semester', programCohortId);
                 setLinearDisplay('none');
@@ -171,7 +174,8 @@ function ProgramCohortSemesters(props: { history: { goBack: () => void } }) {
                         endDate: cc?.programCohortSemester?.semester.endDate,
                         programCohortId: cc?.programCohortId,
                         programCohortSemesterId: cc?.programCohortSemesterId,
-                        activationStatus: cc?.programCohortSemester?.activationStatus
+                        activationStatus: cc?.programCohortSemester?.activationStatus,
+                        examCutOffDate: cc?.programCohortSemester?.examCutOffDate
                     };
                 });
                 setData(semesterData);
@@ -240,14 +244,13 @@ function ProgramCohortSemesters(props: { history: { goBack: () => void } }) {
                     </Card>
                 </Col>
             </Row>
-
             <ChangeExamCutOffModal
+                examCutOffDate={data[0]?.examCutOffDate}
                 programCohortSemesterId={programCohortSemesterId}
                 showCutOffModal={showCutOffModal}
-                setShowModal = {setShowCutOffModal}
-                modalTitle= {`Change ${programName} of ${anticipatedGraduation} semester Exam Cut Off Date`}
-            >
-            </ChangeExamCutOffModal>
+                setShowModal={setShowCutOffModal}
+                modalTitle={`Change ${programName} of ${anticipatedGraduation} semester Exam Cut Off Date`}
+            ></ChangeExamCutOffModal>
         </>
     );
 }
