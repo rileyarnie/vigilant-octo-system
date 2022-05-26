@@ -52,7 +52,9 @@ const Transactions = (): JSX.Element => {
     const [attachmentUrl, setAttachmentUrl] = useState('');
     const [recordedBy, setRecordedBy] = useState<{ staffId: number; name: string }>({ staffId: 0, name: '' });
     const [feeBalanceCr, setFeeBalanceCr] = useState(0);
+    const [studentNameCr, setStudentNameCr] = useState('');
     const [feeBalanceDr, setFeeBalanceDr] = useState(0);
+    const [studentNameDr, setStudentNameDr] = useState('');
     const [linearDisplay, setLinearDisplay] = useState('none');
 
     //daterange state
@@ -302,6 +304,12 @@ const Transactions = (): JSX.Element => {
                 axios.spread((...responses) => {
                     const staff = responses[0] && responses[0].data;
                     setRecordedBy({ staffId: staff.id, name: staff.name });
+                    const studentCrFirstName = responses[1] && responses[1].data.applications_firstName;
+                    const studentCrLastName = responses[1] && responses[1].data.applications_lastName;
+                    setStudentNameCr(`${studentCrFirstName} ${studentCrLastName}`);
+                    const studentDrFirstName = responses[2] && responses[2].data.applications_firstName;
+                    const studentDrLastName = responses[2] && responses[2].data.applications_lastName;
+                    setStudentNameDr(`${studentDrFirstName} ${studentDrLastName}`);
                     const balanceCr = responses[3] && responses[3].data.balance;
                     setFeeBalanceCr(balanceCr);
                     const balanceDr = responses[4] && responses[4].data.balance;
@@ -364,7 +372,7 @@ const Transactions = (): JSX.Element => {
                             <Col>
                                 {' '}
                                 <Button className="" variant="info" onClick={() => filterTranscations('student')}>
-                                        Filter By Student
+                                    Filter By Student
                                 </Button>
                             </Col>
                         </Row>
@@ -553,6 +561,8 @@ const Transactions = (): JSX.Element => {
                     data={selectedRow}
                     staff={recordedBy}
                     balanceCr={feeBalanceCr}
+                    studentNameCr={studentNameCr}
+                    studentNameDr={studentNameDr}
                     balanceDr={feeBalanceDr}
                     supportingDocument={attachmentUrl}
                     handleReversal={handleReversal}
