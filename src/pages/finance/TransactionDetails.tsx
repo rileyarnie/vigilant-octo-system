@@ -7,12 +7,12 @@ interface Props {
     staff: { staffId: number; name: string };
     balanceCr: number;
     balanceDr: number;
-    handleReversal: (transactionId:number) => void;
-    transactionId:number
+    handleReversal: (transactionId: number) => void;
+    transactionId: number;
     supportingDocument?: string;
+    disabled: boolean;
 }
 const TransactionDetails: React.FunctionComponent<Props> = (props) => {
-    const [disabled, setDisabled] = useState(false);
     const [confirmModal, setConfirmModal] = useState(false);
 
     return (
@@ -59,13 +59,12 @@ const TransactionDetails: React.FunctionComponent<Props> = (props) => {
             </div>
             <ConfirmationModalWrapper
                 show={confirmModal}
-                disabled={disabled}
+                disabled={props.disabled}
                 closeModal={() => {
                     setConfirmModal(false);
                 }}
                 submitButton
                 submitFunction={() => {
-                    setDisabled(true);
                     props.handleReversal(props.transactionId);
                 }}
             >
