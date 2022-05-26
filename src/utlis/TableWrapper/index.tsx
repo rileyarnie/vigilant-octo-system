@@ -53,5 +53,3 @@ const TableWrapper = ({ title, data, columns, options, ...props }): JSX.Element 
 };
 
 export default TableWrapper;
-
-

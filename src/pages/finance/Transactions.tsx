@@ -169,6 +169,23 @@ const Transactions = (): JSX.Element => {
             });
     };
 
+    //filter transactions
+    const filterTranscations = (filter:string) => {
+        setLinearDisplay('block');
+        const params = filter === 'student' ? { studentId } : '';
+        financeAxiosInstance
+            .get('/transactions', { params })
+            .then((res) => {
+                setData(res.data);
+            })
+            .catch((err) => {
+                console.error('err.message', err.message);
+            })
+            .finally(() => {
+                setLinearDisplay('none');
+            });
+    };
+
     useEffect(() => {
         getTransactions();
     }, []);
@@ -301,6 +318,27 @@ const Transactions = (): JSX.Element => {
                     )}
                 </Col>
             </Row>
+            <div className="mb-4">
+                <Row>
+                    <Col md={4}>
+                        <AsyncSelect
+                            id="studentOptions"
+                            cacheOptions
+                            loadOptions={loadOptions}
+                            defaultOptions
+                            onChange={handleInputChange}
+                            placeholder="Filter by student"
+                            styles={{ menuPortal: (base) => ({ ...base, zIndex: 9999 }) }}
+                        />
+                    </Col>
+                    <Col>
+                        {' '}
+                        <Button className="" variant="info" onClick={() => filterTranscations('student')}>
+                            Filter
+                        </Button>
+                    </Col>
+                </Row>
+            </div>
             {canPerformActions(ACTION_GET_FEE_ITEMS.name) && (
                 <>
                     <LinearProgress style={{ display: linearDisplay }} />
