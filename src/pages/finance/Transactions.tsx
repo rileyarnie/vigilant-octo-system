@@ -165,7 +165,7 @@ const Transactions = (): JSX.Element => {
                 setFeeWaiverModal(false);
             })
             .catch((error) => {
-                alerts.showError(error.response.data);
+                alerts.showError(error.message);
             })
             .finally(() => {
                 setDisabled(false);
