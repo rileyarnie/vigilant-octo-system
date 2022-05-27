@@ -58,6 +58,8 @@ const Transactions = (): JSX.Element => {
     const [studentNameDr, setStudentNameDr] = useState('');
     const [linearDisplay, setLinearDisplay] = useState('none');
     const [disableFilterButton, setDisableFilterButton] = useState(false);
+    const [filterName, setFilterName] = useState('');
+    const [filterDates, setFilterDates] = useState('');
 
     //daterange state
     const [dateRange, setDateRange] = useState<
@@ -183,6 +185,8 @@ const Transactions = (): JSX.Element => {
         financeAxiosInstance
             .get('/transactions')
             .then((res) => {
+                setFilterName('');
+                setFilterDates('');
                 setData(res.data);
             })
             .catch((err) => {
@@ -195,21 +199,31 @@ const Transactions = (): JSX.Element => {
     };
 
     //filter transactions
-    const filterTranscations = (filter: string, id?: number, dates?: [{ startDate: Date; endDate: Date; key: string }]) => {
+    const filterTranscations = (filter: string, id?: number, name?: string, dates?: [{ startDate: Date; endDate: Date; key: string }]) => {
+        let params;
         setLinearDisplay('block');
-        const params =
-            filter === 'student'
-                ? { studentId: id }
-                : {
-                    startDate: new Date(dates[0].startDate).toISOString().split('T')[0],
-                    endDate: new Date(dates[0].endDate).toISOString().split('T')[0]
-                };
+        const formattedStartDate = dates && new Date(dates[0].startDate).toISOString().split('T')[0];
+        const formattedEndDate = dates && new Date(dates[0].endDate).toISOString().split('T')[0];
+
+        if (filter === 'student') {
+            params = { studentId };
+            setFilterDates('');
+        } else {
+            params = {
+                startDate: formattedStartDate,
+                endDate: formattedEndDate
+            };
+            setFilterName('');
+        }
 
         setDateRangeModal(false);
         financeAxiosInstance
             .get('/transactions', { params })
             .then((res) => {
                 setData(res.data);
+                setStudentId(null);
+                setFilterName(name);
+                setFilterDates(`from ${formattedStartDate} to ${formattedEndDate}`);
             })
             .catch((err) => {
                 console.error('err.message', err.message);
@@ -252,8 +266,7 @@ const Transactions = (): JSX.Element => {
     };
     const handleFilterInputChange = (e) => {
         setStudentId(e.value);
-
-        filterTranscations('student', e.value);
+        filterTranscations('student', e.value, e.label);
     };
 
     //close Fee Payment Modal
@@ -376,6 +389,7 @@ const Transactions = (): JSX.Element => {
                                     onChange={handleFilterInputChange}
                                     placeholder="Filter by student"
                                     styles={{ menuPortal: (base) => ({ ...base, zIndex: 9999 }) }}
+                                    value={studentId}
                                 />
                             </Col>
                         </Row>
@@ -390,7 +404,13 @@ const Transactions = (): JSX.Element => {
                         <Col>
                             <Card>
                                 <TableWrapper
-                                    title="Transactions"
+                                    title={
+                                        filterName
+                                            ? `Transactions for ${filterName}`
+                                            : filterDates
+                                                ? `Transactions ${filterDates}`
+                                                : 'Transactions'
+                                    }
                                     columns={columns}
                                     options={{ actionsColumnIndex: -1 }}
                                     data={data}
@@ -611,7 +631,7 @@ const Transactions = (): JSX.Element => {
                 title="Select date range"
                 closeModal={() => setDateRangeModal(false)}
                 submitButton
-                submitFunction={() => filterTranscations('dates', undefined, dateRange)}
+                submitFunction={() => filterTranscations('dates', undefined, undefined, dateRange)}
             >
                 <DateRangePickerElement setDateRange={setDateRange} ranges={dateRange} />
             </ModalWrapper>
