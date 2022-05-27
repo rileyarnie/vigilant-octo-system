@@ -206,7 +206,7 @@ const Transactions = (): JSX.Element => {
         const formattedEndDate = dates && new Date(dates[0].endDate).toISOString().split('T')[0];
 
         if (filter === 'student') {
-            params = { studentId };
+            params = { studentId:id };
             setFilterDates('');
         } else {
             params = {
