@@ -216,7 +216,7 @@ const Transactions = (): JSX.Element => {
             setFilterName('');
         }
 
-        setDateRangeModal(false);
+        closeDateRangeModal();
         financeAxiosInstance
             .get('/transactions', { params })
             .then((res) => {
@@ -231,6 +231,17 @@ const Transactions = (): JSX.Element => {
             .finally(() => {
                 setLinearDisplay('none');
             });
+    };
+
+    const closeDateRangeModal = () => {
+        setDateRange([
+            {
+                startDate: new Date(),
+                endDate: new Date(),
+                key: 'selection'
+            }
+        ]);
+        setDateRangeModal(false);
     };
 
     useEffect(() => {
@@ -629,7 +640,7 @@ const Transactions = (): JSX.Element => {
                 show={dateRangeModal}
                 modalSize="xl"
                 title="Select date range"
-                closeModal={() => setDateRangeModal(false)}
+                closeModal={closeDateRangeModal}
                 submitButton
                 submitFunction={() => filterTranscations('dates', undefined, undefined, dateRange)}
             >
