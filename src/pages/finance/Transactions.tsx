@@ -19,6 +19,7 @@ import axios from 'axios';
 import { timetablingAxiosInstance } from '../../utlis/interceptors/timetabling-interceptor';
 import { LinearProgress } from '@material-ui/core';
 import DateRangePickerElement from '../../App/components/DatePicker/DateRangePicker';
+import ClearFilter from '../../utlis/TableActionButtons/ClearFilter';
 
 const Transactions = (): JSX.Element => {
     const alerts: Alerts = new ToastifyAlerts();
@@ -56,6 +57,7 @@ const Transactions = (): JSX.Element => {
     const [feeBalanceDr, setFeeBalanceDr] = useState(0);
     const [studentNameDr, setStudentNameDr] = useState('');
     const [linearDisplay, setLinearDisplay] = useState('none');
+    const [disableFilterButton, setDisableFilterButton] = useState(false);
 
     //daterange state
     const [dateRange, setDateRange] = useState<
@@ -177,16 +179,18 @@ const Transactions = (): JSX.Element => {
     //get transactions
     const getTransactions = () => {
         setLinearDisplay('block');
+        setDisableFilterButton(true);
         financeAxiosInstance
             .get('/transactions')
             .then((res) => {
                 setData(res.data);
             })
             .catch((err) => {
-                console.error('err.message', err.message);
+                alerts.showError(err.message);
             })
             .finally(() => {
                 setLinearDisplay('none');
+                setDisableFilterButton(false);
             });
     };
 
@@ -341,10 +345,10 @@ const Transactions = (): JSX.Element => {
     return (
         <>
             <Row className="align-items-center page-header">
-                <Col md={6}>
+                <Col md={4}>
                     <Breadcrumb />
                 </Col>
-                <Col md={6}>
+                <Col md={8}>
                     {canPerformActions(ACTION_CREATE_FEE_PAYMENT.name) && (
                         <Button className="float-right ml-4" variant="danger" onClick={() => setFeePaymentModal(true)}>
                             Record Fee Payment
@@ -385,7 +389,27 @@ const Transactions = (): JSX.Element => {
                     <Row>
                         <Col>
                             <Card>
-                                <TableWrapper title="Transactions" columns={columns} options={{ actionsColumnIndex: -1 }} data={data} />
+                                <TableWrapper
+                                    title="Transactions"
+                                    columns={columns}
+                                    options={{ actionsColumnIndex: -1 }}
+                                    data={data}
+                                    components={{
+                                        Action: (props) => (
+                                            <ClearFilter
+                                                disableFilterButton={disableFilterButton}
+                                                clearFilter={getTransactions}
+                                                {...props}
+                                            />
+                                        )
+                                    }}
+                                    actions={[
+                                        {
+                                            icon: ClearFilter,
+                                            isFreeAction: true
+                                        }
+                                    ]}
+                                />
                             </Card>
                         </Col>
                     </Row>
