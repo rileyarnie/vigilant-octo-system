@@ -11,6 +11,8 @@ interface Props {
     transactionId: number;
     supportingDocument?: string;
     disabled: boolean;
+    studentNameCr:string;
+    studentNameDr:string;
 }
 const TransactionDetails: React.FunctionComponent<Props> = (props) => {
     const [confirmModal, setConfirmModal] = useState(false);
@@ -28,14 +30,14 @@ const TransactionDetails: React.FunctionComponent<Props> = (props) => {
                         {props.balanceCr && (
                             <ListGroup.Item>
                                 <h6>Student (Cr):</h6>
-                                <p>reg No - Name</p>
+                                <p>{props.studentNameCr}</p>
                                 <p>Balance: KES {props.balanceCr}</p>
                             </ListGroup.Item>
                         )}
                         {props.balanceDr && (
                             <ListGroup.Item>
                                 <h6>Student (Dr):</h6>
-                                <p>reg No - Name</p>
+                                <p>{props.studentNameDr}</p>
                                 <p>Balance: KES {props.balanceDr}</p>
                             </ListGroup.Item>
                         )}

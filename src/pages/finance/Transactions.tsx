@@ -19,6 +19,7 @@ import axios from 'axios';
 import { timetablingAxiosInstance } from '../../utlis/interceptors/timetabling-interceptor';
 import { LinearProgress } from '@material-ui/core';
 import DateRangePickerElement from '../../App/components/DatePicker/DateRangePicker';
+import ClearFilter from '../../utlis/TableActionButtons/ClearFilter';
 
 const Transactions = (): JSX.Element => {
     const alerts: Alerts = new ToastifyAlerts();
@@ -52,8 +53,13 @@ const Transactions = (): JSX.Element => {
     const [attachmentUrl, setAttachmentUrl] = useState('');
     const [recordedBy, setRecordedBy] = useState<{ staffId: number; name: string }>({ staffId: 0, name: '' });
     const [feeBalanceCr, setFeeBalanceCr] = useState(0);
+    const [studentNameCr, setStudentNameCr] = useState('');
     const [feeBalanceDr, setFeeBalanceDr] = useState(0);
+    const [studentNameDr, setStudentNameDr] = useState('');
     const [linearDisplay, setLinearDisplay] = useState('none');
+    const [disableFilterButton, setDisableFilterButton] = useState(false);
+    const [filterName, setFilterName] = useState('');
+    const [filterDates, setFilterDates] = useState('');
 
     //daterange state
     const [dateRange, setDateRange] = useState<
@@ -163,7 +169,7 @@ const Transactions = (): JSX.Element => {
                 setFeeWaiverModal(false);
             })
             .catch((error) => {
-                alerts.showError(error.response.data);
+                alerts.showError(error.message);
             })
             .finally(() => {
                 setDisabled(false);
@@ -175,10 +181,49 @@ const Transactions = (): JSX.Element => {
     //get transactions
     const getTransactions = () => {
         setLinearDisplay('block');
+        setDisableFilterButton(true);
         financeAxiosInstance
             .get('/transactions')
             .then((res) => {
+                setFilterName('');
+                setFilterDates('');
                 setData(res.data);
+            })
+            .catch((err) => {
+                alerts.showError(err.message);
+            })
+            .finally(() => {
+                setLinearDisplay('none');
+                setDisableFilterButton(false);
+            });
+    };
+
+    //filter transactions
+    const filterTranscations = (filter: string, id?: number, name?: string, dates?: [{ startDate: Date; endDate: Date; key: string }]) => {
+        let params;
+        setLinearDisplay('block');
+        const formattedStartDate = dates && new Date(dates[0].startDate).toISOString().split('T')[0];
+        const formattedEndDate = dates && new Date(dates[0].endDate).toISOString().split('T')[0];
+
+        if (filter === 'student') {
+            params = { studentId };
+            setFilterDates('');
+        } else {
+            params = {
+                startDate: formattedStartDate,
+                endDate: formattedEndDate
+            };
+            setFilterName('');
+        }
+
+        closeDateRangeModal();
+        financeAxiosInstance
+            .get('/transactions', { params })
+            .then((res) => {
+                setData(res.data);
+                setStudentId(null);
+                setFilterName(name);
+                setFilterDates(`from ${formattedStartDate} to ${formattedEndDate}`);
             })
             .catch((err) => {
                 console.error('err.message', err.message);
@@ -188,29 +233,15 @@ const Transactions = (): JSX.Element => {
             });
     };
 
-    //filter transactions
-    const filterTranscations = (filter: string, dates?: [{ startDate: Date; endDate: Date; key: string }]) => {
-        setLinearDisplay('block');
-        const params =
-            filter === 'student'
-                ? { studentId }
-                : {
-                    startDate: new Date(dates[0].startDate).toISOString().split('T')[0],
-                    endDate: new Date(dates[0].endDate).toISOString().split('T')[0]
-                };
-
-        financeAxiosInstance
-            .get('/transactions', { params })
-            .then((res) => {
-                setData(res.data);
-                setDateRangeModal(false);
-            })
-            .catch((err) => {
-                console.error('err.message', err.message);
-            })
-            .finally(() => {
-                setLinearDisplay('none');
-            });
+    const closeDateRangeModal = () => {
+        setDateRange([
+            {
+                startDate: new Date(),
+                endDate: new Date(),
+                key: 'selection'
+            }
+        ]);
+        setDateRangeModal(false);
     };
 
     useEffect(() => {
@@ -243,6 +274,10 @@ const Transactions = (): JSX.Element => {
 
     const handleInputChange = (e) => {
         setStudentId(e.value);
+    };
+    const handleFilterInputChange = (e) => {
+        setStudentId(e.value);
+        filterTranscations('student', e.value, e.label);
     };
 
     //close Fee Payment Modal
@@ -302,6 +337,12 @@ const Transactions = (): JSX.Element => {
                 axios.spread((...responses) => {
                     const staff = responses[0] && responses[0].data;
                     setRecordedBy({ staffId: staff.id, name: staff.name });
+                    const studentCrFirstName = responses[1] && responses[1]?.data[0].applications_firstName;
+                    const studentCrLastName = responses[1] && responses[1]?.data[0].applications_lastName;
+                    setStudentNameCr(`${studentCrFirstName} ${studentCrLastName}`);
+                    const studentDrFirstName = responses[2] && responses[2].data[0]?.applications_firstName;
+                    const studentDrLastName = responses[2] && responses[2].data[0]?.applications_lastName;
+                    setStudentNameDr(`${studentDrFirstName} ${studentDrLastName}`);
                     const balanceCr = responses[3] && responses[3].data.balance;
                     setFeeBalanceCr(balanceCr);
                     const balanceDr = responses[4] && responses[4].data.balance;
@@ -328,10 +369,10 @@ const Transactions = (): JSX.Element => {
     return (
         <>
             <Row className="align-items-center page-header">
-                <Col md={3}>
+                <Col md={4}>
                     <Breadcrumb />
                 </Col>
-                <Col md={9}>
+                <Col md={8}>
                     {canPerformActions(ACTION_CREATE_FEE_PAYMENT.name) && (
                         <Button className="float-right ml-4" variant="danger" onClick={() => setFeePaymentModal(true)}>
                             Record Fee Payment
@@ -356,16 +397,11 @@ const Transactions = (): JSX.Element => {
                                     cacheOptions
                                     loadOptions={loadOptions}
                                     defaultOptions
-                                    onChange={handleInputChange}
+                                    onChange={handleFilterInputChange}
                                     placeholder="Filter by student"
                                     styles={{ menuPortal: (base) => ({ ...base, zIndex: 9999 }) }}
+                                    value={studentId}
                                 />
-                            </Col>
-                            <Col>
-                                {' '}
-                                <Button className="" variant="info" onClick={() => filterTranscations('student')}>
-                                        Filter By Student
-                                </Button>
                             </Col>
                         </Row>
                     )}
@@ -378,7 +414,33 @@ const Transactions = (): JSX.Element => {
                     <Row>
                         <Col>
                             <Card>
-                                <TableWrapper title="Transactions" columns={columns} options={{ actionsColumnIndex: -1 }} data={data} />
+                                <TableWrapper
+                                    title={
+                                        filterName
+                                            ? `Transactions for ${filterName}`
+                                            : filterDates
+                                                ? `Transactions ${filterDates}`
+                                                : 'Transactions'
+                                    }
+                                    columns={columns}
+                                    options={{ actionsColumnIndex: -1 }}
+                                    data={data}
+                                    components={{
+                                        Action: (props) => (
+                                            <ClearFilter
+                                                disableFilterButton={disableFilterButton}
+                                                clearFilter={getTransactions}
+                                                {...props}
+                                            />
+                                        )
+                                    }}
+                                    actions={[
+                                        {
+                                            icon: ClearFilter,
+                                            isFreeAction: true
+                                        }
+                                    ]}
+                                />
                             </Card>
                         </Col>
                     </Row>
@@ -553,6 +615,8 @@ const Transactions = (): JSX.Element => {
                     data={selectedRow}
                     staff={recordedBy}
                     balanceCr={feeBalanceCr}
+                    studentNameCr={studentNameCr}
+                    studentNameDr={studentNameDr}
                     balanceDr={feeBalanceDr}
                     supportingDocument={attachmentUrl}
                     handleReversal={handleReversal}
@@ -576,9 +640,9 @@ const Transactions = (): JSX.Element => {
                 show={dateRangeModal}
                 modalSize="xl"
                 title="Select date range"
-                closeModal={() => setDateRangeModal(false)}
+                closeModal={closeDateRangeModal}
                 submitButton
-                submitFunction={() => filterTranscations('dates', dateRange)}
+                submitFunction={() => filterTranscations('dates', undefined, undefined, dateRange)}
             >
                 <DateRangePickerElement setDateRange={setDateRange} ranges={dateRange} />
             </ModalWrapper>
