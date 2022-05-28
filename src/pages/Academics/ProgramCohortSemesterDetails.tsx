@@ -166,6 +166,8 @@ function ProgramCohortSemesterDetails(props) {
                     return error;
                 }
                 alerts.showError(error.message);
+            }).finally(() => {
+                setLinearDisplay('none');
             });
     }
 
