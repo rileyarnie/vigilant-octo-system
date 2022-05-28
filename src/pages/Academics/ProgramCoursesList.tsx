@@ -82,13 +82,13 @@ const ProgramCoursesList = (props): JSX.Element => {
             .then(() => {
                 alerts.showSuccess('Succesfully removed course');
                 fetchCoursesAssignedToProgram(progId);
-                setDisabled(false);
-                setLinearDisplay('none');
             })
             .catch((error) => {
-                setDisabled(false);
                 alerts.showError(error.message);
+            }).finally(() => {
                 setLinearDisplay('none');
+                setDisabled(false);
+                toggleCloseConfirmModal();
             });
     };
     const toggleConfirmModal = () => {

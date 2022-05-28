@@ -81,18 +81,16 @@ const AssignCourse = (): JSX.Element => {
         timetablingAxiosInstance
             .put(`/programs/${programId}/courses`, { courses: selectedRows })
             .then((res) => {
-                setDisabled(false);
-                setLinearDisplay('block');
                 alerts.showSuccess('Course assignment successful');
                 fetchCourses();
-                toggleCloseConfirmModal();
-                setSelectedRows([]);
-                setLinearDisplay('none');
                 return res;
             })
             .catch((error) => {
-                setDisabled(false);
                 alerts.showError(error.message);
+            }).finally(() => {
+                setLinearDisplay('none');
+                setDisabled(false);
+                toggleCloseConfirmModal();
             });
     };
     const toggleConfirmModal = () => {

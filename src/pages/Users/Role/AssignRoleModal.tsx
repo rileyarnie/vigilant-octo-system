@@ -87,9 +87,7 @@ export const AssignRoleModal = (props: IProps): JSX.Element => {
                         placeholder="Select roles for this user"
                         noOptionsMessage={() => 'No roles available'}
                         onChange={handleChange}
-                    />
-                </Modal.Body>
-                <Modal.Footer>
+                    /><br/><br/>
                     <div className="form-group">
                         <button disabled={disabled} className="btn btn-danger float-left" onClick={() => props.toggleModal()}>
                             Cancel
@@ -98,7 +96,7 @@ export const AssignRoleModal = (props: IProps): JSX.Element => {
                             Submit
                         </button>
                     </div>
-                </Modal.Footer>
+                </Modal.Body>
             </Modal>
             <ConfirmationModalWrapper
                 disabled={disabled}
@@ -107,7 +105,7 @@ export const AssignRoleModal = (props: IProps): JSX.Element => {
                 closeModal={toggleCloseConfirmModal}
                 show={confirmModal}
             >
-                <h6 className="text-center">Are you sure you want to Assign roles to {props.selectedrowprops.aadAlias} ?</h6>
+                <p className="text-center">Are you sure you want to Assign roles to {props.selectedrowprops.aadAlias} ?</p>
             </ConfirmationModalWrapper>
         </>
     );
