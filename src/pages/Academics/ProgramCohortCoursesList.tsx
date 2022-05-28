@@ -7,15 +7,12 @@ import AssignmentTurnedIn from '@material-ui/icons/AssignmentTurnedIn';
 import LinearProgress from '@material-ui/core/LinearProgress';
 import Alert from '@material-ui/lab/Alert';
 import Breadcrumb from '../../App/components/Breadcrumb';
-import {SelectGroup, TextInput, ValidationForm} from 'react-bootstrap4-form-validation';
+import {SelectGroup, ValidationForm} from 'react-bootstrap4-form-validation';
 import {Button, Card, Col, Modal, Row} from 'react-bootstrap';
-import DeleteIcon from '@material-ui/icons/Delete';
-import SelectCurrency from 'react-select-currency';
 import {Alerts, ToastifyAlerts} from '../lib/Alert';
 import {createStyles, makeStyles, Theme} from '@material-ui/core/styles';
 import IconButton from '@material-ui/core/IconButton';
 import ArrowBackIcon from '@material-ui/icons/ArrowBack';
-import {financeAxiosInstance} from '../../utlis/interceptors/finance-interceptor';
 import {timetablingAxiosInstance} from '../../utlis/interceptors/timetabling-interceptor';
 import TableWrapper from '../../utlis/TableWrapper';
 
@@ -110,16 +107,9 @@ const CourseCohortsList = (props): JSX.Element => {
     const [errorMessages] = useState([]);
     const programName = localStorage.getItem('programName');
     const anticipatedGraduation = localStorage.getItem('anticipatedGraduation');
-    const progId = parseInt(localStorage.getItem('programId'));
-    const programCohortCode = localStorage.getItem('program_cohort_code');
-    const [showPublishModal, setShowPublish] = useState(false);
-    const [showDialog, setDialog] = useState(false);
-    const [narrative, setNarrative] = useState('');
-    const [amount, setAmount] = useState(0);
-    const [currency, setCurrency] = useState('KES');
+    // const progId = parseInt(localStorage.getItem('programId'));
     const programCohortId = localStorage.getItem('programCohortId');
     const [linearDisplay, setLinearDisplay] = useState('none');
-    let programCohortSemesterId: number;
     useEffect(() => {
         setLinearDisplay('block');
         fetchCourseCohortsByProgramCohortId();
@@ -143,26 +133,18 @@ const CourseCohortsList = (props): JSX.Element => {
             });
     }
 
-    const fetchCoursesAssignedToProgram = (progId: number): void => {
-        setLinearDisplay('block');
-        timetablingAxiosInstance
-            .get(`/programs/${progId}courses`)
-            .then((res) => {
-                setLinearDisplay('none');
-                setData(res.data);
-            })
-            .catch((error) => {
-                alerts.showError(error.message);
-            });
-    };
-
-    const publishSemesterAndFeeItems = async (e) => {
-        e.preventDefault();
-        await handleFeeItemsPost();
-        toggleDialog();
-        togglePublishModal();
-    };
-
+    // const fetchCoursesAssignedToProgram = (progId: number): void => {
+    //     setLinearDisplay('block');
+    //     timetablingAxiosInstance
+    //         .get(`/programs/${progId}courses`)
+    //         .then((res) => {
+    //             setLinearDisplay('none');
+    //             setData(res.data);
+    //         })
+    //         .catch((error) => {
+    //             alerts.showError(error.message);
+    //         });
+    // };
     const handleAssignSemesterSubmit = () => {
         setLinearDisplay('block');
         timetablingAxiosInstance
@@ -181,72 +163,29 @@ const CourseCohortsList = (props): JSX.Element => {
                 alerts.showError(error.message);
             });
     };
-    const unassignSelectedCourseFromProgram = (selectedCourseId: number): void => {
-        setLinearDisplay('block');
-        timetablingAxiosInstance
-            .put(`/programs/${progId}/courses/${selectedCourseId}`)
-            .then(() => {
-                alerts.showSuccess('Succesfully removed course');
-                fetchCoursesAssignedToProgram(progId);
-                setLinearDisplay('none');
-            })
-            .catch((error) => {
-                alerts.showError(error.message);
-                setLinearDisplay('none');
-            });
-    };
 
-    const handleFeeItemsPost = async () => {
-        setLinearDisplay('block');
-        financeAxiosInstance
-            .post('/', {
-                createFeeItemRequest: {
-                    narrative: narrative,
-                    amount: amount,
-                    currency: currency,
-                    programCohortSemesterId: programCohortSemesterId
-                }
-            })
-            .then(() => {
-                alerts.showSuccess('Successfully posted fee items');
-                setLinearDisplay('none');
-            })
-            .catch((error) => {
-                alerts.showError(error.message);
-                setLinearDisplay('none');
-            });
-    };
-
+    // const unassignSelectedCourseFromProgram = (selectedCourseId: number): void => {
+    //     setLinearDisplay('block');
+    //     timetablingAxiosInstance
+    //         .put(`/programs/${progId}/courses/${selectedCourseId}`)
+    //         .then(() => {
+    //             alerts.showSuccess('Successfully removed course');
+    //             fetchCoursesAssignedToProgram(progId);
+    //             setLinearDisplay('none');
+    //         })
+    //         .catch((error) => {
+    //             alerts.showError(error.message);
+    //             setLinearDisplay('none');
+    //         });
+    // };
+    //TODO - confirm unsassigning course cohort calls the correct endpoint
     const resetStateCloseModal = (): void => {
         setShow(false);
     };
     const handleClose = () => setShow(false);
     const handleShow = () => setShow(true);
-
-    const togglePublishModal = () => {
-        showPublishModal ? setShowPublish(false) : setShowPublish(true);
-    };
-    const toggleDialog = () => {
-        showDialog ? setDialog(false) : setDialog(true);
-    };
     const handleBack = () => {
         props.history.goBack();
-    };
-    const onSelectedCurrency = (currencyAbbrev) => {
-        setCurrency(currencyAbbrev);
-    };
-
-    const handleNarrativeChange = (event) => {
-        setNarrative(event.target.value);
-    };
-
-    const handleAmountChange = (event) => {
-        setAmount(event.target.value);
-    };
-
-    const selectStyle = {
-        width: '100%',
-        height: '30px'
     };
     return (
         <>
@@ -279,152 +218,20 @@ const CourseCohortsList = (props): JSX.Element => {
                             title={`${programName} of ${anticipatedGraduation} courses`}
                             columns={columns}
                             data={data}
-                            actions={[
-                                (rowData) => ({
-                                    icon: DeleteIcon,
-                                    tooltip: 'Delete Course',
-                                    onClick: () => {
-                                        unassignSelectedCourseFromProgram(rowData.id);
-                                    }
-                                })
-                            ]}
+                            // actions={[
+                            //     (rowData) => ({
+                            //         icon: DeleteIcon,
+                            //         tooltip: 'Delete Course',
+                            //         onClick: () => {
+                            //             unassignSelectedCourseFromProgram(rowData.id);
+                            //         }
+                            //     })
+                            // ]}
                             options={{}}
                         />
                     </Card>
                 </Col>
             </Row>
-            <Modal
-                show={showDialog}
-                onHide={toggleDialog}
-                size="lg"
-                backdrop="static"
-                aria-labelledby="contained-modal-title-vcenter"
-                centered
-            >
-                <Modal.Dialog>
-                    <Modal.Header closeButton>
-                        <Modal.Title>Confirm publish</Modal.Title>
-                    </Modal.Header>
-                    <Modal.Body>
-                        <p>
-                            Publishing a semester for {programCohortCode} will disable you from adding semesters to this
-                            semester for the
-                            course, continue?
-                        </p>
-                    </Modal.Body>
-
-                    <Modal.Footer>
-                        <Button variant="secondary" onClick={(e) => publishSemesterAndFeeItems(e)}>
-                            Continue to publish
-                        </Button>
-                        <Button variant="primary" onClick={() => toggleDialog()}>
-                            Continue editing
-                        </Button>
-                    </Modal.Footer>
-                </Modal.Dialog>
-            </Modal>
-            <Modal
-                show={showPublishModal}
-                onHide={togglePublishModal}
-                size="lg"
-                backdrop="static"
-                aria-labelledby="contained-modal-title-vcenter"
-                centered
-            >
-                <Modal.Header closeButton>
-                    <Modal.Title id="contained-modal-title-vcenter">
-                        Publish {programName} {programCohortCode}
-                    </Modal.Title>
-                </Modal.Header>
-                <Modal.Body>
-                    <ValidationForm>
-                        <div className="form-group">
-                            <label htmlFor="startDate">
-                                <b>Anticipated Start Date</b>
-                            </label>
-                            <br/>
-                            <TextInput name="startDate" id="startDate" type="date" required/>
-                            <br/>
-                            <label htmlFor="Date">
-                                <b>Number of slots</b>
-                            </label>
-                            <br/>
-                            <TextInput
-                                name="numSlots"
-                                id="numSlots"
-                                type="text"
-                                placeholder="number of slots"
-                                required
-                                onChange={(e) => {
-                                    console.log(e.target.value);
-                                }}
-                            />
-                            <br/>
-                            <label htmlFor="semester">
-                                <b>Semester</b>
-                            </label>
-                            <br/>
-                            <SelectGroup
-                                name="semester"
-                                id="semester"
-                                required
-                                errorMessage="Please select semester"
-                                onChange={(e) => setSelectedSemesterId(e.target.value)}
-                                defaultValue={''}
-                            >
-                                {semester.map((semester) => (
-                                    <option key={semester.id} value={semester.id}>
-                                        {semester.name}
-                                    </option>
-                                ))}
-                            </SelectGroup>
-                            <hr/>
-                            <label htmlFor="narrative">
-                                <b>Narrative</b>
-                            </label>
-                            <br/>
-                            <TextInput
-                                name="narrative"
-                                id="narrative"
-                                type="text"
-                                value={narrative}
-                                onChange={handleNarrativeChange}
-                                required
-                            />
-                            <br/>
-
-                            <label htmlFor="amount">
-                                <b>Amount</b>
-                            </label>
-                            <br/>
-                            <TextInput name="amount" id="amount" type="number" value={amount}
-                                onChange={handleAmountChange} required/>
-                            <br/>
-
-                            <label htmlFor="currency">
-                                <b>Currency</b>
-                            </label>
-                            <br/>
-                            <SelectCurrency style={selectStyle} name="currency" value={currency}
-                                onChange={onSelectedCurrency}/>
-                        </div>
-                        <div className="form-group">
-                            <button
-                                className="btn btn-info float-left"
-                                onClick={(e) => {
-                                    e.preventDefault();
-                                    toggleDialog();
-                                }}
-                            >
-                                Publish
-                            </button>
-                        </div>
-                    </ValidationForm>
-                    <button className="btn btn-danger float-right" onClick={togglePublishModal}>
-                        Close
-                    </button>
-                </Modal.Body>
-            </Modal>
             <Modal backdrop="static" show={show} onHide={handleClose} size="lg"
                 aria-labelledby="contained-modal-title-vcenter" centered>
                 <Modal.Header closeButton>
