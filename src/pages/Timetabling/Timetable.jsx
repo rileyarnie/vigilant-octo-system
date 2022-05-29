@@ -140,10 +140,12 @@ class Timetable extends React.Component {
                         };
                     });
                 this.setState({ courseCohort: courseCohortData });
-                let datasourceTu = [];
-                for (const courseCohort of courseCohorts) {
-                    const semStartDate = courseCohort.programCohortSemester.semester.startDate; // update current date to semester start date
-                    const semEndDate = courseCohort.programCohortSemester.semester.endDate;
+                const datasourceTu = []; 
+                let semStartDate   
+                let semEndDate
+                for (const courseCohort of courseCohorts) {                   
+                    semStartDate = courseCohort.programCohortSemester.semester.startDate; // update current date to semester start date
+                    semEndDate = courseCohort.programCohortSemester.semester.endDate;
                     courseCohort.timetablingUnit.map((tu) => {
                         const startDate = new Date(tu.recurrenceStartDate);
                         const endDate = new Date(startDate.setTime(startDate.getTime() + 1 * 60 * 60 * 1000));
@@ -162,11 +164,13 @@ class Timetable extends React.Component {
                             }`
                         };
                         datasourceTu.push(d);
-                        this.setState({ timetableData: datasourceTu, currentDate: semStartDate });
-                        // check if training hours has been met
-                        this.checkTrainingHoursHasBeenMet(courseCohort, courseCohorts.indexOf(courseCohort));
-                    });
+              
+                    } );        
+                    this.checkTrainingHoursHasBeenMet(courseCohort, courseCohorts.indexOf(courseCohort));
                 }
+                this.setState({ timetableData: datasourceTu, currentDate: semStartDate });
+                // check if training hours has been met
+                
             })
             .catch((error) => {
                 alerts.showError(error.message);
@@ -461,6 +465,10 @@ class Timetable extends React.Component {
     handleDeletion(e) {
         this.setState({ linearDisplay: 'block' });
         const timetabledUnitId = e.appointmentData.timetablingUnitId;
+        if(!timetabledUnitId) {
+            this.setState({ linearDisplay: 'none' });
+            return;
+        }
         TimetableService.deleteTimetableUnit(timetabledUnitId)
             .then(() => {
                 alerts.showSuccess('Successfully deleted a timetabling Unit');
