@@ -140,10 +140,10 @@ class Timetable extends React.Component {
                         };
                     });
                 this.setState({ courseCohort: courseCohortData });
-                const datasourceTu = []; 
-                let semStartDate   
-                let semEndDate
-                for (const courseCohort of courseCohorts) {                   
+                const datasourceTu = [];
+                let semStartDate;
+                let semEndDate;
+                for (const courseCohort of courseCohorts) {
                     semStartDate = courseCohort.programCohortSemester.semester.startDate; // update current date to semester start date
                     semEndDate = courseCohort.programCohortSemester.semester.endDate;
                     courseCohort.timetablingUnit.map((tu) => {
@@ -164,13 +164,11 @@ class Timetable extends React.Component {
                             }`
                         };
                         datasourceTu.push(d);
-              
-                    } );        
+                    });
                     this.checkTrainingHoursHasBeenMet(courseCohort, courseCohorts.indexOf(courseCohort));
                 }
                 this.setState({ timetableData: datasourceTu, currentDate: semStartDate });
                 // check if training hours has been met
-                
             })
             .catch((error) => {
                 alerts.showError(error.message);
@@ -292,7 +290,6 @@ class Timetable extends React.Component {
             venueId: null,
             unitStartDate: unitStartDate
         };
-
         // save timetableUnit to the database
         TimetableService.createTimetableUnit(timetableUnit)
             .then(() => {
@@ -410,9 +407,11 @@ class Timetable extends React.Component {
      */
     handleEdit(e) {
         this.setState({ linearDisplay: 'block' });
+        const diffBtwnStartEnd = moment(e.appointmentData.endDate).diff(moment(e.appointmentData.startDate), 'hours', true);
+        const unitDuration = e.appointmentData.unitDuration ? e.appointmentData.unitDuration : diffBtwnStartEnd;
 
         const recurrenceStartDate = new Date(e.appointmentData.startDate);
-        const recurrenceEndDate = new Date(moment(new Date(recurrenceStartDate)).add(e.appointmentData.unitDuration, 'hours'));
+        const recurrenceEndDate = new Date(moment(new Date(recurrenceStartDate)).add(unitDuration, 'hours'));
         const numberOfSessions = e.appointmentData.numSessions;
 
         const { semEnds, diff } = this.getMaxValueForNumberOfSession(); // get max value form semester date difference
@@ -439,7 +438,7 @@ class Timetable extends React.Component {
             venueId: e.appointmentData.venueId,
             recurrenceStartDate: recurrenceStartDate,
             recurrenceEndDate: recurrenceEndDate,
-            durationInMinutes: e.appointmentData.unitDuration * 60,
+            durationInMinutes: unitDuration * 60,
             startTime: e.appointmentData.startDate.toTimeString().slice(0, 8),
             numSessions: e.appointmentData.numSessions,
             trainerId: e.appointmentData.trainerId,
@@ -465,7 +464,7 @@ class Timetable extends React.Component {
     handleDeletion(e) {
         this.setState({ linearDisplay: 'block' });
         const timetabledUnitId = e.appointmentData.timetablingUnitId;
-        if(!timetabledUnitId) {
+        if (!timetabledUnitId) {
             this.setState({ linearDisplay: 'none' });
             return;
         }
