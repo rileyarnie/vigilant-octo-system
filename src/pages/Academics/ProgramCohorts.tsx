@@ -656,10 +656,11 @@ const ProgramCohorts = (): JSX.Element => {
             </ModalWrapper>
             <Modal backdrop="static" show={showUploadModal} onHide={toggleUploadModal} size="sm" centered>
                 <Modal.Header closeButton>
-                    <Modal.Title>Add image</Modal.Title>
+                    <Modal.Title>Add image</Modal.Title>                   
                 </Modal.Header>
                 <Modal.Body>
                     <ValidationForm>
+                        <div style={{fontSize:'12px'}}>Allowed files: jpg jpeg, png upto 5mb</div>
                         <FileInput
                             name="fileUploaded"
                             id="image"
