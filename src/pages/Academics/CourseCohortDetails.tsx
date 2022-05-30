@@ -1,18 +1,18 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 /* eslint-disable react/display-name */
-import React, {useEffect, useState} from 'react';
+import React, { useEffect, useState } from 'react';
 import Card from '@material-ui/core/Card';
 import Alert from '@material-ui/lab/Alert';
 import Breadcrumb from '../../App/components/Breadcrumb';
-import {Button, Col, Row} from 'react-bootstrap';
-import {Alerts, ToastifyAlerts} from '../lib/Alert';
-import {LinearProgress} from '@mui/material';
+import { Button, Col, Row } from 'react-bootstrap';
+import { Alerts, ToastifyAlerts } from '../lib/Alert';
+import { LinearProgress } from '@mui/material';
 import CreateMarksModal from './CreateMarksModal';
 import Select from 'react-select';
 import CertificationType from './enums/CertificationType';
 import ProgramCohortGraduationList from './ProgramCohortGraduationList';
-import {simsAxiosInstance} from '../../utlis/interceptors/sims-interceptor';
-import {timetablingAxiosInstance} from '../../utlis/interceptors/timetabling-interceptor';
+import { simsAxiosInstance } from '../../utlis/interceptors/sims-interceptor';
+import { timetablingAxiosInstance } from '../../utlis/interceptors/timetabling-interceptor';
 import TableWrapper from '../../utlis/TableWrapper';
 import ConfirmationModalWrapper from '../../App/components/modal/ConfirmationModalWrapper';
 
@@ -73,9 +73,13 @@ const CourseCohortsDetails = (props: any): JSX.Element => {
     }
     const columns = [
         { title: 'Course Cohort ID', render: () => props.match.params?.id, hidden: false, editable: 'never' as const },
-        { title: 'Student name', render: (row) => row.registration?.student?.applications[0]?.firstName+ ' '+row.registration?.student?.applications[0]?.lastName},
+        {
+            title: 'Student name',
+            render: (row) =>
+                row.registration?.student?.applications[0]?.firstName + ' ' + row.registration?.student?.applications[0]?.lastName
+        },
         { title: 'Identification No', render: (row) => row.registration?.student?.applications[0]?.identification },
-        { title: 'Certification Type', field: 'certificationType' },
+        { title: 'Certification Type', field: 'certificationType', editable: 'never' as const },
         { title: 'Id', field: 'id', hidden: true },
         { title: 'Marks', field: 'marks', editComponent: (tableData) => renderSwitch(tableData?.rowData) },
         { title: 'Grade', field: 'grade', editable: 'never' as const }
@@ -89,22 +93,22 @@ const CourseCohortsDetails = (props: any): JSX.Element => {
 
     const courseCohortId = props.match.params.id;
 
-    const handleMarksEntryUnlockedEdit = (id: number, isMarkEntryUnlocked: boolean,courseCohort) => {
+    const handleMarksEntryUnlockedEdit = (id: number, isMarkEntryUnlocked: boolean, courseCohort) => {
         setLinearDisplay('block');
         timetablingAxiosInstance
             .patch(`/course-cohorts/${id}`, {
                 isMarkEntryUnlocked: isMarkEntryUnlocked,
                 programCohortId: courseCohort.programCohortId,
-                semesterId:courseCohort.programCohortSemester.semesterId
+                semesterId: courseCohort.programCohortSemester.semesterId
             })
             .then(() => {
                 alerts.showSuccess('Successfully updated marks entry lock status');
                 fetchCourseCohortById();
-
             })
             .catch(() => {
                 alerts.showError('Error updating marks entry lock status');
-            }).finally(() => {
+            })
+            .finally(() => {
                 setLinearDisplay('none');
                 setConfirmModal(false);
             });
@@ -124,11 +128,11 @@ const CourseCohortsDetails = (props: any): JSX.Element => {
                 setMarksPublished(res.data[0].isMarksPublished);
                 setProgramCohortId(res.data[0].programCohortId);
             })
-            .catch(err => err);
+            .catch((err) => err);
     };
     const fetchProgramByCourseCohortId = () => {
         const courseCohortIdArr = [parseInt(courseCohortId)];
-        
+
         setLinearDisplay('block');
         timetablingAxiosInstance
             .get('/programs', {
@@ -140,7 +144,7 @@ const CourseCohortsDetails = (props: any): JSX.Element => {
             .then((res: any) => {
                 const program = res.data[0];
                 setCertificationType(program.certificationType);
-                
+
                 fetchcourseCohortsRegistrations(program.certificationType);
                 setLinearDisplay('none');
             })
@@ -150,15 +154,21 @@ const CourseCohortsDetails = (props: any): JSX.Element => {
             });
     };
 
-    const fetchcourseCohortsRegistrations = (certificationTypeParam:string): void => {
+    const fetchcourseCohortsRegistrations = (certificationTypeParam: string): void => {
         setLinearDisplay('block');
         simsAxiosInstance
-            .get('/course-cohort-registrations', { params: { loadExtras: 'marks,student',includeDeactivated: true, certificationType: certificationTypeParam, courseCohortIds: courseCohortId } })
+            .get('/course-cohort-registrations', {
+                params: {
+                    loadExtras: 'marks,student',
+                    includeDeactivated: true,
+                    certificationType: certificationTypeParam,
+                    courseCohortIds: courseCohortId
+                }
+            })
             .then((res) => {
                 const ccData = res.data;
                 setData(ccData);
                 setLinearDisplay('none');
-
             })
             .catch((error) => {
                 console.log('Error fetching marks ', error);
@@ -181,20 +191,20 @@ const CourseCohortsDetails = (props: any): JSX.Element => {
             .catch((error) => {
                 alerts.showError(error);
             })
-            .finally(() => {                
+            .finally(() => {
                 setLinearDisplay('none');
             });
     };
 
-    function publishMarks(courseCohortId: number){
+    function publishMarks(courseCohortId: number) {
         return timetablingAxiosInstance
-            .patch(`/course-cohorts/${courseCohortId}`,{isMarksPublished:true, programCohortId})
+            .patch(`/course-cohorts/${courseCohortId}`, { isMarksPublished: true, programCohortId })
             .then(() => {
                 fetchcourseCohortsRegistrations(certificationType);
                 alerts.showSuccess('Successfully published marks');
             })
             .catch((error) => {
-                alerts.showError(error.message);                
+                alerts.showError(error.message);
             })
             .finally(() => {
                 setLinearDisplay('none');
@@ -228,9 +238,11 @@ const CourseCohortsDetails = (props: any): JSX.Element => {
                                     <Button
                                         className="float-right"
                                         variant="primary"
-                                        onClick={() => {toggleConfirmModal();}}
+                                        onClick={() => {
+                                            toggleConfirmModal();
+                                        }}
                                     >
-                                        {isMarkEntryUnlocked ? 'Lock Marks Entry' : 'Unlock Marks Entry'} 
+                                        {isMarkEntryUnlocked ? 'Lock Marks Entry' : 'Unlock Marks Entry'}
                                     </Button>
                                 </Col>
                                 <Col>
@@ -253,20 +265,19 @@ const CourseCohortsDetails = (props: any): JSX.Element => {
                                         Show Graduating Students
                                     </Button>
                                 </Col>
-                                {
-                                    !isMarksPublished  &&                                 
-                                <Col>
-                                    <Button
-                                        className="float-right"
-                                        variant="primary"
-                                        onClick={() => {
-                                            publishMarks(parseInt(courseCohortId));
-                                        }}
-                                    >
-                                        Publish Marks
-                                    </Button>
-                                </Col>   
-                                }                                                             
+                                {!isMarksPublished && (
+                                    <Col>
+                                        <Button
+                                            className="float-right"
+                                            variant="primary"
+                                            onClick={() => {
+                                                publishMarks(parseInt(courseCohortId));
+                                            }}
+                                        >
+                                            Publish Marks
+                                        </Button>
+                                    </Col>
+                                )}
                             </Row>
                         </Col>
                     </Row>
@@ -284,12 +295,23 @@ const CourseCohortsDetails = (props: any): JSX.Element => {
                                     )}
                                 </div>
                                 <TableWrapper
-                                    title={isMarkEntryUnlocked && isMarksPublished ? 'Course Cohort Student/Marks Details 🔓' : 'Course Cohort Student/Marks Details 🔒' }
+                                    title={
+                                        isMarkEntryUnlocked && isMarksPublished
+                                            ? 'Course Cohort Student/Marks Details 🔓'
+                                            : 'Course Cohort Student/Marks Details 🔒'
+                                    }
                                     columns={columns}
                                     data={data}
-                                    options={{ actionsColumnIndex: 0,}}
+                                    options={{ actionsColumnIndex: 4 }}
                                     editable={{
-                                        onRowUpdate: async (newData) => {await updateMarks(newData.id, enterredMarks || selectedMarks);}
+                                        onRowUpdate: async (newData) => {
+                                            await updateMarks(newData.id, enterredMarks || selectedMarks);
+                                        }
+                                    }}
+                                    localization={{
+                                        header: {
+                                            actions: 'Edit Marks'
+                                        }
                                     }}
                                 />
                             </Card>
@@ -297,18 +319,26 @@ const CourseCohortsDetails = (props: any): JSX.Element => {
                     </Row>
                 </div>
             ) : (
-                <ProgramCohortGraduationList toggleGraduationList={toggleGraduationList} programCohortId={props.location.state.programCohortId} />
+                <ProgramCohortGraduationList
+                    toggleGraduationList={toggleGraduationList}
+                    programCohortId={props.location.state.programCohortId}
+                />
             )}
 
-            <ConfirmationModalWrapper disabled={disabledButton}
+            <ConfirmationModalWrapper
+                disabled={disabledButton}
                 submitButton
                 submitFunction={() => {
-                    isMarkEntryUnlocked ? handleMarksEntryUnlockedEdit(courseCohortId, false,courseCohort ) : handleMarksEntryUnlockedEdit(courseCohortId, true,courseCohort);
+                    isMarkEntryUnlocked
+                        ? handleMarksEntryUnlockedEdit(courseCohortId, false, courseCohort)
+                        : handleMarksEntryUnlockedEdit(courseCohortId, true, courseCohort);
                 }}
                 closeModal={toggleCloseConfirmModal}
                 show={confirmModal}
             >
-                <p className="text-center">Are you sure you want to change <b>Marks Entry Lock Status</b> ?</p>
+                <p className="text-center">
+                    Are you sure you want to change <b>Marks Entry Lock Status</b> ?
+                </p>
             </ConfirmationModalWrapper>
         </>
     );
