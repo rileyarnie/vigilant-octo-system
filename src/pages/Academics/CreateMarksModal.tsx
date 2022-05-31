@@ -138,8 +138,8 @@ const CreateMarksModal = (props:Props) => {
             .get('/course-cohort-registrations', {
                 params: {
                     courseCohortIds: props.courseCohortId,
-                    loadExtras: 'student',
-                    includeDeactivated: true
+                    includeDeactivated: true,
+                    loadExtras: 'student'
                 }
             })
             .then((res) => {
