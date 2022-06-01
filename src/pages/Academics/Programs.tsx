@@ -333,7 +333,7 @@ const Programs = (): JSX.Element => {
                         <br />
                         <label htmlFor="cou">
                             <b>
-                                Prerequisite Documentation<span className="text-danger">*</span>
+                                Prerequisite Documentation
                             </b>
                         </label>
                         <TextInput
