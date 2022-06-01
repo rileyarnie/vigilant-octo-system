@@ -147,6 +147,7 @@ const CourseCohortsList = (props): JSX.Element => {
     //         });
     // };
     const handleAssignSemesterSubmit = () => {
+        event.preventDefault();
         setLinearDisplay('block');
         timetablingAxiosInstance
             .patch(`/course-cohorts/${selectedRow.id}`, {
@@ -261,10 +262,10 @@ const CourseCohortsList = (props): JSX.Element => {
                         })}
                     </SelectGroup>
                     <div className="mt-2" style={{ display: 'flex', justifyContent: 'space-between' }}>
-                        <Button className="btn btn-danger float-left" onClick={handleClose}>
+                        <Button className="btn btn-danger " onClick={handleClose}>
                             Close
                         </Button>
-                        <Button className="btn btn-info float-right" type="submit">
+                        <Button className="btn btn-info" type='submit'>
                             Submit
                         </Button>
                     </div>
