@@ -56,8 +56,8 @@ export function EditApplicationDetails(props) {
     const [nextOfKinName, setNextOfKinName] = useState(props.application?.nkd_name || '');
     const [nextOfKinPhoneNumber, setNextOfKinPhoneNumber] = useState(props.application?.nkd_nextOfKinPhoneNumber || '');
     const [nextOfKinRelation, setNextOfKinRelation] = useState(props.application?.nkd_relation || '');
-    const [physicalChallengesDetails, setPhysicalChallengesDetails] = useState(props.application?.applications_physicalChallengesDetails || '');
-    const [physicalChallenges, setPhysicalChallenges] = useState(props.application?.applications_physicalChallenges || '');
+    const [physicalChallengesDetails, setPhysicalChallengesDetails] = useState(props.application?.applications_physicalChallengesDetails);
+    const [physicalChallenges, setPhysicalChallenges] = useState(props.application?.applications_physicalChallenges);
     const [preferredStartDate, setPreferredStartDate] = useState(props.application?.applications_preferredStartDate?.slice(0, 10) || '');
     const [campus, setCampus] = useState(props.application?.applications_campus);
     const [sponsor, setSponsor] = useState(props.application?.applications_sponsor || '');
@@ -67,6 +67,7 @@ export function EditApplicationDetails(props) {
     const [showUploadModal, setShowUploadModal] = useState(false);
     const [confirmModal, setConfirmModal] = useState(false);
     const [disabledButton, setDisabledButton] = useState(false);
+
     JSON.parse(localStorage.getItem('programId') as string);
     const classes = useStyles();
     useEffect(() => {
@@ -130,6 +131,7 @@ export function EditApplicationDetails(props) {
             }).finally(() =>{
                 setConfirmModal(false);
                 props.close();
+                props.fetchProgramCohortApplications();
                 setDisabledButton(false);
             });
     };
@@ -853,7 +855,7 @@ export function EditApplicationDetails(props) {
                                 onChange={(e) => {
                                     setPhysicalChallenges(e.target.value);
                                 }}
-                                errorMessage="Please select yes or No"
+                                errorMessage="Please select Yes or No"
                             >
                                 <option value="">- Please select -</option>
                                 <option value="Yes">Yes</option>

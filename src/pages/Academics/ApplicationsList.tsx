@@ -206,7 +206,13 @@ const ApplicationsList = (): JSX.Element => {
                         Application Id: {applicationId}
                         {isAdmitted === 'ADMITTED' && (
                             <>
-                                <Link to={`/publishedsemesters?programCohortId=${applicationData?.applications_programCohortId}&studentId=${applicationData?.applications_studentId}&applicationId=${applicationData?.applications_id}&studentName=${applicationData?.applications_firstName+' '+applicationData?.applications_lastName}`}>
+                                <Link
+                                    to={`/publishedsemesters?programCohortId=${applicationData?.applications_programCohortId}&studentId=${
+                                        applicationData?.applications_studentId
+                                    }&applicationId=${applicationData?.applications_id}&studentName=${
+                                        applicationData?.applications_firstName + ' ' + applicationData?.applications_lastName
+                                    }`}
+                                >
                                     <Button style={{ marginRight: '.5rem', marginLeft: '.5rem' }} variant="info" onClick={handleClose}>
                                         View Semesters
                                     </Button>
@@ -264,11 +270,13 @@ const ApplicationsList = (): JSX.Element => {
                             <ListGroup>
                                 <ListGroup.Item>Phone Number: {applicationData?.applications_phoneNumber}</ListGroup.Item>
                                 <ListGroup.Item>Email Address: {applicationData?.applications_emailAddress}</ListGroup.Item>
-                                <ListGroup.Item>Date Of Birth: {applicationData?.applications_dateOfBirth?.slice(0,10)}</ListGroup.Item>
+                                <ListGroup.Item>Date Of Birth: {applicationData?.applications_dateOfBirth?.slice(0, 10)}</ListGroup.Item>
                                 <ListGroup.Item>Physical Challenges: {applicationData?.applications_physicalChallenges}</ListGroup.Item>
                                 <ListGroup.Item>Details: {applicationData?.applications_physicalChallengesDetails}</ListGroup.Item>
                                 <ListGroup.Item>Campus: {applicationData?.campus[0].name}</ListGroup.Item>
-                                <ListGroup.Item>Preferred Start Date: {applicationData?.applications_preferredStartDate?.slice(0,10)}</ListGroup.Item>
+                                <ListGroup.Item>
+                                    Preferred Start Date: {applicationData?.applications_preferredStartDate?.slice(0, 10)}
+                                </ListGroup.Item>
                                 <ListGroup.Item>Sponsor: {applicationData?.applications_sponsor}</ListGroup.Item>
                                 <ListGroup.Item>County Of Residence: {applicationData?.applications_countyOfResidence}</ListGroup.Item>
                             </ListGroup>
@@ -311,7 +319,11 @@ const ApplicationsList = (): JSX.Element => {
                     <Modal.Title id="contained-modal-title-vcenter">Edit Application Details</Modal.Title>
                 </Modal.Header>
                 <Modal.Body>
-                    <EditApplicationDetails application={applicationData} close={resetStateCloseModal} />
+                    <EditApplicationDetails
+                        application={applicationData}
+                        close={resetStateCloseModal}
+                        fetchProgramCohortApplications={fetchProgramCohortApplications}
+                    />
                 </Modal.Body>
             </Modal>
         </>
