@@ -7,7 +7,7 @@ interface Props {
     show: boolean;
     closeModal?: () => void;
     title: string;
-    modalSize: string;
+    modalSize?: string;
     submitButton?: boolean;
     submitFunction?: () => void;
     noFooter?: boolean;
