@@ -302,12 +302,19 @@ export function EditApplicationDetails(props) {
             );
         case 1:
             return (
-                <ValidationForm onSubmit={(e) => { e.preventDefault();handleNext();}}>
+                <ValidationForm
+                    onSubmit={(e) => {
+                        e.preventDefault();
+                        handleNext();
+                    }}
+                >
                     <div className="form-group row">
                         <div className="col-md-2"></div>
                         <div className="col-md-4">
                             <label htmlFor="gender">
-                                <b>Gender<span className="text-danger">*</span></b>
+                                <b>
+                                    Gender<span className="text-danger">*</span>
+                                </b>
                             </label>
                             <SelectGroup
                                 defaultValue={gender}
@@ -324,11 +331,13 @@ export function EditApplicationDetails(props) {
                                 <option value="female">Female</option>
                                 <option value="other">Other</option>
                             </SelectGroup>
-                            <br/>
+                            <br />
                             <label htmlFor="religion">
-                                <b>Religion<span className="text-danger">*</span></b>
+                                <b>
+                                    Religion<span className="text-danger">*</span>
+                                </b>
                             </label>
-                            <br/>
+                            <br />
                             <SelectGroup
                                 defaultValue={religion}
                                 name="religion"
@@ -346,11 +355,13 @@ export function EditApplicationDetails(props) {
                                 <option value="Hindu">Hinduism</option>
                                 <option value="Other">Other</option>
                             </SelectGroup>
-                            <br/>
+                            <br />
                             <label htmlFor="maritalStatus">
-                                <b>Marital Status<span className="text-danger">*</span></b>
+                                <b>
+                                    Marital Status<span className="text-danger">*</span>
+                                </b>
                             </label>
-                            <br/>
+                            <br />
                             <SelectGroup
                                 defaultValue={maritalStatus}
                                 name="maritalStatus"
@@ -368,13 +379,15 @@ export function EditApplicationDetails(props) {
                                 <option value="separated">Separated</option>
                                 <option value="widowed">widowed</option>
                             </SelectGroup>
-                            <br/>
+                            <br />
                         </div>
                         <div className="col-md-4">
                             <label htmlFor="nationality">
-                                <b>Nationality<span className="text-danger">*</span></b>
+                                <b>
+                                    Nationality<span className="text-danger">*</span>
+                                </b>
                             </label>
-                            <br/>
+                            <br />
                             <SelectGroup
                                 defaultValue={nationality}
                                 name="nationality"
@@ -579,13 +592,15 @@ export function EditApplicationDetails(props) {
                                 <option value="zambian">Zambian</option>
                                 <option value="zimbabwean">Zimbabwean</option>
                             </SelectGroup>
-                            <br/>
+                            <br />
                             {nationality === 'kenyan' ? (
                                 <>
                                     <label htmlFor="maritalStatus">
-                                        <b>County of Residence<span className="text-danger">*</span></b>
+                                        <b>
+                                            County of Residence<span className="text-danger">*</span>
+                                        </b>
                                     </label>
-                                    <br/>
+                                    <br />
                                     <SelectGroup
                                         defaultValue={countyOfResidence}
                                         name="county"
@@ -649,11 +664,13 @@ export function EditApplicationDetails(props) {
                             ) : (
                                 <></>
                             )}
-                            <br/>
+                            <br />
                             <label htmlFor="dateOfBirth">
-                                <b>Date of Birth<span className="text-danger">*</span></b>
+                                <b>
+                                    Date of Birth<span className="text-danger">*</span>
+                                </b>
                             </label>
-                            <br/>
+                            <br />
                             <TextInput
                                 name="dateOfBirth"
                                 id="dateOfBirth"
@@ -663,15 +680,16 @@ export function EditApplicationDetails(props) {
                                     setDateOfBirth(e.target.value);
                                 }}
                                 type="date"
+                                max={new Date().toISOString().slice(0, 10)}
                             />
-                            <br/>
+                            <br />
                         </div>
                         <div className="col-md-2"></div>
                     </div>
                     <div>
                         <Button
                             className="btn btn-danger float-left"
-                            style={{marginLeft: '1rem'}}
+                            style={{ marginLeft: '1rem' }}
                             disabled={activeStep === 0}
                             onClick={handleBack}
                         >
