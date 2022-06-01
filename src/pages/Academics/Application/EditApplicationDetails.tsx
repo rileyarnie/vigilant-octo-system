@@ -2,7 +2,7 @@
 /* eslint-disable camelcase */
 // eslint-disable-next-line no-use-before-define
 import React, {useEffect, useState} from 'react';
-import {Button, Card, Col, Container, Modal, Row} from 'react-bootstrap';
+import {Button, Card, Col, Container, Row} from 'react-bootstrap';
 import axios from 'axios';
 import Config from '../../../config';
 import {createStyles, makeStyles, Theme} from '@material-ui/core/styles';
@@ -16,6 +16,7 @@ import {simsAxiosInstance} from '../../../utlis/interceptors/sims-interceptor';
 import {TimetableService} from '../../../services/TimetableService';
 import {timetablingAxiosInstance} from '../../../utlis/interceptors/timetabling-interceptor';
 import ConfirmationModalWrapper from '../../../App/components/modal/ConfirmationModalWrapper';
+import ModalWrapper from '../../../App/components/modal/ModalWrapper';
 
 const alerts: Alerts = new ToastifyAlerts();
 const useStyles = makeStyles((theme: Theme) =>
@@ -291,14 +292,14 @@ export function EditApplicationDetails(props) {
                     </div>
                     <div>
                         <Button
-                            className="btn btn-danger float-left"
+                            className="btn btn-danger float-left mb-2"
                             style={{marginLeft: '1rem'}}
                             disabled={activeStep === 0}
                             onClick={handleBack}
                         >
                                 Back
                         </Button>
-                        <button className="btn btn-danger float-right">Next</button>
+                        <button className="btn btn-danger float-right mb-2">Next</button>
                     </div>
                 </ValidationForm>
             );
@@ -690,14 +691,14 @@ export function EditApplicationDetails(props) {
                     </div>
                     <div>
                         <Button
-                            className="btn btn-danger float-left"
+                            className="btn btn-danger float-left mb-2"
                             style={{ marginLeft: '1rem' }}
                             disabled={activeStep === 0}
                             onClick={handleBack}
                         >
                             Back
                         </Button>
-                        <button className="btn btn-danger float-right">Next</button>
+                        <button className="btn btn-danger float-right mb-2">Next</button>
                     </div>
                 </ValidationForm>
             );
@@ -764,14 +765,14 @@ export function EditApplicationDetails(props) {
                     </div>
                     <div>
                         <Button
-                            className="btn btn-danger float-left"
+                            className="btn btn-danger float-left mb-2"
                             style={{marginLeft: '1rem'}}
                             disabled={activeStep === 0}
                             onClick={handleBack}
                         >
                             Back
                         </Button>
-                        <button className="btn btn-danger float-right">Next</button>
+                        <button className="btn btn-danger float-right mb-2">Next</button>
                     </div>
                 </ValidationForm>
             );
@@ -900,14 +901,14 @@ export function EditApplicationDetails(props) {
                     </div>
                     <div>
                         <Button
-                            className="btn btn-danger float-left"
+                            className="btn btn-danger float-left mb-2"
                             style={{marginLeft: '1rem'}}
                             disabled={activeStep === 0}
                             onClick={handleBack}
                         >
                             Back
                         </Button>
-                        <button className="btn btn-info float-right">Submit</button>
+                        <button className="btn btn-info float-right mb-2">Submit</button>
                     </div>
                 </ValidationForm>
             );
@@ -998,49 +999,27 @@ export function EditApplicationDetails(props) {
             >
                 <h6>Are you sure you want to update {props.application?.applications_firstName} {props.application?.applications_lastName} application details ?</h6>
             </ConfirmationModalWrapper>
-            <Modal
-                backdrop="static"
-                show={showUploadModal}
-                onHide={toggleUploadModal}
-                size="sm"
-                aria-labelledby="contained-modal-title-vcenter"
-                centered
-            >
-                <Modal.Dialog>
-                    <Modal.Header closeButton>
-                        <Modal.Title>Upload document</Modal.Title>
-                    </Modal.Header>
-                    <Modal.Body>
-                        <ValidationForm>
-                            <FileInput
-                                name="fileUploaded"
-                                id="image"
-                                encType="multipart/form-data"
-                                fileType={['pdf']}
-                                maxFileSize="2mb"
-                                onInput={(e) => {
-                                    setFileUploaded(() => {
-                                        return e.target.files[0];
-                                    });
-                                }}
-                                errorMessage={{
-                                    required: 'Please upload a document',
-                                    fileType:'Only pdf document allowed',
-                                    maxFileSize: 'Max file size is 10MB'
-                                }}
-                            />
-                        </ValidationForm>
-                    </Modal.Body>
-                    <Modal.Footer style={{display: 'flex', justifyContent: 'space-between'}}>
-                        <Button variant="contained" color="primary" onClick={toggleUploadModal}>
-                            Close
-                        </Button>
-                        <Button variant="contained" color="secondary" onClick={() => handleUpload()}>
-                            Upload
-                        </Button>
-                    </Modal.Footer>
-                </Modal.Dialog>
-            </Modal>
+            <ModalWrapper show={showUploadModal} closeModal={toggleUploadModal} title='Upload Document' submitButton submitFunction={handleUpload}>
+                <ValidationForm>
+                    <FileInput
+                        name="fileUploaded"
+                        id="image"
+                        encType="multipart/form-data"
+                        fileType={['pdf']}
+                        maxFileSize="2mb"
+                        onInput={(e) => {
+                            setFileUploaded(() => {
+                                return e.target.files[0];
+                            });
+                        }}
+                        errorMessage={{
+                            required: 'Please upload a document',
+                            fileType:'Only pdf document allowed',
+                            maxFileSize: 'Max file size is 2MB'
+                        }}
+                    />
+                </ValidationForm>
+            </ModalWrapper>
             {}
         </>
     );

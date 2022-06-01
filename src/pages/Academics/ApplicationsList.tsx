@@ -13,6 +13,7 @@ import { ACTION_GET_PROGRAM_COHORT_APPLICATIONS } from '../../authnz-library/sim
 import { simsAxiosInstance } from '../../utlis/interceptors/sims-interceptor';
 import TableWrapper from '../../utlis/TableWrapper';
 import EditApplicationDetails from './Application/EditApplicationDetails';
+import ModalWrapper from '../../App/components/modal/ModalWrapper';
 
 const alerts: Alerts = new ToastifyAlerts();
 const ApplicationsList = (): JSX.Element => {
@@ -299,33 +300,21 @@ const ApplicationsList = (): JSX.Element => {
                         </div>
                     </Row>
                     <br />
-                    <Button className="btn btn-danger btn-rounded float-left" onClick={handleClose}>
+                    <Button className="btn btn-danger float-left" onClick={handleClose}>
                         Close
                     </Button>
-                    <Button className="btn btn-info btn-rounded float-right" onClick={toggleUpdateModal}>
+                    <Button className="btn btn-info float-right" onClick={toggleUpdateModal}>
                         Update
                     </Button>
                 </Modal.Body>
             </Modal>
-            <Modal
-                backdrop="static"
-                show={modalShow}
-                onHide={handleCloseModal}
-                size="lg"
-                aria-labelledby="contained-modal-title-vcenter"
-                centered
-            >
-                <Modal.Header closeButton>
-                    <Modal.Title id="contained-modal-title-vcenter">Edit Application Details</Modal.Title>
-                </Modal.Header>
-                <Modal.Body>
-                    <EditApplicationDetails
-                        application={applicationData}
-                        close={resetStateCloseModal}
-                        fetchProgramCohortApplications={fetchProgramCohortApplications}
-                    />
-                </Modal.Body>
-            </Modal>
+            <ModalWrapper show={modalShow} closeModal={handleCloseModal} title='Edit Application Details' modalSize='lg' >
+                <EditApplicationDetails
+                    application={applicationData}
+                    close={resetStateCloseModal}
+                    fetchProgramCohortApplications={fetchProgramCohortApplications}
+                />
+            </ModalWrapper>
         </>
     );
 };
