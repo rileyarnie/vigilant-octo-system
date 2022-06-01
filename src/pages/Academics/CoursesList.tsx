@@ -130,17 +130,17 @@ const CoursesList = (): JSX.Element => {
             .put(`/courses/${selectedRow.id}`, course)
             .then(() => {
                 msg = status ? 'Course activated successfully' : 'Course deactivated successfully';
-                setDisabled(false);
                 alerts.showSuccess(msg);
                 fetchCourses();
             })
             .catch((error) => {
-                setDisabled(false);
                 alerts.showError(error.message);
             })
             .finally(() => {
+                setDisabled(false);
                 setSelectedRow(null);
                 setLinearDisplay('none');
+                handleCloseModal();
             });
     };
     const toggleCreateModal = () => {

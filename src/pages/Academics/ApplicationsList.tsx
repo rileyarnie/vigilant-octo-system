@@ -13,6 +13,7 @@ import { ACTION_GET_PROGRAM_COHORT_APPLICATIONS } from '../../authnz-library/sim
 import { simsAxiosInstance } from '../../utlis/interceptors/sims-interceptor';
 import TableWrapper from '../../utlis/TableWrapper';
 import EditApplicationDetails from './Application/EditApplicationDetails';
+import ModalWrapper from '../../App/components/modal/ModalWrapper';
 
 const alerts: Alerts = new ToastifyAlerts();
 const ApplicationsList = (): JSX.Element => {
@@ -206,7 +207,13 @@ const ApplicationsList = (): JSX.Element => {
                         Application Id: {applicationId}
                         {isAdmitted === 'ADMITTED' && (
                             <>
-                                <Link to={`/publishedsemesters?programCohortId=${applicationData?.applications_programCohortId}&studentId=${applicationData?.applications_studentId}&applicationId=${applicationData?.applications_id}&studentName=${applicationData?.applications_firstName+' '+applicationData?.applications_lastName}`}>
+                                <Link
+                                    to={`/publishedsemesters?programCohortId=${applicationData?.applications_programCohortId}&studentId=${
+                                        applicationData?.applications_studentId
+                                    }&applicationId=${applicationData?.applications_id}&studentName=${
+                                        applicationData?.applications_firstName + ' ' + applicationData?.applications_lastName
+                                    }`}
+                                >
                                     <Button style={{ marginRight: '.5rem', marginLeft: '.5rem' }} variant="info" onClick={handleClose}>
                                         View Semesters
                                     </Button>
@@ -264,11 +271,13 @@ const ApplicationsList = (): JSX.Element => {
                             <ListGroup>
                                 <ListGroup.Item>Phone Number: {applicationData?.applications_phoneNumber}</ListGroup.Item>
                                 <ListGroup.Item>Email Address: {applicationData?.applications_emailAddress}</ListGroup.Item>
-                                <ListGroup.Item>Date Of Birth: {applicationData?.applications_dateOfBirth?.slice(0,10)}</ListGroup.Item>
+                                <ListGroup.Item>Date Of Birth: {applicationData?.applications_dateOfBirth?.slice(0, 10)}</ListGroup.Item>
                                 <ListGroup.Item>Physical Challenges: {applicationData?.applications_physicalChallenges}</ListGroup.Item>
                                 <ListGroup.Item>Details: {applicationData?.applications_physicalChallengesDetails}</ListGroup.Item>
                                 <ListGroup.Item>Campus: {applicationData?.campus[0].name}</ListGroup.Item>
-                                <ListGroup.Item>Preferred Start Date: {applicationData?.applications_preferredStartDate?.slice(0,10)}</ListGroup.Item>
+                                <ListGroup.Item>
+                                    Preferred Start Date: {applicationData?.applications_preferredStartDate?.slice(0, 10)}
+                                </ListGroup.Item>
                                 <ListGroup.Item>Sponsor: {applicationData?.applications_sponsor}</ListGroup.Item>
                                 <ListGroup.Item>County Of Residence: {applicationData?.applications_countyOfResidence}</ListGroup.Item>
                             </ListGroup>
@@ -291,29 +300,21 @@ const ApplicationsList = (): JSX.Element => {
                         </div>
                     </Row>
                     <br />
-                    <Button className="btn btn-danger btn-rounded float-left" onClick={handleClose}>
+                    <Button className="btn btn-danger float-left" onClick={handleClose}>
                         Close
                     </Button>
-                    <Button className="btn btn-info btn-rounded float-right" onClick={toggleUpdateModal}>
+                    <Button className="btn btn-info float-right" onClick={toggleUpdateModal}>
                         Update
                     </Button>
                 </Modal.Body>
             </Modal>
-            <Modal
-                backdrop="static"
-                show={modalShow}
-                onHide={handleCloseModal}
-                size="lg"
-                aria-labelledby="contained-modal-title-vcenter"
-                centered
-            >
-                <Modal.Header closeButton>
-                    <Modal.Title id="contained-modal-title-vcenter">Edit Application Details</Modal.Title>
-                </Modal.Header>
-                <Modal.Body>
-                    <EditApplicationDetails application={applicationData} close={resetStateCloseModal} />
-                </Modal.Body>
-            </Modal>
+            <ModalWrapper show={modalShow} closeModal={handleCloseModal} title='Edit Application Details' modalSize='lg' >
+                <EditApplicationDetails
+                    application={applicationData}
+                    close={resetStateCloseModal}
+                    fetchProgramCohortApplications={fetchProgramCohortApplications}
+                />
+            </ModalWrapper>
         </>
     );
 };
