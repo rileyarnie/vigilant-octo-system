@@ -41,10 +41,6 @@ const TransactionDetails: React.FunctionComponent<Props> = (props) => {
                                 <p>Balance: KES {props.balanceDr}</p>
                             </ListGroup.Item>
                         )}
-                        {/* <ListGroup.Item>
-                            <h6>Program:</h6>
-                            code - Name
-                        </ListGroup.Item> */}
                         {props.supportingDocument && (
                             <ListGroup.Item>
                                 <h6>Supporting document:</h6>link here
