@@ -1,21 +1,21 @@
 /* eslint-disable react/display-name */
-import React, { useEffect, useState } from 'react';
+import React, {useEffect, useState} from 'react';
 import Card from '@material-ui/core/Card';
 import Alert from '@material-ui/lab/Alert';
 import Breadcrumb from '../../App/components/Breadcrumb';
 import {Button, Col, Dropdown, DropdownButton, Modal, Row} from 'react-bootstrap';
 import {FileInput, TextInput, ValidationForm} from 'react-bootstrap4-form-validation';
 import CardPreview from './CardPreview';
-import { Link } from 'react-router-dom';
-import { Alerts, ToastifyAlerts } from '../lib/Alert';
-import { LinearProgress } from '@mui/material';
-import { ProgramCohortService } from '../services/ProgramCohortService';
-import { canPerformActions } from '../../services/ActionChecker';
-import { ACTION_CREATE_PROGRAM_COHORT, ACTION_GET_PROGRAM_COHORTS } from '../../authnz-library/timetabling-actions';
-import { timetablingAxiosInstance } from '../../utlis/interceptors/timetabling-interceptor';
+import {Link} from 'react-router-dom';
+import {Alerts, ToastifyAlerts} from '../lib/Alert';
+import {LinearProgress} from '@mui/material';
+import {ProgramCohortService} from '../services/ProgramCohortService';
+import {canPerformActions} from '../../services/ActionChecker';
+import {ACTION_CREATE_PROGRAM_COHORT} from '../../authnz-library/timetabling-actions';
+import {timetablingAxiosInstance} from '../../utlis/interceptors/timetabling-interceptor';
 import TableWrapper from '../../utlis/TableWrapper';
 import Select from 'react-select';
-import { customSelectTheme } from '../lib/SelectThemes';
+import {customSelectTheme} from '../lib/SelectThemes';
 import ConfirmationModalWrapper from '../../App/components/modal/ConfirmationModalWrapper';
 import CustomSwitch from '../../assets/switch/CustomSwitch';
 import ModalWrapper from '../../App/components/modal/ModalWrapper';
@@ -479,27 +479,25 @@ const ProgramCohorts = (): JSX.Element => {
                     )}
                 </Col>
             </Row>
-            {canPerformActions(ACTION_GET_PROGRAM_COHORTS.name) && (
-                <>
-                    <LinearProgress style={{ display: linearDisplay }} />
-                    <Row>
-                        <Col>
-                            <Card>
-                                <div>
-                                    {isError && (
-                                        <Alert severity="error">
-                                            {errorMessages.map((msg, i) => {
-                                                return <div key={i}>{msg}</div>;
-                                            })}
-                                        </Alert>
-                                    )}
-                                </div>
-                                <TableWrapper title="Program Cohorts" columns={columns} data={data} options={{ actionsColumnIndex: -1 }} />
-                            </Card>
-                        </Col>
-                    </Row>
-                </>
-            )}
+            <>
+                <LinearProgress style={{ display: linearDisplay }} />
+                <Row>
+                    <Col>
+                        <Card>
+                            <div>
+                                {isError && (
+                                    <Alert severity="error">
+                                        {errorMessages.map((msg, i) => {
+                                            return <div key={i}>{msg}</div>;
+                                        })}
+                                    </Alert>
+                                )}
+                            </div>
+                            <TableWrapper title="Program Cohorts" columns={columns} data={data} options={{ actionsColumnIndex: -1 }} />
+                        </Card>
+                    </Col>
+                </Row>
+            </>
             <ModalWrapper
                 noFooter
                 show={showModal}

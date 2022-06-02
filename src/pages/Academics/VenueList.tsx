@@ -1,16 +1,16 @@
 /* eslint-disable react/display-name */
-import React, { useEffect, useState } from 'react';
+import React, {useEffect, useState} from 'react';
 import Edit from '@material-ui/icons/Edit';
 import Alert from '@material-ui/lab/Alert';
 import Breadcrumb from '../../App/components/Breadcrumb';
-import { Button, Card, Col,  Row } from 'react-bootstrap';
+import {Button, Card, Col, Row} from 'react-bootstrap';
 import CreateVenue from './CreateVenue';
 import EditVenue from './EditVenue';
-import { Alerts, ToastifyAlerts } from '../lib/Alert';
-import { LinearProgress } from '@mui/material';
-import { canPerformActions } from '../../services/ActionChecker';
-import { ACTION_CREATE_VENUE, ACTION_GET_VENUE, ACTION_UPDATE_VENUE } from '../../authnz-library/timetabling-actions';
-import { timetablingAxiosInstance } from '../../utlis/interceptors/timetabling-interceptor';
+import {Alerts, ToastifyAlerts} from '../lib/Alert';
+import {LinearProgress} from '@mui/material';
+import {canPerformActions} from '../../services/ActionChecker';
+import {ACTION_CREATE_VENUE, ACTION_UPDATE_VENUE} from '../../authnz-library/timetabling-actions';
+import {timetablingAxiosInstance} from '../../utlis/interceptors/timetabling-interceptor';
 import TableWrapper from '../../utlis/TableWrapper';
 import ConfirmationModalWrapper from '../../App/components/modal/ConfirmationModalWrapper';
 import ModalWrapper from '../../App/components/modal/ModalWrapper';
@@ -133,46 +133,44 @@ const VenueList = (): JSX.Element => {
                     )}
                 </Col>
             </Row>
-            {canPerformActions(ACTION_GET_VENUE.name) && (
-                <>
-                    <LinearProgress style={{ display: linearDisplay }} />
-                    <Row>
-                        <Col>
-                            <Card>
-                                <div>
-                                    {iserror && (
-                                        <Alert severity="error">
-                                            {errorMessages.map((msg, i) => {
-                                                return <div key={i}>{msg}</div>;
-                                            })}
-                                        </Alert>
-                                    )}
-                                </div>
-                                <TableWrapper
-                                    title="Venues"
-                                    columns={columns}
-                                    data={data}
-                                    options={{ actionsColumnIndex: -1 }}
-                                    actions={
-                                        canPerformActions(ACTION_UPDATE_VENUE.name)
-                                            ? [
-                                                {
-                                                    icon: Edit,
-                                                    tooltip: 'Edit Row',
-                                                    onClick: (event, rowData) => {
-                                                        setSelectedVenue(rowData);
-                                                        toggleEditModal();
-                                                    }
+            <>
+                <LinearProgress style={{ display: linearDisplay }} />
+                <Row>
+                    <Col>
+                        <Card>
+                            <div>
+                                {iserror && (
+                                    <Alert severity="error">
+                                        {errorMessages.map((msg, i) => {
+                                            return <div key={i}>{msg}</div>;
+                                        })}
+                                    </Alert>
+                                )}
+                            </div>
+                            <TableWrapper
+                                title="Venues"
+                                columns={columns}
+                                data={data}
+                                options={{ actionsColumnIndex: -1 }}
+                                actions={
+                                    canPerformActions(ACTION_UPDATE_VENUE.name)
+                                        ? [
+                                            {
+                                                icon: Edit,
+                                                tooltip: 'Edit Row',
+                                                onClick: (event, rowData) => {
+                                                    setSelectedVenue(rowData);
+                                                    toggleEditModal();
                                                 }
-                                            ]
-                                            : []
-                                    }
-                                />
-                            </Card>
-                        </Col>
-                    </Row>
-                </>
-            )}
+                                            }
+                                        ]
+                                        : []
+                                }
+                            />
+                        </Card>
+                    </Col>
+                </Row>
+            </>
             <ModalWrapper show={showModal} modalSize="lg" closeModal={toggleCreateModal} title="Create Venue" noFooter={true}>
                 <CreateVenue
                     setModal={setModal}
