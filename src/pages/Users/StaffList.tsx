@@ -294,10 +294,7 @@ const StaffList = (): JSX.Element => {
                                         <Row>
                                             <Col sm={6}>
                                                 <label htmlFor="user">
-                                                    <b>
-                                                        User
-                                                        <span className="text-danger">*</span>
-                                                    </b>
+                                                    <b>User</b>
                                                 </label>
                                                 <Select
                                                     options={
@@ -419,9 +416,7 @@ const StaffList = (): JSX.Element => {
                                         <Col sm={6}>
                                             <div className="form-group">
                                                 <label htmlFor="user">
-                                                    <b>
-                                                        User<span className="text-danger">*</span>
-                                                    </b>
+                                                    <b>User</b>
                                                 </label>
                                                 <Select
                                                     options={users.map((user) => ({
