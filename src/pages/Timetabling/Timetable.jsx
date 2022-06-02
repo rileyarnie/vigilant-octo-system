@@ -487,8 +487,6 @@ class Timetable extends React.Component {
                 this.setState({ linearDisplay: 'none' });
             });
     }
-    
-
     onListDragStart(e) {
         e.cancel = true;
     }
