@@ -156,7 +156,7 @@ function roleList(): JSX.Element {
                 setLinearDisplay('none');
             });
     }
-    
+
     // function handleRowDelete(id: number): void {
     //     setLinearDisplay('block');
     //     authnzAxiosInstance
