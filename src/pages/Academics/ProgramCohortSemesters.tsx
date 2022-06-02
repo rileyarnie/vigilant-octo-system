@@ -164,6 +164,7 @@ function ProgramCohortSemesters(props: { history: { goBack: () => void } }) {
                 setLinearDisplay('none');
                 const uniqueSemIds = ccData
                     .map((v: CourseCohort) => v?.programCohortSemester?.semesterId)
+                    .filter(cc => cc?.programCohortSemester && cc?.programCohortSemester?.semesterId)
                     .filter((value: any, index: any, self: string | any[]) => self.indexOf(value) === index);
                 const semesterData = uniqueSemIds.map((semId: number) => {
                     const cc = ccData.filter((v: CourseCohort) => v?.programCohortSemester?.semester?.id === semId)[0];
