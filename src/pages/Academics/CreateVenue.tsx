@@ -40,8 +40,6 @@ class CreateVenue extends Component<Props> {
                 });
             })
             .catch((error) => {
-                //handle error using logging library
-                console.error(error);
                 alerts.showError(error.message);
             });
     }
@@ -75,13 +73,14 @@ class CreateVenue extends Component<Props> {
                 alerts.showSuccess('Venue Created Successfully');
                 this.props.fetchVenues();
                 this.props.setModal(false);
-                this.props.setLinearDisplay('none');
-                this.toggleCloseConfirmModal();
+                
             })
             .catch((error) => {
-                this.setState({ disabled: false });
-                this.toggleCloseConfirmModal();
                 alerts.showError(error.message);
+            }).finally(() => {
+                this.setState({ disabled: false });
+                this.props.setLinearDisplay('none');
+                this.toggleCloseConfirmModal();
             });
     };
     handleErrorSubmit = (e, _formData, errorInputs) => {
