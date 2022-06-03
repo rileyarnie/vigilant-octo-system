@@ -1,25 +1,23 @@
 /* eslint-disable linebreak-style */
 /* eslint-disable @typescript-eslint/no-unused-vars */
-import React, { useEffect, useState } from 'react';
+import React, {useEffect, useState} from 'react';
 import Alert from '@material-ui/lab/Alert';
-import { Button, Card, Col, Modal, Row } from 'react-bootstrap';
+import {Card, Col, Row} from 'react-bootstrap';
 import Breadcrumb from '../../App/components/Breadcrumb';
-import { Actions } from './ActionsByRole/Actions';
-import { AddActions } from './AddActionsModal/AddActions';
+import {Actions} from './ActionsByRole/Actions';
+import {AddActions} from './AddActionsModal/AddActions';
 import CreateRole from './Role/CreateRole';
-import { Alerts, ToastifyAlerts } from '../lib/Alert';
-import { LinearProgress } from '@mui/material';
-import { MenuItem, Select } from '@material-ui/core';
-import { VerticalModal } from './ActionsByRole/VerticalModal';
-import { AddActionsModal } from './AddActionsModal/AddActionsModal';
-import { canPerformActions } from '../../services/ActionChecker';
+import {Alerts, ToastifyAlerts} from '../lib/Alert';
+import {LinearProgress} from '@mui/material';
+import {MenuItem, Select} from '@material-ui/core';
+import {AddActionsModal} from './AddActionsModal/AddActionsModal';
+import {canPerformActions} from '../../services/ActionChecker';
 import {
     ACTION_ADD_ACTIONS_TO_ROLE,
     ACTION_DEACTIVATE_ROLE,
-    ACTION_GET_ACTIONS_BY_ROLE_ID,
-    ACTION_GET_ROLES
+    ACTION_GET_ACTIONS_BY_ROLE_ID
 } from '../../authnz-library/authnz-actions';
-import { authnzAxiosInstance } from '../../utlis/interceptors/authnz-interceptor';
+import {authnzAxiosInstance} from '../../utlis/interceptors/authnz-interceptor';
 import TableWrapper from '../../utlis/TableWrapper';
 import ConfirmationModalWrapper from '../../App/components/modal/ConfirmationModalWrapper';
 import CustomSwitch from '../../assets/switch/CustomSwitch';
@@ -44,11 +42,9 @@ function roleList(): JSX.Element {
     const [isError] = useState(false);
     const [errorMessages] = useState([]);
     const [actions, setActions] = useState([]);
-    const [viewActions, setViewActions] = useState(false);
     const [linearDisplay, setLinearDisplay] = useState('none');
     const [defaultRoleValues, setDefaultRoleValues] = useState([]);
     //modal functions
-    const [verticalModal, setVerticalModal] = React.useState(false);
     const [actionListModal, setActionListModal] = useState(false);
     const [addActionsModal, setAddActionsModal] = useState(false);
 
@@ -160,22 +156,23 @@ function roleList(): JSX.Element {
                 setLinearDisplay('none');
             });
     }
-    function handleRowDelete(id: number): void {
-        setLinearDisplay('block');
-        authnzAxiosInstance
-            .delete(`/roles/${id}`)
-            .then(() => {
-                fetchRoles();
-                alerts.showSuccess('Successfully deleted role');
-            })
-            .catch((error) => {
-                console.error(error);
-                alerts.showError((error as Error).message);
-            })
-            .finally(() => {
-                setLinearDisplay('none');
-            });
-    }
+
+    // function handleRowDelete(id: number): void {
+    //     setLinearDisplay('block');
+    //     authnzAxiosInstance
+    //         .delete(`/roles/${id}`)
+    //         .then(() => {
+    //             fetchRoles();
+    //             alerts.showSuccess('Successfully deleted role');
+    //         })
+    //         .catch((error) => {
+    //             console.error(error);
+    //             alerts.showError((error as Error).message);
+    //         })
+    //         .finally(() => {
+    //             setLinearDisplay('none');
+    //         });
+    // }
 
     const getActionsByRoleId = (roleId: number, roleName: string, type: string) => {
         setDefaultRoleValues([]);
@@ -188,7 +185,7 @@ function roleList(): JSX.Element {
                 setDefaultRoleValues(res.data.map((role: { id: number; name: string }) => ({ value: role.id, label: role.name })));
                 return type === 'viewActions' ? toggleActionListModal() : toggleAddActionsModal();
             })
-            .catch((err) => {
+            .catch(() => {
                 alerts.showError(`We couldn’t fetch the existing actions for ${roleName}, please try again`);
             })
             .finally(() => {
@@ -226,12 +223,6 @@ function roleList(): JSX.Element {
     const toggleAddActionsModal = () => {
         setAddActionsModal(!addActionsModal);
     };
-    const viewRoleActions = () => {
-        setViewActions(true);
-    };
-    const handleCloseViewActions = () => {
-        setViewActions(false);
-    };
     return (
         <>
             <div>
@@ -244,29 +235,26 @@ function roleList(): JSX.Element {
                     </Col>
                 </Row>
                 <LinearProgress style={{ display: linearDisplay }} />
-                {canPerformActions(ACTION_GET_ROLES.name) && (
-                    <Row>
-                        <Col>
-                            <Card>
-                                <div>
-                                    {isError && (
-                                        <Alert severity="error">
-                                            {errorMessages.map((msg, i) => {
-                                                return <div key={i}>{msg}</div>;
-                                            })}
-                                        </Alert>
-                                    )}
-                                </div>
-                                <TableWrapper title="Role List" columns={columns} data={data} options={{}} />
-                            </Card>
-                        </Col>
-                    </Row>
-                )}
+                <Row>
+                    <Col>
+                        <Card>
+                            <div>
+                                {isError && (
+                                    <Alert severity="error">
+                                        {errorMessages.map((msg, i) => {
+                                            return <div key={i}>{msg}</div>;
+                                        })}
+                                    </Alert>
+                                )}
+                            </div>
+                            <TableWrapper title="Role List" columns={columns} data={data} options={{}} />
+                        </Card>
+                    </Col>
+                </Row>
                 <Actions {...selectedRowProps}> </Actions>
                 &nbsp;&nbsp;&nbsp;
                 <AddActions {...selectedRowProps}> </AddActions>
             </div>
-            {/* <VerticalModal show={verticalModal} onHide={() => setVerticalModal(false)} selectedrowprops={selectedRowProps} /> */}
             <AddActionsModal
                 show={addActionsModal}
                 toggleModal={toggleAddActionsModal}

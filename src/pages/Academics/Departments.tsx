@@ -1,5 +1,5 @@
 /* eslint-disable react/display-name */
-import React, { useEffect, useState } from 'react';
+import React, {useEffect, useState} from 'react';
 import Edit from '@material-ui/icons/Edit';
 import Alert from '@material-ui/lab/Alert';
 import Breadcrumb from '../../App/components/Breadcrumb';
@@ -7,11 +7,11 @@ import {Button, Card, Col, Row} from 'react-bootstrap';
 import {TextInput, ValidationForm} from 'react-bootstrap4-form-validation';
 import {Alerts, ToastifyAlerts} from '../lib/Alert';
 import LinearProgress from '@mui/material/LinearProgress';
-import { canPerformActions } from '../../services/ActionChecker';
-import { ACTION_CREATE_DEPARTMENT, ACTION_GET_DEPARTMENTS, ACTION_UPDATE_DEPARTMENT } from '../../authnz-library/timetabling-actions';
-import { timetablingAxiosInstance } from '../../utlis/interceptors/timetabling-interceptor';
+import {canPerformActions} from '../../services/ActionChecker';
+import {ACTION_CREATE_DEPARTMENT, ACTION_UPDATE_DEPARTMENT} from '../../authnz-library/timetabling-actions';
+import {timetablingAxiosInstance} from '../../utlis/interceptors/timetabling-interceptor';
 import TableWrapper from '../../utlis/TableWrapper';
-import { customSelectTheme } from '../lib/SelectThemes';
+import {customSelectTheme} from '../lib/SelectThemes';
 import Select from 'react-select';
 import ConfirmationModalWrapper from '../../App/components/modal/ConfirmationModalWrapper';
 import CustomSwitch from '../../assets/switch/CustomSwitch';
@@ -257,49 +257,47 @@ const Department = (): JSX.Element => {
                     )}
                 </Col>
             </Row>
-            {canPerformActions(ACTION_GET_DEPARTMENTS.name) && (
-                <>
-                    <LinearProgress style={{ display: linearDisplay }} />
-                    <Row>
-                        <Col>
-                            <Card>
-                                <div>
-                                    {iserror && (
-                                        <Alert severity="error">
-                                            {errorMessages.map((msg, i) => {
-                                                return <div key={i}>{msg}</div>;
-                                            })}
-                                        </Alert>
-                                    )}
-                                </div>
-                                <TableWrapper
-                                    title="Departments"
-                                    columns={columns}
-                                    data={data}
-                                    options={{ actionsColumnIndex: -1 }}
-                                    actions={
-                                        canPerformActions(ACTION_UPDATE_DEPARTMENT.name)
-                                            ? [
-                                                {
-                                                    icon: Edit,
-                                                    tooltip: 'Edit Row',
-                                                    onClick: (event, rowData) => {
-                                                        setDeptId(rowData.id);
-                                                        setSelectedDeptName(rowData.name);
-                                                        setSelectedHoD(rowData.hodTrainerId);
-                                                        setIsActive(rowData.isActive);
-                                                        toggleCreateModal();
-                                                    }
+            <>
+                <LinearProgress style={{ display: linearDisplay }} />
+                <Row>
+                    <Col>
+                        <Card>
+                            <div>
+                                {iserror && (
+                                    <Alert severity="error">
+                                        {errorMessages.map((msg, i) => {
+                                            return <div key={i}>{msg}</div>;
+                                        })}
+                                    </Alert>
+                                )}
+                            </div>
+                            <TableWrapper
+                                title="Departments"
+                                columns={columns}
+                                data={data}
+                                options={{ actionsColumnIndex: -1 }}
+                                actions={
+                                    canPerformActions(ACTION_UPDATE_DEPARTMENT.name)
+                                        ? [
+                                            {
+                                                icon: Edit,
+                                                tooltip: 'Edit Row',
+                                                onClick: (event, rowData) => {
+                                                    setDeptId(rowData.id);
+                                                    setSelectedDeptName(rowData.name);
+                                                    setSelectedHoD(rowData.hodTrainerId);
+                                                    setIsActive(rowData.isActive);
+                                                    toggleCreateModal();
                                                 }
-                                            ]
-                                            : []
-                                    }
-                                />
-                            </Card>
-                        </Col>
-                    </Row>
-                </>
-            )}
+                                            }
+                                        ]
+                                        : []
+                                }
+                            />
+                        </Card>
+                    </Col>
+                </Row>
+            </>
             <ModalWrapper
                 show={showModal}
                 title={deptId ? 'Edit department' : 'Create a department'}

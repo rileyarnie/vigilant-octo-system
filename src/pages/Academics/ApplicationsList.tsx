@@ -1,16 +1,14 @@
 /* eslint-disable react/display-name */
-import React, { useEffect, useState } from 'react';
-import { MTableToolbar } from 'material-table';
-import { MenuItem, Select } from '@material-ui/core';
-import { Link } from 'react-router-dom';
+import React, {useEffect, useState} from 'react';
+import {MTableToolbar} from 'material-table';
+import {MenuItem, Select} from '@material-ui/core';
+import {Link} from 'react-router-dom';
 import Alert from '@material-ui/lab/Alert';
 import Breadcrumb from '../../App/components/Breadcrumb';
-import { Button, Card, Col, ListGroup, Modal, Row } from 'react-bootstrap';
-import { Alerts, ToastifyAlerts } from '../lib/Alert';
+import {Button, Card, Col, ListGroup, Modal, Row} from 'react-bootstrap';
+import {Alerts, ToastifyAlerts} from '../lib/Alert';
 import LinearProgress from '@mui/material/LinearProgress';
-import { canPerformActions } from '../../services/ActionChecker';
-import { ACTION_GET_PROGRAM_COHORT_APPLICATIONS } from '../../authnz-library/sim-actions';
-import { simsAxiosInstance } from '../../utlis/interceptors/sims-interceptor';
+import {simsAxiosInstance} from '../../utlis/interceptors/sims-interceptor';
 import TableWrapper from '../../utlis/TableWrapper';
 import EditApplicationDetails from './Application/EditApplicationDetails';
 import ModalWrapper from '../../App/components/modal/ModalWrapper';
@@ -137,63 +135,61 @@ const ApplicationsList = (): JSX.Element => {
                     <Breadcrumb />
                 </Col>
             </Row>
-            {canPerformActions(ACTION_GET_PROGRAM_COHORT_APPLICATIONS.name) && (
-                <>
-                    <LinearProgress style={{ display: linearDisplay }} />
-                    <Row>
-                        <Col>
-                            <Card>
-                                <div>
-                                    {isError && (
-                                        <Alert severity="error">
-                                            {errorMessages.map((msg, i) => {
-                                                return <div key={i}>{msg}</div>;
-                                            })}
-                                        </Alert>
-                                    )}
-                                </div>
-                                <TableWrapper
-                                    title="Applications"
-                                    columns={columns}
-                                    onRowClick={(event, row) => {
-                                        toggleCreateModal();
-                                        setApplicationData(row);
-                                        setIsAdmitted(row.applications_status);
-                                        setApplicationId(row.applications_id);
-                                    }}
-                                    data={data}
-                                    options={{
-                                        rowStyle: (rowData) => ({
-                                            backgroundColor: selectedRow === rowData.tableData.id ? '#EEE' : '#FFF'
-                                        })
-                                    }}
-                                    components={{
-                                        Toolbar: (props) => (
-                                            <div>
-                                                <MTableToolbar {...props} />
-                                                <div style={{ padding: '0px 10px' }}>
-                                                    <Select
-                                                        labelId="demo-simple-select-label"
-                                                        id="demo-simple-select"
-                                                        style={{ width: 150 }}
-                                                        value={isAdmitted}
-                                                        onChange={(e) => setIsAdmitted(e.target.value as string)}
-                                                    >
-                                                        <MenuItem value={'ADMITTED'}>Admitted</MenuItem>
-                                                        <MenuItem value={'PENDING'}>Pending</MenuItem>
-                                                        <MenuItem value={'REJECTED'}>Rejected</MenuItem>
-                                                        <MenuItem value={'FAILED'}>Failed</MenuItem>
-                                                    </Select>
-                                                </div>
+            <>
+                <LinearProgress style={{ display: linearDisplay }} />
+                <Row>
+                    <Col>
+                        <Card>
+                            <div>
+                                {isError && (
+                                    <Alert severity="error">
+                                        {errorMessages.map((msg, i) => {
+                                            return <div key={i}>{msg}</div>;
+                                        })}
+                                    </Alert>
+                                )}
+                            </div>
+                            <TableWrapper
+                                title="Applications"
+                                columns={columns}
+                                onRowClick={(event, row) => {
+                                    toggleCreateModal();
+                                    setApplicationData(row);
+                                    setIsAdmitted(row.applications_status);
+                                    setApplicationId(row.applications_id);
+                                }}
+                                data={data}
+                                options={{
+                                    rowStyle: (rowData) => ({
+                                        backgroundColor: selectedRow === rowData.tableData.id ? '#EEE' : '#FFF'
+                                    })
+                                }}
+                                components={{
+                                    Toolbar: (props) => (
+                                        <div>
+                                            <MTableToolbar {...props} />
+                                            <div style={{ padding: '0px 10px' }}>
+                                                <Select
+                                                    labelId="demo-simple-select-label"
+                                                    id="demo-simple-select"
+                                                    style={{ width: 150 }}
+                                                    value={isAdmitted}
+                                                    onChange={(e) => setIsAdmitted(e.target.value as string)}
+                                                >
+                                                    <MenuItem value={'ADMITTED'}>Admitted</MenuItem>
+                                                    <MenuItem value={'PENDING'}>Pending</MenuItem>
+                                                    <MenuItem value={'REJECTED'}>Rejected</MenuItem>
+                                                    <MenuItem value={'FAILED'}>Failed</MenuItem>
+                                                </Select>
                                             </div>
-                                        )
-                                    }}
-                                />
-                            </Card>
-                        </Col>
-                    </Row>
-                </>
-            )}
+                                        </div>
+                                    )
+                                }}
+                            />
+                        </Card>
+                    </Col>
+                </Row>
+            </>
             <Modal
                 backdrop="static"
                 show={showModal}

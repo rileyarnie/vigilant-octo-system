@@ -1,20 +1,20 @@
 /* eslint-disable react/display-name */
-import React, { useEffect, useState } from 'react';
+import React, {useEffect, useState} from 'react';
 import Alert from '@material-ui/lab/Alert';
 import Department from '../services/Department';
 import Breadcrumb from '../../App/components/Breadcrumb';
-import { Button, Card, Col, Dropdown, DropdownButton, Row } from 'react-bootstrap';
-import { ValidationForm, SelectGroup } from 'react-bootstrap4-form-validation';
-import { Alerts, ToastifyAlerts } from '../lib/Alert';
+import {Button, Card, Col, Dropdown, DropdownButton, Row} from 'react-bootstrap';
+import {SelectGroup, ValidationForm} from 'react-bootstrap4-form-validation';
+import {Alerts, ToastifyAlerts} from '../lib/Alert';
 import LinearProgress from '@mui/material/LinearProgress';
-import { canPerformActions } from '../../services/ActionChecker';
-import { ACTION_CREATE_TRAINER, ACTION_UPDATE_TRAINER } from '../../authnz-library/timetabling-actions';
-import { timetablingAxiosInstance } from '../../utlis/interceptors/timetabling-interceptor';
+import {canPerformActions} from '../../services/ActionChecker';
+import {ACTION_CREATE_TRAINER, ACTION_UPDATE_TRAINER} from '../../authnz-library/timetabling-actions';
+import {timetablingAxiosInstance} from '../../utlis/interceptors/timetabling-interceptor';
 import TableWrapper from '../../utlis/TableWrapper';
-import { customSelectTheme, trainerTypes } from '../lib/SelectThemes';
+import {customSelectTheme, trainerTypes} from '../lib/SelectThemes';
 import Select from 'react-select';
 import ConfirmationModalWrapper from '../../App/components/modal/ConfirmationModalWrapper';
-import { DepartmentService } from '../services/DepartmentService';
+import {DepartmentService} from '../services/DepartmentService';
 import ModalWrapper from '../../App/components/modal/ModalWrapper';
 import CustomSwitch from '../../assets/switch/CustomSwitch';
 
@@ -367,20 +367,18 @@ const TrainerList = (): JSX.Element => {
             <LinearProgress style={{ display: linearDisplay }} />
             <Row>
                 <Col>
-                    {canPerformActions(ACTION_CREATE_TRAINER.name) && (
-                        <Card>
-                            <div>
-                                {isError && (
-                                    <Alert severity="error">
-                                        {errorMessages.map((msg, i) => {
-                                            return <div key={i}>{msg}</div>;
-                                        })}
-                                    </Alert>
-                                )}
-                            </div>
-                            <TableWrapper title="Trainers" columns={columns} data={data} editable={{}} options={{}} />
-                        </Card>
-                    )}
+                    <Card>
+                        <div>
+                            {isError && (
+                                <Alert severity="error">
+                                    {errorMessages.map((msg, i) => {
+                                        return <div key={i}>{msg}</div>;
+                                    })}
+                                </Alert>
+                            )}
+                        </div>
+                        <TableWrapper title="Trainers" columns={columns} data={data} editable={{}} options={{}} />
+                    </Card>
                 </Col>
             </Row>
             <ModalWrapper show={showModal} closeModal={toggleCreateModal} modalSize="lg" title="Create a trainer" noFooter>
