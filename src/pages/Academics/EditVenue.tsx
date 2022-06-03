@@ -50,18 +50,16 @@ const EditVenue = (props): JSX.Element => {
         timetablingAxiosInstance
             .put(`/venues/${props.venue_id}`, {Venue: modifiedVenue})
             .then(() => {
-                setDisabled(true);
                 alerts.showSuccess('successfully updated Venue details');
-                props.setEditModal(false);
-                toggleCloseConfirmModal();
                 props.fetchVenues();
                 props.setLinearDisplay('none');
             })
             .catch((error) => {
-                setDisabled(false);
-                props.setEditModal(false);
-                toggleCloseConfirmModal();
                 alerts.showError(error.message);
+            }).finally(() => {
+                props.setEditModal(false);
+                setDisabled(false);
+                toggleCloseConfirmModal();
             });
     };
     const handleCampusChange = (campus) => {
