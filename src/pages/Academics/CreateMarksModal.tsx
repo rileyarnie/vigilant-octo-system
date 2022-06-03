@@ -19,7 +19,6 @@ const CreateMarksModal = (props:Props) => {
     const [courseCohortRegistrationId,setCourseCohortRegistrationId] = useState(0);
     const [typeOfMarks,setTypeOfMarks] = useState('');
     const [marks,setMarks] = useState(0);
-    const [programCohortSemesterId,] = useState(1);
     const [ccRegistrations,setCCRegistrations] = useState([]);
     const [modalShow,setModalShow] = useState(false);
     const options= [];
@@ -42,6 +41,8 @@ const CreateMarksModal = (props:Props) => {
         {value:'pass', label:'pass'},
         {value:'fail', label:'fail'}
     ];
+
+    const programCohortSemesterId = JSON.parse(localStorage.getItem('programCohortSemesterId'));
 
     const handleSelect= (e) => {
         selectedMarks=e.target.value;

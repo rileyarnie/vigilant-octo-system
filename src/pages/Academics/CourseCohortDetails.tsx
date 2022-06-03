@@ -127,6 +127,7 @@ const CourseCohortsDetails = (props: any): JSX.Element => {
                 setIsMarkEntryUnlocked(res.data[0].isMarkEntryUnlocked);
                 setMarksPublished(res.data[0].isMarksPublished);
                 setProgramCohortId(res.data[0].programCohortId);
+                localStorage.setItem('programCohortSemesterId', JSON.stringify(res.data[0].programCohortSemesterId));
             })
             .catch((err) => err);
     };
