@@ -59,7 +59,8 @@ const ApplicationsList = (): JSX.Element => {
         ADMITTED = 'ADMITTED',
         REJECTED = 'REJECTED',
         PENDING = 'PENDING',
-        FAILED = 'FAILED'
+        FAILED = 'FAILED',
+        DEFERRED = 'DEFERRED'
     }
     const [data, setData] = useState([]);
     const [isError] = useState(false);
@@ -180,6 +181,7 @@ const ApplicationsList = (): JSX.Element => {
                                                     <MenuItem value={'PENDING'}>Pending</MenuItem>
                                                     <MenuItem value={'REJECTED'}>Rejected</MenuItem>
                                                     <MenuItem value={'FAILED'}>Failed</MenuItem>
+                                                    <MenuItem value={'DEFERRED'}>Deferred</MenuItem>
                                                 </Select>
                                             </div>
                                         </div>

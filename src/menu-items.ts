@@ -104,7 +104,6 @@ const chartData: { items: MenuItemType[] } = {
                             id: 'Staff',
                             title: 'Staff',
                             type: 'item',
-                            icon: 'feather icon-user',
                             url: '/staff'
                         }
                     ]
