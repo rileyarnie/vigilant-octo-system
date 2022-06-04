@@ -337,11 +337,11 @@ const Transactions = (): JSX.Element => {
                 axios.spread((...responses) => {
                     const staff = responses[0] && responses[0].data;
                     setRecordedBy({ staffId: staff.id, name: staff.name });
-                    const studentCrFirstName = responses[1] && responses[1]?.data[0].applications_firstName;
-                    const studentCrLastName = responses[1] && responses[1]?.data[0].applications_lastName;
+                    const studentCrFirstName = responses[1] && responses[1]?.data[0].firstName;
+                    const studentCrLastName = responses[1] && responses[1]?.data[0].lastName;
                     setStudentNameCr(`${studentCrFirstName} ${studentCrLastName}`);
-                    const studentDrFirstName = responses[2] && responses[2].data[0]?.applications_firstName;
-                    const studentDrLastName = responses[2] && responses[2].data[0]?.applications_lastName;
+                    const studentDrFirstName = responses[2] && responses[2].data[0]?.firstName;
+                    const studentDrLastName = responses[2] && responses[2].data[0]?.lastName;
                     setStudentNameDr(`${studentDrFirstName} ${studentDrLastName}`);
                     const balanceCr = responses[3] && responses[3].data.balance;
                     setFeeBalanceCr(balanceCr);
