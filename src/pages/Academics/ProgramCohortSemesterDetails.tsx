@@ -325,12 +325,12 @@ function ProgramCohortSemesterDetails(props) {
                         className="float-center"
                         variant="danger"
                         onClick={() => {
-                            programCohortSemesterStatus.toLowerCase() === 'pending'
+                            programCohortSemesterStatus === 'PENDING'
                                 ? togglePublishSemesterModal()
                                 : toggleConfirmPublishModal();
                         }}
                     >
-                        {programCohortSemesterStatus.toLowerCase() === 'pending' ? 'Publish' : 'Unpublish'}
+                        {programCohortSemesterStatus === 'PENDING' ? 'Publish' : 'Unpublish'}
                     </Button>
                     <Button
                         className="float-center"
