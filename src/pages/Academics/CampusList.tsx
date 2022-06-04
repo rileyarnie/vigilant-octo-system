@@ -1,15 +1,15 @@
 /* eslint-disable react/display-name */
-import React, { useEffect, useState } from 'react';
+import React, {useEffect, useState} from 'react';
 import Edit from '@material-ui/icons/Edit';
 import {LinearProgress} from '@material-ui/core';
 import Alert from '@material-ui/lab/Alert';
 import Breadcrumb from '../../App/components/Breadcrumb';
-import { Button, Card, Col, Modal, Row } from 'react-bootstrap';
-import { TextInput, ValidationForm } from 'react-bootstrap4-form-validation';
-import { Alerts, ToastifyAlerts } from '../lib/Alert';
-import { canPerformActions } from '../../services/ActionChecker';
-import { ACTION_CREATE_CAMPUS, ACTION_GET_CAMPUSES, ACTION_UPDATE_CAMPUS } from '../../authnz-library/timetabling-actions';
-import { timetablingAxiosInstance } from '../../utlis/interceptors/timetabling-interceptor';
+import {Button, Card, Col, Modal, Row} from 'react-bootstrap';
+import {TextInput, ValidationForm} from 'react-bootstrap4-form-validation';
+import {Alerts, ToastifyAlerts} from '../lib/Alert';
+import {canPerformActions} from '../../services/ActionChecker';
+import {ACTION_CREATE_CAMPUS, ACTION_UPDATE_CAMPUS} from '../../authnz-library/timetabling-actions';
+import {timetablingAxiosInstance} from '../../utlis/interceptors/timetabling-interceptor';
 import TableWrapper from '../../utlis/TableWrapper';
 import ConfirmationModalWrapper from '../../App/components/modal/ConfirmationModalWrapper';
 import CustomSwitch from '../../assets/switch/CustomSwitch';
@@ -227,48 +227,46 @@ const CampusList = (): JSX.Element => {
                     )}
                 </Col>
             </Row>
-            {canPerformActions(ACTION_GET_CAMPUSES.name) && (
-                <>
-                    <LinearProgress style={{ display: linearDisplay }} />
-                    <Row>
-                        <Col>
-                            <Card>
-                                <div>
-                                    {iserror && (
-                                        <Alert severity="error">
-                                            {errorMessages.map((msg, i) => {
-                                                return <div key={i}>{msg}</div>;
-                                            })}
-                                        </Alert>
-                                    )}
-                                </div>
-                                <TableWrapper
-                                    title="Campuses"
-                                    columns={columns}
-                                    options={{ actionsColumnIndex: -1 }}
-                                    data={data}
-                                    actions={
-                                        canPerformActions(ACTION_UPDATE_CAMPUS.name)
-                                            ? [
-                                                {
-                                                    icon: Edit,
-                                                    tooltip: 'Edit Row',
-                                                    onClick: (event, row) => {
-                                                        setCampusId(row.id);
-                                                        setSelectedCampusName(row.name);
-                                                        setSelectedDescription(row.description);
-                                                        toggleCreateModal();
-                                                    }
+            <>
+                <LinearProgress style={{ display: linearDisplay }} />
+                <Row>
+                    <Col>
+                        <Card>
+                            <div>
+                                {iserror && (
+                                    <Alert severity="error">
+                                        {errorMessages.map((msg, i) => {
+                                            return <div key={i}>{msg}</div>;
+                                        })}
+                                    </Alert>
+                                )}
+                            </div>
+                            <TableWrapper
+                                title="Campuses"
+                                columns={columns}
+                                options={{ actionsColumnIndex: -1 }}
+                                data={data}
+                                actions={
+                                    canPerformActions(ACTION_UPDATE_CAMPUS.name)
+                                        ? [
+                                            {
+                                                icon: Edit,
+                                                tooltip: 'Edit Row',
+                                                onClick: (event, row) => {
+                                                    setCampusId(row.id);
+                                                    setSelectedCampusName(row.name);
+                                                    setSelectedDescription(row.description);
+                                                    toggleCreateModal();
                                                 }
-                                            ]
-                                            : []
-                                    }
-                                />
-                            </Card>
-                        </Col>
-                    </Row>
-                </>
-            )}
+                                            }
+                                        ]
+                                        : []
+                                }
+                            />
+                        </Card>
+                    </Col>
+                </Row>
+            </>
             <Modal
                 show={showModal}
                 onHide={toggleCreateModal}

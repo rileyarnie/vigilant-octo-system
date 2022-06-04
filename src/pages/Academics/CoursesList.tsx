@@ -1,20 +1,20 @@
 /* eslint-disable react/display-name */
-import React, { useEffect, useState } from 'react';
+import React, {useEffect, useState} from 'react';
 import Alert from '@material-ui/lab/Alert';
 import Breadcrumb from '../../App/components/Breadcrumb';
-import { Button, Card, Col, ListGroup, Modal, Row } from 'react-bootstrap';
+import {Button, Card, Col, ListGroup, Modal, Row} from 'react-bootstrap';
 import CourseCreation from './CreateCourse';
-import { Alerts, ToastifyAlerts } from '../lib/Alert';
+import {Alerts, ToastifyAlerts} from '../lib/Alert';
 import LinearProgress from '@mui/material/LinearProgress';
-import { canPerformActions } from '../../services/ActionChecker';
-import { ACTION_CREATE_COURSE, ACTION_GET_COURSES, ACTION_UPDATE_COURSE } from '../../authnz-library/timetabling-actions';
-import { timetablingAxiosInstance } from '../../utlis/interceptors/timetabling-interceptor';
-import { ValidationForm } from 'react-bootstrap4-form-validation';
+import {canPerformActions} from '../../services/ActionChecker';
+import {ACTION_CREATE_COURSE, ACTION_UPDATE_COURSE} from '../../authnz-library/timetabling-actions';
+import {timetablingAxiosInstance} from '../../utlis/interceptors/timetabling-interceptor';
+import {ValidationForm} from 'react-bootstrap4-form-validation';
 import TableWrapper from '../../utlis/TableWrapper';
 import ConfirmationModalWrapper from '../../App/components/modal/ConfirmationModalWrapper';
 import CustomSwitch from '../../assets/switch/CustomSwitch';
 import ModalWrapper from '../../App/components/modal/ModalWrapper';
-import { Interweave } from 'interweave';
+import {Interweave} from 'interweave';
 
 const alerts: Alerts = new ToastifyAlerts();
 
@@ -130,17 +130,17 @@ const CoursesList = (): JSX.Element => {
             .put(`/courses/${selectedRow.id}`, course)
             .then(() => {
                 msg = status ? 'Course activated successfully' : 'Course deactivated successfully';
-                setDisabled(false);
                 alerts.showSuccess(msg);
                 fetchCourses();
             })
             .catch((error) => {
-                setDisabled(false);
                 alerts.showError(error.message);
             })
             .finally(() => {
+                setDisabled(false);
                 setSelectedRow(null);
                 setLinearDisplay('none');
+                handleCloseModal();
             });
     };
     const toggleCreateModal = () => {
@@ -172,27 +172,25 @@ const CoursesList = (): JSX.Element => {
                     )}
                 </Col>
             </Row>
-            {canPerformActions(ACTION_GET_COURSES.name) && (
-                <>
-                    <LinearProgress style={{ display: linearDisplay }} />
-                    <Row>
-                        <Col>
-                            <Card>
-                                <div>
-                                    {iserror && (
-                                        <Alert severity="error">
-                                            {errorMessages.map((msg, i) => {
-                                                return <div key={i}>{msg}</div>;
-                                            })}
-                                        </Alert>
-                                    )}
-                                </div>
-                                <TableWrapper title="Courses" columns={columns} data={data} options={{}} />
-                            </Card>
-                        </Col>
-                    </Row>
-                </>
-            )}
+            <>
+                <LinearProgress style={{ display: linearDisplay }} />
+                <Row>
+                    <Col>
+                        <Card>
+                            <div>
+                                {iserror && (
+                                    <Alert severity="error">
+                                        {errorMessages.map((msg, i) => {
+                                            return <div key={i}>{msg}</div>;
+                                        })}
+                                    </Alert>
+                                )}
+                            </div>
+                            <TableWrapper title="Courses" columns={columns} data={data} options={{}} />
+                        </Card>
+                    </Col>
+                </Row>
+            </>
             <Modal size="lg" aria-labelledby="contained-modal-title-vcenter" centered show={showModal} backdrop="static">
                 <Modal.Header>
                     <Modal.Title id="contained-modal-title-vcenter">Create Course</Modal.Title>

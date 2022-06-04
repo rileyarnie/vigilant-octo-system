@@ -2,7 +2,7 @@
 /* eslint-disable camelcase */
 // eslint-disable-next-line no-use-before-define
 import React, {useEffect, useState} from 'react';
-import {Button, Card, Col, Container, Modal, Row} from 'react-bootstrap';
+import {Button, Card, Col, Container, Row} from 'react-bootstrap';
 import axios from 'axios';
 import Config from '../../../config';
 import {createStyles, makeStyles, Theme} from '@material-ui/core/styles';
@@ -16,6 +16,7 @@ import {simsAxiosInstance} from '../../../utlis/interceptors/sims-interceptor';
 import {TimetableService} from '../../../services/TimetableService';
 import {timetablingAxiosInstance} from '../../../utlis/interceptors/timetabling-interceptor';
 import ConfirmationModalWrapper from '../../../App/components/modal/ConfirmationModalWrapper';
+import ModalWrapper from '../../../App/components/modal/ModalWrapper';
 
 const alerts: Alerts = new ToastifyAlerts();
 const useStyles = makeStyles((theme: Theme) =>
@@ -56,8 +57,8 @@ export function EditApplicationDetails(props) {
     const [nextOfKinName, setNextOfKinName] = useState(props.application?.nkd_name || '');
     const [nextOfKinPhoneNumber, setNextOfKinPhoneNumber] = useState(props.application?.nkd_nextOfKinPhoneNumber || '');
     const [nextOfKinRelation, setNextOfKinRelation] = useState(props.application?.nkd_relation || '');
-    const [physicalChallengesDetails, setPhysicalChallengesDetails] = useState(props.application?.applications_physicalChallengesDetails || '');
-    const [physicalChallenges, setPhysicalChallenges] = useState(props.application?.applications_physicalChallenges || '');
+    const [physicalChallengesDetails, setPhysicalChallengesDetails] = useState(props.application?.applications_physicalChallengesDetails);
+    const [physicalChallenges, setPhysicalChallenges] = useState(props.application?.applications_physicalChallenges);
     const [preferredStartDate, setPreferredStartDate] = useState(props.application?.applications_preferredStartDate?.slice(0, 10) || '');
     const [campus, setCampus] = useState(props.application?.applications_campus);
     const [sponsor, setSponsor] = useState(props.application?.applications_sponsor || '');
@@ -67,6 +68,7 @@ export function EditApplicationDetails(props) {
     const [showUploadModal, setShowUploadModal] = useState(false);
     const [confirmModal, setConfirmModal] = useState(false);
     const [disabledButton, setDisabledButton] = useState(false);
+
     JSON.parse(localStorage.getItem('programId') as string);
     const classes = useStyles();
     useEffect(() => {
@@ -130,6 +132,7 @@ export function EditApplicationDetails(props) {
             }).finally(() =>{
                 setConfirmModal(false);
                 props.close();
+                props.fetchProgramCohortApplications();
                 setDisabledButton(false);
             });
     };
@@ -289,25 +292,32 @@ export function EditApplicationDetails(props) {
                     </div>
                     <div>
                         <Button
-                            className="btn btn-danger float-left"
+                            className="btn btn-danger float-left mb-2"
                             style={{marginLeft: '1rem'}}
                             disabled={activeStep === 0}
                             onClick={handleBack}
                         >
                                 Back
                         </Button>
-                        <button className="btn btn-danger float-right">Next</button>
+                        <button className="btn btn-danger float-right mb-2">Next</button>
                     </div>
                 </ValidationForm>
             );
         case 1:
             return (
-                <ValidationForm onSubmit={(e) => { e.preventDefault();handleNext();}}>
+                <ValidationForm
+                    onSubmit={(e) => {
+                        e.preventDefault();
+                        handleNext();
+                    }}
+                >
                     <div className="form-group row">
                         <div className="col-md-2"></div>
                         <div className="col-md-4">
                             <label htmlFor="gender">
-                                <b>Gender<span className="text-danger">*</span></b>
+                                <b>
+                                    Gender<span className="text-danger">*</span>
+                                </b>
                             </label>
                             <SelectGroup
                                 defaultValue={gender}
@@ -324,11 +334,13 @@ export function EditApplicationDetails(props) {
                                 <option value="female">Female</option>
                                 <option value="other">Other</option>
                             </SelectGroup>
-                            <br/>
+                            <br />
                             <label htmlFor="religion">
-                                <b>Religion<span className="text-danger">*</span></b>
+                                <b>
+                                    Religion<span className="text-danger">*</span>
+                                </b>
                             </label>
-                            <br/>
+                            <br />
                             <SelectGroup
                                 defaultValue={religion}
                                 name="religion"
@@ -346,11 +358,13 @@ export function EditApplicationDetails(props) {
                                 <option value="Hindu">Hinduism</option>
                                 <option value="Other">Other</option>
                             </SelectGroup>
-                            <br/>
+                            <br />
                             <label htmlFor="maritalStatus">
-                                <b>Marital Status<span className="text-danger">*</span></b>
+                                <b>
+                                    Marital Status<span className="text-danger">*</span>
+                                </b>
                             </label>
-                            <br/>
+                            <br />
                             <SelectGroup
                                 defaultValue={maritalStatus}
                                 name="maritalStatus"
@@ -368,13 +382,15 @@ export function EditApplicationDetails(props) {
                                 <option value="separated">Separated</option>
                                 <option value="widowed">widowed</option>
                             </SelectGroup>
-                            <br/>
+                            <br />
                         </div>
                         <div className="col-md-4">
                             <label htmlFor="nationality">
-                                <b>Nationality<span className="text-danger">*</span></b>
+                                <b>
+                                    Nationality<span className="text-danger">*</span>
+                                </b>
                             </label>
-                            <br/>
+                            <br />
                             <SelectGroup
                                 defaultValue={nationality}
                                 name="nationality"
@@ -579,13 +595,15 @@ export function EditApplicationDetails(props) {
                                 <option value="zambian">Zambian</option>
                                 <option value="zimbabwean">Zimbabwean</option>
                             </SelectGroup>
-                            <br/>
+                            <br />
                             {nationality === 'kenyan' ? (
                                 <>
                                     <label htmlFor="maritalStatus">
-                                        <b>County of Residence<span className="text-danger">*</span></b>
+                                        <b>
+                                            County of Residence<span className="text-danger">*</span>
+                                        </b>
                                     </label>
-                                    <br/>
+                                    <br />
                                     <SelectGroup
                                         defaultValue={countyOfResidence}
                                         name="county"
@@ -649,11 +667,13 @@ export function EditApplicationDetails(props) {
                             ) : (
                                 <></>
                             )}
-                            <br/>
+                            <br />
                             <label htmlFor="dateOfBirth">
-                                <b>Date of Birth<span className="text-danger">*</span></b>
+                                <b>
+                                    Date of Birth<span className="text-danger">*</span>
+                                </b>
                             </label>
-                            <br/>
+                            <br />
                             <TextInput
                                 name="dateOfBirth"
                                 id="dateOfBirth"
@@ -663,21 +683,22 @@ export function EditApplicationDetails(props) {
                                     setDateOfBirth(e.target.value);
                                 }}
                                 type="date"
+                                max={new Date().toISOString().slice(0, 10)}
                             />
-                            <br/>
+                            <br />
                         </div>
                         <div className="col-md-2"></div>
                     </div>
                     <div>
                         <Button
-                            className="btn btn-danger float-left"
-                            style={{marginLeft: '1rem'}}
+                            className="btn btn-danger float-left mb-2"
+                            style={{ marginLeft: '1rem' }}
                             disabled={activeStep === 0}
                             onClick={handleBack}
                         >
                             Back
                         </Button>
-                        <button className="btn btn-danger float-right">Next</button>
+                        <button className="btn btn-danger float-right mb-2">Next</button>
                     </div>
                 </ValidationForm>
             );
@@ -744,14 +765,14 @@ export function EditApplicationDetails(props) {
                     </div>
                     <div>
                         <Button
-                            className="btn btn-danger float-left"
+                            className="btn btn-danger float-left mb-2"
                             style={{marginLeft: '1rem'}}
                             disabled={activeStep === 0}
                             onClick={handleBack}
                         >
                             Back
                         </Button>
-                        <button className="btn btn-danger float-right">Next</button>
+                        <button className="btn btn-danger float-right mb-2">Next</button>
                     </div>
                 </ValidationForm>
             );
@@ -835,7 +856,7 @@ export function EditApplicationDetails(props) {
                                 onChange={(e) => {
                                     setPhysicalChallenges(e.target.value);
                                 }}
-                                errorMessage="Please select yes or No"
+                                errorMessage="Please select Yes or No"
                             >
                                 <option value="">- Please select -</option>
                                 <option value="Yes">Yes</option>
@@ -880,14 +901,14 @@ export function EditApplicationDetails(props) {
                     </div>
                     <div>
                         <Button
-                            className="btn btn-danger float-left"
+                            className="btn btn-danger float-left mb-2"
                             style={{marginLeft: '1rem'}}
                             disabled={activeStep === 0}
                             onClick={handleBack}
                         >
                             Back
                         </Button>
-                        <button className="btn btn-info float-right">Submit</button>
+                        <button className="btn btn-info float-right mb-2">Submit</button>
                     </div>
                 </ValidationForm>
             );
@@ -978,49 +999,27 @@ export function EditApplicationDetails(props) {
             >
                 <h6>Are you sure you want to update {props.application?.applications_firstName} {props.application?.applications_lastName} application details ?</h6>
             </ConfirmationModalWrapper>
-            <Modal
-                backdrop="static"
-                show={showUploadModal}
-                onHide={toggleUploadModal}
-                size="sm"
-                aria-labelledby="contained-modal-title-vcenter"
-                centered
-            >
-                <Modal.Dialog>
-                    <Modal.Header closeButton>
-                        <Modal.Title>Upload document</Modal.Title>
-                    </Modal.Header>
-                    <Modal.Body>
-                        <ValidationForm>
-                            <FileInput
-                                name="fileUploaded"
-                                id="image"
-                                encType="multipart/form-data"
-                                fileType={['pdf']}
-                                maxFileSize="2mb"
-                                onInput={(e) => {
-                                    setFileUploaded(() => {
-                                        return e.target.files[0];
-                                    });
-                                }}
-                                errorMessage={{
-                                    required: 'Please upload a document',
-                                    fileType:'Only pdf document allowed',
-                                    maxFileSize: 'Max file size is 10MB'
-                                }}
-                            />
-                        </ValidationForm>
-                    </Modal.Body>
-                    <Modal.Footer style={{display: 'flex', justifyContent: 'space-between'}}>
-                        <Button variant="contained" color="primary" onClick={toggleUploadModal}>
-                            Close
-                        </Button>
-                        <Button variant="contained" color="secondary" onClick={() => handleUpload()}>
-                            Upload
-                        </Button>
-                    </Modal.Footer>
-                </Modal.Dialog>
-            </Modal>
+            <ModalWrapper show={showUploadModal} closeModal={toggleUploadModal} title='Upload Document' submitButton submitFunction={handleUpload}>
+                <ValidationForm>
+                    <FileInput
+                        name="fileUploaded"
+                        id="image"
+                        encType="multipart/form-data"
+                        fileType={['pdf']}
+                        maxFileSize="2mb"
+                        onInput={(e) => {
+                            setFileUploaded(() => {
+                                return e.target.files[0];
+                            });
+                        }}
+                        errorMessage={{
+                            required: 'Please upload a document',
+                            fileType:'Only pdf document allowed',
+                            maxFileSize: 'Max file size is 2MB'
+                        }}
+                    />
+                </ValidationForm>
+            </ModalWrapper>
             {}
         </>
     );

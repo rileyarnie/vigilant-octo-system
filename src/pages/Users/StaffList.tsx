@@ -5,8 +5,6 @@ import Breadcrumb from '../../App/components/Breadcrumb';
 import {Card, Col, Row} from 'react-bootstrap';
 import {Alerts, ToastifyAlerts} from '../lib/Alert';
 import {LinearProgress} from '@mui/material';
-import {canPerformActions} from '../../services/ActionChecker';
-import {ACTION_GET_USERS} from '../../authnz-library/authnz-actions';
 import TableWrapper from '../../utlis/TableWrapper';
 import CreateStaff from './CreateStaff/CreateStaff';
 import {timetablingAxiosInstance} from '../../utlis/interceptors/timetabling-interceptor';
@@ -14,7 +12,7 @@ import ConfirmationModalWrapper from '../../App/components/modal/ConfirmationMod
 import {authnzAxiosInstance} from '../../utlis/interceptors/authnz-interceptor';
 import CustomSwitch from '../../assets/switch/CustomSwitch';
 import ModalWrapper from '../../App/components/modal/ModalWrapper';
-import {ValidationForm, TextInput} from 'react-bootstrap4-form-validation';
+import {TextInput, ValidationForm} from 'react-bootstrap4-form-validation';
 import validator from 'validator';
 import Select from 'react-select';
 
@@ -267,15 +265,13 @@ const StaffList = (): JSX.Element => {
                 <CreateStaff openCreateStaffModal={toggleCreateStaffModal} fetchStaff={fetchStaff}/>
             </Row>
             <LinearProgress style={{display: linearDisplay}}/>
-            {canPerformActions(ACTION_GET_USERS.name) && (
-                <Row>
-                    <Col>
-                        <Card>
-                            <TableWrapper columns={columns} title="Staff" data={data} options={{}}/>
-                        </Card>
-                    </Col>
-                </Row>
-            )}
+            <Row>
+                <Col>
+                    <Card>
+                        <TableWrapper columns={columns} title="Staff" data={data} options={{}}/>
+                    </Card>
+                </Col>
+            </Row>
             <ModalWrapper
                 title="Update Staff"
                 show={updateStaffModal}
@@ -294,10 +290,7 @@ const StaffList = (): JSX.Element => {
                                         <Row>
                                             <Col sm={6}>
                                                 <label htmlFor="user">
-                                                    <b>
-                                                        User
-                                                        <span className="text-danger">*</span>
-                                                    </b>
+                                                    <b>User</b>
                                                 </label>
                                                 <Select
                                                     options={
@@ -419,9 +412,7 @@ const StaffList = (): JSX.Element => {
                                         <Col sm={6}>
                                             <div className="form-group">
                                                 <label htmlFor="user">
-                                                    <b>
-                                                        User<span className="text-danger">*</span>
-                                                    </b>
+                                                    <b>User</b>
                                                 </label>
                                                 <Select
                                                     options={users.map((user) => ({

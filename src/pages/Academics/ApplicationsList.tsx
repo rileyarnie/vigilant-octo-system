@@ -1,18 +1,19 @@
 /* eslint-disable react/display-name */
-import React, { useEffect, useState } from 'react';
-import { MTableToolbar } from 'material-table';
-import { MenuItem, Select } from '@material-ui/core';
-import { Link } from 'react-router-dom';
+import React, {useEffect, useState} from 'react';
+import {MTableToolbar} from 'material-table';
+import {MenuItem, Select} from '@material-ui/core';
+import {Link} from 'react-router-dom';
 import Alert from '@material-ui/lab/Alert';
 import Breadcrumb from '../../App/components/Breadcrumb';
-import { Button, Card, Col, ListGroup, Modal, Row } from 'react-bootstrap';
-import { Alerts, ToastifyAlerts } from '../lib/Alert';
+import {Button, Card, Col, ListGroup, Modal, Row} from 'react-bootstrap';
+import {Alerts, ToastifyAlerts} from '../lib/Alert';
 import LinearProgress from '@mui/material/LinearProgress';
-import { canPerformActions } from '../../services/ActionChecker';
-import { ACTION_GET_PROGRAM_COHORT_APPLICATIONS } from '../../authnz-library/sim-actions';
-import { simsAxiosInstance } from '../../utlis/interceptors/sims-interceptor';
+import {simsAxiosInstance} from '../../utlis/interceptors/sims-interceptor';
 import TableWrapper from '../../utlis/TableWrapper';
 import EditApplicationDetails from './Application/EditApplicationDetails';
+import ModalWrapper from '../../App/components/modal/ModalWrapper';
+import { canPerformActions } from '../../services/ActionChecker';
+import { ACTION_GET_PROGRAM_COHORT_APPLICATIONS } from '../../authnz-library/sim-actions';
 
 const alerts: Alerts = new ToastifyAlerts();
 const ApplicationsList = (): JSX.Element => {
@@ -58,7 +59,8 @@ const ApplicationsList = (): JSX.Element => {
         ADMITTED = 'ADMITTED',
         REJECTED = 'REJECTED',
         PENDING = 'PENDING',
-        FAILED = 'FAILED'
+        FAILED = 'FAILED',
+        DEFERRED = 'DEFERRED'
     }
     const [data, setData] = useState([]);
     const [isError] = useState(false);
@@ -186,133 +188,126 @@ const ApplicationsList = (): JSX.Element => {
                                         )
                                     }}
                                 />
-                            </Card>
+                            </Card> 
                         </Col>
                     </Row>
-                </>
-            )}
-            <Modal
-                backdrop="static"
-                show={showModal}
-                onHide={handleClose}
-                size="lg"
-                aria-labelledby="contained-modal-title-vcenter"
-                centered
-            >
-                <Modal.Header closeButton>
-                    <Modal.Title id="contained-modal-title-vcenter">
+              
+                    <Modal
+                        backdrop="static"
+                        show={showModal}
+                        onHide={handleClose}
+                        size="lg"
+                        aria-labelledby="contained-modal-title-vcenter"
+                        centered
+                    >
+                        <Modal.Header closeButton>
+                            <Modal.Title id="contained-modal-title-vcenter">
                         Application Id: {applicationId}
-                        {isAdmitted === 'ADMITTED' && (
-                            <>
-                                <Link to={`/publishedsemesters?programCohortId=${applicationData?.programCohortId}&studentId=${applicationData?.studentId}&applicationId=${applicationData?.id}&studentName=${applicationData?.firstName+' '+applicationData?.lastName}`}>
-                                    <Button style={{ marginRight: '.5rem', marginLeft: '.5rem' }} variant="info" onClick={handleClose}>
+                                {isAdmitted === 'ADMITTED' && (
+                                    <>
+                                        <Link to={`/publishedsemesters?programCohortId=${applicationData?.programCohortId}&studentId=${applicationData?.studentId}&applicationId=${applicationData?.id}&studentName=${applicationData?.firstName+' '+applicationData?.lastName}`}>
+                                            <Button style={{ marginRight: '.5rem', marginLeft: '.5rem' }} variant="info" onClick={handleClose}>
                                         View Semesters
-                                    </Button>
-                                </Link>
-                                <Button variant="danger" onClick={(e) => handleAdmission(e, admissionStatus.REJECTED)} disabled={disabled}>
+                                            </Button>
+                                        </Link>
+                                        <Button variant="danger" onClick={(e) => handleAdmission(e, admissionStatus.REJECTED)} disabled={disabled}>
                                     Reject
-                                </Button>
-                            </>
-                        )}
-                        {isAdmitted === 'PENDING' && (
-                            <>
-                                <Button
-                                    style={{ marginRight: '.5rem', marginLeft: '.5rem' }}
-                                    variant="info"
-                                    onClick={(e) => handleAdmission(e, admissionStatus.ADMITTED)}
-                                >
+                                        </Button>
+                                    </>
+                                )}
+                                {isAdmitted === 'PENDING' && (
+                                    <>
+                                        <Button
+                                            style={{ marginRight: '.5rem', marginLeft: '.5rem' }}
+                                            variant="info"
+                                            onClick={(e) => handleAdmission(e, admissionStatus.ADMITTED)}
+                                        >
                                     Admit
-                                </Button>
-                                <Button variant="danger" onClick={(e) => handleAdmission(e, admissionStatus.REJECTED)} disabled={disabled}>
+                                        </Button>
+                                        <Button variant="danger" onClick={(e) => handleAdmission(e, admissionStatus.REJECTED)} disabled={disabled}>
                                     Reject
-                                </Button>
-                            </>
-                        )}
-                        {isAdmitted === 'REJECTED' && (
-                            <>
-                                <Button
-                                    style={{ marginRight: '.5rem', marginLeft: '.5rem' }}
-                                    variant="info"
-                                    onClick={(e) => handleAdmission(e, admissionStatus.ADMITTED)}
-                                    disabled={disabled}
-                                >
+                                        </Button>
+                                    </>
+                                )}
+                                {isAdmitted === 'REJECTED' && (
+                                    <>
+                                        <Button
+                                            style={{ marginRight: '.5rem', marginLeft: '.5rem' }}
+                                            variant="info"
+                                            onClick={(e) => handleAdmission(e, admissionStatus.ADMITTED)}
+                                            disabled={disabled}
+                                        >
                                     Admit
-                                </Button>
-                            </>
-                        )}
-                    </Modal.Title>
-                </Modal.Header>
-                <Modal.Body>
-                    <h6>Admission status: {isAdmitted}</h6>
-                    <Row>
-                        <div className="col-md-6">
-                            <ListGroup>
-                                <ListGroup.Item>First Name: {applicationData?.firstName}</ListGroup.Item>
-                                <ListGroup.Item>Last Name: {applicationData?.lastName}</ListGroup.Item>
-                                <ListGroup.Item>Other Name: {applicationData?.otherName}</ListGroup.Item>
-                                <ListGroup.Item>Nationality: {applicationData?.nationality}</ListGroup.Item>
-                                <ListGroup.Item>Identification Type: {applicationData?.identificationType}</ListGroup.Item>
-                                <ListGroup.Item>Identification No: {applicationData?.identification}</ListGroup.Item>
-                                <ListGroup.Item>Gender: {applicationData?.gender}</ListGroup.Item>
-                                <ListGroup.Item>Marital Status: {applicationData?.maritalStatus}</ListGroup.Item>
-                                <ListGroup.Item>Religion: {applicationData?.religion}</ListGroup.Item>
-                            </ListGroup>
-                        </div>
-                        <div className="col-md-6">
-                            <ListGroup>
-                                <ListGroup.Item>Phone Number: {applicationData?.phoneNumber}</ListGroup.Item>
-                                <ListGroup.Item>Email Address: {applicationData?.emailAddress}</ListGroup.Item>
-                                <ListGroup.Item>Date Of Birth: {applicationData?.dateOfBirth?.slice(0,10)}</ListGroup.Item>
-                                <ListGroup.Item>Physical Challenges: {applicationData?.physicalChallenges}</ListGroup.Item>
-                                <ListGroup.Item>Details: {applicationData?.physicalChallengesDetails}</ListGroup.Item>
-                                <ListGroup.Item>Campus: {applicationData?.campus[0].name}</ListGroup.Item>
-                                <ListGroup.Item>Preferred Start Date: {applicationData?.preferredStartDate?.slice(0,10)}</ListGroup.Item>
-                                <ListGroup.Item>Sponsor: {applicationData?.sponsor}</ListGroup.Item>
-                                <ListGroup.Item>County Of Residence: {applicationData?.countyOfResidence}</ListGroup.Item>
-                            </ListGroup>
-                        </div>
-                    </Row>
-                    <br />
-                    <Row>
-                        <div className="col-md-6">
-                            <h6>Next of Kin Details</h6>
-                            <ListGroup>
-                                <ListGroup.Item>Name: {applicationData?.nkd_name}</ListGroup.Item>
-                                <ListGroup.Item>Phone Number: {applicationData?.nkd_nextOfKinPhoneNumber}</ListGroup.Item>
-                                <ListGroup.Item>Relation: {applicationData?.nkd_relation}</ListGroup.Item>
-                            </ListGroup>
-                        </div>
-                        <div className="col-md-6">
-                            <ListGroup>
-                                <ListGroup.Item>Document Url: {applicationData?.sdocs_documentUrl}</ListGroup.Item>
-                            </ListGroup>
-                        </div>
-                    </Row>
-                    <br />
-                    <Button className="btn btn-danger btn-rounded float-left" onClick={handleClose}>
+                                        </Button>
+                                    </>
+                                )}
+                            </Modal.Title>
+                        </Modal.Header>
+                        <Modal.Body>
+                            <h6>Admission status: {isAdmitted}</h6>
+                            <Row>
+                                <div className="col-md-6">
+                                    <ListGroup>
+                                        <ListGroup.Item>First Name: {applicationData?.firstName}</ListGroup.Item>
+                                        <ListGroup.Item>Last Name: {applicationData?.lastName}</ListGroup.Item>
+                                        <ListGroup.Item>Other Name: {applicationData?.otherName}</ListGroup.Item>
+                                        <ListGroup.Item>Nationality: {applicationData?.nationality}</ListGroup.Item>
+                                        <ListGroup.Item>Identification Type: {applicationData?.identificationType}</ListGroup.Item>
+                                        <ListGroup.Item>Identification No: {applicationData?.identification}</ListGroup.Item>
+                                        <ListGroup.Item>Gender: {applicationData?.gender}</ListGroup.Item>
+                                        <ListGroup.Item>Marital Status: {applicationData?.maritalStatus}</ListGroup.Item>
+                                        <ListGroup.Item>Religion: {applicationData?.religion}</ListGroup.Item>
+                                    </ListGroup>
+                                </div>
+                                <div className="col-md-6">
+                                    <ListGroup>
+                                        <ListGroup.Item>Phone Number: {applicationData?.phoneNumber}</ListGroup.Item>
+                                        <ListGroup.Item>Email Address: {applicationData?.emailAddress}</ListGroup.Item>
+                                        <ListGroup.Item>Date Of Birth: {applicationData?.dateOfBirth?.slice(0,10)}</ListGroup.Item>
+                                        <ListGroup.Item>Physical Challenges: {applicationData?.physicalChallenges}</ListGroup.Item>
+                                        <ListGroup.Item>Details: {applicationData?.physicalChallengesDetails}</ListGroup.Item>
+                                        <ListGroup.Item>Campus: {applicationData?.campus[0].name}</ListGroup.Item>
+                                        <ListGroup.Item>Preferred Start Date: {applicationData?.preferredStartDate?.slice(0,10)}</ListGroup.Item>
+                                        <ListGroup.Item>Sponsor: {applicationData?.sponsor}</ListGroup.Item>
+                                        <ListGroup.Item>County Of Residence: {applicationData?.countyOfResidence}</ListGroup.Item>
+                                    </ListGroup>
+                                </div>
+                            </Row>
+                            <br />
+                            <Row>
+                                <div className="col-md-6">
+                                    <h6>Next of Kin Details</h6>
+                                    <ListGroup>
+                                        <ListGroup.Item>Name: {applicationData?.nkd_name}</ListGroup.Item>
+                                        <ListGroup.Item>Phone Number: {applicationData?.nkd_nextOfKinPhoneNumber}</ListGroup.Item>
+                                        <ListGroup.Item>Relation: {applicationData?.nkd_relation}</ListGroup.Item>
+                                    </ListGroup>
+                                </div>
+                                <div className="col-md-6">
+                                    <ListGroup>
+                                        <ListGroup.Item>Document Url: {applicationData?.sdocs_documentUrl}</ListGroup.Item>
+                                    </ListGroup>
+                                </div>
+                            </Row>
+                            <br />
+                            <Button className="btn btn-danger float-left" onClick={handleClose}>
                         Close
-                    </Button>
-                    <Button className="btn btn-info btn-rounded float-right" onClick={toggleUpdateModal}>
+                            </Button>
+                            <Button className="btn btn-info float-right" onClick={toggleUpdateModal}>
                         Update
-                    </Button>
-                </Modal.Body>
-            </Modal>
-            <Modal
-                backdrop="static"
-                show={modalShow}
-                onHide={handleCloseModal}
-                size="lg"
-                aria-labelledby="contained-modal-title-vcenter"
-                centered
-            >
-                <Modal.Header closeButton>
-                    <Modal.Title id="contained-modal-title-vcenter">Edit Application Details</Modal.Title>
-                </Modal.Header>
-                <Modal.Body>
-                    <EditApplicationDetails application={applicationData} close={resetStateCloseModal} />
-                </Modal.Body>
-            </Modal>
+                            </Button>
+                        </Modal.Body>
+                    </Modal>
+                    <ModalWrapper show={modalShow} closeModal={handleCloseModal} title='Edit Application Details' modalSize='lg' >
+                        <EditApplicationDetails
+                            application={applicationData}
+                            close={resetStateCloseModal}
+                            fetchProgramCohortApplications={fetchProgramCohortApplications}
+                        />
+                    </ModalWrapper>
+                </>
+            )};
         </>
     );
-};
+} ;  
 export default ApplicationsList;

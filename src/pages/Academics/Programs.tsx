@@ -1,22 +1,26 @@
 /* eslint-disable react/react-in-jsx-scope */
 /* eslint-disable react/display-name */
-import React, { useEffect, useState } from 'react';
-import { Alerts, ToastifyAlerts } from '../lib/Alert';
+import React, {useEffect, useState} from 'react';
+import {Alerts, ToastifyAlerts} from '../lib/Alert';
 import Alert from '@material-ui/lab/Alert';
 import Breadcrumb from '../../App/components/Breadcrumb';
-import { Button, Card, Col, ListGroup, Row } from 'react-bootstrap';
-import { Link } from 'react-router-dom';
-import { TextInput, ValidationForm } from 'react-bootstrap4-form-validation';
-import { canPerformActions } from '../../services/ActionChecker';
-import { ACTION_ASSIGN_COURSE_TO_PROGRAM, ACTION_CREATE_PROGRAM, ACTION_GET_PROGRAMS } from '../../authnz-library/timetabling-actions';
-import { timetablingAxiosInstance } from '../../utlis/interceptors/timetabling-interceptor';
+import {Button, Card, Col, ListGroup, Row} from 'react-bootstrap';
+import {Link} from 'react-router-dom';
+import {TextInput, ValidationForm} from 'react-bootstrap4-form-validation';
+import {canPerformActions} from '../../services/ActionChecker';
+import {
+    ACTION_ASSIGN_COURSE_TO_PROGRAM,
+    ACTION_CREATE_PROGRAM,
+    ACTION_GET_PROGRAMS
+} from '../../authnz-library/timetabling-actions';
+import {timetablingAxiosInstance} from '../../utlis/interceptors/timetabling-interceptor';
 import TableWrapper from '../../utlis/TableWrapper';
-import { certType, customSelectTheme, selectOptions } from '../lib/SelectThemes';
+import {certType, customSelectTheme, selectOptions} from '../lib/SelectThemes';
 import Select from 'react-select';
 import ConfirmationModalWrapper from '../../App/components/modal/ConfirmationModalWrapper';
 import CustomSwitch from '../../assets/switch/CustomSwitch';
 import ModalWrapper from '../../App/components/modal/ModalWrapper';
-import { LinearProgress, MenuItem, Select as MUISelect } from '@material-ui/core';
+import {LinearProgress, MenuItem, Select as MUISelect} from '@material-ui/core';
 
 const alerts: Alerts = new ToastifyAlerts();
 
@@ -270,27 +274,25 @@ const Programs = (): JSX.Element => {
                 </Col>
             </Row>
 
-            {canPerformActions(ACTION_GET_PROGRAMS.name) && (
-                <>
-                    <LinearProgress style={{ display: linearDisplay }} />
-                    <Row>
-                        <Col>
-                            <Card>
-                                <div>
-                                    {iserror && (
-                                        <Alert severity="error">
-                                            {errorMessages.map((msg, i) => {
-                                                return <div key={i}>{msg}</div>;
-                                            })}
-                                        </Alert>
-                                    )}
-                                </div>
-                                <TableWrapper title="Programs" columns={columns} data={data} options={{}} />
-                            </Card>
-                        </Col>
-                    </Row>
-                </>
-            )}
+            <>
+                <LinearProgress style={{ display: linearDisplay }} />
+                <Row>
+                    <Col>
+                        <Card>
+                            <div>
+                                {iserror && (
+                                    <Alert severity="error">
+                                        {errorMessages.map((msg, i) => {
+                                            return <div key={i}>{msg}</div>;
+                                        })}
+                                    </Alert>
+                                )}
+                            </div>
+                            <TableWrapper title="Programs" columns={columns} data={data} options={{}} />
+                        </Card>
+                    </Col>
+                </Row>
+            </>
             <ModalWrapper show={showModal} closeModal={toggleCreateModal} modalSize="lg" title="Create a program" noFooter>
                 <ValidationForm
                     onSubmit={(e) => {
@@ -333,7 +335,7 @@ const Programs = (): JSX.Element => {
                         <br />
                         <label htmlFor="cou">
                             <b>
-                                Prerequisite Documentation<span className="text-danger">*</span>
+                                Prerequisite Documentation
                             </b>
                         </label>
                         <TextInput

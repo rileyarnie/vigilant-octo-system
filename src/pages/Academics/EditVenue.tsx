@@ -1,9 +1,8 @@
 /* eslint-disable react/prop-types */
 import React, {useEffect, useState} from 'react';
-import {Row, Col, Card} from 'react-bootstrap';
-import {ValidationForm, TextInput} from 'react-bootstrap4-form-validation';
+import {Card, Col, Row} from 'react-bootstrap';
+import {TextInput, ValidationForm} from 'react-bootstrap4-form-validation';
 import {Alerts, ToastifyAlerts} from '../lib/Alert';
-import {regxAlphaNumericWithSpacesAndUnderscores} from '../lib/validation';
 import {timetablingAxiosInstance} from '../../utlis/interceptors/timetabling-interceptor';
 import ConfirmationModalWrapper from '../../App/components/modal/ConfirmationModalWrapper';
 import Select from 'react-select';
@@ -47,22 +46,20 @@ const EditVenue = (props): JSX.Element => {
             campusId: campusId === 0 ? props.selectedVenue.venue_campusId : campusId
         };
         props.setLinearDisplay('block');
-        setDisabled(false);
+        setDisabled(true);
         timetablingAxiosInstance
             .put(`/venues/${props.venue_id}`, {Venue: modifiedVenue})
             .then(() => {
-                setDisabled(true);
                 alerts.showSuccess('successfully updated Venue details');
-                props.setEditModal(false);
-                toggleCloseConfirmModal();
                 props.fetchVenues();
                 props.setLinearDisplay('none');
             })
             .catch((error) => {
-                setDisabled(false);
-                props.setEditModal(false);
-                toggleCloseConfirmModal();
                 alerts.showError(error.message);
+            }).finally(() => {
+                props.setEditModal(false);
+                setDisabled(false);
+                toggleCloseConfirmModal();
             });
     };
     const handleCampusChange = (campus) => {
@@ -70,7 +67,6 @@ const EditVenue = (props): JSX.Element => {
     };
     const toggleConfirmModal = () => {
         setConfirmModal(true);
-        console.log('CAMPUS ASSIGNED', campusAssigned[0].value);
     };
     const toggleCloseConfirmModal = () => {
         setConfirmModal(false);
@@ -105,7 +101,6 @@ const EditVenue = (props): JSX.Element => {
                                                     type="text"
                                                     placeholder="Hall 6"
                                                     defaultValue={props.venue_name}
-                                                    validator={(value) => regxAlphaNumericWithSpacesAndUnderscores.test(value)}
                                                     errorMessage={{validator: 'Please enter a valid name'}}
                                                     onChange={venueChangeHandler}
                                                 />

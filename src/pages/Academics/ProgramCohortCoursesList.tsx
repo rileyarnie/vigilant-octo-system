@@ -8,13 +8,14 @@ import LinearProgress from '@material-ui/core/LinearProgress';
 import Alert from '@material-ui/lab/Alert';
 import Breadcrumb from '../../App/components/Breadcrumb';
 import {SelectGroup, ValidationForm} from 'react-bootstrap4-form-validation';
-import {Button, Card, Col, Modal, Row} from 'react-bootstrap';
+import {Button, Card, Col,Row} from 'react-bootstrap';
 import {Alerts, ToastifyAlerts} from '../lib/Alert';
 import {createStyles, makeStyles, Theme} from '@material-ui/core/styles';
 import IconButton from '@material-ui/core/IconButton';
 import ArrowBackIcon from '@material-ui/icons/ArrowBack';
 import {timetablingAxiosInstance} from '../../utlis/interceptors/timetabling-interceptor';
 import TableWrapper from '../../utlis/TableWrapper';
+import ModalWrapper from '../../App/components/modal/ModalWrapper';
 
 const alerts: Alerts = new ToastifyAlerts();
 
@@ -146,6 +147,7 @@ const CourseCohortsList = (props): JSX.Element => {
     //         });
     // };
     const handleAssignSemesterSubmit = () => {
+        event.preventDefault();
         setLinearDisplay('block');
         timetablingAxiosInstance
             .patch(`/course-cohorts/${selectedRow.id}`, {
@@ -155,12 +157,14 @@ const CourseCohortsList = (props): JSX.Element => {
             })
             .then(() => {
                 alerts.showSuccess('Successfully updated course cohort');
-                setLinearDisplay('none');
                 fetchCourseCohortsByProgramCohortId();
                 resetStateCloseModal();
             })
             .catch((error) => {
                 alerts.showError(error.message);
+            })
+            .finally(() => {
+                setLinearDisplay('none');
             });
     };
 
@@ -232,46 +236,41 @@ const CourseCohortsList = (props): JSX.Element => {
                     </Card>
                 </Col>
             </Row>
-            <Modal backdrop="static" show={show} onHide={handleClose} size="lg"
-                aria-labelledby="contained-modal-title-vcenter" centered>
-                <Modal.Header closeButton>
-                    <Modal.Title id="contained-modal-title-vcenter">
-                        {' '}
-                        {selectedRow?.programCohortSemester?.semester ? 'Change semester' : 'Assign a semester'}{' '}
-                    </Modal.Title>
-                </Modal.Header>
-                <Modal.Body>
-                    <ValidationForm>
-                        <SelectGroup
-                            name="c"
-                            id="color"
-                            required
-                            defaultValue={selectedRow?.programCohortSemester?.semesterId}
-                            onChange={(e) => {
-                                setSelectedSemesterId(e.target.value);
-                            }}
-                        >
-                            <option value="">-- select a semester --</option>
-                            {semester.map((sem) => {
-                                return (
-                                    <option key={sem.name} defaultValue={selectedSemesterId} value={sem.id}>
-                                        {sem.name}
-                                    </option>
-                                );
-                            })}
-                        </SelectGroup>
-                        <br></br>
-                        <Col>
-                            <Button className="btn btn-info float-right" onClick={() => handleAssignSemesterSubmit()}>
-                                Submit
-                            </Button>
-                            <Button className="btn btn-danger float-left" onClick={handleClose}>
-                                Close
-                            </Button>
-                        </Col>
-                    </ValidationForm>
-                </Modal.Body>
-            </Modal>
+            <ModalWrapper
+                show={show}
+                closeModal={handleClose}
+                title={selectedRow?.programCohortSemester?.semester ? 'Change semester' : 'Assign a semester'}
+                noFooter
+            >
+                <ValidationForm onSubmit={handleAssignSemesterSubmit}>
+                    <SelectGroup
+                        name="c"
+                        id="color"
+                        required
+                        defaultValue={selectedRow?.programCohortSemester?.semesterId}
+                        onChange={(e) => {
+                            setSelectedSemesterId(e.target.value);
+                        }}
+                    >
+                        <option value="">-- select a semester --</option>
+                        {semester.map((sem) => {
+                            return (
+                                <option key={sem.name} defaultValue={selectedSemesterId} value={sem.id}>
+                                    {sem.name}
+                                </option>
+                            );
+                        })}
+                    </SelectGroup>
+                    <div className="mt-2" style={{ display: 'flex', justifyContent: 'space-between' }}>
+                        <Button className="btn btn-danger " onClick={handleClose}>
+                            Close
+                        </Button>
+                        <Button className="btn btn-info" type='submit'>
+                            Submit
+                        </Button>
+                    </div>
+                </ValidationForm>
+            </ModalWrapper>
         </>
     );
 };

@@ -1,7 +1,7 @@
 /* eslint-disable react/display-name */
 import React, { useEffect, useState } from 'react';
 import Breadcrumb from '../../App/components/Breadcrumb';
-import { Button, Card, Col, Row } from 'react-bootstrap';
+import {Button, Card, Col, ListGroup, Row} from 'react-bootstrap';
 import { TextInput, ValidationForm, FileInput } from 'react-bootstrap4-form-validation';
 import { Alerts, ToastifyAlerts } from '../lib/Alert';
 import { canPerformActions } from '../../services/ActionChecker';
@@ -438,6 +438,40 @@ const Transactions = (): JSX.Element => {
                                         {
                                             icon: ClearFilter,
                                             isFreeAction: true
+                                        }
+                                    ]}
+                                    detailPanel={[
+                                        {
+                                            render: (rowData) => {
+                                                return (
+                                                    <div>
+                                                        <Row>
+                                                            <div className="col-md-12">
+                                                                {rowData.transactions.map((trans) => (
+                                                                    <ListGroup.Item key={trans.id}>
+                                                                        <Row>
+                                                                            <Col
+                                                                                sm={12}
+                                                                                style={{
+                                                                                    display: 'flex',
+                                                                                    alignContent: 'center',
+                                                                                    justifyContent: 'space-between'
+                                                                                }}
+                                                                            >
+                                                                                <h6>{trans.id} </h6>
+                                                                                <h6>{trans.narrative} </h6>
+                                                                                <p>{new Date(trans.transactionDate).toLocaleDateString()}</p>
+                                                                                <p>{trans.transactionType}</p>
+                                                                                <p>{trans.currency} {trans.amount}</p>
+                                                                            </Col>
+                                                                        </Row>
+                                                                    </ListGroup.Item>
+                                                                ))}
+                                                            </div>
+                                                        </Row>
+                                                    </div>
+                                                );
+                                            }
                                         }
                                     ]}
                                 />

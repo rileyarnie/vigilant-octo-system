@@ -99,6 +99,12 @@ const chartData: { items: MenuItemType[] } = {
                             type: 'item',
                             url: '/departments',
                             hidden: !canPerformActions(ACTION_GET_DEPARTMENTS.name)
+                        },
+                        {
+                            id: 'Staff',
+                            title: 'Staff',
+                            type: 'item',
+                            url: '/staff'
                         }
                     ]
                 },
@@ -203,13 +209,6 @@ const chartData: { items: MenuItemType[] } = {
                     type: 'item',
                     icon: 'feather icon-user',
                     url: '/actionapprovals'
-                },
-                {
-                    id: 'Staff',
-                    title: 'Staff',
-                    type: 'item',
-                    icon: 'feather icon-user',
-                    url: '/staff'
                 }
             ]
         }

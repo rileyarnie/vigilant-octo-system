@@ -67,7 +67,7 @@ class Timetable extends React.Component {
             trainerId: 0,
             venueId: 0,
             semesterId: 0,
-            numSessions: 0,
+            numSessions: 1,
             startTime: '',
             endTime: '',
             dayOfWeek: '',
@@ -157,6 +157,7 @@ class Timetable extends React.Component {
                             numSessions: tu.numSessions,
                             venueId: tu.venueId,
                             trainerId: courseCohort.trainerId,
+                            trainingHours: courseCohort.course.trainingHours,
                             startDate: new Date(tu.recurrenceStartDate),
                             endDate: new Date(tu.recurrenceEndDate),
                             recurrenceRule: `FREQ=WEEKLY;BYDAY=${moment(tu.recurrenceStartDate).format('dd').toUpperCase()};COUNT=${
@@ -376,28 +377,30 @@ class Timetable extends React.Component {
                 editorType: 'dxNumberBox',
                 editorOptions: {
                     width: '100%',
-                    min: 0,
+                    min: 1,
                     max: max,
                     format: '',
                     showSpinButtons: true,
                     type: 'number'
                 }
-            },
-            {
-                label: {
-                    text: 'Duration in hours'
-                },
-                dataField: 'unitDuration',
-                editorType: 'dxNumberBox',
-                editorOptions: {
-                    width: '100%',
-                    min: 1,
-                    max: 24, // to allow units to span all day e.g confreneces
-                    format: '',
-                    showSpinButtons: true,
-                    type: 'number'
-                }
             }
+            //TODO: more elegant solution to be looked for after, do not delete the commented out lines
+
+            // {
+            //     label: {
+            //         text: 'Duration in hours'
+            //     },
+            //     dataField: 'unitDuration',
+            //     editorType: 'dxNumberBox',
+            //     editorOptions: {
+            //         width: '100%',
+            //         min: 1,
+            //         max: 24, // to allow units to span all day e.g confreneces
+            //         format: '',
+            //         showSpinButtons: true,
+            //         type: 'number'
+            //     }
+            // }
         ]);
     }
 
@@ -407,18 +410,22 @@ class Timetable extends React.Component {
      */
     handleEdit(e) {
         this.setState({ linearDisplay: 'block' });
-        const diffBtwnStartEnd = moment(e.appointmentData.endDate).diff(moment(e.appointmentData.startDate), 'hours', true);
-        const unitDuration = e.appointmentData.unitDuration ? e.appointmentData.unitDuration : diffBtwnStartEnd;
+        const trainingHours = e.appointmentData.trainigHours;
+
+        //TODO: more elegant solution to be looked for after, do not delete the 2 commented out lines
+        // const diffBtwnStartEnd = moment(e.appointmentData.endDate).diff(moment(e.appointmentData.startDate), 'hours', true);
+        // const unitDuration = e.appointmentData.unitDuration ? e.appointmentData.unitDuration : diffBtwnStartEnd;
+        const unitDuration = 1;
 
         const recurrenceStartDate = new Date(e.appointmentData.startDate);
         const recurrenceEndDate = new Date(moment(new Date(recurrenceStartDate)).add(unitDuration, 'hours'));
-        const numberOfSessions = e.appointmentData.numSessions;
+        const numberOfSessions = e.appointmentData.numSessions < 1 ? 1 : e.appointmentData.numSessions;
 
         const { semEnds, diff } = this.getMaxValueForNumberOfSession(); // get max value form semester date difference
         if (numberOfSessions > diff) {
             // number of sessions has exceeded semester period
             alerts.showError("Number of sessions can't exceed semester period!");
-            this.setState({ linearDisplay: 'non' });
+            this.setState({ linearDisplay: 'none' });
             return;
         }
 
@@ -480,7 +487,6 @@ class Timetable extends React.Component {
                 this.setState({ linearDisplay: 'none' });
             });
     }
-
     onListDragStart(e) {
         e.cancel = true;
     }

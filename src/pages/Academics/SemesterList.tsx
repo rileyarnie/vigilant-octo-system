@@ -1,15 +1,15 @@
 /* eslint-disable react/display-name */
-import React, { useEffect, useState } from 'react';
+import React, {useEffect, useState} from 'react';
 import Edit from '@material-ui/icons/Edit';
 import {LinearProgress} from '@material-ui/core';
 import Alert from '@material-ui/lab/Alert';
 import Breadcrumb from '../../App/components/Breadcrumb';
-import { Button, Card, Col, Modal, Row } from 'react-bootstrap';
-import { TextInput, ValidationForm } from 'react-bootstrap4-form-validation';
-import { Alerts, ToastifyAlerts } from '../lib/Alert';
-import { canPerformActions } from '../../services/ActionChecker';
-import { ACTION_CREATE_SEMESTERS, ACTION_GET_SEMESTERS, ACTION_UPDATE_SEMESTERS } from '../../authnz-library/timetabling-actions';
-import { timetablingAxiosInstance } from '../../utlis/interceptors/timetabling-interceptor';
+import {Button, Card, Col, Modal, Row} from 'react-bootstrap';
+import {TextInput, ValidationForm} from 'react-bootstrap4-form-validation';
+import {Alerts, ToastifyAlerts} from '../lib/Alert';
+import {canPerformActions} from '../../services/ActionChecker';
+import {ACTION_CREATE_SEMESTERS, ACTION_UPDATE_SEMESTERS} from '../../authnz-library/timetabling-actions';
+import {timetablingAxiosInstance} from '../../utlis/interceptors/timetabling-interceptor';
 import TableWrapper from '../../utlis/TableWrapper';
 import ConfirmationModalWrapper from '../../App/components/modal/ConfirmationModalWrapper';
 import CustomSwitch from '../../assets/switch/CustomSwitch';
@@ -26,10 +26,10 @@ const SemesterList = (): JSX.Element => {
     }
 
     const columns = [
-        { title: 'ID', field: 'id' },
-        { title: 'Semester name', field: 'name' },
-        { title: 'Start Date', render: (row) => row.startDate.slice(0, 10) },
-        { title: 'End Date', render: (row) => row.endDate.slice(0, 10) },
+        {title: 'ID', field: 'id'},
+        {title: 'Semester name', field: 'name'},
+        {title: 'Start Date', render: (row) => row.startDate.slice(0, 10)},
+        {title: 'End Date', render: (row) => row.endDate.slice(0, 10)},
         {
             title: 'Activation Status',
             field: 'internal_action',
@@ -39,7 +39,7 @@ const SemesterList = (): JSX.Element => {
                         <CustomSwitch
                             defaultChecked={row.activationStatus}
                             color="secondary"
-                            inputProps={{ 'aria-label': 'controlled' }}
+                            inputProps={{'aria-label': 'controlled'}}
                             onChange={(event) => {
                                 handleActivationStatusToggle(event, row);
                                 setRowData(row);
@@ -92,7 +92,7 @@ const SemesterList = (): JSX.Element => {
         };
         setDisabledButton(true);
         timetablingAxiosInstance
-            .put(`/semesters/${selectedRow.id}`, { body: semester })
+            .put(`/semesters/${selectedRow.id}`, {body: semester})
             .then(() => {
                 const msg = activationStatus ? 'Successfully activated semester' : 'Successfully Deactivated semester';
                 alerts.showSuccess(msg);
@@ -116,7 +116,7 @@ const SemesterList = (): JSX.Element => {
         setLinearDisplay('block');
         setDisabledButton(true);
         timetablingAxiosInstance
-            .put(`/semesters/${semesterId}`, { body: updates })
+            .put(`/semesters/${semesterId}`, {body: updates})
             .then(() => {
                 setDisabledButton(false);
                 alerts.showSuccess('Successfully updated Semester');
@@ -134,7 +134,7 @@ const SemesterList = (): JSX.Element => {
     const fetchSemesters = () => {
         setLinearDisplay('block');
         timetablingAxiosInstance
-            .get('/semesters', { params: { includeDeactivated: true } })
+            .get('/semesters', {params: {includeDeactivated: true}})
             .then((res) => {
                 setData(res.data);
             })
@@ -219,7 +219,7 @@ const SemesterList = (): JSX.Element => {
         <>
             <Row className="align-items-center page-header">
                 <Col>
-                    <Breadcrumb />
+                    <Breadcrumb/>
                 </Col>
                 <Col>
                     {canPerformActions(ACTION_CREATE_SEMESTERS.name) && (
@@ -229,50 +229,48 @@ const SemesterList = (): JSX.Element => {
                     )}
                 </Col>
             </Row>
-            {canPerformActions(ACTION_GET_SEMESTERS.name) && (
-                <>
-                    <LinearProgress style={{ display: linearDisplay }} />
-                    <Row>
-                        <Col>
-                            <Card>
-                                <div>
-                                    {isError && (
-                                        <Alert severity="error">
-                                            {errorMessages.map((msg, i) => {
-                                                return <div key={i}>{msg}</div>;
-                                            })}
-                                        </Alert>
-                                    )}
-                                </div>
-                                <TableWrapper
-                                    title="Semesters"
-                                    columns={columns}
-                                    data={data}
-                                    options={{ actionsColumnIndex: -1, pageSize: 50 }}
-                                    actions={
-                                        canPerformActions(ACTION_UPDATE_SEMESTERS.name)
-                                            ? [
-                                                {
-                                                    icon: Edit,
-                                                    tooltip: 'Edit Row',
-                                                    onClick: (event, rowData) => {
-                                                        setSemesterId(rowData.id);
-                                                        setSelectedSemesterName(rowData.name);
-                                                        setSelectedStartDate(rowData.startDate);
-                                                        setSelectedEndDate(rowData.endDate);
-                                                        setSelectedSemester(rowData);
-                                                        toggleCreateModal();
-                                                    }
+            <>
+                <LinearProgress style={{display: linearDisplay}}/>
+                <Row>
+                    <Col>
+                        <Card>
+                            <div>
+                                {isError && (
+                                    <Alert severity="error">
+                                        {errorMessages.map((msg, i) => {
+                                            return <div key={i}>{msg}</div>;
+                                        })}
+                                    </Alert>
+                                )}
+                            </div>
+                            <TableWrapper
+                                title="Semesters"
+                                columns={columns}
+                                data={data}
+                                options={{actionsColumnIndex: -1, pageSize: 50}}
+                                actions={
+                                    canPerformActions(ACTION_UPDATE_SEMESTERS.name)
+                                        ? [
+                                            {
+                                                icon: Edit,
+                                                tooltip: 'Edit Row',
+                                                onClick: (event, rowData) => {
+                                                    setSemesterId(rowData.id);
+                                                    setSelectedSemesterName(rowData.name);
+                                                    setSelectedStartDate(rowData.startDate);
+                                                    setSelectedEndDate(rowData.endDate);
+                                                    setSelectedSemester(rowData);
+                                                    toggleCreateModal();
                                                 }
-                                            ]
-                                            : []
-                                    }
-                                />
-                            </Card>
-                        </Col>
-                    </Row>
-                </>
-            )}
+                                            }
+                                        ]
+                                        : []
+                                }
+                            />
+                        </Card>
+                    </Col>
+                </Row>
+            </>
             <Modal
                 show={showModal}
                 onHide={toggleCreateModal}
@@ -282,10 +280,14 @@ const SemesterList = (): JSX.Element => {
                 centered
             >
                 <Modal.Header closeButton>
-                    <Modal.Title id="contained-modal-title-vcenter">{semesterId ? `Edit ${getName(selectedSemester?.name, semesterId)}` : 'Create a Semester'}</Modal.Title>
+                    <Modal.Title
+                        id="contained-modal-title-vcenter">{semesterId ? `Edit ${getName(selectedSemester?.name, semesterId)}` : 'Create a Semester'}</Modal.Title>
                 </Modal.Header>
                 <Modal.Body>
-                    <ValidationForm onSubmit={(e) => { e.preventDefault();toggleConfirmModal();}}>
+                    <ValidationForm onSubmit={(e) => {
+                        e.preventDefault();
+                        toggleConfirmModal();
+                    }}>
                         <div className="form-group">
                             <label htmlFor="name">
                                 <b>Semester name <span className="text-danger">*</span></b>
@@ -300,11 +302,11 @@ const SemesterList = (): JSX.Element => {
                                     setSemesterName(e.target.value);
                                 }}
                             />
-                            <br />
+                            <br/>
                             <label htmlFor="Date">
                                 <b>Start Date<span className="text-danger">*</span></b>
                             </label>
-                            <br />
+                            <br/>
                             <TextInput
                                 name="startDate"
                                 id="startDate"
@@ -316,11 +318,11 @@ const SemesterList = (): JSX.Element => {
                                     setStartDate(e.target.value);
                                 }}
                             />
-                            <br />
+                            <br/>
                             <label htmlFor="Date">
                                 <b>End Date<span className="text-danger">*</span></b>
                             </label>
-                            <br />
+                            <br/>
                             <TextInput
                                 name="endDate"
                                 id="endDate"
@@ -332,12 +334,15 @@ const SemesterList = (): JSX.Element => {
                                     setEndDate(e.target.value);
                                 }}
                             />
-                            <br />
+                            <br/>
                         </div>
                         <div className="form-group">
                             <button className="btn btn-info float-right">Submit</button>
-                            <button className="btn btn-danger float-left" onClick={(e) => { e.preventDefault();toggleCreateModal();}}>
-                            Cancel
+                            <button className="btn btn-danger float-left" onClick={(e) => {
+                                e.preventDefault();
+                                toggleCreateModal();
+                            }}>
+                                Cancel
                             </button>
                         </div>
                     </ValidationForm>
