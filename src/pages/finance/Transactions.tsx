@@ -101,7 +101,7 @@ const Transactions = (): JSX.Element => {
 
     const handleFileUpload = () => {
         const form = new FormData();
-        form.append('attachment', attachment);
+        form.append('fileUploaded', attachment);
         const config = {
             headers: { 'content-type': 'multipart/form-data' }
         };
@@ -535,13 +535,18 @@ const Transactions = (): JSX.Element => {
                                     name="attachment"
                                     id="attachment"
                                     required={attachmentUrl ? true : false}
-                                    onChange={(event) => setAttachment(event.target.files[0])}
+                                    // onChange={(event) => setAttachment(event.target.files[0])}
+                                    onChange={(e) => {
+                                        setAttachment(() => {
+                                            return e.target.files[0];
+                                        });
+                                    }}
                                     fileType={['pdf']}
-                                    maxFileSize="2 mb"
+                                    maxFileSize="10 mb"
                                     errorMessage={{
                                         required: 'Please upload a file',
                                         fileType: 'Only pdf files are allowed',
-                                        maxFileSize: 'Max file size is 2 mb'
+                                        maxFileSize: 'Max file size is 10 mb'
                                     }}
                                 />
                             </Col>
