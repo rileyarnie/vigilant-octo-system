@@ -14,18 +14,18 @@ const alerts: Alerts = new ToastifyAlerts();
 
 const StudentFeesManagement = (): JSX.Element => {
     const columns = [
-        { title: 'ID', field: 'applications_id' },
-        { title: 'Name', render: (rowData) => rowData.applications_firstName + ' ' + rowData.applications_lastName },
-        { title: 'Email', field: 'applications_emailAddress' },
-        { title: 'Program', field: 'applications_programCohortId' },
-        { title: 'Admission Status', field: 'applications_status' },
+        { title: 'ID', field: 'id' },
+        { title: 'Name', render: (rowData) => rowData.firstName + ' ' + rowData.lastName },
+        { title: 'Email', field: 'emailAddress' },
+        { title: 'Program', field: 'programCohortId' },
+        { title: 'Admission Status', field: 'status' },
         {
             title: 'Actions',
             field: 'internal_action',
             render: (row) => (
                 <Link
-                    to={`/studentfeesreport?studentId=${row.applications_studentId}&studentName=${
-                        row.applications_firstName + ' ' + row.applications_lastName
+                    to={`/studentfeesreport?studentId=${row.studentId}&studentName=${
+                        row.firstName + ' ' + row.lastName
                     }`}
                 >
                     <Button variant="link" value="View semesters">View Details</Button>

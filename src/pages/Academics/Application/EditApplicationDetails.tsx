@@ -123,7 +123,7 @@ export function EditApplicationDetails(props) {
     const updateApplication = (updates) => {
         setDisabledButton(true);
         simsAxiosInstance
-            .put(`/program-cohort-applications/${props.application?.applications_id}`, {modifiedProgramCohortApplication: updates})
+            .put(`/program-cohort-applications/${props.application?.id}`, {modifiedProgramCohortApplication: updates})
             .then(() => {
                 alerts.showSuccess('Successfully updated application details');
             })
