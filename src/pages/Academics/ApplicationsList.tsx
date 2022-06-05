@@ -17,9 +17,20 @@ import { ACTION_GET_PROGRAM_COHORT_APPLICATIONS } from '../../authnz-library/sim
 
 const alerts: Alerts = new ToastifyAlerts();
 const ApplicationsList = (): JSX.Element => {
-    interface campus {
+    interface campusArr {
         name: string,
         id: number
+    }
+    interface nextofKinDetails {
+        id: number,
+        name: string,
+        relation: string,
+        nextOfKinPhoneNumber: string
+    }
+    interface supportingDocuments {
+        id: number,
+        documentUrl: string,
+        applicationId: number
     }
     interface applicationDetails {
         firstName: string,
@@ -42,11 +53,9 @@ const ApplicationsList = (): JSX.Element => {
         sponsor: string,
         programCohortId: string,
         studentId?: number,
-        nkd_name: string,
-        nkd_nextOfKinPhoneNumber: string,
-        nkd_relation: string,
-        campus: campus,
-        sdocs_documentUrl: string
+        nextofKinDetails: nextofKinDetails,
+        campusArr: campusArr,
+        supportingDocuments: supportingDocuments
     }
     const columns = [
         { title: 'ID', field: 'id' },
@@ -157,6 +166,7 @@ const ApplicationsList = (): JSX.Element => {
                                     onRowClick={(event, row) => {
                                         toggleCreateModal();
                                         setApplicationData(row);
+                                        console.log('HELLO',row);
                                         setIsAdmitted(row.status);
                                         setApplicationId(row.id);
                                     }}
@@ -266,7 +276,7 @@ const ApplicationsList = (): JSX.Element => {
                                         <ListGroup.Item>Date Of Birth: {applicationData?.dateOfBirth?.slice(0,10)}</ListGroup.Item>
                                         <ListGroup.Item>Physical Challenges: {applicationData?.physicalChallenges}</ListGroup.Item>
                                         <ListGroup.Item>Details: {applicationData?.physicalChallengesDetails}</ListGroup.Item>
-                                        <ListGroup.Item>Campus: {applicationData?.campus[0].name}</ListGroup.Item>
+                                        <ListGroup.Item>Campus: {applicationData?.campusArr[0]?.name}</ListGroup.Item>
                                         <ListGroup.Item>Preferred Start Date: {applicationData?.preferredStartDate?.slice(0,10)}</ListGroup.Item>
                                         <ListGroup.Item>Sponsor: {applicationData?.sponsor}</ListGroup.Item>
                                         <ListGroup.Item>County Of Residence: {applicationData?.countyOfResidence}</ListGroup.Item>
@@ -278,14 +288,14 @@ const ApplicationsList = (): JSX.Element => {
                                 <div className="col-md-6">
                                     <h6>Next of Kin Details</h6>
                                     <ListGroup>
-                                        <ListGroup.Item>Name: {applicationData?.nkd_name}</ListGroup.Item>
-                                        <ListGroup.Item>Phone Number: {applicationData?.nkd_nextOfKinPhoneNumber}</ListGroup.Item>
-                                        <ListGroup.Item>Relation: {applicationData?.nkd_relation}</ListGroup.Item>
+                                        <ListGroup.Item>Name: {applicationData?.nextofKinDetails[0]?.name}</ListGroup.Item>
+                                        <ListGroup.Item>Phone Number: {applicationData?.nextofKinDetails[0]?.nextOfKinPhoneNumber}</ListGroup.Item>
+                                        <ListGroup.Item>Relation: {applicationData?.nextofKinDetails[0]?.relation}</ListGroup.Item>
                                     </ListGroup>
                                 </div>
                                 <div className="col-md-6">
                                     <ListGroup>
-                                        <ListGroup.Item>Document Url: {applicationData?.sdocs_documentUrl}</ListGroup.Item>
+                                        <ListGroup.Item>Document Url: {applicationData?.supportingDocuments[0]?.documentUrl}</ListGroup.Item>
                                     </ListGroup>
                                 </div>
                             </Row>
