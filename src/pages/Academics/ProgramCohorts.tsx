@@ -304,7 +304,6 @@ const ProgramCohorts = (): JSX.Element => {
         timetablingAxiosInstance
             .post('/files', form, config)
             .then((res) => {
-                console.log(res.data);
                 alerts.showSuccess('successfully uploaded');
                 setBanner(res.data);
                 setLinearDisplay('none');
