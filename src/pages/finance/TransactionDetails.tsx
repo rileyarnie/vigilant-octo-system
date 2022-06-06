@@ -43,7 +43,7 @@ const TransactionDetails: React.FunctionComponent<Props> = (props) => {
                         )}
                         {props.supportingDocument && (
                             <ListGroup.Item>
-                                <h6>Supporting document:</h6>link here
+                                <h6>Supporting document:</h6> {props.supportingDocument}
                             </ListGroup.Item>
                         )}
                     </ListGroup>
