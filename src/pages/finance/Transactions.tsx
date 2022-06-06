@@ -101,14 +101,15 @@ const Transactions = (): JSX.Element => {
 
     const handleFileUpload = () => {
         const form = new FormData();
-        form.append('attachment', attachment);
+        form.append('fileUploaded', attachment);
         const config = {
             headers: { 'content-type': 'multipart/form-data' }
         };
         StudentFeesManagementService.uploadSupportDocument(form, config)
             .then((res) => {
-                alerts.showSuccess('File uploaded successfully');
+                console.log('file upload response ', res);
                 setAttachmentUrl(res['data']);
+                alerts.showSuccess('File uploaded successfully');
             })
             .catch((error) => {
                 alerts.showError(error.message);
@@ -447,7 +448,7 @@ const Transactions = (): JSX.Element => {
                                                     <div>
                                                         <Row>
                                                             <div className="col-md-12">
-                                                                {rowData.transactions.map((trans) => (
+                                                                {rowData?.transactions?.map((trans) => (
                                                                     <ListGroup.Item key={trans.id}>
                                                                         <Row>
                                                                             <Col
@@ -532,10 +533,13 @@ const Transactions = (): JSX.Element => {
                             </label>
                             <Col sm={9}>
                                 <FileInput
-                                    name="attachment"
+                                    name="fileUploaded"
                                     id="attachment"
                                     required={attachmentUrl ? true : false}
-                                    onChange={(event) => setAttachment(event.target.files[0])}
+                                    encType="multipart/form-data"
+                                    onChange={(event) => setAttachment(() => {
+                                        return event.target.files[0];
+                                    })}
                                     fileType={['pdf']}
                                     maxFileSize="2 mb"
                                     errorMessage={{
