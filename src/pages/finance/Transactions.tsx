@@ -107,7 +107,6 @@ const Transactions = (): JSX.Element => {
         };
         StudentFeesManagementService.uploadSupportDocument(form, config)
             .then((res) => {
-                console.log('file upload response ', res);
                 setAttachmentUrl(res['data']);
                 alerts.showSuccess('File uploaded successfully');
             })
