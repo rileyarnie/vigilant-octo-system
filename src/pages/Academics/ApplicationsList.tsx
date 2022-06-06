@@ -192,6 +192,7 @@ const ApplicationsList = (): JSX.Element => {
                                                         <MenuItem value={'PENDING'}>Pending</MenuItem>
                                                         <MenuItem value={'REJECTED'}>Rejected</MenuItem>
                                                         <MenuItem value={'FAILED'}>Failed</MenuItem>
+                                                        <MenuItem value={'DEFERRED'}>Deferred</MenuItem>
                                                     </Select>
                                                 </div>
                                             </div>
