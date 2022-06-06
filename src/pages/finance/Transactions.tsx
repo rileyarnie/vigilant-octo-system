@@ -540,11 +540,11 @@ const Transactions = (): JSX.Element => {
                                         return event.target.files[0];
                                     })}
                                     fileType={['pdf']}
-                                    maxFileSize="2 mb"
+                                    maxFileSize="10 mb"
                                     errorMessage={{
                                         required: 'Please upload a file',
                                         fileType: 'Only pdf files are allowed',
-                                        maxFileSize: 'Max file size is 2 mb'
+                                        maxFileSize: 'Max file size is 10 mb'
                                     }}
                                 />
                             </Col>
