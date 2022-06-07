@@ -246,6 +246,7 @@ const CourseCohortsDetails = (props: any): JSX.Element => {
                                         {isMarkEntryUnlocked ? 'Lock Marks Entry' : 'Unlock Marks Entry'}
                                     </Button>
                                 </Col>
+                                {isMarkEntryUnlocked &&
                                 <Col>
                                     <CreateMarksModal
                                         fetchcourseCohortsRegistrations={fetchcourseCohortsRegistrations}
@@ -254,6 +255,7 @@ const CourseCohortsDetails = (props: any): JSX.Element => {
                                         certificationType={certificationType}
                                     ></CreateMarksModal>
                                 </Col>
+                                }
 
                                 <Col>
                                     <Button
