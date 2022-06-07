@@ -55,7 +55,7 @@ const ApplicationsList = (): JSX.Element => {
         studentId?: number,
         nextofKinDetails: nextofKinDetails,
         campusArr: campusArr,
-        supportingDocuments: supportingDocuments
+        supportingDocuments: supportingDocuments[]
     }
     const columns = [
         { title: 'ID', field: 'id' },
@@ -296,7 +296,21 @@ const ApplicationsList = (): JSX.Element => {
                                 </div>
                                 <div className="col-md-6">
                                     <ListGroup>
-                                        <ListGroup.Item>Document Url: {applicationData?.supportingDocuments[0]?.documentUrl}</ListGroup.Item>
+                                        <p>Document urls:</p>
+                                        <ListGroup.Item>
+                                            {
+                                                (applicationData?.supportingDocuments.map((doc,index) => {  
+                                                    const name = doc.documentUrl.split('/').pop();
+                                                    const altName = 'Doc' + index.toString();
+                                                    return (
+                                                        <>
+                                                            <a key={doc.id} href = {doc.documentUrl}  target='_blank' rel='noopener noreferrer'>{name || altName}</a>                                                   
+                                                            <br></br>
+                                                        </>   
+                                                    );                                    
+                                                }))
+                                            }
+                                        </ListGroup.Item>
                                     </ListGroup>
                                 </div>
                             </Row>
