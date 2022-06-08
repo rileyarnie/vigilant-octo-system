@@ -77,6 +77,9 @@ const ProgramCohorts = (): JSX.Element => {
     const [activationModal, setActivationModal] = useState(false);
     const [selectedRow, setRowData] = useState<programCohort>();
     const [disabledButton, setDisabledButton] = useState(false);
+    const errorMsg = 'Selected program has no associated courses. Please pick a different program';
+    const [showProgramError, setShowProgramError] = useState(false);
+    const [disableSubmit, setDisableSubmit] = useState(false);
 
     const handleActivationStatusToggle = (event, row: programCohort) => {
         setDisabled(true);
@@ -238,7 +241,7 @@ const ProgramCohorts = (): JSX.Element => {
                 setLinearDisplay('none');
             });
         timetablingAxiosInstance
-            .get('/programs')
+            .get('/programs', { params: { loadExtras: 'courses' } })
             .then((res) => {
                 setPrograms(res.data);
                 setLinearDisplay('none');
@@ -260,7 +263,8 @@ const ProgramCohorts = (): JSX.Element => {
             });
     }, []);
     programs.map((prog) => {
-        return programOptions.push({ value: prog.id, label: prog.name });
+        const coursesCount = `(${prog?.courses?.length || 0})`;
+        return programOptions.push({ value: prog.id, label: prog.name + ' ' + coursesCount});
     });
     campuses.map((camp) => {
         return campusOptions.push({ value: camp.id, label: camp.name });
@@ -407,6 +411,16 @@ const ProgramCohorts = (): JSX.Element => {
     };
     const handleProgramChange = (programId) => {
         setProgramId(parseInt(programId.value));
+        const selectedProgram = programs.find(pg => pg.id == programId.value);
+        
+        if(selectedProgram?.courses?.length === 0) {
+            setShowProgramError(true);
+            setDisableSubmit(true);
+            return;
+        }
+        setShowProgramError(false);
+        setDisableSubmit(false);
+
     };
     const handleCampusChange = (campusId) => {
         setCampusId(parseInt(campusId.value));
@@ -522,8 +536,13 @@ const ProgramCohorts = (): JSX.Element => {
                                     isMulti={false}
                                     placeholder="Select a Program."
                                     noOptionsMessage={() => 'No Programs available'}
-                                    onChange={(e) => handleProgramChange(e)}
+                                    onChange={(e) => handleProgramChange(e)}                               
                                 />
+                                {
+                                    showProgramError &&
+                                    <div style={{fontSize: '12px', color: 'red'}}>{errorMsg}</div>
+                                }
+                                
                                 <br />
                                 <label htmlFor="cohortName">
                                     <b>{cohortId ? 'Select a campus' : 'Select a new campus for this cohort'}<span className="text-danger">*</span></b>
@@ -625,7 +644,7 @@ const ProgramCohorts = (): JSX.Element => {
                             <input name="banner" id="banner" type="hidden" required value={banner} />
                             <br />
                             <div className="form-group">
-                                <button className="btn btn-info float-right">
+                                <button className="btn btn-info float-right" disabled={disableSubmit}>
                                     Submit
                                 </button>
                                 <button className="btn btn-danger float-left" onClick={(e) => { e.preventDefault();toggleCreateModal();}}>
