@@ -43,8 +43,8 @@ const ProgramCohortGraduationList: React.FunctionComponent<Props> = ({ toggleGra
 
     const data = graduands.map((graduand) => {
         return {
-            studentId: graduand.sds_id,
-            studentName: `${graduand.applications_firstName} ${graduand.applications_lastName}`,
+            studentId: graduand.studentId,
+            studentName: `${graduand.firstName} ${graduand.lastName}`,
             grades: graduand.averageMarks
         };
     });
