@@ -11,6 +11,7 @@ import {Alerts, ToastifyAlerts} from '../../lib/Alert';
 import TableWrapper from '../../../utlis/TableWrapper';
 import {timetablingAxiosInstance} from '../../../utlis/interceptors/timetabling-interceptor';
 import {simsAxiosInstance} from '../../../utlis/interceptors/sims-interceptor';
+import {CourseCohortService} from '../../services/CourseCohortsService';
 
 const alerts: Alerts = new ToastifyAlerts();
 const PublishedSemester = (): JSX.Element => {
@@ -27,15 +28,19 @@ const PublishedSemester = (): JSX.Element => {
 
     interface registration {
         registrationStatus: string;
+        id: number
     }
-
-    interface Course {
-        programCohortSemester: programCohortSemester;
+    interface course {
         id: number;
         name: string;
         codePrefix: string;
+    }
+
+    interface CourseCohort {
+        programCohortSemester: programCohortSemester;
         status: string;
         registration: registration;
+        course: course
     }
 
     const columns = [
@@ -44,17 +49,8 @@ const PublishedSemester = (): JSX.Element => {
         {title: 'Start Date', render: (row) => row?.startDate.slice(0, 10)},
         {title: 'End Date', render: (row) => row?.endDate.slice(0, 10)}
     ];
-    const childColumns = [
-        {title: 'ID', field: 'course.id'},
-        {title: 'Course Code', field: 'course.codePrefix'},
-        {title: 'Course Name', field: 'course.name'},
-        {
-            title: 'Registration Status',
-            render: (row) => <>{row.registration?.registrationStatus === 'registered' ? 'Registered' : 'Not Registered'}</>
-        }
-    ];
     const [data, setData] = useState([]);
-    const [childData, setChildData] = useState(new Map<number, Course[]>());
+    const [childData, setChildData] = useState(new Map<number, CourseCohort[]>());
     const [isError] = useState(false);
     const [errorMessages] = useState([]);
     const [courseCohortIds, setCourseCohortIds] = useState([]);
@@ -84,21 +80,22 @@ const PublishedSemester = (): JSX.Element => {
             .then((res) => {
                 const myData = res.data;
                 const uniqueSemIds = myData
-                    .map((v: Course) => v.programCohortSemester.semesterId)
+                    .filter(cc => cc?.programCohortSemester && cc?.programCohortSemester?.semesterId)
+                    .map((v: CourseCohort) => v?.programCohortSemester?.semesterId)
                     .filter((value, index, self) => self.indexOf(value) === index);
                 const semesterData = uniqueSemIds.map((semId) => {
-                    const cc = myData.filter((v: Course) => v.programCohortSemester.semesterId === semId)[0];
+                    const cc = myData.filter((v: CourseCohort) => v?.programCohortSemester?.semesterId === semId)[0];
                     return {
-                        id: cc.programCohortSemester.semester.id,
-                        name: cc.programCohortSemester.semester.name,
-                        startDate: cc.programCohortSemester.semester.startDate,
-                        endDate: cc.programCohortSemester.semester.endDate
+                        id: cc?.programCohortSemester?.semester?.id,
+                        name: cc?.programCohortSemester?.semester?.name,
+                        startDate: cc?.programCohortSemester?.semester?.startDate,
+                        endDate: cc?.programCohortSemester?.semester?.endDate
                     };
                 });
                 setData(semesterData);
-                const childData = new Map<number, Course[]>();
+                const childData = new Map<number, CourseCohort[]>();
                 uniqueSemIds.forEach((semId) => {
-                    const courses = myData.filter((v: Course) => v.programCohortSemester.semesterId === semId);
+                    const courses = myData.filter((v: CourseCohort) => v?.programCohortSemester?.semesterId === semId);
                     childData.set(semId, courses);
                 });
                 setChildData(childData);
@@ -108,7 +105,9 @@ const PublishedSemester = (): JSX.Element => {
                 alerts.showError(error.message);
             });
     }
-
+    function getTranscript(programCohortId: string, semesterId: number) {
+        CourseCohortService.getTranscript(programCohortId, semesterId);
+    }
     const resetStateCloseModal = () => {
         setModalShow(false);
     };
@@ -117,7 +116,7 @@ const PublishedSemester = (): JSX.Element => {
             applicationId: applicationId,
             courseCohortIds: courseCohortIds,
             registrationStatus: 'registered',
-            studentId: JSON.parse(localStorage.getItem('studentId'))
+            studentId: studentId
         };
         simsAxiosInstance.post(`/program-cohort-semesters/${programCohortSemesterId}/registrations`, register)
             .then(() => {
@@ -174,7 +173,15 @@ const PublishedSemester = (): JSX.Element => {
                                         return (
                                             <TableWrapper
                                                 title="Course Cohorts"
-                                                columns={childColumns}
+                                                columns={[
+                                                    {title: 'ID', field: 'id'},
+                                                    {title: 'Course Code', field: 'course.codePrefix'},
+                                                    {title: 'Course Name', field: 'course.name'},
+                                                    {
+                                                        title: 'Registration Status',
+                                                        render: (row) => <>{!row?.registration?.registrationStatus ? 'Not Registered' : row?.registration?.registrationStatus}</>
+                                                    }
+                                                ]}
                                                 data={childData.get(row.id)}
                                                 options={{
                                                     selection: true,
@@ -191,13 +198,25 @@ const PublishedSemester = (): JSX.Element => {
                                                         <div>
                                                             <MTableToolbar {...props} />
                                                             <div style={{padding: '0px 10px'}}>
+                                                                {props.selectedRows.length === 0 ?
+                                                                    <p className="btn btn-light btn-default float-center">Select Courses to register</p>
+                                                                    :
+                                                                    <Button
+                                                                        className="btn btn-info btn-default float-center"
+                                                                        onClick={() => {
+                                                                            toggleRegisterModal();
+                                                                        }}
+                                                                    >
+                                                                        Register
+                                                                    </Button>
+                                                                }
                                                                 <Button
-                                                                    className="btn btn-info btn-rounded float-center"
+                                                                    className="btn btn-info btn-default float-right"
                                                                     onClick={() => {
-                                                                        toggleRegisterModal();
+                                                                        getTranscript(programCohortId, row.id);
                                                                     }}
                                                                 >
-                                                                    Register
+                                                                    Download Transcript
                                                                 </Button>
                                                             </div>
                                                         </div>
