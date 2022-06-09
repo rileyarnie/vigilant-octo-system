@@ -263,8 +263,8 @@ const ProgramCohorts = (): JSX.Element => {
             });
     }, []);
     programs.map((prog) => {
-        const coursesCount = `(${prog?.courses?.length || 0})`;
-        return programOptions.push({ value: prog.id, label: prog.name + ' ' + coursesCount});
+        const pgSelectionLabel = `${prog.name} (${prog.courses?.length || 0})`;
+        return programOptions.push({ value: prog.id, label: pgSelectionLabel});
     });
     campuses.map((camp) => {
         return campusOptions.push({ value: camp.id, label: camp.name });
