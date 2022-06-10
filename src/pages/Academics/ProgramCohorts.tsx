@@ -462,9 +462,6 @@ const ProgramCohorts = (): JSX.Element => {
     const toggleCloseConfirmModal = () => {
         setConfirmModal(false);
     };
-    const checkCoursesAssigned = (value) => {
-        return value.courses.length > 0;
-    };
     return (
         <>
             <Row className="align-items-center page-header">
