@@ -78,6 +78,7 @@ const ProgramCohorts = (): JSX.Element => {
     const [selectedRow, setRowData] = useState<programCohort>();
     const [disabledButton, setDisabledButton] = useState(false);
 
+
     const handleActivationStatusToggle = (event, row: programCohort) => {
         setDisabled(true);
         if (row.program_cohorts_activationStatus) {
@@ -238,7 +239,7 @@ const ProgramCohorts = (): JSX.Element => {
                 setLinearDisplay('none');
             });
         timetablingAxiosInstance
-            .get('/programs')
+            .get('/programs', { params: { loadExtras: 'courses' } })
             .then((res) => {
                 setPrograms(res.data);
                 setLinearDisplay('none');
@@ -260,7 +261,10 @@ const ProgramCohorts = (): JSX.Element => {
             });
     }, []);
     programs.map((prog) => {
-        return programOptions.push({ value: prog.id, label: prog.name });
+        const pgSelectionLabel = `${prog.name} (${prog.courses?.length || 0})`;
+        return programOptions.push({ value: prog.id, label: pgSelectionLabel, isDisabled: prog.courses?.length > 0 ?
+            false : true        
+        });
     });
     campuses.map((camp) => {
         return campusOptions.push({ value: camp.id, label: camp.name });
@@ -522,8 +526,10 @@ const ProgramCohorts = (): JSX.Element => {
                                     isMulti={false}
                                     placeholder="Select a Program."
                                     noOptionsMessage={() => 'No Programs available'}
-                                    onChange={(e) => handleProgramChange(e)}
+                                    onChange={(e) => handleProgramChange(e)}                 
                                 />
+
+                                
                                 <br />
                                 <label htmlFor="cohortName">
                                     <b>{cohortId ? 'Select a campus' : 'Select a new campus for this cohort'}<span className="text-danger">*</span></b>
