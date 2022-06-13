@@ -221,9 +221,12 @@ const ApplicationsList = (): JSX.Element => {
                                         View Semesters
                                             </Button>
                                         </Link>
+                                        {
+                                            isAdmitted !== 'ADMITTED' &&                                         
                                         <Button variant="danger" onClick={(e) => handleAdmission(e, admissionStatus.REJECTED)} disabled={disabled}>
-                                    Reject
+                                        Reject
                                         </Button>
+                                        }
                                     </>
                                 )}
                                 {isAdmitted === 'PENDING' && (
