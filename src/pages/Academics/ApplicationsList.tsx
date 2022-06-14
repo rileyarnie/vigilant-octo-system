@@ -222,11 +222,11 @@ const ApplicationsList = (): JSX.Element => {
                                             </Button>
                                         </Link>
                                         {
-                                            isAdmitted !== 'ADMITTED' &&                                         
-                                        <Button variant="danger" onClick={(e) => handleAdmission(e, admissionStatus.REJECTED)} disabled={disabled}>
+                                            isAdmitted !== 'ADMITTED' && (                                      
+                                                <Button variant="danger" onClick={(e) => handleAdmission(e, admissionStatus.REJECTED)} disabled={disabled}>
                                         Reject
-                                        </Button>
-                                        }
+                                                </Button>
+                                            )}
                                     </>
                                 )}
                                 {isAdmitted === 'PENDING' && (
