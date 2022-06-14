@@ -8,7 +8,7 @@ import LinearProgress from '@material-ui/core/LinearProgress';
 import Alert from '@material-ui/lab/Alert';
 import Breadcrumb from '../../App/components/Breadcrumb';
 import {SelectGroup, ValidationForm} from 'react-bootstrap4-form-validation';
-import {Button, Card, Col,Row} from 'react-bootstrap';
+import {Button, Card, Col, Row} from 'react-bootstrap';
 import {Alerts, ToastifyAlerts} from '../lib/Alert';
 import {createStyles, makeStyles, Theme} from '@material-ui/core/styles';
 import IconButton from '@material-ui/core/IconButton';
@@ -69,31 +69,38 @@ const CourseCohortsList = (props): JSX.Element => {
             field: 'internal_action',
             render: (row) => (
                 <>
-                    {(row.programCohortSemester && (row.programCohortSemester.status).toUpperCase() === 'PUBLISHED') ? (
+                    {(row.programCohort && (row.programCohort.activationStatus === false)) ? (
                         <>
-                            Cant update a published Cohort Semester
-                        </>) : (
+                            Cant update a deactivated program Cohort
+                        </>):(
                         <>
-                            <button
-                                className="btn btn btn-link"
-                                onClick={() => {
-                                    handleShow();
-                                    setSelectedRow(row);
-                                }}
-                            >
-                                {row.programCohortSemester ? (
-                                    <>
-                                        Change Semester
-                                        <AssignmentTurnedIn fontSize="inherit"
-                                            style={{fontSize: '20px', color: 'black'}}/>
-                                    </>) : (
-                                    <>
-                                        Assign Semester
-                                        <AssignmentTurnedIn fontSize="inherit"
-                                            style={{fontSize: '20px', color: 'black'}}/>
-                                    </>)
-                                }
-                            </button>
+                            {(row.programCohortSemester && (row.programCohortSemester.status).toUpperCase() === 'PUBLISHED') ? (
+                                <>
+                                Cant update a published Cohort Semester
+                                </>) : (
+                                <>
+                                    <button
+                                        className="btn btn btn-link"
+                                        onClick={() => {
+                                            handleShow();
+                                            setSelectedRow(row);
+                                        }}
+                                    >
+                                        {row.programCohortSemester ? (
+                                            <>
+                                            Change Semester
+                                                <AssignmentTurnedIn fontSize="inherit"
+                                                    style={{fontSize: '20px', color: 'black'}}/>
+                                            </>) : (
+                                            <>
+                                            Assign Semester
+                                                <AssignmentTurnedIn fontSize="inherit"
+                                                    style={{fontSize: '20px', color: 'black'}}/>
+                                            </>)
+                                        }
+                                    </button>
+                                </>
+                            )}
                         </>
                     )}
                 </>
@@ -126,7 +133,12 @@ const CourseCohortsList = (props): JSX.Element => {
 
     function fetchCourseCohortsByProgramCohortId() {
         timetablingAxiosInstance
-            .get('/course-cohorts', {params: {programCohortId: programCohortId, loadExtras: 'course,semester'}})
+            .get('/course-cohorts', {
+                params: {
+                    programCohortId: programCohortId,
+                    loadExtras: 'course,semester'
+                }
+            })
             .then((res) => {
                 const ccData = res.data;
                 setData(ccData);
@@ -261,12 +273,12 @@ const CourseCohortsList = (props): JSX.Element => {
                             );
                         })}
                     </SelectGroup>
-                    <div className="mt-2" style={{ display: 'flex', justifyContent: 'space-between' }}>
+                    <div className="mt-2" style={{display: 'flex', justifyContent: 'space-between'}}>
                         <Button className="btn btn-danger " onClick={handleClose}>
-                            Close
+                    Close
                         </Button>
                         <Button className="btn btn-info" type='submit'>
-                            Submit
+                    Submit
                         </Button>
                     </div>
                 </ValidationForm>
