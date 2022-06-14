@@ -42,6 +42,7 @@ const Department = (): JSX.Element => {
                         defaultChecked={row.activationStatus}
                         color="secondary"
                         inputProps={{ 'aria-label': 'controlled' }}
+                        checked={row.activationStatus}
                         onChange={(event) => {
                             handleActivationStatusToggle(event, row);
                             setSelectedRow(row);

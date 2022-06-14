@@ -37,7 +37,6 @@ const CampusList = (): JSX.Element => {
     const [selectedDescription, setSelectedDescription] = useState('');
     const [linearDisplay, setLinearDisplay] = useState('none');
     const [, setDisabled] = useState(false);
-    let activationStatus: boolean;
     const [disabledButton, setDisabledButton] = useState(false);
     const [status, setStatus] = useState(false);
     const handleActivationStatusToggle = (event, row: Campus) => {
@@ -54,7 +53,7 @@ const CampusList = (): JSX.Element => {
             .put(`/campuses/${selectedRow.id}`, campus)
             .then(() => {
                 setDisabledButton(false);
-                const msg = activationStatus ? 'Successfully activated campus' : 'Successfully Deactivated campus';
+                const msg = campus.activationStatus ? 'Successfully activated campus' : 'Successfully Deactivated campus';
                 alerts.showSuccess(msg);
                 fetchCampuses();
                 setActivationModal(false);
@@ -86,6 +85,7 @@ const CampusList = (): JSX.Element => {
                             defaultChecked={row.activationStatus}
                             color="secondary"
                             inputProps={{ 'aria-label': 'controlled' }}
+                            checked={row.activationStatus}
                             onChange={(event) => {
                                 handleActivationStatusToggle(event, row);
                                 setSelectedRow(row);
