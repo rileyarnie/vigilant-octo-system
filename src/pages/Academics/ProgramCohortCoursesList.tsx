@@ -72,7 +72,7 @@ const CourseCohortsList = (props): JSX.Element => {
                 <>
                     {(row.programCohort && (row.programCohort.activationStatus === false)) ? (
                         <>
-                            Can&apos;t update a deactivated program Cohort
+                            Needs activation
                         </>):(
                         <>
                             {(row.programCohortSemester && (row.programCohortSemester.status).toUpperCase() === 'PUBLISHED') ? (
