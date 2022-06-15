@@ -183,7 +183,7 @@ const CampusList = (): JSX.Element => {
             })
             .finally(() => {
                 setDisabledButton(false);
-                setLinearDisplay('block');
+                setLinearDisplay('none');
             });
     };
     const resetStateCloseModal = () => {
