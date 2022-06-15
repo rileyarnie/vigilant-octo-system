@@ -166,7 +166,8 @@ function ProgramCohortSemesterDetails(props) {
                     return error;
                 }
                 alerts.showError(error.message);
-            }).finally(() => {
+            })
+            .finally(() => {
                 setLinearDisplay('none');
             });
     }
@@ -268,7 +269,6 @@ function ProgramCohortSemesterDetails(props) {
                 setDisabledButton(false);
                 setShowModal(false);
                 setConfirmPublishModal(false);
-
             });
     }
 
@@ -325,9 +325,7 @@ function ProgramCohortSemesterDetails(props) {
                         className="float-center"
                         variant="danger"
                         onClick={() => {
-                            programCohortSemesterStatus === 'PENDING'
-                                ? togglePublishSemesterModal()
-                                : toggleConfirmPublishModal();
+                            programCohortSemesterStatus === 'PENDING' ? togglePublishSemesterModal() : toggleConfirmPublishModal();
                         }}
                     >
                         {programCohortSemesterStatus === 'PENDING' ? 'Publish' : 'Unpublish'}
@@ -573,27 +571,18 @@ function ProgramCohortSemesterDetails(props) {
                 )}
             </ModalWrapper>
             {/* cancel programCohortSemester modal */}
-            <Modal show={showCancelModal} onHide={showCancelSemesterModal} size="lg" backdrop="static" centered>
-                <Modal.Header closeButton>
-                    <Modal.Title id="contained-modal-title-vcenter">
-                        Cancelling a program-cohort cancels all active course-cohorts and prevents addition of the cohort to a semester or
-                        timetabling of the same, are you sure you want to proceed?
-                    </Modal.Title>
-                </Modal.Header>
-                <Modal.Body></Modal.Body>
-                <Modal.Footer style={{ display: 'flex', justifyContent: 'space-between' }}>
-                    <Button
-                        variant="btn btn-info btn-rounded"
-                        onClick={(e) => {
-                            e.preventDefault();
-                            setShowCancelModal(false);
-                        }}
-                    >
-                        No
-                    </Button>
-                    <Button variant="btn btn-danger btn-rounded">Cancel</Button>
-                </Modal.Footer>
-            </Modal>
+            <ModalWrapper
+                show={showCancelModal}
+                closeModal={showCancelSemesterModal}
+                title="Cancel Semester"
+                submitButton
+                submitFunction={() => console.log('cancel semester function')}
+            >
+                <h6 style={{ textAlign: 'center', marginBottom: '1rem' }}>
+                    This action wil cancel all cohorts and prevent any futher updates to this semester.
+                </h6>
+                <h6 style={{ textAlign: 'center' }}>Are you sure ?</h6>
+            </ModalWrapper>
             <ConfirmationModalWrapper
                 disabled={disabledButton}
                 show={confirmPublishModal}
