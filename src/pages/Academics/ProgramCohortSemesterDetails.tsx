@@ -24,6 +24,7 @@ import ArrowBackIcon from '@material-ui/icons/ArrowBack';
 import TableWrapper from '../../utlis/TableWrapper';
 import ConfirmationModalWrapper from '../../App/components/modal/ConfirmationModalWrapper';
 import ModalWrapper from '../../App/components/modal/ModalWrapper';
+import { timetablingAxiosInstance } from '../../utlis/interceptors/timetabling-interceptor';
 
 const alerts: Alerts = new ToastifyAlerts();
 
@@ -307,6 +308,25 @@ function ProgramCohortSemesterDetails(props) {
     const handleBack = () => {
         props.history.goBack();
     };
+
+    //handle semester cancellation
+    const handleCancelSemester = () => {
+        setLinearDisplay('block');
+        timetablingAxiosInstance
+            .put(`/program-cohort-semesters/${semesterId}`, {
+                ModifyProgramCohortSemesterRequest: { status: 'CANCELLED' }
+            })
+            .then(() => {
+                alerts.showSuccess('Semester has been cancelled');
+                setShowCancelModal(false);
+            })
+            .catch((error) => {
+                alerts.showError(error.message);
+            })
+            .finally(() => {
+                setLinearDisplay('none');
+            });
+    };
     return (
         <>
             <Row className="align-items-center page-header">
@@ -328,7 +348,7 @@ function ProgramCohortSemesterDetails(props) {
                             programCohortSemesterStatus === 'PENDING' ? togglePublishSemesterModal() : toggleConfirmPublishModal();
                         }}
                     >
-                        {programCohortSemesterStatus === 'PENDING' ? 'Publish' : 'Unpublish'}
+                        {programCohortSemesterStatus.toLowerCase() === 'published' ? 'Unpublish' : 'Publish '}
                     </Button>
                     <Button
                         className="float-center"
@@ -576,7 +596,9 @@ function ProgramCohortSemesterDetails(props) {
                 closeModal={showCancelSemesterModal}
                 title="Cancel Semester"
                 submitButton
-                submitFunction={() => console.log('cancel semester function')}
+                submitFunction={handleCancelSemester}
+                linearDisplay={linearDisplay === 'block'}
+                disabled={linearDisplay === 'block'}
             >
                 <h6 style={{ textAlign: 'center', marginBottom: '1rem' }}>
                     This action wil cancel all cohorts and prevent any futher updates to this semester.
