@@ -3,13 +3,12 @@ import React, {useEffect, useState} from 'react';
 import Card from '@material-ui/core/Card';
 import Alert from '@material-ui/lab/Alert';
 import Breadcrumb from '../../App/components/Breadcrumb';
-import {Button, Col, Dropdown, DropdownButton, Modal, Row} from 'react-bootstrap';
-import {FileInput, TextInput, ValidationForm } from 'react-bootstrap4-form-validation';
+import {Button, Col, Modal, Row} from 'react-bootstrap';
+import {FileInput, TextInput, ValidationForm} from 'react-bootstrap4-form-validation';
 import CardPreview from './CardPreview';
 import {Link} from 'react-router-dom';
 import {Alerts, ToastifyAlerts} from '../lib/Alert';
-import {LinearProgress} from '@mui/material';
-import {ProgramCohortService} from '../services/ProgramCohortService';
+import {LinearProgress, MenuItem, Select as MUISelect} from '@material-ui/core';import {ProgramCohortService} from '../services/ProgramCohortService';
 import {canPerformActions} from '../../services/ActionChecker';
 import {ACTION_CREATE_PROGRAM_COHORT} from '../../authnz-library/timetabling-actions';
 import {timetablingAxiosInstance} from '../../utlis/interceptors/timetabling-interceptor';
@@ -19,6 +18,7 @@ import {customSelectTheme} from '../lib/SelectThemes';
 import ConfirmationModalWrapper from '../../App/components/modal/ConfirmationModalWrapper';
 import CustomSwitch from '../../assets/switch/CustomSwitch';
 import ModalWrapper from '../../App/components/modal/ModalWrapper';
+
 
 const alerts: Alerts = new ToastifyAlerts();
 
@@ -166,64 +166,64 @@ const ProgramCohorts = (): JSX.Element => {
             title: 'Actions',
             field: 'internal_action',
             render: (row) => (
-                <DropdownButton id="dropdown-basic-button" variant="Secondary" title="Actions">
-                    <button
-                        className="btn btn btn-link"
+                <MUISelect defaultValue="" value="" labelId="demo-simple-select-label" id="demo-simple-select" style={{ width: 100 }}>
+                    <MenuItem
+                        value="assignCourses"
                         onClick={() => {
                             setCohortId(row.program_cohorts_id);
-                            toggleCreateModal();
                             setSelectedProgramCohort(row);
                             setBanner(row.program_cohorts_bannerImageUrl);
+                            toggleCreateModal();
                         }}
                     >
-                        <Dropdown.Item>Edit</Dropdown.Item>
-                    </button>
-                    <button
-                        className="btn btn btn-link"
+                        Edit
+                    </MenuItem>
+                    <MenuItem
+                        value="assignCourses"
                         onClick={() => {
                             setCohortIdCancel(row.program_cohorts_id);
                             setCohortName(row.pg_name);
                             toggleCancelModal();
                         }}
                     >
-                        <Dropdown.Item>Cancel</Dropdown.Item>
-                    </button>
-                    <Dropdown.Item>
-                        <Link
-                            to="/cohortscourses"
-                            onClick={() => {
-                                localStorage.setItem('programId', row.pg_id);
-                                localStorage.setItem('programName', row.pg_name);
-                                localStorage.setItem('programCohortId', row.program_cohorts_id);
-                                localStorage.setItem('programCohortCode', row.program_cohorts_code);
-                                localStorage.setItem(
-                                    'anticipatedGraduation',
-                                    `${row.program_cohorts_anticipatedGraduationMonth}/${row.program_cohorts_anticipatedGraduationYear}`
-                                );
-                            }}
-                        >
-                            View courses
-                        </Link>
-                    </Dropdown.Item>
-                    <Dropdown.Item>
-                        <Link
-                            to="/programcohortsemester"
-                            onClick={() => {
-                                localStorage.setItem('programId', row.pg_id);
-                                localStorage.setItem('programName', row.pg_name);
-                                localStorage.setItem('semesterId', row.semesterId);
-                                localStorage.setItem('programCohortId', row.program_cohorts_id);
-                                localStorage.setItem('program_cohort_code', row.program_cohorts_code);
-                                localStorage.setItem(
-                                    'anticipatedGraduation',
-                                    `${row.program_cohorts_anticipatedGraduationMonth}/${row.program_cohorts_anticipatedGraduationYear}`
-                                );
-                            }}
-                        >
-                            View semesters
-                        </Link>
-                    </Dropdown.Item>
-                </DropdownButton>
+                        Cancel
+                    </MenuItem>
+
+                    <Link
+                        to="/cohortscourses"
+                        onClick={() => {
+                            localStorage.setItem('programId', row.pg_id);
+                            localStorage.setItem('programName', row.pg_name);
+                            localStorage.setItem('programCohortId', row.program_cohorts_id);
+                            localStorage.setItem('programCohortCode', row.program_cohorts_code);
+                            localStorage.setItem(
+                                'anticipatedGraduation',
+                                `${row.program_cohorts_anticipatedGraduationMonth}/${row.program_cohorts_anticipatedGraduationYear}`
+                            );
+                        }}
+                        style={{ color: 'black' }}
+                    >
+                        <MenuItem value="assignCourses">View Courses</MenuItem>
+                    </Link>
+
+                    <Link
+                        to="/programcohortsemester"
+                        onClick={() => {
+                            localStorage.setItem('programId', row.pg_id);
+                            localStorage.setItem('programName', row.pg_name);
+                            localStorage.setItem('semesterId', row.semesterId);
+                            localStorage.setItem('programCohortId', row.program_cohorts_id);
+                            localStorage.setItem('program_cohort_code', row.program_cohorts_code);
+                            localStorage.setItem(
+                                'anticipatedGraduation',
+                                `${row.program_cohorts_anticipatedGraduationMonth}/${row.program_cohorts_anticipatedGraduationYear}`
+                            );
+                        }}
+                        style={{ color: 'black' }}
+                    >
+                        <MenuItem value="viewCourses">View Semesters</MenuItem>
+                    </Link>
+                </MUISelect>
             )
         }
     ];

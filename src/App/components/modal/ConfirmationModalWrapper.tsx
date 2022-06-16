@@ -1,6 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import React from 'react';
 import { Button, Modal } from 'react-bootstrap';
+import LinearProgress from '@material-ui/core/LinearProgress';
 
 interface Props {
     show: boolean;
@@ -8,11 +9,12 @@ interface Props {
     title?: string;
     submitButton?: boolean;
     submitFunction?: (e?: unknown) => void;
-    disabled:boolean
+    disabled: boolean;
 }
 const ConfirmationModalWrapper: React.FunctionComponent<Props> = (props) => {
     return (
         <Modal show={props.show} backdrop="static" centered size="sm">
+            {props.disabled && <LinearProgress />}
             <Modal.Header closeButton onHide={props.closeModal}>
                 <Modal.Title id="contained-modal-title-vcenter">{props.title}</Modal.Title>
             </Modal.Header>

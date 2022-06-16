@@ -6,6 +6,8 @@ import { ValidationForm, TextInput } from 'react-bootstrap4-form-validation';
 import { Alerts, ToastifyAlerts } from '../../lib/Alert';
 import { authnzAxiosInstance } from '../../../utlis/interceptors/authnz-interceptor';
 import ConfirmationModalWrapper from '../../../App/components/modal/ConfirmationModalWrapper';
+import validator from 'validator';
+
 
 const alerts: Alerts = new ToastifyAlerts();
 const CreateUserModal = (props): JSX.Element => {
@@ -73,6 +75,7 @@ const CreateUserModal = (props): JSX.Element => {
                                                     type="email"
                                                     required
                                                     placeholder="user@kpc.co.ke"
+                                                    validator={validator.isEmail} 
                                                     errorMessage={{ validator: 'Please enter a valid email' }}
                                                     value={email}
                                                     onChange={handleChange}
