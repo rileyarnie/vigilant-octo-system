@@ -141,6 +141,7 @@ const ProgramCohorts = (): JSX.Element => {
                         defaultChecked={row.program_cohorts_activationStatus}
                         color="secondary"
                         inputProps={{ 'aria-label': 'controlled' }}
+                        checked={row.program_cohorts_activationStatus}
                         onChange={(event) => {
                             handleActivationStatusToggle(event, row);
                             setRowData(row);
@@ -262,8 +263,7 @@ const ProgramCohorts = (): JSX.Element => {
     }, []);
     programs.map((prog) => {
         const pgSelectionLabel = `${prog.name} (${prog.courses?.length || 0})`;
-        return programOptions.push({ value: prog.id, label: pgSelectionLabel, isDisabled: prog.courses?.length > 0 ?
-            false : true        
+        return programOptions.push({ value: prog.id, label: pgSelectionLabel, isDisabled: prog.courses?.length <= 0
         });
     });
     campuses.map((camp) => {
