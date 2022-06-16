@@ -474,6 +474,7 @@ function ProgramCohortSemesterDetails(props) {
                                 value={feeItemId ? selectedNarrative : narrative}
                                 onChange={(e) => (feeItemId ? setSelectedNarrative(e.target.value) : setNarrative(e.target.value))}
                                 required
+                                minLength={4}
                             />
                             <br />
                             <label htmlFor="amount">
@@ -484,7 +485,9 @@ function ProgramCohortSemesterDetails(props) {
                                 name="amount"
                                 id="amount"
                                 required
-                                type="text"
+                                min={1}
+                                max={999999}
+                                type="number"
                                 value={feeItemId ? selectedAmount : amount}
                                 onChange={(e) => (feeItemId ? setSelectedAmount(e.target.value) : setAmount(e.target.value))}
                             />
