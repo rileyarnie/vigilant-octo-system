@@ -39,10 +39,10 @@ const CardPreview = (props: IProps): JSX.Element => {
                 </CardContent>
             </CardActionArea>
             <CardActions>
-                <Button style={{ textTransform: 'none' }} size="small" color="primary">
+                <Button style={{ textTransform: 'none', pointerEvents: 'none' }} size="small" color="primary">
                     Apply Now
                 </Button>
-                <Button size="small" style={{ textTransform: 'none' }} color="primary">
+                <Button size="small" style={{ textTransform: 'none', pointerEvents: 'none' }} color="primary">
                     more details
                 </Button>
             </CardActions>

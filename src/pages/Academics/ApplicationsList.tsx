@@ -193,6 +193,7 @@ const ApplicationsList = (): JSX.Element => {
                                                         <MenuItem value={'REJECTED'}>Rejected</MenuItem>
                                                         <MenuItem value={'FAILED'}>Failed</MenuItem>
                                                         <MenuItem value={'DEFERRED'}>Deferred</MenuItem>
+                                                        <MenuItem value={'DROPPED'}>Dropped</MenuItem>
                                                     </Select>
                                                 </div>
                                             </div>
@@ -221,9 +222,12 @@ const ApplicationsList = (): JSX.Element => {
                                         View Semesters
                                             </Button>
                                         </Link>
-                                        <Button variant="danger" onClick={(e) => handleAdmission(e, admissionStatus.REJECTED)} disabled={disabled}>
-                                    Reject
-                                        </Button>
+                                        {
+                                            isAdmitted !== 'ADMITTED' && (                                      
+                                                <Button variant="danger" onClick={(e) => handleAdmission(e, admissionStatus.REJECTED)} disabled={disabled}>
+                                        Reject
+                                                </Button>
+                                            )}
                                     </>
                                 )}
                                 {isAdmitted === 'PENDING' && (

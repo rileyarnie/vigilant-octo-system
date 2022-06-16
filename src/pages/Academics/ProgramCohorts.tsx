@@ -3,8 +3,8 @@ import React, {useEffect, useState} from 'react';
 import Card from '@material-ui/core/Card';
 import Alert from '@material-ui/lab/Alert';
 import Breadcrumb from '../../App/components/Breadcrumb';
-import {Button, Col, Modal, Row} from 'react-bootstrap';
-import {FileInput, TextInput, ValidationForm} from 'react-bootstrap4-form-validation';
+import {Button, Col, Dropdown, DropdownButton, Modal, Row} from 'react-bootstrap';
+import {FileInput, TextInput, ValidationForm } from 'react-bootstrap4-form-validation';
 import CardPreview from './CardPreview';
 import {Link} from 'react-router-dom';
 import {Alerts, ToastifyAlerts} from '../lib/Alert';
@@ -141,6 +141,7 @@ const ProgramCohorts = (): JSX.Element => {
                         defaultChecked={row.program_cohorts_activationStatus}
                         color="secondary"
                         inputProps={{ 'aria-label': 'controlled' }}
+                        checked={row.program_cohorts_activationStatus}
                         onChange={(event) => {
                             handleActivationStatusToggle(event, row);
                             setRowData(row);
@@ -262,8 +263,7 @@ const ProgramCohorts = (): JSX.Element => {
     }, []);
     programs.map((prog) => {
         const pgSelectionLabel = `${prog.name} (${prog.courses?.length || 0})`;
-        return programOptions.push({ value: prog.id, label: pgSelectionLabel, isDisabled: prog.courses?.length > 0 ?
-            false : true        
+        return programOptions.push({ value: prog.id, label: pgSelectionLabel, isDisabled: prog.courses?.length <= 0
         });
     });
     campuses.map((camp) => {
@@ -425,6 +425,7 @@ const ProgramCohorts = (): JSX.Element => {
         setModal(false);
         setProgramName('');
         setConfirmModal(false);
+        setNumberOfSlots(0);
     };
     const toggleCreateModal = () => {
         showModal ? resetStateCloseModal() : setModal(true);
@@ -462,6 +463,10 @@ const ProgramCohorts = (): JSX.Element => {
     const toggleCloseConfirmModal = () => {
         setConfirmModal(false);
     };
+
+    // const validateInput = (startDate, endDate, slots) => {
+
+    // };
     return (
         <>
             <Row className="align-items-center page-header">
@@ -553,11 +558,12 @@ const ProgramCohorts = (): JSX.Element => {
                                     id="startDate"
                                     type="date"
                                     required
+                                    min={new Date().toISOString().split('T')[0]}
                                     defaultValue={cohortId ? selectedProgramCohort.program_cohorts_startDate.slice(0, 10) : startDate}
                                     onChange={(e) => {
                                         setStartDate(e.target.value);
                                     }}
-                                />
+                                />                               
                                 <br />
                                 <label htmlFor="Date">
                                     <b>Anticipated Graduation Date<span className="text-danger">*</span></b>
@@ -587,6 +593,7 @@ const ProgramCohorts = (): JSX.Element => {
                                 <TextInput
                                     name="description"
                                     minLength="4"
+                                    maxLength={256}
                                     id="description"
                                     defaultValue={cohortId ? selectedProgramCohort.program_cohorts_advertDescription : selectedDescription}
                                     type="text"
@@ -606,10 +613,12 @@ const ProgramCohorts = (): JSX.Element => {
                                     name="numberOfSlots"
                                     id="numberOfSlots"
                                     defaultValue={cohortId ? selectedProgramCohort.program_cohorts_numberOfSlots : numberOfSlots}
-                                    type="text"
+                                    type="number"
                                     placeholder={'number Of slots'}
                                     required
-                                    onChange={(e) => {
+                                    min={0}
+                                    max={500}
+                                    onChange={(e) => {                                    
                                         setNumberOfSlots(e.target.value);
                                     }}
                                 />
@@ -631,7 +640,8 @@ const ProgramCohorts = (): JSX.Element => {
                             <input name="banner" id="banner" type="hidden" required value={banner} />
                             <br />
                             <div className="form-group">
-                                <button className="btn btn-info float-right">
+                                
+                                <button disabled={imageUploaded.length === 0 ? true : false } className="btn btn-info float-right">
                                     Submit
                                 </button>
                                 <button className="btn btn-danger float-left" onClick={(e) => { e.preventDefault();toggleCreateModal();}}>
